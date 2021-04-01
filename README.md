@@ -5,7 +5,7 @@ Hola amigos este BOT se realizo en vivo en mi canal de Youtube si quieres ver co
 
 #### Node 
 > Debes de tener instalado NODE si no sabes como instalarlo te dejo un video en el cual explico como instalar node
-__https://bit.ly/367tJ32 Minuto 0:50__ 
+__https://www.youtube.com/watch?v=6741ceWzsKQ&list=PL_WGMLcL4jzVY1y-SutA3N_PCNCAG7Y46&index=2&t=50s Minuto 0:50__ 
 
 ## Instruciones
 __Descargar o Clonar repositorio__
