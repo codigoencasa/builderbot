@@ -1,6 +1,7 @@
 # BOT Whatsapp Gratis
 
-Requisitos previos debes de tener
+Hola amigos este BOT se realizo en vivo en mi canal de Youtube si quieres ver como se hizo __Subscribete__
+[https://www.youtube.com/leifermendez](https://www.youtube.com/leifermendez)
 
 #### Node 
 > Debes de tener instalado NODE si no sabes como instalarlo te dejo un video en el cual explico como instalar node
