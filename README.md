@@ -5,6 +5,10 @@ Hola amigos este BOT se realizo en vivo en mi canal de Youtube si quieres ver co
 
 🤖 Link video https://www.youtube.com/watch?v=A_Xu0OR_HkE
 
+#### Actualización 14 Ene 2022
+- npm update
+- add mysql
+
 #### Node 
 > Debes de tener instalado NODE si no sabes como instalarlo te dejo un video en el cual explico como instalar node
 __https://www.youtube.com/watch?v=6741ceWzsKQ&list=PL_WGMLcL4jzVY1y-SutA3N_PCNCAG7Y46&index=2&t=50s Minuto 0:50__ 

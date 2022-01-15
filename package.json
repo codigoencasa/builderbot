@@ -4,22 +4,25 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "chalk": "^4.1.0",
-    "excel4node": "^1.7.2",
-    "exceljs": "^4.2.1",
-    "express": "^4.17.1",
-    "file-type": "^16.3.0",
-    "mime-db": "^1.46.0",
+    "dotenv": "^11.0.0",
+    "exceljs": "^4.3.0",
+    "express": "^4.17.2",
+    "file-type": "^16.5.3",
+    "mime-db": "^1.51.0",
     "moment": "^2.29.1",
-    "ora": "^5.4.0",
     "qrcode-terminal": "^0.12.0",
-    "whatsapp-web.js": "^1.12.5",
+    "socket.io": "^4.4.1",
+    "whatsapp-web.js": "^1.15.3",
     "xlsx": "^0.16.9"
+  },
+  "devDependencies": {
+    "prettier": "2.5.1"
   }
 }
