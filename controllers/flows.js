@@ -1,21 +1,18 @@
-const {get} = require('../adapter')
+const {get, reply} = require('../adapter')
+const {saveExternalFile} = require('./handle')
 
-const getMessages = async (step, message) => {
-    const data = await get(step)
-    return data.includes(message)
+const getMessages = async (message) => {
+    const data = await get(message)
+    return data
 }
 
-
-const responseMessages = (step) => {
-    switch (step) {
-        case 'STEP_1':
-            return ['Si como estas', '🤔'].join('')
-            break;
-        case 'STEP_2':
-            return ['pa como estas', '🤔'].join('')
-            break;
+const responseMessages = async (step) => {
+    const data = await reply(step)
+    if(data && data.media){
+        const file = await saveExternalFile(data.media)
+        return {...data,...{media:file}}
     }
-    return null
+    return data
 }
 
 module.exports = { getMessages, responseMessages }

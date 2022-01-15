@@ -4,6 +4,7 @@ const moment = require('moment');
 const fs = require('fs');
 const { MessageMedia } = require('whatsapp-web.js');
 const { cleanNumber } = require('./handle')
+const { saveMedia } = require('../controllers/save')
 /**
  * Enviamos archivos multimedia a nuestro cliente
  * @param {*} number 
@@ -11,20 +12,24 @@ const { cleanNumber } = require('./handle')
  */
 
 const sendMedia = (client, number, fileName) => {
+    const dirMedia = `${__dirname}/../mediaSend/${fileName}`;
+    console.log(dirMedia)
     number = cleanNumber(number)
-    const media = MessageMedia.fromFilePath(`${__dirname}/../mediaSend/${fileName}`);
-    client.sendMessage(number, media);
+    if(fs.existsSync(dirMedia)){
+        const media = MessageMedia.fromFilePath(dirMedia);
+        client.sendMessage(number, media);
+    }
 }
 
 /**
  * Enviamos un mensaje simple (texto) a nuestro cliente
  * @param {*} number 
  */
-const sendMessage = (client, number = null, text = null, trigger = null) => {
+const sendMessage = async (client, number = null, text = null, trigger = null) => {
     number = cleanNumber(number)
     const message = text
     client.sendMessage(number, message);
-    readChat(number, message, trigger)
+    await readChat(number, message, trigger)
     console.log(`⚡⚡⚡ Enviando mensajes....`);
 }
 
@@ -35,17 +40,16 @@ const lastTrigger = (number) => new Promise((resolve, reject) => {
     number = cleanNumber(number)
     const pathExcel = `${__dirname}/../chats/${number}.xlsx`;
     const workbook = new ExcelJS.Workbook();
-    if(fs.existsSync(pathExcel))
-    {
+    if (fs.existsSync(pathExcel)) {
         workbook.xlsx.readFile(pathExcel)
-        .then(() => {
-            const worksheet = workbook.getWorksheet(1);
-            const lastRow = worksheet.lastRow;
-            const getRowPrevStep = worksheet.getRow(lastRow.number);
-            const lastStep = getRowPrevStep.getCell('C').value;
-            resolve(lastStep)
-        });
-    }else{
+            .then(() => {
+                const worksheet = workbook.getWorksheet(1);
+                const lastRow = worksheet.lastRow;
+                const getRowPrevStep = worksheet.getRow(lastRow.number);
+                const lastStep = getRowPrevStep.getCell('C').value;
+                resolve(lastStep)
+            });
+    } else {
         resolve(null)
     }
 })
@@ -55,7 +59,7 @@ const lastTrigger = (number) => new Promise((resolve, reject) => {
  * @param {*} number 
  * @param {*} message 
  */
- const readChat = async (number, message, trigger = null) => {
+const readChat = async (number, message, trigger = null) => {
     const pathExcel = `${__dirname}/../chats/${number}.xlsx`;
     const workbook = new ExcelJS.Workbook();
     const today = moment().format('DD-MM-YYYY hh:mm')

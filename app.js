@@ -46,33 +46,29 @@ const listenMessage = () => client.on('message', async msg => {
     */
 
     const lastStep = await lastTrigger(from) || null;
-
-    if (lastStep === 'STEP_2') {
-        const response = responseMessages(lastStep)
-        sendMessage(client, from, response);
-        return
-    }
-
-    if (lastStep === 'STEP_3') {
-        const response = responseMessages(lastStep)
-        sendMessage(client, from, response);
-        return
+    if (lastStep) {
+        const response = await responseMessages(lastStep)
+        await sendMessage(client, from, response.replyMessage);
     }
 
     /**
      * Respondemos al primero paso si encuentra palabras clave
      */
-    if (await getMessages('STEP_1', message)) {
-        const response = responseMessages('STEP_1')
-        sendMessage(client, from, response, 'STEP_2');
+    const step = await getMessages(message);
+    if (step) {
+        const response = await responseMessages(step)
+        await sendMessage(client, from, response.replyMessage, response.trigger);
+        
+        if(!response.delay && response.media){
+            sendMedia(client, from, response.media);
+        }
+        if(response.delay && response.media){
+            setTimeout(() => {
+                sendMedia(client, from, response.media);
+            },response.delay)
+        }
         return
     }
-
-    // if (getMessages('STEP_2').includes(message)) {
-    //     const response = responseMessages('STEP_2')
-    //     sendMessage(client, from, response);
-    //     return
-    // }
 });
 
 /**
