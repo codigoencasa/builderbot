@@ -1,13 +1,8 @@
-const getMessages = (step) => {
-    switch (step) {
-        case 'STEP_1':
-            return ['hola', 'hi']
-            break;
-        case 'STEP_2':
-            return ['hola', 'hi']
-            break;
-    }
-    return null
+const {get} = require('../adapter')
+
+const getMessages = async (step, message) => {
+    const data = await get(step)
+    return data.includes(message)
 }
 
 

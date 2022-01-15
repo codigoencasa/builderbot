@@ -6,6 +6,7 @@ const fs = require('fs');
 const express = require('express');
 const qrcode = require('qrcode-terminal');
 const { Client } = require('whatsapp-web.js');
+const mysqlConnection = require('./config/mysql')
 const { middlewareClient } = require('./middleware/client')
 const { connectionReady, connectionLost } = require('./controllers/connection')
 const { saveMedia } = require('./controllers/save')
@@ -61,17 +62,17 @@ const listenMessage = () => client.on('message', async msg => {
     /**
      * Respondemos al primero paso si encuentra palabras clave
      */
-    if (getMessages('STEP_1').includes(message)) {
+    if (await getMessages('STEP_1', message)) {
         const response = responseMessages('STEP_1')
         sendMessage(client, from, response, 'STEP_2');
         return
     }
 
-    if (getMessages('STEP_2').includes(message)) {
-        const response = responseMessages('STEP_2')
-        sendMessage(client, from, response);
-        return
-    }
+    // if (getMessages('STEP_2').includes(message)) {
+    //     const response = responseMessages('STEP_2')
+    //     sendMessage(client, from, response);
+    //     return
+    // }
 });
 
 /**
@@ -139,6 +140,13 @@ const withOutSession = () => {
  */
 (fs.existsSync(SESSION_FILE_PATH)) ? withSession() : withOutSession();
 
+/**
+ * Verificamos si tienes un gesto de db
+ */
+
+if(process.env.DATABASE === 'mysql'){
+    mysqlConnection.connect()
+}
 
 app.listen(port, () => {
     console.log(`El server esta listo por el puerto ${port}`);
