@@ -46,6 +46,7 @@ const listenMessage = () => client.on('message', async msg => {
     */
 
     const lastStep = await lastTrigger(from) || null;
+    console.log({lastStep})
     if (lastStep) {
         const response = await responseMessages(lastStep)
         await sendMessage(client, from, response.replyMessage);
@@ -55,6 +56,7 @@ const listenMessage = () => client.on('message', async msg => {
      * Respondemos al primero paso si encuentra palabras clave
      */
     const step = await getMessages(message);
+    console.log({step})
     if (step) {
         const response = await responseMessages(step)
         await sendMessage(client, from, response.replyMessage, response.trigger);
@@ -84,7 +86,7 @@ const withSession = () => {
     });
 
     client.on('ready', () => {
-        connectionReady();
+        connectionReady()
         listenMessage()
         loadRoutes(client);
     });
@@ -108,6 +110,8 @@ const withOutSession = () => {
 
     client.on('ready', () => {
         connectionReady()
+        listenMessage()
+        loadRoutes(client);
     });
 
     client.on('auth_failure', () => connectionLost());
