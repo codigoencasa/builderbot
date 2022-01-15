@@ -10,8 +10,9 @@ const mysqlConnection = require('./config/mysql')
 const { middlewareClient } = require('./middleware/client')
 const { connectionReady, connectionLost } = require('./controllers/connection')
 const { saveMedia } = require('./controllers/save')
-const { getMessages, responseMessages } = require('./controllers/flows')
+const { getMessages, responseMessages, bothResponse } = require('./controllers/flows')
 const { sendMedia, sendMessage, lastTrigger } = require('./controllers/send')
+
 const app = express();
 app.use(express.json())
 
@@ -37,6 +38,16 @@ const listenMessage = () => client.on('message', async msg => {
     if (process.env.SAVE_MEDIA && hasMedia) {
         const media = await msg.downloadMedia();
         saveMedia(media);
+    }
+
+    /**
+     * Si estas usando dialogflow solo manejamos una funcion todo es IA
+     */
+
+    if (process.env.DATABASE === 'dialogflow') {
+        const response = await bothResponse(message);
+        await sendMessage(client, from, response.replyMessage);
+        return
     }
 
     /**

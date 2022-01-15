@@ -15,4 +15,10 @@ const responseMessages = async (step) => {
     return data
 }
 
-module.exports = { getMessages, responseMessages }
+const bothResponse = async (message) => {
+    const data = await get(message)
+    return data
+}
+
+
+module.exports = { getMessages, responseMessages, bothResponse }

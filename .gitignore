@@ -1,5 +1,6 @@
 /node_modules
 /node_modules/*
+chatbot-account.json
 session.json
 chats/*
 !chats/.gitkeep
