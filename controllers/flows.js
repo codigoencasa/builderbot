@@ -1,4 +1,4 @@
-const {get, reply} = require('../adapter')
+const {get, reply, getIA} = require('../adapter')
 const {saveExternalFile} = require('./handle')
 
 const getMessages = async (message) => {
@@ -16,7 +16,11 @@ const responseMessages = async (step) => {
 }
 
 const bothResponse = async (message) => {
-    const data = await get(message)
+    const data = await getIA(message)
+    if(data && data.media){
+        const file = await saveExternalFile(data.media)
+        return {...data,...{media:file}}
+    }
     return data
 }
 

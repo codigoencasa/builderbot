@@ -12,16 +12,21 @@ const cleanNumber = (number) => {
 const saveExternalFile = (url) => new Promise((resolve, reject) => {
     const ext = url.split('.').pop()
     const checkProtocol = url.split('/').includes('https:');
-    console.log(checkProtocol)
     const handleHttp = checkProtocol ? https : http;
     const name = `${Date.now()}.${ext}`;
     const file = fs.createWriteStream(`./mediaSend/${name}`);
-    const request = handleHttp.get(url, function(response) {
-        const ext = response.headers['content-type'].split('/').pop()
+    console.log(url)
+     handleHttp.get(url, function(response) {
+        console.log('aaaa')
         response.pipe(file);
         file.on('finish', function() {
             file.close();  // close() is async, call cb after close completes.
             resolve(name)
+        });
+        file.on('error', function() {
+            console.log('errro')
+            file.close();  // close() is async, call cb after close completes.
+            resolve(null)
         });
     });
 })

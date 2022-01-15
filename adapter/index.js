@@ -32,18 +32,20 @@ const get = (message) => new Promise((resolve, reject) => {
         });
     }
 
+})
+
+const getIA = (message) => new Promise((resolve, reject) => {
     /**
      * Si usas dialogflow
      */
-    if (process.env.DATABASE === 'dialogflow') {
+     if (process.env.DATABASE === 'dialogflow') {
         let resData = { replyMessage: '', media: null, trigger: null }
         getDataIa(message,(dt) => {
-            resData = { ...resData, ...{ replyMessage: dt.replyMessage } }
+            resData = { ...resData, ...dt }
             resolve(resData)
         })
     }
 })
-
 
 const reply = (step) => new Promise((resolve, reject) => {
     /**
@@ -99,4 +101,4 @@ const reply = (step) => new Promise((resolve, reject) => {
     }
 })
 
-module.exports = { get, reply }
+module.exports = { get, reply, getIA }

@@ -20,6 +20,7 @@ const sessionClient = new dialogflow.SessionsClient(CONFIGURATION);
 
 // Detect intent method
 const detectIntent = async (queryText) => {
+    let media = null;
     const sessionId = nanoid.nanoid()
     const sessionPath = sessionClient.projectAgentSessionPath(PROJECID, sessionId);
     const languageCode = process.env.LANGUAGE
@@ -37,18 +38,24 @@ const detectIntent = async (queryText) => {
     const [singleResponse] = responses;
     const { queryResult } = singleResponse
     const { intent } = queryResult || { intent: {} }
-    const parseIntent = intent?.displayName || null
+    const parseIntent = intent['displayName'] || null
+    const parsePayload = queryResult['fulfillmentMessages'].find((a) => a.message === 'payload');
+
+    if (parsePayload && parsePayload.payload) {
+        const { fields } = parsePayload.payload
+        media = fields.media.stringValue || null
+    }
+    // const customPayload = parsePayload['payload']
 
     const parseData = {
-        replyMessage:queryResult.fulfillmentText,
-        media:null,
-        trigger:null
+        replyMessage: queryResult.fulfillmentText,
+        media,
+        trigger: null
     }
-
     return parseData
 }
 
-const getDataIa = (message = '',cb = () => {}) => {
+const getDataIa = (message = '', cb = () => { }) => {
     detectIntent(message).then((res) => {
         cb(res)
     })
