@@ -12,9 +12,6 @@
     ],
     "addons": [
     ],
-    "scripts": {
-      "postdeploy": "php artisan migrate --force && php artisan db:seed --force"
-    },
     "buildpacks": [
       {
         "url": "https://github.com/heroku/heroku-buildpack-google-chrome"
