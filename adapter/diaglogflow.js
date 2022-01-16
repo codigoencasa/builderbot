@@ -4,19 +4,28 @@ const nanoid = require('nanoid')
 /**
  * Debes de tener tu archivo con el nombre "chatbot-account.json" en la raíz del proyecto
  */
-const CREDENTIALS = JSON.parse(fs.readFileSync(`${__dirname}/../chatbot-account.json`));
+let PROJECID;
+let CONFIGURATION;
+let sessionClient;
 
-const PROJECID = CREDENTIALS.project_id;
-
-const CONFIGURATION = {
-    credentials: {
-        private_key: CREDENTIALS['private_key'],
-        client_email: CREDENTIALS['client_email']
+const checkFileCredentials = () => {
+    if(!fs.existsSync(`${__dirname}/../chatbot-account.json`)){
+        return false
     }
+
+    const parseCredentials = JSON.parse(fs.readFileSync(`${__dirname}/../chatbot-account.json`));
+    PROJECID = parseCredentials.project_id;
+    CONFIGURATION = {
+        credentials: {
+            private_key: parseCredentials['private_key'],
+            client_email: parseCredentials['client_email']
+        }
+    }
+    sessionClient = new dialogflow.SessionsClient(CONFIGURATION);
 }
 
 // Create a new session
-const sessionClient = new dialogflow.SessionsClient(CONFIGURATION);
+
 
 // Detect intent method
 const detectIntent = async (queryText) => {
@@ -60,5 +69,7 @@ const getDataIa = (message = '', cb = () => { }) => {
         cb(res)
     })
 }
+
+checkFileCredentials();
 
 module.exports = { getDataIa }
