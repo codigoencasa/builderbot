@@ -1,0 +1,38 @@
+{
+    "name": "Chatbot Whatsapp (Leifer Mendez)",
+    "description": "Este bot se realizo con la finalidad de aprender y utilizar nodejs, ademas le agregamos inteligencia artificial gracias a dialogflow",
+    "repository": "https://github.com/leifermendez/bot-whatsapp",
+    "logo": "https://avatars0.githubusercontent.com/u/15802366?s=460&u=77ec7ef359e8ed842aef769693f1675c0ed460fd&v=4",
+    "keywords": [
+      "nodejs",
+      "whatsapp",
+      "bot",
+      "chatbot",
+      "dialogflow"
+    ],
+    "addons": [
+    ],
+    "scripts": {
+      "postdeploy": "php artisan migrate --force && php artisan db:seed --force"
+    },
+    "buildpacks": [
+      {
+        "url": "https://github.com/heroku/heroku-buildpack-google-chrome"
+      },
+      {
+        "url": "https://github.com/jontewks/puppeteer-heroku-buildpack"
+      }
+    ],
+    "env": {
+      "SAVE_MEDIA": "false",
+      "DATABASE": {
+        "description": "Puedes usar none, mysql, dialogflow: Defecto: none",
+        "value": "none"
+      },
+      "LANGUAGE": "es",
+      "SQL_HOST":"",
+      "SQL_USER":"",
+      "SQL_PASS":"",
+      "SQL_DATABASE":""
+    }
+  }

@@ -7,5 +7,6 @@
 - external download
 - add dialogflow
 - images less 1mb
+- easy deploy heroku
 
 https://stackoverflow.com/questions/51855169/dialogflow-403-iam-permission-dialogflow-sessions-detectintent

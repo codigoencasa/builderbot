@@ -96,9 +96,14 @@ const withSession = () => {
     console.log(`Validando session con Whatsapp...`)
     sessionData = require(SESSION_FILE_PATH);
     client = new Client({
-        session: sessionData
+        session: sessionData,
+        puppeteer: {
+            args: [
+                '--no-sandbox'
+            ],
+        }
     });
-
+    
     client.on('ready', () => {
         connectionReady()
         listenMessage()

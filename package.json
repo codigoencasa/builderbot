@@ -26,6 +26,7 @@
     "xlsx": "^0.16.9"
   },
   "devDependencies": {
+    "pm2": "^5.1.2",
     "prettier": "2.5.1"
   }
 }
