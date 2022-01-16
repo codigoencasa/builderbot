@@ -1,6 +1,6 @@
 {
     "name": "Chatbot Whatsapp (Leifer Mendez)",
-    "description": "Este bot se realizo con la finalidad de aprender y utilizar nodejs, ademas le agregamos inteligencia artificial gracias a dialogflow",
+    "description": "El siguiente proyecto se realizó con fines educativos para el canal de Youtube (Leifer Mendez) donde aprendemos como usando node.js podemos crear un chatbot increíble que además le agregamos inteligencia artificial gracias al servicio de dialogflow",
     "repository": "https://github.com/leifermendez/bot-whatsapp",
     "logo": "https://avatars0.githubusercontent.com/u/15802366?s=460&u=77ec7ef359e8ed842aef769693f1675c0ed460fd&v=4",
     "keywords": [
@@ -26,13 +26,13 @@
     "env": {
       "SAVE_MEDIA": "false",
       "DATABASE": {
-        "description": "Puedes usar none, mysql, dialogflow: Defecto: none",
+        "description": "'none', 'mysql', 'dialogflow' por defecto 'none' Puedes usar alguna de los siguientes opciones. Pero antes debes de saber como funciona y eso lo explico en el video. Puedes obtener más información https://github.com/leifermendez/bot-whatsapp/blob/main/README.md",
         "value": "none"
       },
       "LANGUAGE": "es",
-      "SQL_HOST":"",
-      "SQL_USER":"",
-      "SQL_PASS":"",
-      "SQL_DATABASE":""
+      "SQL_HOST":"your_host",
+      "SQL_USER":"your_user",
+      "SQL_PASS":"your_password",
+      "SQL_DATABASE":"your_database"
     }
   }
