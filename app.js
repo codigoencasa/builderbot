@@ -121,7 +121,13 @@ const withSession = () => {
 const withOutSession = () => {
     console.log('No tenemos session guardada');
 
-    client = new Client();
+    client = new Client({
+        puppeteer: {
+            args: [
+                '--no-sandbox'
+            ],
+        }
+    });
 
     client.on('qr', qr => {
         qrcode.generate(qr, { small: true });
