@@ -31,7 +31,6 @@ const listenMessage = () => client.on('message', async msg => {
         return 
     }
     message = body.toLowerCase();
-
     /**
      * Guardamos el archivo multimedia que envia
      */
