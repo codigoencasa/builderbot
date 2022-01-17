@@ -9,8 +9,8 @@ El siguiente proyecto se realizó con fines educativos para el canal de [Youtube
 - node v14 o superior
 
 #### Video Creación 🤖
-[Ver Video 1](https://www.youtube.com/watch?v=A_Xu0OR_HkE)
-[Ver Video 2 (Actulización)](https://www.youtube.com/watch?v=A_Xu0OR_HkE)
+- [Ver Video 1](https://www.youtube.com/watch?v=A_Xu0OR_HkE)
+- [Ver Video 2 (Actulización)](https://www.youtube.com/watch?v=A_Xu0OR_HkE)
 
 #### ¿Que puedo hacer con este chatbot?
 
