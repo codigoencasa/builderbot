@@ -8,6 +8,7 @@ const qrcode = require('qrcode-terminal');
 const { Client } = require('whatsapp-web.js');
 const mysqlConnection = require('./config/mysql')
 const { middlewareClient } = require('./middleware/client')
+const { generateImage } = require('./controllers/handle')
 const { connectionReady, connectionLost } = require('./controllers/connection')
 const { saveMedia } = require('./controllers/save')
 const { getMessages, responseMessages, bothResponse } = require('./controllers/flows')
@@ -15,6 +16,7 @@ const { sendMedia, sendMessage, lastTrigger } = require('./controllers/send')
 
 const app = express();
 app.use(express.json())
+app.use('/',require('./routes/web'))
 
 const port = process.env.PORT || 3000
 const SESSION_FILE_PATH = './session.json';
@@ -128,10 +130,11 @@ const withOutSession = () => {
         }
     });
 
-    client.on('qr', qr => {
+    client.on('qr', qr => generateImage(qr, () => {
         qrcode.generate(qr, { small: true });
-    });
-
+        console.log(`Ver QR http://localhost:${port}/qr`)
+    }))
+    
     client.on('ready', () => {
         connectionReady()
         listenMessage()

@@ -1,3 +1,4 @@
+const fs = require('fs')
 const { sendMessage } = require('../controllers/send')
 
 const sendMessagePost = (req, res) => {
@@ -7,4 +8,9 @@ const sendMessagePost = (req, res) => {
     res.send({ status: 'Enviado!' })
 }
 
-module.exports = { sendMessagePost }
+const getQr = (req, res) => {
+    res.writeHead(200, { 'content-type': 'image/svg+xml' });
+    fs.createReadStream(`${__dirname}/../mediaSend/qr-code.svg`).pipe(res);
+}
+
+module.exports = { sendMessagePost, getQr }
