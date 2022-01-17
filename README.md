@@ -19,7 +19,7 @@ IMAGE
 
 ## Instruciones
 __Descargar o Clonar repositorio__
-![](https://i.imgur.com/4iEKZIc.png)
+![](https://i.imgur.com/dSpUbFz.png)
 
 __Instalar paquetes (npm install)__
 > Ubicate en le directorio que descargaste y via consola o terminal ejecuta el siguiente comando
