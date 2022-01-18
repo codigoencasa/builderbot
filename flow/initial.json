@@ -2,6 +2,7 @@
     {
         "keywords":  [
             "hola",
+            "hola!",
             "ola",
             "ole",
             "inicio",
@@ -18,9 +19,9 @@
     },
     {
         "keywords":  [
-            "catalogo",
-            "productos",
-            "categoría"
+            "cursos",
+            "info",
+            "curso"
         ],
         "key": "STEP_2"
     },
@@ -29,6 +30,24 @@
             "angular"
         ],
         "key": "STEP_2_1"
+    },
+    {
+        "keywords":  [
+            "node"
+        ],
+        "key": "STEP_2_2"
+    },
+    {
+        "keywords":  [
+            "ngrx"
+        ],
+        "key": "STEP_2_3"
+    },
+    {
+        "keywords":  [
+            "aws"
+        ],
+        "key": "STEP_2_4"
     },
     {
         "keywords":  [

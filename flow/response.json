@@ -10,24 +10,55 @@
     },
     "STEP_1":{
         "replyMessage":[
-            "✌️ Bienveido a este CHATBOT lo primero \n",
-            "Decirte que mi nombre es Leifer Mendez  \n\n",
-            "scribe la palabra ‼️ *Catalogo* y te mostrare nuestras categorías😉 \n"
+            "✌️ Bienvenido a este 🤖 CHATBOT de Whatsapp, lo primero \n",
+            "decirte que mi nombre es *Leifer Mendez*😎  \n",
+            "\n Si necesitas ver más info sobre las capacitacion tecnicas ",
+            "escribe *cursos* o *info*"
         ],
         "media":null,
         "trigger":null
     },
     "STEP_2":{
         "replyMessage":[
-            "Perfecto estas son nuestras categorías. 🙂🤖� \n",
-            "enviando...👌"
+            "Perfecto, te voy a pasar la lista ",
+            "de los temas que tengo y un breve video 🙂🤖 \n\n",
+            "*Angular* Basico (Pago) \n",
+            "*Angular* Basico (Gratis) \n",
+            "*Node* Basico (Gratis) \n",
+            "*NGRX* Basico (Gratis) \n",
+            "*AWS* Basico (Pago) \n\n",
+            "Escribe la palabra del tema que te interese \n"
         ],
-        "media":"https://media4.giphy.com/media/GVwkLerYYmDDWeY52s/giphy.gif",
-        "trigger":"STEP_3"
+        "media":"https://i.giphy.com/media/5J5gN0WUk0VToHaK2p/giphy-downsized.gif",
+        "trigger":null
     },
     "STEP_2_1":{
         "replyMessage":[
-            "Muy bien te comparto el link del curso \n",
+            "Muy bien te comparto el link del curso angular \n",
+            "👉 https://angular.io"
+        ],
+        "media":null,
+        "trigger":null
+    },
+    "STEP_2_2":{
+        "replyMessage":[
+            "Muy bien te comparto el link del curso node \n",
+            "👉 https://angular.io"
+        ],
+        "media":null,
+        "trigger":null
+    },
+    "STEP_2_3":{
+        "replyMessage":[
+            "Muy bien te comparto el link del curso ngrx \n",
+            "👉 https://angular.io"
+        ],
+        "media":null,
+        "trigger":null
+    },
+    "STEP_2_4":{
+        "replyMessage":[
+            "Muy bien te comparto el link del curso aws \n",
             "👉 https://angular.io"
         ],
         "media":null,
