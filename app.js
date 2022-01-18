@@ -86,6 +86,13 @@ const listenMessage = () => client.on('message', async msg => {
         }
         return
     }
+
+    if(process.env.DEFAULT_MESSAGE === 'true'){
+        console.log('hehehe',(process.env.DEFAULT_MESSAGE) , step)
+        const response = await responseMessages('DEFAULT')
+        await sendMessage(client, from, response.replyMessage, response.trigger);
+        return
+    }
 });
 
 /**

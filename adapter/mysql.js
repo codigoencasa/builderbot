@@ -1,7 +1,8 @@
 const {connection} = require('../config/mysql')
+const DATABASE_NAME = process.env.SQL_DATABASE || 'db_test'
 
 getData = (message = '', callback) => connection.query(
-    `SELECT * FROM db_test.keywords WHERE value LIKE '%${message}%'  LIMIT 1`,
+    `SELECT * FROM ${DATABASE_NAME}.initial WHERE keywords LIKE '%${message}%'  LIMIT 1`,
     (error, results
         ) => {
     const [response] = results
@@ -11,12 +12,13 @@ getData = (message = '', callback) => connection.query(
 
 
 getReply = (option_key = '', callback) => connection.query(
-    `SELECT * FROM db_test.replies WHERE option_key = '${option_key}'  LIMIT 1`,
+    `SELECT * FROM ${DATABASE_NAME}.response WHERE option_key = '${option_key}'  LIMIT 1`,
     (error, results
         ) => {
-    const [response] = results
+    const [response] = results;
+    console.log(response)
     const value = {
-        replyMessage:response?.value || '',
+        replyMessage:response?.replyMessage || '',
         trigger:response?.trigger || '',
         media:response?.media || ''
     }

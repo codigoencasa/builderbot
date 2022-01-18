@@ -13,7 +13,6 @@ const { saveMedia } = require('../controllers/save')
 
 const sendMedia = (client, number, fileName) => {
     const dirMedia = `${__dirname}/../mediaSend/${fileName}`;
-    console.log(dirMedia)
     number = cleanNumber(number)
     if(fs.existsSync(dirMedia)){
         const media = MessageMedia.fromFilePath(dirMedia);
