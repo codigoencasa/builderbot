@@ -2,7 +2,7 @@
   "name": "test-ws-bot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "node ./app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -29,5 +29,8 @@
   "devDependencies": {
     "pm2": "^5.1.2",
     "prettier": "2.5.1"
+  },
+  "engines": {
+    "node": "14.x"
   }
 }
