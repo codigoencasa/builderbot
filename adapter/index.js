@@ -1,5 +1,7 @@
 const { getData, getReply } = require('./mysql')
 const { getDataIa } = require('./diaglogflow')
+const  stepsInitial = require('../flow/initial.json')
+const  stepsReponse = require('../flow/response.json')
 
 const get = (message) => new Promise((resolve, reject) => {
     /**
@@ -7,19 +9,7 @@ const get = (message) => new Promise((resolve, reject) => {
      */
 
     if (process.env.DATABASE === 'none') {
-
-        const steps = [
-            {
-                keywords: ['hola', 'hi', 'buen dia'],
-                key: 'STEP_1'
-            },
-            {
-                keywords: ['enviar pdf', 'pdf', 'enviarpdf'],
-                key: 'STEP_2'
-            }
-        ]
-
-        const { key } = steps.find(k => k.keywords.includes(message)) || { key: null }
+        const { key } = stepsInitial.find(k => k.keywords.includes(message)) || { key: null }
         const response = key || null
         resolve(response)
     }
@@ -34,60 +24,21 @@ const get = (message) => new Promise((resolve, reject) => {
 
 })
 
-const getIA = (message) => new Promise((resolve, reject) => {
-    /**
-     * Si usas dialogflow
-     */
-     if (process.env.DATABASE === 'dialogflow') {
-        let resData = { replyMessage: '', media: null, trigger: null }
-        getDataIa(message,(dt) => {
-            resData = { ...resData, ...dt }
-            resolve(resData)
-        })
-    }
-})
 
 const reply = (step) => new Promise((resolve, reject) => {
     /**
     * Si no estas usando un gesto de base de datos
     */
     if (process.env.DATABASE === 'none') {
-        let replyMessage = null;
         let resData = { replyMessage: '', media: null, trigger: null }
-        switch (step) {
-
-            case 'STEP_1':
-                replyMessage = [
-                    '✌️ Bienveido a este CHATBOT lo primero \n',
-                    'Decirte que mi nombre es Leifer Mendez  \n\n',
-                    '¿Quieres que te envie mi presentación? \n',
-                    '*enviar pdf* o *omitir* \n',
-                ].join('');
-                resData = { replyMessage, media: null }
-                resolve(resData);
-                return
-                break;
-            case 'STEP_2':
-                replyMessage = [
-                    'Yeah! 😎 \n',
-                    'enviando...👌'
-                ].join('');
-                resData = { replyMessage, media: 'meme-1.png', trigger: 'STEP_0' }
-                resolve(resData);
-                return
-                break;
-            case 'STEP_0':
-                replyMessage = [
-                    'El flujo ha finalizado \n',
-                    'pero puedes ver todo el codigo de este \n',
-                    'repositorio en https://github.com/leifermendez/bot-whatsapp.git'
-                ].join('');
-                resData = { replyMessage, media: null }
-                resolve(resData);
-                return
-                break;
-
-        }
+        const responseFind = stepsReponse[step] || {};
+        console.log('Responder:',responseFind)
+        resData = {
+            ...resData, 
+            ...responseFind,
+            replyMessage:responseFind.replyMessage.join('')}
+        resolve(resData);
+        return 
     }
     /**
      * Si usas MYSQL
@@ -98,6 +49,19 @@ const reply = (step) => new Promise((resolve, reject) => {
             resData = { ...resData, ...dt }
             resolve(resData)
         });
+    }
+})
+
+const getIA = (message) => new Promise((resolve, reject) => {
+    /**
+     * Si usas dialogflow
+     */
+     if (process.env.DATABASE === 'dialogflow') {
+        let resData = { replyMessage: '', media: null, trigger: null }
+        getDataIa(message,(dt) => {
+            resData = { ...resData, ...dt }
+            resolve(resData)
+        })
     }
 })
 

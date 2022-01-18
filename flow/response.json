@@ -1,0 +1,51 @@
+{
+    "STEP_0":{
+        "replyMessage":[
+            "El flujo ha finalizado \n",
+            "pero puedes ver todo el codigo de este \n",
+            "repositorio en https://github.com/leifermendez/bot-whatsapp.git"
+        ],
+        "media":null,
+        "trigger":null
+    },
+    "STEP_1":{
+        "replyMessage":[
+            "✌️ Bienveido a este CHATBOT lo primero \n",
+            "Decirte que mi nombre es Leifer Mendez  \n\n",
+            "scribe la palabra ‼️ *Catalogo* y te mostrare nuestras categorías😉 \n"
+        ],
+        "media":null,
+        "trigger":null
+    },
+    "STEP_2":{
+        "replyMessage":[
+            "Perfecto estas son nuestras categorías. 🙂🤖� \n",
+            "enviando...👌"
+        ],
+        "media":"https://media4.giphy.com/media/GVwkLerYYmDDWeY52s/giphy.gif",
+        "trigger":"STEP_3"
+    },
+    "STEP_2_1":{
+        "replyMessage":[
+            "Muy bien te comparto el link del curso \n",
+            "👉 https://angular.io"
+        ],
+        "media":null,
+        "trigger":null
+    },
+    "STEP_3":{
+        "replyMessage":[
+            "¿Ok cual curso de intereso? \n",
+            "*angular* , *node*, *ngrx*, *aws*"
+        ],
+        "media":null,
+        "trigger":null
+    },
+    "STEP_4":{
+        "replyMessage":[
+            "Gracias a ti! \n"
+        ],
+        "media":"https://media4.giphy.com/media/hur0SFIU5SH4mxNBWa/giphy.gif",
+        "trigger":null
+    }
+}

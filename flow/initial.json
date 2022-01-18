@@ -1,0 +1,51 @@
+[
+    {
+        "keywords":  [
+            "hola",
+            "ola",
+            "ole",
+            "inicio",
+            "welcome",
+            "buenos días",
+            "buenas tardes",
+            "buenas noches",
+            "me dieron este número",
+            "venden a crédito",
+            "quisiera saber si venden",
+            "necesito saber"
+        ],
+        "key": "STEP_1"
+    },
+    {
+        "keywords":  [
+            "catalogo",
+            "productos",
+            "categoría"
+        ],
+        "key": "STEP_2"
+    },
+    {
+        "keywords":  [
+            "angular"
+        ],
+        "key": "STEP_2_1"
+    },
+    {
+        "keywords":  [
+            "asesor",
+            "asesores",
+            "Vendedor",
+            "cobrador"
+        ],
+        "key": "STEP_3"
+    },
+    {
+        "keywords":  [
+            "muchas gracias",
+            "ok",
+            "gracias",
+            "vale gracias"
+        ],
+        "key": "STEP_4"
+    }
+]
