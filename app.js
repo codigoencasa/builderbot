@@ -12,7 +12,7 @@ const { generateImage } = require('./controllers/handle')
 const { connectionReady, connectionLost } = require('./controllers/connection')
 const { saveMedia } = require('./controllers/save')
 const { getMessages, responseMessages, bothResponse } = require('./controllers/flows')
-const { sendMedia, sendMessage, lastTrigger } = require('./controllers/send')
+const { sendMedia, sendMessage, lastTrigger, sendMessageButton } = require('./controllers/send')
 
 const app = express();
 app.use(express.json())
@@ -75,6 +75,7 @@ const listenMessage = () => client.on('message', async msg => {
     if (step) {
         const response = await responseMessages(step)
         await sendMessage(client, from, response.replyMessage, response.trigger);
+        await sendMessageButton(client, from);
         
         if(!response.delay && response.media){
             sendMedia(client, from, response.media);

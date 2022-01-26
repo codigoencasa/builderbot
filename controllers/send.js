@@ -2,7 +2,7 @@
 const ExcelJS = require('exceljs');
 const moment = require('moment');
 const fs = require('fs');
-const { MessageMedia } = require('whatsapp-web.js');
+const { MessageMedia, Buttons } = require('whatsapp-web.js');
 const { cleanNumber } = require('./handle')
 const { saveMedia } = require('../controllers/save')
 /**
@@ -14,7 +14,7 @@ const { saveMedia } = require('../controllers/save')
 const sendMedia = (client, number, fileName) => {
     const dirMedia = `${__dirname}/../mediaSend/${fileName}`;
     number = cleanNumber(number)
-    if(fs.existsSync(dirMedia)){
+    if (fs.existsSync(dirMedia)) {
         const media = MessageMedia.fromFilePath(dirMedia);
         client.sendMessage(number, media);
     }
@@ -31,6 +31,24 @@ const sendMessage = async (client, number = null, text = null, trigger = null) =
     await readChat(number, message, trigger)
     console.log(`⚡⚡⚡ Enviando mensajes....`);
 }
+
+/**
+ * Enviamos un mensaje con buttons a nuestro cliente
+ * @param {*} number 
+ */
+const sendMessageButton = async (client, number = null, text = null, trigger = null) => {
+    number = cleanNumber(number)
+    const message = text
+
+    let button = new Buttons("holaaaa", [
+        { body: "Leer" },
+        { body: "SIII" }
+    ], "ssssss", "foonooooter");
+    client.sendMessage(number, button);
+
+    console.log(`⚡⚡⚡ Enviando mensajes....`);
+}
+
 
 /**
  * Opte
@@ -102,4 +120,4 @@ const readChat = async (number, message, trigger = null) => {
     }
 }
 
-module.exports = { sendMessage, sendMedia, lastTrigger }
+module.exports = { sendMessage, sendMedia, lastTrigger, sendMessageButton }

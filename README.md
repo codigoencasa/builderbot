@@ -2,6 +2,7 @@
 #### Actualizado Enero 2022
 
 El siguiente proyecto se realizó con fines educativos para el canal de [Youtube (Leifer Mendez)](https://www.youtube.com/channel/UCgrIGp5QAnC0J8LfNJxDRDw?sub_confirmation=1) donde aprendemos como usando node.js podemos crear un chatbot increíble que además le agregamos inteligencia artificial gracias al servicio de dialogflow.
+
 ![](https://i.giphy.com/media/OBDi3CXC83WkNeLEZP/giphy.webp)
 > Si tienes una cuenta en __heroku__ puedes desplegar este proyecto con 1 click
 
@@ -66,7 +67,7 @@ SQL_PASS=
 SQL_DATABASE=
 ```
 
-> Si quieres usar la conexion via _mysql_ puedes importar el archivo [sql-bot.sql](s)
+> Si quieres usar la conexion via _mysql_ puedes importar el archivo [sql-bot.sql](https://github.com/leifermendez/bot-whatsapp/blob/main/sql-bot.sql)
 
 ### ¿Como usarlo el chatbot de whatsapp?
 > Escribe un mensaje al whatsapp que vinculaste con tu BOT
