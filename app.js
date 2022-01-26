@@ -75,7 +75,7 @@ const listenMessage = () => client.on('message', async msg => {
     if (step) {
         const response = await responseMessages(step)
         await sendMessage(client, from, response.replyMessage, response.trigger);
-        await sendMessageButton(client, from);
+        // await sendMessageButton(client, from);
         
         if(!response.delay && response.media){
             sendMedia(client, from, response.media);
