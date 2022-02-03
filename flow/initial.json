@@ -66,5 +66,23 @@
             "vale gracias"
         ],
         "key": "STEP_4"
+    },
+    {
+        "keywords":  [
+            "👉 Youtube"
+        ],
+        "key": "STEP_5"
+    },
+    {
+        "keywords":  [
+            "😎 Cursos"
+        ],
+        "key": "STEP_6"
+    },
+    {
+        "keywords":  [
+            "😁 Telegram"
+        ],
+        "key": "STEP_7"
     }
 ]

@@ -36,14 +36,10 @@ const sendMessage = async (client, number = null, text = null, trigger = null) =
  * Enviamos un mensaje con buttons a nuestro cliente
  * @param {*} number 
  */
-const sendMessageButton = async (client, number = null, text = null, trigger = null) => {
+const sendMessageButton = async (client, number = null, text = null, actionButtons) => {
     number = cleanNumber(number)
-    const message = text
-
-    let button = new Buttons("holaaaa", [
-        { body: "Leer" },
-        { body: "SIII" }
-    ], "ssssss", "foonooooter");
+    const { title = null, message = null, footer = null, buttons = [] } = actionButtons;
+    let button = new Buttons(message,[...buttons], title, footer);
     client.sendMessage(number, button);
 
     console.log(`⚡⚡⚡ Enviando mensajes....`);
