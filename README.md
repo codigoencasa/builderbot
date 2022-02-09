@@ -8,7 +8,7 @@ El siguiente proyecto se realizó con fines educativos para el canal de [Youtube
 #### Acceso rápido
 > Si tienes una cuenta en __heroku__ puedes desplegar este proyecto con (1 click)
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/leifermendez/bot-ventas) 
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/leifermendez/bot-whatsapp) 
 
 > Comprarme un cafe!
 
