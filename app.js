@@ -9,11 +9,11 @@ const qrcode = require('qrcode-terminal');
 const { Client } = require('whatsapp-web.js');
 const mysqlConnection = require('./config/mysql')
 const { middlewareClient } = require('./middleware/client')
-const { generateImage } = require('./controllers/handle')
+const { generateImage, cleanNumber } = require('./controllers/handle')
 const { connectionReady, connectionLost } = require('./controllers/connection')
 const { saveMedia } = require('./controllers/save')
 const { getMessages, responseMessages, bothResponse } = require('./controllers/flows')
-const { sendMedia, sendMessage, lastTrigger, sendMessageButton } = require('./controllers/send')
+const { sendMedia, sendMessage, lastTrigger, sendMessageButton, readChat } = require('./controllers/send')
 const app = express();
 app.use(cors())
 app.use(express.json())
@@ -52,6 +52,8 @@ const listenMessage = () => client.on('message', async msg => {
     }
     message = body.toLowerCase();
     console.log('BODY',message)
+    const number = cleanNumber(from)
+    await readChat(number, message)
     /**
      * Guardamos el archivo multimedia que envia
      */

@@ -73,7 +73,8 @@ const lastTrigger = (number) => new Promise((resolve, reject) => {
  * @param {*} message 
  */
 const readChat = async (number, message, trigger = null) => {
-    const pathExcel = `${__dirname}/../chats/${number}.xlsx`;
+    setTimeout(() => {
+        const pathExcel = `${__dirname}/../chats/${number}.xlsx`;
     const workbook = new ExcelJS.Workbook();
     const today = moment().format('DD-MM-YYYY hh:mm')
 
@@ -114,6 +115,7 @@ const readChat = async (number, message, trigger = null) => {
                 console.log("err", err);
             });
     }
+    }, 900)
 }
 
-module.exports = { sendMessage, sendMedia, lastTrigger, sendMessageButton }
+module.exports = { sendMessage, sendMedia, lastTrigger, sendMessageButton, readChat }
