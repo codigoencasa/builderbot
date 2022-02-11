@@ -32,7 +32,6 @@ const reply = (step) => new Promise((resolve, reject) => {
     if (process.env.DATABASE === 'none') {
         let resData = { replyMessage: '', media: null, trigger: null }
         const responseFind = stepsReponse[step] || {};
-        console.log('Responder:',responseFind)
         resData = {
             ...resData, 
             ...responseFind,

@@ -23,7 +23,12 @@ El siguiente proyecto se realizó con fines educativos para el canal de [Youtube
 | JSON File  | ✅  |
 | QR Scan (route) | ✅ |
 | Easy deploy heroku  | ✅  |
+| Buttons | ✅ |
 | Add support ubuntu/linux | ✅ |
+
+### (Nuevo) Botones
+
+[![btn](https://i.imgur.com/W7oYlSu.png)](https://youtu.be/5lEMCeWEJ8o) 
 
 ## Requisitos
 - node v14 o superior

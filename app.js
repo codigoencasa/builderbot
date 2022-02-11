@@ -4,19 +4,37 @@
 require('dotenv').config()
 const fs = require('fs');
 const express = require('express');
+const cors = require('cors')
 const qrcode = require('qrcode-terminal');
 const { Client } = require('whatsapp-web.js');
 const mysqlConnection = require('./config/mysql')
 const { middlewareClient } = require('./middleware/client')
-const { generateImage } = require('./controllers/handle')
+const { generateImage, cleanNumber } = require('./controllers/handle')
 const { connectionReady, connectionLost } = require('./controllers/connection')
 const { saveMedia } = require('./controllers/save')
 const { getMessages, responseMessages, bothResponse } = require('./controllers/flows')
-const { sendMedia, sendMessage, lastTrigger, sendMessageButton } = require('./controllers/send')
-
+const { sendMedia, sendMessage, lastTrigger, sendMessageButton, readChat } = require('./controllers/send')
 const app = express();
+app.use(cors())
 app.use(express.json())
-app.use('/',require('./routes/web'))
+
+const server = require('http').Server(app)
+const io = require('socket.io')(server, {
+    cors: {
+        origins: ['http://localhost:4200']
+    }
+})
+
+let socketEvents = {sendQR:() => {} ,sendStatus:() => {}};
+
+io.on('connection', (socket) => {
+    const CHANNEL = 'main-channel';
+    socket.join(CHANNEL);
+    socketEvents = require('./controllers/socket')(socket)
+    console.log('Se conecto')
+})
+
+app.use('/', require('./routes/web'))
 
 const port = process.env.PORT || 3000
 const SESSION_FILE_PATH = './session.json';
@@ -29,10 +47,13 @@ var sessionData;
 const listenMessage = () => client.on('message', async msg => {
     const { from, body, hasMedia } = msg;
     // Este bug lo reporto Lucas Aldeco Brescia para evitar que se publiquen estados
-    if(from === 'status@broadcast'){
-        return 
+    if (from === 'status@broadcast') {
+        return
     }
     message = body.toLowerCase();
+    console.log('BODY',message)
+    const number = cleanNumber(from)
+    await readChat(number, message)
     /**
      * Guardamos el archivo multimedia que envia
      */
@@ -48,7 +69,7 @@ const listenMessage = () => client.on('message', async msg => {
     if (process.env.DATABASE === 'dialogflow') {
         const response = await bothResponse(message);
         await sendMessage(client, from, response.replyMessage);
-        if(response.media){
+        if (response.media) {
             sendMedia(client, from, response.media);
         }
         return
@@ -61,7 +82,7 @@ const listenMessage = () => client.on('message', async msg => {
     */
 
     const lastStep = await lastTrigger(from) || null;
-    console.log({lastStep})
+    console.log({ lastStep })
     if (lastStep) {
         const response = await responseMessages(lastStep)
         await sendMessage(client, from, response.replyMessage);
@@ -71,27 +92,36 @@ const listenMessage = () => client.on('message', async msg => {
      * Respondemos al primero paso si encuentra palabras clave
      */
     const step = await getMessages(message);
-    console.log({step})
+    console.log({ step })
+
     if (step) {
         const response = await responseMessages(step)
         await sendMessage(client, from, response.replyMessage, response.trigger);
-        // await sendMessageButton(client, from);
         
-        if(!response.delay && response.media){
+
+        if (!response.delay && response.media) {
             sendMedia(client, from, response.media);
         }
-        if(response.delay && response.media){
+        if (response.delay && response.media) {
             setTimeout(() => {
                 sendMedia(client, from, response.media);
-            },response.delay)
+            }, response.delay)
         }
         return
     }
 
-    if(process.env.DEFAULT_MESSAGE === 'true'){
-        console.log('hehehe',(process.env.DEFAULT_MESSAGE) , step)
+    //Si quieres tener un mensaje por defecto
+    if (process.env.DEFAULT_MESSAGE === 'true') {
         const response = await responseMessages('DEFAULT')
         await sendMessage(client, from, response.replyMessage, response.trigger);
+
+        /**
+         * Si quieres enviar botones
+         */
+        if(response.hasOwnProperty('actions')){
+            const { actions } = response;
+            await sendMessageButton(client, from, null, actions);
+        }
         return
     }
 });
@@ -112,11 +142,12 @@ const withSession = () => {
             ],
         }
     });
-    
+
     client.on('ready', () => {
         connectionReady()
         listenMessage()
         loadRoutes(client);
+        socketEvents.sendStatus()
     });
 
     client.on('auth_failure', () => connectionLost())
@@ -141,12 +172,14 @@ const withOutSession = () => {
     client.on('qr', qr => generateImage(qr, () => {
         qrcode.generate(qr, { small: true });
         console.log(`Ver QR http://localhost:${port}/qr`)
+        socketEvents.sendQR(qr)
     }))
-    
-    client.on('ready', () => {
+
+    client.on('ready', (a) => {
         connectionReady()
         listenMessage()
         loadRoutes(client);
+        // socketEvents.sendStatus(client)
     });
 
     client.on('auth_failure', () => connectionLost());
@@ -167,7 +200,7 @@ const withOutSession = () => {
  * Cargamos rutas de express
  */
 
- const loadRoutes = (client) => {
+const loadRoutes = (client) => {
     app.use('/api/', middlewareClient(client), require('./routes/api'))
 }
 /**
@@ -179,10 +212,12 @@ const withOutSession = () => {
  * Verificamos si tienes un gesto de db
  */
 
-if(process.env.DATABASE === 'mysql'){
+if (process.env.DATABASE === 'mysql') {
     mysqlConnection.connect()
 }
 
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`El server esta listo por el puerto ${port}`);
 })
+
+
