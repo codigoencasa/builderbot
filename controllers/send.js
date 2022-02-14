@@ -5,6 +5,8 @@ const fs = require('fs');
 const { MessageMedia, Buttons } = require('whatsapp-web.js');
 const { cleanNumber } = require('./handle')
 const { saveMedia } = require('../controllers/save')
+const DELAY_TIME = 170; //ms
+
 /**
  * Enviamos archivos multimedia a nuestro cliente
  * @param {*} number 
@@ -25,11 +27,13 @@ const sendMedia = (client, number, fileName) => {
  * @param {*} number 
  */
 const sendMessage = async (client, number = null, text = null, trigger = null) => {
+   setTimeout(async () => {
     number = cleanNumber(number)
     const message = text
     client.sendMessage(number, message);
     await readChat(number, message, trigger)
     console.log(`⚡⚡⚡ Enviando mensajes....`);
+   },DELAY_TIME)
 }
 
 /**
@@ -74,6 +78,7 @@ const lastTrigger = (number) => new Promise((resolve, reject) => {
  */
 const readChat = async (number, message, trigger = null) => {
     setTimeout(() => {
+        number = cleanNumber(number)
         const pathExcel = `${__dirname}/../chats/${number}.xlsx`;
     const workbook = new ExcelJS.Workbook();
     const today = moment().format('DD-MM-YYYY hh:mm')
@@ -115,7 +120,7 @@ const readChat = async (number, message, trigger = null) => {
                 console.log("err", err);
             });
     }
-    }, 900)
+    }, 150)
 }
 
 module.exports = { sendMessage, sendMedia, lastTrigger, sendMessageButton, readChat }
