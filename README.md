@@ -5,6 +5,9 @@ El siguiente proyecto se realizó con fines educativos para el canal de [Youtube
 
 [![Video](https://i.giphy.com/media/OBDi3CXC83WkNeLEZP/giphy.webp)](https://youtu.be/5lEMCeWEJ8o) 
 
+### ATENCION
+> 💥💥 Si te aparece el Error Multi-device es porque aun no esta disponible en la version Multi dispositivo
+
 #### Acceso rápido
 > Si tienes una cuenta en __heroku__ puedes desplegar este proyecto con (1 click)
 
