@@ -13,7 +13,7 @@ const { generateImage, cleanNumber } = require('./controllers/handle')
 const { connectionReady, connectionLost } = require('./controllers/connection')
 const { saveMedia } = require('./controllers/save')
 const { getMessages, responseMessages, bothResponse } = require('./controllers/flows')
-const { sendMedia, sendMessage, lastTrigger, sendMessageButton, readChat } = require('./controllers/send')
+const { sendMedia, sendMessage, lastTrigger, sendMessageButton, readChat, sendMediaVoiceNote } = require('./controllers/send')
 const app = express();
 app.use(cors())
 app.use(express.json())
@@ -54,6 +54,8 @@ const listenMessage = () => client.on('message', async msg => {
     console.log('BODY',message)
     const number = cleanNumber(from)
     await readChat(number, message)
+
+    await sendMediaVoiceNote(client, from, 'PTT-20220223-WA0000.opus')
     /**
      * Guardamos el archivo multimedia que envia
      */

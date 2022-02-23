@@ -27,17 +27,51 @@ El siguiente proyecto se realizó con fines educativos para el canal de [Youtube
 | QR Scan (route) | ✅ |
 | Easy deploy heroku  | ✅  |
 | Buttons | ✅ |
+| Send Voice Note | ✅ |
 | Add support ubuntu/linux | ✅ |
-
-### (Nuevo) Botones
-
-[![btn](https://i.imgur.com/W7oYlSu.png)](https://youtu.be/5lEMCeWEJ8o) 
 
 ## Requisitos
 - node v14 o superior
 - VSCode (Editor de codigo) [Descargar](https://code.visualstudio.com/download)
 - MySql (opcional) solo aplica si vas a usar el modo 'mysql'  [sql-bot.sql migración](https://github.com/leifermendez/bot-whatsapp/blob/main/sql-bot.sql)
 - Dialogflow (opcional) solo aplica si vas a usar el modo 'dialogflow'
+
+### (Nuevo) Botones
+
+[![btn](https://i.imgur.com/W7oYlSu.png)](https://youtu.be/5lEMCeWEJ8o) 
+
+> Implementar los botones solo necesitas hacer uso del metodo __sendMessageButton__ que se encuentra dentro `./controllers/send` dejo un ejemplo de como usarlo.
+[Ver implementación](https://github.com/leifermendez/bot-whatsapp/blob/main/app.js#L123)
+
+``` javascript
+const { sendMessageButton } = require('./controllers/send')
+
+await sendMessageButton(
+    {
+        "title":"¿Que te interesa ver?",
+        "message":"Recuerda todo este contenido es gratis y estaria genial que me siguas!",
+        "footer":"Gracias",
+        "buttons":[
+            {"body":"😎 Cursos"},
+            {"body":"👉 Youtube"},
+            {"body":"😁 Telegram"}
+        ]
+    }
+)
+
+```
+
+## Notas de Voz
+[![voice note](https://i.imgur.com/zq6xYDp.png)](https://i.imgur.com/zq6xYDp.png) 
+
+> Se pueden enviar notas de voz con formato nativo para que no se vea como reenviado. En este ejemplo enviare el archivo __PTT-20220223-WA0000.opus__ que se encuentra dentro de la carpeta de __/mediaSend__
+
+``` javascript
+const { sendMediaVoiceNote } = require('./controllers/send')
+
+await sendMediaVoiceNote(client, from, 'PTT-20220223-WA0000.opus')
+
+```
 
 ## Instruciones
 __Descargar o Clonar repositorio__

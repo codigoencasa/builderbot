@@ -4,8 +4,8 @@ const moment = require('moment');
 const fs = require('fs');
 const { MessageMedia, Buttons } = require('whatsapp-web.js');
 const { cleanNumber } = require('./handle')
-const { saveMedia } = require('../controllers/save')
 const DELAY_TIME = 170; //ms
+const DIR_MEDIA = `${__dirname}/../mediaSend`;
 
 /**
  * Enviamos archivos multimedia a nuestro cliente
@@ -14,11 +14,26 @@ const DELAY_TIME = 170; //ms
  */
 
 const sendMedia = (client, number, fileName) => {
-    const dirMedia = `${__dirname}/../mediaSend/${fileName}`;
     number = cleanNumber(number)
-    if (fs.existsSync(dirMedia)) {
-        const media = MessageMedia.fromFilePath(dirMedia);
+    const file = `${DIR_MEDIA}/${fileName}`;
+    if (fs.existsSync(file)) {
+        const media = MessageMedia.fromFilePath(file);
         client.sendMessage(number, media);
+    }
+}
+
+/**
+ * Enviamos archivos como notas de voz
+ * @param {*} number 
+ * @param {*} fileName 
+ */
+
+ const sendMediaVoiceNote = (client, number, fileName) => {
+    number = cleanNumber(number)
+    const file = `${DIR_MEDIA}/${fileName}`;
+    if (fs.existsSync(file)) {
+        const media = MessageMedia.fromFilePath(file);
+        client.sendMessage(number, media ,{ sendAudioAsVoice: true });
     }
 }
 
@@ -123,4 +138,4 @@ const readChat = async (number, message, trigger = null) => {
     }, 150)
 }
 
-module.exports = { sendMessage, sendMedia, lastTrigger, sendMessageButton, readChat }
+module.exports = { sendMessage, sendMedia, lastTrigger, sendMessageButton, readChat, sendMediaVoiceNote }
