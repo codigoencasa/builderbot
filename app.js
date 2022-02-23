@@ -97,9 +97,18 @@ const listenMessage = () => client.on('message', async msg => {
     console.log({ step })
 
     if (step) {
-        const response = await responseMessages(step)
+        const response = await responseMessages(step);
+
+        /**
+         * Si quieres enviar botones
+         */
+
         await sendMessage(client, from, response.replyMessage, response.trigger);
-        
+        if(response.hasOwnProperty('actions')){
+            const { actions } = response;
+            await sendMessageButton(client, from, null, actions);
+            return
+        }
 
         if (!response.delay && response.media) {
             sendMedia(client, from, response.media);

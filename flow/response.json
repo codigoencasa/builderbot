@@ -34,7 +34,17 @@
             "escribe *cursos* o *info*"
         ],
         "media":null,
-        "trigger":null
+        "trigger":null,
+        "actions":{
+            "title":"¿Que te interesa ver?",
+            "message":"Recuerda todo este contenido es gratis y estaria genial que me siguas!",
+            "footer":"Gracias",
+            "buttons":[
+                {"body":"😎 Cursos"},
+                {"body":"👉 Youtube"},
+                {"body":"😁 Telegram"}
+            ]
+        }
     },
     "STEP_2":{
         "replyMessage":[
