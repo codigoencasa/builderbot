@@ -55,7 +55,6 @@ const listenMessage = () => client.on('message', async msg => {
     const number = cleanNumber(from)
     await readChat(number, message)
 
-    await sendMediaVoiceNote(client, from, 'PTT-20220223-WA0000.opus')
     /**
      * Guardamos el archivo multimedia que envia
      */

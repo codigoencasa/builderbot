@@ -1,21 +1,15 @@
 {
     "DEFAULT":{
         "replyMessage":[
-            "🆗 Bienvenido a este 🤖 CHATBOT de Whatsapp, lo primero \n",
-            "decirte que mi nombre es *Leifer Mendez*😎 y te dejo opciones rapidas \n"
+            "*Esta respuesta es un respuesta default* cuando no se consigue una palabra clave \n",
+            "la puedes desactivar en tu archivo .env DEFAULT_MESSAGE=false \n",
+            "tambien te quiero recordar que si presentas algun error pasarte por el repositorio \n",
+            "https://github.com/leifermendez/bot-whatsapp#chatbot-whatsapp-opensource \n",
+            "y recuerda tener la ultima versión del proyecto \n\n",
+            "Prueba escribiendo *hola* \n"
         ],
         "media":null,
-        "trigger":null,
-        "actions":{
-            "title":"¿Que te interesa ver?",
-            "message":"Recuerda todo este contenido es gratis y estaria genial que me siguas!",
-            "footer":"Gracias",
-            "buttons":[
-                {"body":"😎 Cursos"},
-                {"body":"👉 Youtube"},
-                {"body":"😁 Telegram"}
-            ]
-        }
+        "trigger":null
     },
     "STEP_0":{
         "replyMessage":[
@@ -28,10 +22,10 @@
     },
     "STEP_1":{
         "replyMessage":[
-            "✌️ Bienvenido a este 🤖 CHATBOT de Whatsapp, lo primero \n",
+            "Hola! y✌️ Bienvenido a este 🤖 CHATBOT de Whatsapp, lo primero \n",
             "decirte que mi nombre es *Leifer Mendez*😎  \n",
             "\n Si necesitas ver más info sobre las capacitacion tecnicas ",
-            "escribe *cursos* o *info*"
+            "escribe *cursos* o *info* o escribe *audio*"
         ],
         "media":null,
         "trigger":null,
@@ -40,9 +34,9 @@
             "message":"Recuerda todo este contenido es gratis y estaria genial que me siguas!",
             "footer":"Gracias",
             "buttons":[
-                {"body":"😎 Cursos"},
-                {"body":"👉 Youtube"},
-                {"body":"😁 Telegram"}
+                {"body":"Cursos"},
+                {"body":"Youtube"},
+                {"body":"Telegram"}
             ]
         }
     },
@@ -116,9 +110,10 @@
     },
     "STEP_5":{
         "replyMessage":[
-            "Muy bien te comparto el canal de Youtube \n"
+            "Muy bien te comparto el canal de Youtube \n",
+            "https://youtube.com/leifermendez \n"
         ],
-        "media":"https://youtube.com/leifermendez",
+        "media":null,
         "trigger":null
     },
     "STEP_6":{
@@ -137,9 +132,17 @@
     },
     "STEP_7":{
         "replyMessage":[
-            "Vente al telegram \n"
+            "Vente al telegram \n",
+            "https://t.me/leifermendez \n"
         ],
-        "media":"https://t.me/leifermendez",
+        "media":null,
+        "trigger":null
+    },
+    "STEP_8":{
+        "replyMessage":[
+            "Esto es una nota de voz \n"
+        ],
+        "media":"nota-de-voz.mp3",
         "trigger":null
     }
 }

@@ -18,7 +18,7 @@ const sendMedia = (client, number, fileName) => {
     const file = `${DIR_MEDIA}/${fileName}`;
     if (fs.existsSync(file)) {
         const media = MessageMedia.fromFilePath(file);
-        client.sendMessage(number, media);
+        client.sendMessage(number, media, { sendAudioAsVoice: true });
     }
 }
 

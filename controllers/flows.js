@@ -1,5 +1,5 @@
 const {get, reply, getIA} = require('../adapter')
-const {saveExternalFile} = require('./handle')
+const {saveExternalFile, checkIsUrl} = require('./handle')
 
 const getMessages = async (message) => {
     const data = await get(message)
@@ -9,7 +9,7 @@ const getMessages = async (message) => {
 const responseMessages = async (step) => {
     const data = await reply(step)
     if(data && data.media){
-        const file = await saveExternalFile(data.media)
+        const file = checkIsUrl(data.media) ? await saveExternalFile(data.media) : data.media;
         return {...data,...{media:file}}
     }
     return data

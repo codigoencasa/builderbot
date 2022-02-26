@@ -31,6 +31,16 @@ const saveExternalFile = (url) => new Promise((resolve, reject) => {
     });
 })
 
+const checkIsUrl = (path) => {
+    try{
+        regex = /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/i;
+        match = path.match(regex);
+        return match[0]
+    }catch(e){
+        return null
+    }
+}
+
 const generateImage = (base64, cb = () => {}) => {
     let qr_svg = qr.image(base64, { type: 'svg', margin: 4 });
     qr_svg.pipe(require('fs').createWriteStream('./mediaSend/qr-code.svg'));
@@ -39,4 +49,4 @@ const generateImage = (base64, cb = () => {}) => {
     cb()
 }
 
-module.exports = {cleanNumber, saveExternalFile, generateImage}
+module.exports = {cleanNumber, saveExternalFile, generateImage, checkIsUrl}

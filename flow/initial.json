@@ -21,8 +21,7 @@
         "keywords":  [
             "cursos",
             "info",
-            "curso"
-        ],
+            "curso"        ],
         "key": "STEP_2"
     },
     {
@@ -69,20 +68,26 @@
     },
     {
         "keywords":  [
-            "👉 Youtube"
+            "youtube"
         ],
         "key": "STEP_5"
     },
     {
         "keywords":  [
-            "😎 Cursos"
+            "VER_CURSOS"
         ],
         "key": "STEP_6"
     },
     {
         "keywords":  [
-            "😁 Telegram"
+            "telegram"
         ],
         "key": "STEP_7"
+    },
+    {
+        "keywords":  [
+            "audio"
+        ],
+        "key": "STEP_8"
     }
 ]
