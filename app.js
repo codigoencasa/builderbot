@@ -6,7 +6,7 @@ const fs = require('fs');
 const express = require('express');
 const cors = require('cors')
 const qrcode = require('qrcode-terminal');
-const { Client } = require('whatsapp-web.js');
+const { Client, LegacySessionAuth } = require('whatsapp-web.js');
 const mysqlConnection = require('./config/mysql')
 const { middlewareClient } = require('./middleware/client')
 const { generateImage, cleanNumber } = require('./controllers/handle')
@@ -145,7 +145,10 @@ const withSession = () => {
     console.log(`Validando session con Whatsapp...`)
     sessionData = require(SESSION_FILE_PATH);
     client = new Client({
-        session: sessionData,
+        authStrategy: new LegacySessionAuth({
+            session: sessionData // saved session object
+        }),
+        restartOnAuthFail: true,
         puppeteer: {
             args: [
                 '--no-sandbox'
@@ -170,8 +173,20 @@ const withSession = () => {
  */
 const withOutSession = () => {
     console.log('No tenemos session guardada');
+    console.log([
+        '🙌 El core de whatsapp se esta actualizando',
+        '🙌 para proximamente dar paso al multi-device',
+        '🙌 falta poco si quieres estar al pendiente unete',
+        '🙌 http://t.me/leifermendez',
+        '________________________',
+    ].join('\n'));
 
     client = new Client({
+        session: { },
+        // authStrategy: new LegacySessionAuth({
+        //     session: { }
+        // }),
+        restartOnAuthFail: true,
         puppeteer: {
             args: [
                 '--no-sandbox'
@@ -192,7 +207,10 @@ const withOutSession = () => {
         // socketEvents.sendStatus(client)
     });
 
-    client.on('auth_failure', () => connectionLost());
+    client.on('auth_failure', (e) => {
+        // console.log(e)
+        // connectionLost()
+    });
 
     client.on('authenticated', (session) => {
         sessionData = session;
