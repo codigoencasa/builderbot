@@ -5,8 +5,13 @@ El siguiente proyecto se realizó con fines educativos para el canal de [Youtube
 
 [![Video](https://i.giphy.com/media/OBDi3CXC83WkNeLEZP/giphy.webp)](https://youtu.be/5lEMCeWEJ8o) 
 
-### ATENCION
+### ATENCION 1 🔴
 > 💥💥 Si te aparece el Error Multi-device es porque tienes la cuenta de whatsapp afiliada al modo "BETA de Multi dispositivo" por el momento no se tiene soporte para esas personas si tu quieres hacer uso de este __BOT__ debes de salir del modo BETA y intentarlo de la manera tradicional
+
+### ATENCION 2 🔴
+> El core de whatsapp esta en constante actualizaciones por lo cual siempre revisa la ultima fecha de la actualizacion 
+> [VER](https://github.com/leifermendez/bot-whatsapp/commits/main)
+
 
 #### Acceso rápido
 > Si tienes una cuenta en __heroku__ puedes desplegar este proyecto con (1 click)
