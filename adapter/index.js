@@ -1,4 +1,5 @@
-const { getData, getReply } = require('./mysql')
+const { getData, getReply, saveMessageMysql } = require('./mysql')
+const { saveMessageJson } = require('./jsonDb')
 const { getDataIa } = require('./diaglogflow')
 const  stepsInitial = require('../flow/initial.json')
 const  stepsReponse = require('../flow/response.json')
@@ -64,4 +65,24 @@ const getIA = (message) => new Promise((resolve, reject) => {
     }
 })
 
-module.exports = { get, reply, getIA }
+const saveMessage = ( message, date, trigger, number  ) => new Promise( async (resolve, reject) => {
+     switch ( process.env.DATABASEMESSAGES ) {
+         case 'mysql':
+             resolve( await saveMessageMysql( message, date, trigger, number ) )
+             break;
+         case 'json':
+             resolve( await saveMessageJson( message, date, trigger, number ) )
+             break;
+         default:
+             break;
+    }
+    //  if (process.env.DATABASE === 'dialogflow') {
+    //     let resData = { replyMessage: '', media: null, trigger: null }
+    //     getDataIa(message,(dt) => {
+    //         resData = { ...resData, ...dt }
+    //         resolve(resData)
+    //     })
+    // }
+})
+
+module.exports = { get, reply, getIA, saveMessage }
