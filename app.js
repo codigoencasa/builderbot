@@ -6,7 +6,7 @@ const fs = require('fs');
 const express = require('express');
 const cors = require('cors')
 const qrcode = require('qrcode-terminal');
-const { Client, LegacySessionAuth } = require('whatsapp-web.js');
+const { Client, LegacySessionAuth, LocalAuth } = require('whatsapp-web.js');
 const mysqlConnection = require('./config/mysql')
 const { middlewareClient } = require('./middleware/client')
 const { generateImage, cleanNumber } = require('./controllers/handle')
@@ -182,16 +182,12 @@ const withOutSession = () => {
     ].join('\n'));
 
     client = new Client({
-        session: { },
-        // authStrategy: new LegacySessionAuth({
-        //     session: { }
-        // }),
-        restartOnAuthFail: true,
-        puppeteer: {
-            args: [
-                '--no-sandbox'
-            ],
-        }
+        authStrategy: new LocalAuth(), 
+        puppeteer: { 
+            headless: true, 
+            args: ['--no-sandbox'] 
+        }, 
+        clientId: 'client-one' 
     });
 
     client.on('qr', qr => generateImage(qr, () => {
@@ -214,11 +210,6 @@ const withOutSession = () => {
 
     client.on('authenticated', (session) => {
         sessionData = session;
-        fs.writeFile(SESSION_FILE_PATH, JSON.stringify(session), function (err) {
-            if (err) {
-                console.log(`Ocurrio un error con el archivo: `, err);
-            }
-        });
     });
 
     client.initialize();
