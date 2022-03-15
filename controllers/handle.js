@@ -49,4 +49,12 @@ const generateImage = (base64, cb = () => {}) => {
     cb()
 }
 
-module.exports = {cleanNumber, saveExternalFile, generateImage, checkIsUrl}
+const checkEnvFile = () => {
+    const pathEnv = `${__dirname}/../.env`;
+    const isExist = fs.existsSync(pathEnv);
+    if(!isExist){
+        console.log(`🆗 ATENCION! 🆗 te falta crear tu archivo .env de lo contrario no funcionara`)
+    }
+}
+
+module.exports = {cleanNumber, saveExternalFile, generateImage, checkIsUrl, checkEnvFile}

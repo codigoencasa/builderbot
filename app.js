@@ -9,11 +9,11 @@ const qrcode = require('qrcode-terminal');
 const { Client, LegacySessionAuth } = require('whatsapp-web.js');
 const mysqlConnection = require('./config/mysql')
 const { middlewareClient } = require('./middleware/client')
-const { generateImage, cleanNumber } = require('./controllers/handle')
+const { generateImage, cleanNumber, checkEnvFile } = require('./controllers/handle')
 const { connectionReady, connectionLost } = require('./controllers/connection')
 const { saveMedia } = require('./controllers/save')
 const { getMessages, responseMessages, bothResponse } = require('./controllers/flows')
-const { sendMedia, sendMessage, lastTrigger, sendMessageButton, readChat, sendMediaVoiceNote } = require('./controllers/send')
+const { sendMedia, sendMessage, lastTrigger, sendMessageButton, readChat } = require('./controllers/send')
 const app = express();
 app.use(cors())
 app.use(express.json())
@@ -83,7 +83,6 @@ const listenMessage = () => client.on('message', async msg => {
     */
 
     const lastStep = await lastTrigger(from) || null;
-    console.log({ lastStep })
     if (lastStep) {
         const response = await responseMessages(lastStep)
         await sendMessage(client, from, response.replyMessage);
@@ -93,7 +92,6 @@ const listenMessage = () => client.on('message', async msg => {
      * Respondemos al primero paso si encuentra palabras clave
      */
     const step = await getMessages(message);
-    console.log({ step })
 
     if (step) {
         const response = await responseMessages(step);
@@ -247,5 +245,5 @@ if (process.env.DATABASE === 'mysql') {
 server.listen(port, () => {
     console.log(`El server esta listo por el puerto ${port}`);
 })
-
+checkEnvFile();
 

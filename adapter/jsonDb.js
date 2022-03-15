@@ -1,7 +1,7 @@
 const Path = require('path')
 const StormDB = require("stormdb");
-
-const saveMessageJson = (message, date, trigger, number) => new Promise( async(resolve,reject) =>{
+const date = new Date().toISOString();
+const saveMessageJson = (message, trigger, number) => new Promise( async(resolve,reject) =>{
     try {
         const engine = new StormDB.localFileEngine( Path.join(__dirname, `/../chats/${number}.json`) );
         const db = new StormDB(engine);

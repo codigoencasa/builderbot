@@ -65,24 +65,25 @@ const getIA = (message) => new Promise((resolve, reject) => {
     }
 })
 
-const saveMessage = ( message, date, trigger, number  ) => new Promise( async (resolve, reject) => {
-     switch ( process.env.DATABASEMESSAGES ) {
+/**
+ * 
+ * @param {*} message 
+ * @param {*} date 
+ * @param {*} trigger 
+ * @param {*} number 
+ * @returns 
+ */
+const saveMessage = ( message, trigger, number  ) => new Promise( async (resolve, reject) => {
+     switch ( process.env.DATABASE ) {
          case 'mysql':
-             resolve( await saveMessageMysql( message, date, trigger, number ) )
+             resolve( await saveMessageMysql( message, trigger, number ) )
              break;
-         case 'json':
-             resolve( await saveMessageJson( message, date, trigger, number ) )
+         case 'none':
+             resolve( await saveMessageJson( message, trigger, number ) )
              break;
          default:
              break;
     }
-    //  if (process.env.DATABASE === 'dialogflow') {
-    //     let resData = { replyMessage: '', media: null, trigger: null }
-    //     getDataIa(message,(dt) => {
-    //         resData = { ...resData, ...dt }
-    //         resolve(resData)
-    //     })
-    // }
 })
 
 module.exports = { get, reply, getIA, saveMessage }
