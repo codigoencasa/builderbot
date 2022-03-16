@@ -9,7 +9,7 @@ const qrcode = require('qrcode-terminal');
 const { Client, LegacySessionAuth, LocalAuth } = require('whatsapp-web.js');
 const mysqlConnection = require('./config/mysql')
 const { middlewareClient } = require('./middleware/client')
-const { generateImage, cleanNumber, checkEnvFile } = require('./controllers/handle')
+const { generateImage, cleanNumber, checkEnvFile, createClient } = require('./controllers/handle')
 const { connectionReady, connectionLost } = require('./controllers/connection')
 const { saveMedia } = require('./controllers/save')
 const { getMessages, responseMessages, bothResponse } = require('./controllers/flows')
@@ -17,7 +17,7 @@ const { sendMedia, sendMessage, lastTrigger, sendMessageButton, readChat } = req
 const app = express();
 app.use(cors())
 app.use(express.json())
-
+const MULTI_DEVICE = process.env.MULTI_DEVICE || 'false';
 const server = require('http').Server(app)
 const io = require('socket.io')(server, {
     cors: {
@@ -139,20 +139,9 @@ const listenMessage = () => client.on('message', async msg => {
  * este paso evita volver a escanear el QRCODE
  */
 const withSession = () => {
-    // Si exsite cargamos el archivo con las credenciales
     console.log(`Validando session con Whatsapp...`)
     sessionData = require(SESSION_FILE_PATH);
-    client = new Client({
-        authStrategy: new LegacySessionAuth({
-            session: sessionData // saved session object
-        }),
-        restartOnAuthFail: true,
-        puppeteer: {
-            args: [
-                '--no-sandbox'
-            ],
-        }
-    });
+    client = new Client(createClient(sessionData,true));
 
     client.on('ready', () => {
         connectionReady()
@@ -179,14 +168,7 @@ const withOutSession = () => {
         '________________________',
     ].join('\n'));
 
-    client = new Client({
-        authStrategy: new LocalAuth(), 
-        puppeteer: { 
-            headless: true, 
-            args: ['--no-sandbox'] 
-        }, 
-        clientId: 'client-one' 
-    });
+    client = new Client(createClient());
 
     client.on('qr', qr => generateImage(qr, () => {
         qrcode.generate(qr, { small: true });
@@ -208,6 +190,13 @@ const withOutSession = () => {
 
     client.on('authenticated', (session) => {
         sessionData = session;
+        if(sessionData){
+            fs.writeFile(SESSION_FILE_PATH, JSON.stringify(session), function (err) {
+                if (err) {
+                    console.log(`Ocurrio un error con el archivo: `, err);
+                }
+            });
+        }
     });
 
     client.initialize();
@@ -223,7 +212,7 @@ const loadRoutes = (client) => {
 /**
  * Revisamos si existe archivo con credenciales!
  */
-(fs.existsSync(SESSION_FILE_PATH)) ? withSession() : withOutSession();
+(fs.existsSync(SESSION_FILE_PATH) && MULTI_DEVICE === 'false') ? withSession() : withOutSession();
 
 /**
  * Verificamos si tienes un gesto de db
