@@ -11,21 +11,22 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@google-cloud/dialogflow": "^4.6.0",
+    "@google-cloud/dialogflow": "^4.7.0",
     "cors": "^2.8.5",
     "dotenv": "^11.0.0",
     "exceljs": "^4.3.0",
     "express": "^4.17.2",
     "file-type": "^16.5.3",
     "mime-db": "^1.51.0",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "mysql": "^2.18.1",
-    "nanoid": "^3.1.32",
+    "nanoid": "^3.3.2",
     "qr-image": "^3.2.0",
     "qrcode-terminal": "^0.12.0",
     "socket.io": "^4.4.1",
     "stormdb": "^0.5.2",
-    "whatsapp-web.js": "^1.16.5"
+    "whatsapp-web.js": "^1.16.5",
+    "xlsx": "^0.16.9"
   },
   "devDependencies": {
     "pm2": "^5.1.2",

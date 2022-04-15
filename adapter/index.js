@@ -82,6 +82,7 @@ const saveMessage = ( message, trigger, number  ) => new Promise( async (resolve
              resolve( await saveMessageJson( message, trigger, number ) )
              break;
          default:
+             resolve(true)
              break;
     }
 })
