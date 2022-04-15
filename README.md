@@ -31,7 +31,7 @@ El siguiente proyecto se realizó con fines educativos para el canal de [Youtube
 | JSON File  | ✅  |
 | QR Scan (route) | ✅ |
 | Easy deploy heroku  | ✅  |
-| Buttons | ✅ |
+| Buttons | ✅ℹ️  (No funciona en multi-device)|
 | Send Voice Note | ✅ |
 | Add support ubuntu/linux | ✅ |
 
