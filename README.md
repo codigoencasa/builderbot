@@ -1,17 +1,18 @@
 ## Chatbot Whatsapp (OpenSource)
-#### Actualizado Enero 2022
+#### Actualizado Abril 2022
 
 El siguiente proyecto se realizó con fines educativos para el canal de [Youtube (Leifer Mendez)](https://www.youtube.com/channel/UCgrIGp5QAnC0J8LfNJxDRDw?sub_confirmation=1) donde aprendemos a crear y implementar un chatbot increíble usando [node.js](https://codigoencasa.com/tag/nodejs/) además le agregamos inteligencia artificial gracias al servicio de __dialogflow__.
 
 [![Video](https://i.giphy.com/media/OBDi3CXC83WkNeLEZP/giphy.webp)](https://youtu.be/5lEMCeWEJ8o) 
 
-### ATENCION 1 🔴
+### ATENCION 🔴
 > 💥💥 Si te aparece el Error Multi-device es porque tienes la cuenta de whatsapp afiliada al modo "BETA de Multi dispositivo" por el momento no se tiene soporte para esas personas si tu quieres hacer uso de este __BOT__ debes de salir del modo BETA y intentarlo de la manera tradicional
 
-### ATENCION 2 🔴
 > El core de whatsapp esta en constante actualizaciones por lo cual siempre revisa la ultima fecha de la actualizacion 
 > [VER](https://github.com/leifermendez/bot-whatsapp/commits/main)
 
+### Busco colaboradores
+Hola amigos me gusta mucho este proyecto pero por cuestiones de tiempo se me dificulta mantener las actualizaciones si alguno quieres participar en el proyecto escribeme a leifer.contacto@gmail.com
 
 #### Acceso rápido
 > Si tienes una cuenta en __heroku__ puedes desplegar este proyecto con (1 click)
