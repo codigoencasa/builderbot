@@ -11,10 +11,10 @@ El siguiente proyecto se realizó con fines educativos para el canal de [Youtube
 > El core de whatsapp esta en constante actualizaciones por lo cual siempre revisa la ultima fecha de la actualizacion 
 > [VER](https://github.com/leifermendez/bot-whatsapp/commits/main)
 
-### Busco colaboradores
+### Busco colaboradores ⭐
 Hola amigos me gusta mucho este proyecto pero por cuestiones de tiempo se me dificulta mantener las actualizaciones si alguno quieres participar en el proyecto escribeme a leifer.contacto@gmail.com
 
-#### Acceso rápido
+#### Acceso rápido 
 > Si tienes una cuenta en __heroku__ puedes desplegar este proyecto con (1 click)
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/leifermendez/bot-whatsapp) 
