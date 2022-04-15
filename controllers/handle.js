@@ -4,7 +4,7 @@ const https = require('https'); // or 'https' for https:// URLs
 const fs = require('fs');
 const qr = require('qr-image')
 
-const MULTI_DEVICE = process.env.MULTI_DEVICE || 'false';
+const MULTI_DEVICE = process.env.MULTI_DEVICE || 'true';
 
 const cleanNumber = (number) => {
     number = number.replace('@c.us', '');
@@ -92,4 +92,10 @@ const createClient =  (session = {}, login = false) => {
     }
 }
 
-module.exports = {cleanNumber, saveExternalFile, generateImage, checkIsUrl, checkEnvFile, createClient}
+const isValidNumber = (rawNumber) => {
+    const regexGroup = /\@g.us\b/gm;
+    const exist = rawNumber.match(regexGroup);
+    return !exist
+}
+
+module.exports = {cleanNumber, saveExternalFile, generateImage, checkIsUrl, checkEnvFile, createClient, isValidNumber}

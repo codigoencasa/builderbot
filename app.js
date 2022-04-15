@@ -6,10 +6,10 @@ const fs = require('fs');
 const express = require('express');
 const cors = require('cors')
 const qrcode = require('qrcode-terminal');
-const { Client, LegacySessionAuth, LocalAuth } = require('whatsapp-web.js');
+const { Client } = require('whatsapp-web.js');
 const mysqlConnection = require('./config/mysql')
 const { middlewareClient } = require('./middleware/client')
-const { generateImage, cleanNumber, checkEnvFile, createClient } = require('./controllers/handle')
+const { generateImage, cleanNumber, checkEnvFile, createClient, isValidNumber } = require('./controllers/handle')
 const { connectionReady, connectionLost } = require('./controllers/connection')
 const { saveMedia } = require('./controllers/save')
 const { getMessages, responseMessages, bothResponse } = require('./controllers/flows')
@@ -17,35 +17,26 @@ const { sendMedia, sendMessage, lastTrigger, sendMessageButton, readChat } = req
 const app = express();
 app.use(cors())
 app.use(express.json())
-const MULTI_DEVICE = process.env.MULTI_DEVICE || 'false';
+const MULTI_DEVICE = process.env.MULTI_DEVICE || 'true';
 const server = require('http').Server(app)
-const io = require('socket.io')(server, {
-    cors: {
-        origins: ['http://localhost:4200']
-    }
-})
-
-let socketEvents = {sendQR:() => {} ,sendStatus:() => {}};
-
-io.on('connection', (socket) => {
-    const CHANNEL = 'main-channel';
-    socket.join(CHANNEL);
-    socketEvents = require('./controllers/socket')(socket)
-    console.log('Se conecto')
-})
-
-app.use('/', require('./routes/web'))
 
 const port = process.env.PORT || 3000
 const SESSION_FILE_PATH = './session.json';
 var client;
 var sessionData;
 
+app.use('/', require('./routes/web'))
+
 /**
  * Escuchamos cuando entre un mensaje
  */
 const listenMessage = () => client.on('message', async msg => {
     const { from, body, hasMedia } = msg;
+
+    if(!isValidNumber(from)){
+        return
+    }
+
     // Este bug lo reporto Lucas Aldeco Brescia para evitar que se publiquen estados
     if (from === 'status@broadcast') {
         return
@@ -68,6 +59,7 @@ const listenMessage = () => client.on('message', async msg => {
      */
 
     if (process.env.DATABASE === 'dialogflow') {
+        if(!message.length) return;
         const response = await bothResponse(message);
         await sendMessage(client, from, response.replyMessage);
         if (response.media) {
@@ -165,6 +157,8 @@ const withOutSession = () => {
         '🙌 para proximamente dar paso al multi-device',
         '🙌 falta poco si quieres estar al pendiente unete',
         '🙌 http://t.me/leifermendez',
+        '🙌 Si estas usando el modo multi-device se generan 2 QR Code escanealos',
+        '🙌 Ten paciencia se esta generando el QR CODE',
         '________________________',
     ].join('\n'));
 
@@ -179,7 +173,6 @@ const withOutSession = () => {
     client.on('ready', (a) => {
         connectionReady()
         listenMessage()
-        loadRoutes(client);
         // socketEvents.sendStatus(client)
     });
 
@@ -202,13 +195,6 @@ const withOutSession = () => {
     client.initialize();
 }
 
-/**
- * Cargamos rutas de express
- */
-
-const loadRoutes = (client) => {
-    app.use('/api/', middlewareClient(client), require('./routes/api'))
-}
 /**
  * Revisamos si existe archivo con credenciales!
  */

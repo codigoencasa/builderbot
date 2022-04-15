@@ -1,13 +1,12 @@
 {
-    "type": "",
-    "project_id": "",
-    "private_key_id": "",
-    "private_key":"",
-    "client_email": "",
-    "client_id": "",
-    "auth_uri": "",
-    "token_uri": "",
-    "auth_provider_x509_cert_url": "",
-    "client_x509_cert_url":""
-  }
-  
+  "type": "service_account",
+  "project_id": "chatbot-9nmj",
+  "private_key_id": "82db6f87b09b1739dc1eefc6c7ab3603e7540842",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCvycE/aTSs4ROR\nmjiAdv3qjiHjrvBvosF4BEtkEG7EAQV33ncnTCg9Jqn/A9Aewqzy4DJiNHY7VWLL\nFWjQ+TkmEe+xQd7fBlMHspE65K0CLsRHbUyG5qnXKO1bz/ENiVWWt6eBqIg2+MTq\nAhRkAbc8wciESA1dM/9OhfEz+P0qI+GHQ40fp4qxupCNDazG49hQxqgwXncdWYCL\nuCJAuKpVDuJTypjHzoIkT1iLZh/FGFEgiBOiIV4uBQkIJA7Ex7u3tXBZjZG7+qAu\nrtesrUiYXU1FN3pmrfpkXPWY6JO1KZAjP2lv0BooF4xzSa5RR97muGXRXNJbGRAB\n/m+hY2LfAgMBAAECggEASc6HlXS6OaXs/fLHK2UKmntfzkWKzQyEd7wx3Usq/p/B\nKIGe/MB0mqxLrvduYCPz0qwAa4xEYggpSURtdGRXstzQC1gxV+nDXdWDNbuCyopR\nPf4tpexePikAc86cksbpSTVGHuHgg1gy8V+7KPwxb9CbPLM17T6iQNlrGxu9S/3/\ngE085T6aYDASVMqxvGbGa+llDH5poKEE0kFDP/byk8N20neOCzlHgTw9M/CGJdsq\ni1wttERY24mJQHg88TSZprFTVMyCOYY/N4+1R77FHYvwDGOtjY+VxzgK0DKxQqzj\nUGrbWX4c8klHm47hpruGBu8Jh8njwHljkbPB6JQjUQKBgQDaqcIUgDXEJrNXQSDU\nZBUOuiYMX618oeYf41/qV/X2TP82Fd37Z5irX+emCPgOi+8MVkD4iNBquH0RBIA0\nghKgqFZC4txao3ftlrC+BnTOUFK3iirlhFH18tn59cgvY5d9xTuNTtlBOvfK5Wak\nsg7Xn0xYeSr4Q9CgJdhIXN/PjwKBgQDNzdYfOb9ve5gcoQwh+J8/iCmBaIGfWW0o\nnFegqPNbBdnrxrSiq+yFP+4dbtzQwEcdg+BDp0TH5rICOFljW4wjl+HkRGKQKZ61\nT+ewg/NfW9fnM/4eq+7A+LY/6KWeViflQtCOzwdR3kASosX543/lP0WIAhwwNcwS\nZ8XnJQyPsQKBgQCYa6rIxZI099Edal2rD1SKXoG1MGBrNyOFaOZsIQJnvMZNejKx\nU0Zdd02vNCNNaIeqbtl9JUk6iv1LBnsjnuPDL3RpzV9Sow4vBFKRM0jqo5z1KY+7\nS2AidDUzgvsW5XItDnXzi1nvmV4vBXdmKGQmM3lxVoz4X7UmXRsFXg/4ywKBgHBd\ngBkQaIsvyf9nlr49hoUjjLXRH2SnaMgRhG59kFEUQsVOenWOtNaT7yg2zW1Ubf+Z\nbyrA+vbB6FL5/SQYac1NMdJ12/KmJrcL544inRBljt33LzoD2ZmWsbr3BOYMWD/+\nWOx/8JksZYNHSByFr+C0yPvXWxifZsptyknHmrIhAoGBANmFpX7jRIyaexvwj069\n+7k135hWBiMHNGuUzPPoL3Whr/VdlhxWkkPqeV57n+1ledakqnfQuyAMdWl3B2is\nyX/mZaiU2ZGPFOlQWkMrVJCXqeTReiyzIIUWM/jyORhZ+0RmIOryD/Y0Vs6x/ReW\n77TruIqkc+4RGwEodlUTsd/n\n-----END PRIVATE KEY-----\n",
+  "client_email": "botchatsupport@chatbot-9nmj.iam.gserviceaccount.com",
+  "client_id": "102305323294953494699",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/botchatsupport%40chatbot-9nmj.iam.gserviceaccount.com"
+}
