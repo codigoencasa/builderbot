@@ -138,8 +138,6 @@ const withSession = () => {
     client.on('ready', () => {
         connectionReady()
         listenMessage()
-        loadRoutes(client);
-        socketEvents.sendStatus()
     });
 
     client.on('auth_failure', () => connectionLost())
