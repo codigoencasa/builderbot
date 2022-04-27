@@ -51,13 +51,15 @@ saveMessageMysql = ( message, date, trigger, number ) => new Promise((resolve,re
         connection.query(
         `INSERT INTO ${DATABASE_NAME}.messages  `+"( `message`, `date`, `trigger`, `number`)"+` VALUES ('${message}','${date}','${trigger}', '${number}')` , (error, results) => {
             if(error) {
-                if( error.code === 'ER_NO_SUCH_TABLE' ){
-                    connection.query( `CREATE TABLE ${DATABASE_NAME}.messages `+"( `date` DATE NOT NULL , `message` VARCHAR(450) NOT NULL , `trigger` VARCHAR(450) NOT NULL , `number` VARCHAR(50) NOT NULL ) ENGINE = InnoDB", async (error, results) => {
-                        setTimeout( async () => {
-                            return resolve( await this.saveMessageMysql( message, date, trigger, number ) )
-                        }, 150)
-                    })
-                }
+                //TODO esta parte es mejor incluirla directamente en el archivo .sql template
+                console.log('DEBES DE CREAR LA TABLA DE MESSAGE')
+                // if( error.code === 'ER_NO_SUCH_TABLE' ){
+                //     connection.query( `CREATE TABLE ${DATABASE_NAME}.messages `+"( `date` DATE NOT NULL , `message` VARCHAR(450) NOT NULL , `trigger` VARCHAR(450) NOT NULL , `number` VARCHAR(50) NOT NULL ) ENGINE = InnoDB", async (error, results) => {
+                //         setTimeout( async () => {
+                //             return resolve( await this.saveMessageMysql( message, date, trigger, number ) )
+                //         }, 150)
+                //     })
+                // }
             }
             console.log('Saved')
             console.log( results )
