@@ -21,6 +21,7 @@ getReply = (option_key = '', callback) => connection.query(
         replyMessage:response?.replyMessage || '',
         trigger:response?.trigger || '',
         media:response?.media || ''
+     
     }
     callback(value)
 });
