@@ -64,32 +64,14 @@ const checkEnvFile = () => {
  * @param {*} session 
  * @param {*} cb 
  */
-const createClient =  (session = {}, login = false) => {
-    console.log(`Mode: ${(MULTI_DEVICE === 'false') ? 'No Multi-device' : 'Si Multi-device'} `)
-    const objectLegacy = (login) ? {
-        authStrategy: new LegacySessionAuth({
-            session
-        })
-    } : {session};
-
-    if(MULTI_DEVICE == 'false') {
-       return {...objectLegacy,
-        restartOnAuthFail: true,
-        puppeteer: {
-            args: [
-                '--no-sandbox'
-            ],
-        }
-    }
-    }else{
-        return {
-            puppeteer: { 
-                headless: true, 
-                args: ['--no-sandbox'] 
-            }, 
-            clientId: 'client-one' 
-        }
-    }
+const createClient =  () => {
+    client = new Client({
+        authStrategy: new LocalAuth(
+            {dataPath: './sessions/',
+            clientId: 'bot'}),
+        puppeteer: { headless: false }
+ 
+    });
 }
 
 const isValidNumber = (rawNumber) => {
