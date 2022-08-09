@@ -43,10 +43,12 @@ const sendMedia = (client, number = null, fileName = null) => {
         if (fs.existsSync(file)) {
             const media = MessageMedia.fromFilePath(file);
             client.sendMessage(number, media ,{ sendAudioAsVoice: true });
+
         }
     }catch(e) {
         throw e;
 }
+
 }
 /**
  * Enviamos un mensaje simple (texto) a nuestro cliente
