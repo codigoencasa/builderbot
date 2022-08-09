@@ -15,12 +15,17 @@ const { saveMessage } = require('../adapter')
  * @param {*} fileName 
  */
 
-const sendMedia = (client, number, fileName) => {
-    number = cleanNumber(number)
-    const file = `${DIR_MEDIA}/${fileName}`;
-    if (fs.existsSync(file)) {
-        const media = MessageMedia.fromFilePath(file);
-        client.sendMessage(number, media, { sendAudioAsVoice: true });
+const sendMedia = (client, number = null, fileName = null) => {
+    if(!client) return cosnole.error("El objeto cliente no está definido.");
+    try {
+        number = cleanNumber(number || 0)
+        const file = `${DIR_MEDIA}/${fileName}`;
+        if (fs.existsSync(file)) {
+            const media = MessageMedia.fromFilePath(file);
+            client.sendMessage(number, media, { sendAudioAsVoice: true });
+        }
+    } catch(e) {
+        throw e;
     }
 }
 
@@ -30,15 +35,19 @@ const sendMedia = (client, number, fileName) => {
  * @param {*} fileName 
  */
 
- const sendMediaVoiceNote = (client, number, fileName) => {
-    number = cleanNumber(number)
-    const file = `${DIR_MEDIA}/${fileName}`;
-    if (fs.existsSync(file)) {
-        const media = MessageMedia.fromFilePath(file);
-        client.sendMessage(number, media ,{ sendAudioAsVoice: true });
-    }
+ const sendMediaVoiceNote = (client, number = null, fileName = null) => {
+     if(!client) return cosnole.error("El objeto cliente no está definido.");
+     try { 
+        number = cleanNumber(number || 0)
+        const file = `${DIR_MEDIA}/${fileName}`;
+        if (fs.existsSync(file)) {
+            const media = MessageMedia.fromFilePath(file);
+            client.sendMessage(number, media ,{ sendAudioAsVoice: true });
+        }
+    }catch(e) {
+        throw e;
 }
-
+}
 /**
  * Enviamos un mensaje simple (texto) a nuestro cliente
  * @param {*} number 
