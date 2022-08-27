@@ -1,11 +1,10 @@
 const dialogflow = require('@google-cloud/dialogflow');
 const fs = require('fs')
-const { nanoid } = require('nanoid')
+//const nanoid = require('nanoid')
 /**
  * Debes de tener tu archivo con el nombre "chatbot-account.json" en la raíz del proyecto
  */
-
-const KEEP_DIALOG_FLOW = (process.env.KEEP_DIALOG_FLOW === 'true')
+ const KEEP_DIALOG_FLOW = (process.env.KEEP_DIALOG_FLOW === 'true')
 let PROJECID;
 let CONFIGURATION;
 let sessionClient;
