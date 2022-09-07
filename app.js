@@ -128,7 +128,16 @@ const listenMessage = () => client.on('message', async msg => {
 
 client = new Client({
         authStrategy: new LocalAuth(),
-        puppeteer: { headless: true }
+        puppeteer: {
+            headless: true,
+            ignoreDefaultArgs : [
+                '--disable-extensions'
+            ],
+            args: [ //Desabilitar sandbox para el deployd en heroku
+                '--no-sandbox',
+                '--disable-setuid-sandbox'
+            ]
+        }
     });
     
 client.on('qr', qr => generateImage(qr, () => {
