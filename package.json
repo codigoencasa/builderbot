@@ -1,14 +1,34 @@
 {
-  "name": "test-ws-bot",
+  "name": "bot-whatsapp",
   "version": "1.0.0",
-  "description": "",
+  "description": "Bot de wahtsapp open source para MVP o pequeños negocios",
   "main": "app.js",
   "scripts": {
     "start": "node ./app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "whatsapp",
+    "bot-whatsapp",
+    "node-bot-whatsapp"
+  ],
+
+  "contributors": [
+    {
+      "email": "leifer33@gmail.com",
+      "name": "Leifer Mendez",
+      "url": "https://leifermendez.github.io"
+    },
+    {
+      "name": "aurik3",
+      "email": "aurik3@aurik3.com",
+      "url": "https://github.com/aurik3"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leifermendez/bot-whatsapp"
+  },
   "license": "ISC",
   "dependencies": {
     "@google-cloud/dialogflow": "^5.2.0",
@@ -20,7 +40,6 @@
     "mime-db": "^1.52.0",
     "moment": "^2.29.4",
     "mysql": "^2.18.1",
-    "nanoid": "^4.0.0",
     "qr-image": "^3.2.0",
     "qrcode-terminal": "^0.12.0",
     "socket.io": "^4.5.1",
@@ -33,7 +52,7 @@
     "prettier": "2.7.1"
   },
   "engines": {
-    "node": "14.x"
+    "node": "16.x"
   }
 }
 
