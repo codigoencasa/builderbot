@@ -28,3 +28,12 @@ __Package Provider__
 
 __Package Input/Output__
 > Gestionar los diferentes mensajes entranates y poder responder, a la vez de mantener un registro de los datos
+
+---------
+__Comunidad__
+> Forma parte de este proyecto.
+
+- [Discord](https://link.codigoencasa.com/DISCORD)
+- [Twitter](https://twitter.com/leifermendez)
+- [Youtube](https://www.youtube.com/watch?v=5lEMCeWEJ8o&list=PL_WGMLcL4jzWPhdhcUyhbFU6bC0oJd2BR)
+- [Telegram](https://t.me/leifermendez)

@@ -1,6 +1,7 @@
-const {red, yellow} = require('kleur')
+const {red, yellow, green, bgCyan} = require('kleur')
 
 const checkNodeVersion = () => {
+    console.log(bgCyan('🚀 Revisando tu Node.js'))
     const version = process.version;
     const majorVersion = parseInt(version.replace('v','').split('.').shift())
     if(majorVersion < 16){
@@ -9,10 +10,13 @@ const checkNodeVersion = () => {
         )
         process.exit(1)
     }
+    console.log(green(`Node.js combatible ${version}`))
+    console.log(``)
 
 }
 
 const checkOs = () => {
+    console.log(bgCyan('🙂 Revisando tu Sistema Operativo'))
     const os = process.platform
     if(!os.includes('win32')){
         const messages = [
@@ -28,6 +32,8 @@ const checkOs = () => {
             yellow(messages.join(' \n'))
         )
     }
+
+    console.log(``)
 }
 
 
