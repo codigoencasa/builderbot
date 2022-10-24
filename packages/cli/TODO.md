@@ -1,0 +1,4 @@
+- [X] Revisar version de NODE
+- [X] Revisar OS
+- Obtener Package Manager
+- Revisar las libreria de WhatsappWeb para obtener version reciente
