@@ -1,11 +1,10 @@
-const rimraf = require("rimraf");
+const rimraf = require('rimraf')
 const { yellow } = require('kleur')
 const { join } = require('path')
 
-
 const PATH_WW = [
     join(process.cwd(), '.wwebjs_auth'),
-    join(process.cwd(), 'session.json')
+    join(process.cwd(), 'session.json'),
 ]
 
 const cleanSession = () => {

@@ -1,22 +1,25 @@
 {
-  "name": "cli",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "cross-spawn": "^7.0.3",
-    "detect-package-manager": "^2.0.1",
-    "kleur": "^4.1.5",
-    "prompts": "^2.4.2",
-    "rimraf": "^3.0.2"
-  },
-  "dependencies": {
-    "whatsapp-web.js": "^1.18.0"
-  }
+    "name": "cli",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "cli:dev": "NODE_ENV=dev node ./index.js",
+        "cli:rollup": "rollup index.js --config ./rollup-cli.config.js",
+        "format:check": "prettier --check .",
+        "format:write": "prettier --write .",
+        "lint:check": "eslint .",
+        "lint:fix": "eslint --fix .",
+        "build:cli": "npm run format:write && npm run lint:fix && npm run cli:rollup"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "cross-spawn": "^7.0.3",
+        "detect-package-manager": "^2.0.1",
+        "kleur": "^4.1.5",
+        "prompts": "^2.4.2",
+        "rimraf": "^3.0.2"
+    }
 }

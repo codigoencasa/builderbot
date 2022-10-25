@@ -4,7 +4,7 @@ const { detect } = require('detect-package-manager')
 const PKG_OPTION = {
     npm: 'install',
     yarn: 'add',
-    pnpm: 'add'
+    pnpm: 'add',
 }
 
 const getPkgManage = async () => {
@@ -12,22 +12,24 @@ const getPkgManage = async () => {
     return pkg
 }
 
-const installDeps = (pkgManager, package) => {
-    const errorMessage = `Ocurrio un error instalando ${package}`
+const installDeps = (pkgManager, packageList) => {
+    const errorMessage = `Ocurrio un error instalando ${packageList}`
     let childProcess = []
 
     const installSingle = (pkgInstall) => () => {
-        new Promise((resolve, reject) => {
+        new Promise((resolve) => {
             try {
-                childProcess = spawn(pkgManager, [PKG_OPTION[pkgManager], pkgInstall], {
-                    stdio: 'inherit'
-                })
+                childProcess = spawn(
+                    pkgManager,
+                    [PKG_OPTION[pkgManager], pkgInstall],
+                    {
+                        stdio: 'inherit',
+                    }
+                )
 
                 childProcess.on('error', (e) => {
                     console.error(e)
-                    console.error(
-                        red(errorMessage)
-                    )
+                    console.error(red(errorMessage))
                     resolve()
                 })
 
@@ -36,37 +38,30 @@ const installDeps = (pkgManager, package) => {
                         resolve()
                     } else {
                         console.error(code)
-                        console.error(
-                            red(errorMessage)
-                        )
+                        console.error(red(errorMessage))
                     }
                 })
 
                 resolve()
             } catch (e) {
                 console.error(e)
-                console.error(
-                    red(errorMessage)
-                )
+                console.error(red(errorMessage))
             }
-
         })
     }
 
-    if (typeof package === 'string') {
-        childProcess.push(installSingle(package))
+    if (typeof packageList === 'string') {
+        childProcess.push(installSingle(packageList))
     } else {
-        for (const pkg of package) {
+        for (const pkg of packageList) {
             childProcess.push(installSingle(pkg))
         }
     }
-
 
     const runInstall = () => {
         return Promise.all(childProcess.map((i) => i()))
     }
     return { runInstall }
-
 }
 
 module.exports = { getPkgManage, installDeps }

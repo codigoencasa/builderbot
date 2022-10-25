@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node ./app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "cli": "node ./packages/cli/bin/cli.js"
   },
   "workspaces": [
     "packages/cli",
@@ -52,8 +52,12 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^23.0.2",
+    "eslint": "^8.26.0",
+    "eslint-config-prettier": "^8.5.0",
     "pm2": "^5.2.0",
-    "prettier": "2.7.1"
+    "prettier": "^2.7.1",
+    "rollup": "^3.2.3"
   },
   "engines": {
     "node": "16.x"
