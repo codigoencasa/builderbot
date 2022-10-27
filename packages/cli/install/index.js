@@ -1,9 +1,15 @@
-const { readFileSync } = require('fs')
+const { readFileSync, existsSync } = require('fs')
 const { join } = require('path')
 const { installDeps } = require('./tool')
 
+const PATHS_DIR = [
+    join(__dirname, 'pkg-to-update.json'),
+    join(__dirname, '..', 'pkg-to-update.json'),
+]
+
 const PKG_TO_UPDATE = () => {
-    const data = readFileSync(join(__dirname, 'pkg-to-update.json'), 'utf-8')
+    const PATH_INDEX = PATHS_DIR.findIndex((a) => existsSync(a))
+    const data = readFileSync(PATHS_DIR[PATH_INDEX], 'utf-8')
     const dataParse = JSON.parse(data)
     const pkg = Object.keys(dataParse).map((n) => `${n}@${dataParse[n]}`)
     return pkg

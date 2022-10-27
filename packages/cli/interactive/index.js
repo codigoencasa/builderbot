@@ -3,6 +3,7 @@ const { yellow, red } = require('kleur')
 const { installAll } = require('../install')
 const { cleanSession } = require('../clean')
 const { checkNodeVersion, checkOs } = require('../check')
+const { jsonConfig } = require('../configuration')
 
 const startInteractive = async () => {
     const questions = [
@@ -120,6 +121,7 @@ const startInteractive = async () => {
     await cleanAllSession()
     await vendorProvider()
     await dbProvider()
+    await jsonConfig()
 }
 
 module.exports = { startInteractive }

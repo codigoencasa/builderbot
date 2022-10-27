@@ -1,5 +1,4 @@
 /node_modules
-/node_modules/*
 session.json
 chats/*
 !chats/.gitkeep
@@ -10,3 +9,5 @@ mediaSend/*
 !mediaSend/nota-de-voz.mp3
 .env
 .wwebjs_auth
+packages/cli/config.json
+config.json

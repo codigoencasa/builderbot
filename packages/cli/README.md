@@ -5,7 +5,7 @@
 -   [x] Obtener Package Manager
 -   [x] Revisar las libreria de WhatsappWeb para obtener version reciente
 -   [x] Opcion interactiva de limpiar session
--   [ ] Opcion de generar `json` con la configuracion
+-   [x] Opcion de generar `json` con la configuracion
 -   [x] Agregar `rollup` para limpiar el codigo
 
 ---

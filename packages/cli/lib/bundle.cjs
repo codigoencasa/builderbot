@@ -76,12 +76,18 @@ const installDeps$1 = (pkgManager, packageList) => {
 
 var tool = { getPkgManage, installDeps: installDeps$1 };
 
-const { readFileSync } = require$$0$1;
-const { join: join$1 } = require$$1$1;
+const { readFileSync, existsSync } = require$$0$1;
+const { join: join$2 } = require$$1$1;
 const { installDeps } = tool;
 
+const PATHS_DIR = [
+    join$2(__dirname, 'pkg-to-update.json'),
+    join$2(__dirname, '..', 'pkg-to-update.json'),
+];
+
 const PKG_TO_UPDATE = () => {
-    const data = readFileSync(join$1(__dirname, 'pkg-to-update.json'), 'utf-8');
+    const PATH_INDEX = PATHS_DIR.findIndex((a) => existsSync(a));
+    const data = readFileSync(PATHS_DIR[PATH_INDEX], 'utf-8');
     const dataParse = JSON.parse(data);
     const pkg = Object.keys(dataParse).map((n) => `${n}@${dataParse[n]}`);
     return pkg
@@ -96,11 +102,11 @@ var install = { installAll: installAll$1 };
 
 const rimraf = require$$0$2;
 const { yellow: yellow$2 } = require$$0;
-const { join } = require$$1$1;
+const { join: join$1 } = require$$1$1;
 
 const PATH_WW = [
-    join(process.cwd(), '.wwebjs_auth'),
-    join(process.cwd(), 'session.json'),
+    join$1(process.cwd(), '.wwebjs_auth'),
+    join$1(process.cwd(), 'session.json'),
 ];
 
 const cleanSession$1 = () => {
@@ -153,11 +159,46 @@ const checkOs$1 = () => {
 
 var check = { checkNodeVersion: checkNodeVersion$1, checkOs: checkOs$1 };
 
+const { writeFile } = require$$0$1.promises;
+const { join } = require$$1$1;
+
+/**
+ * JSON_TEMPLATE = {[key:string]{...pros}}
+ */
+const JSON_TEMPLATE = {
+    provider: {
+        vendor: '',
+    },
+    database: {
+        host: '',
+        password: '',
+        port: '',
+        username: '',
+        db: '',
+    },
+    io: {
+        vendor: '',
+    },
+};
+
+const PATH_CONFIG = join(process.cwd(), 'config.json');
+
+const jsonConfig$1 = () => {
+    return writeFile(
+        PATH_CONFIG,
+        JSON.stringify(JSON_TEMPLATE, null, 2),
+        'utf-8'
+    )
+};
+
+var configuration = { jsonConfig: jsonConfig$1 };
+
 const prompts = require$$0$3;
 const { yellow, red } = require$$0;
 const { installAll } = install;
 const { cleanSession } = clean;
 const { checkNodeVersion, checkOs } = check;
+const { jsonConfig } = configuration;
 
 const startInteractive$1 = async () => {
     const questions = [
@@ -275,6 +316,7 @@ const startInteractive$1 = async () => {
     await cleanAllSession();
     await vendorProvider();
     await dbProvider();
+    await jsonConfig();
 };
 
 var interactive = { startInteractive: startInteractive$1 };
