@@ -10,7 +10,7 @@
   "workspaces": [
     "packages/cli",
     "packages/io",
-    "packages/providers"
+    "packages/provider"
   ],
   "keywords": [
     "whatsapp",
