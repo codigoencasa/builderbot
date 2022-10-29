@@ -2,7 +2,7 @@ name: Node.js CI
 
 on:
     push:
-        branches: [monorepo]
+        branches: [feature/monorepo]
     pull_request:
         branches: [main]
 
