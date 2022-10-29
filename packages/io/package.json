@@ -5,7 +5,7 @@
     "main": "index.js",
     "private": true,
     "scripts": {
-        "io:dev": "NODE_ENV=dev node ./index.js",
+        "io:dev": "node ./index.js",
         "io:rollup": "rollup index.js --config ./rollup-cli.config.js",
         "format:check": "prettier --check .",
         "format:write": "prettier --write .",
@@ -16,7 +16,5 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "devDependencies": {
-     
-    }
+    "devDependencies": {}
 }

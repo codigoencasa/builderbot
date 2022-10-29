@@ -54,16 +54,17 @@
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^23.0.2",
+        "cross-env": "^7.0.3",
+        "cross-spawn": "^7.0.3",
+        "detect-package-manager": "^2.0.1",
         "eslint": "^8.26.0",
         "eslint-config-prettier": "^8.5.0",
+        "kleur": "^4.1.5",
         "pm2": "^5.2.0",
         "prettier": "^2.7.1",
-        "rollup": "^3.2.3",
-        "cross-spawn": "^7.0.3",
-        "kleur": "^4.1.5",
         "prompts": "^2.4.2",
         "rimraf": "^3.0.2",
-        "detect-package-manager": "^2.0.1"
+        "rollup": "^3.2.3"
     },
     "engines": {
         "node": "16.x"

@@ -3,9 +3,9 @@
     "version": "0.0.1",
     "description": "",
     "main": "index.js",
-    "private":true,
+    "private": true,
     "scripts": {
-        "cli:dev": "NODE_ENV=dev node ./index.js",
+        "cli:dev": "cross-env NODE_ENV=dev node ./index.js",
         "cli:rollup": "rollup index.js --config ./rollup-cli.config.js",
         "format:check": "prettier --check .",
         "format:write": "prettier --write .",
