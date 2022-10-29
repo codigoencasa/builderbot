@@ -12,7 +12,9 @@
 -   [x] addAnswer
 -   [ ] addKeyword: Opciones
 -   [ ] addAnswer: Opciones
--   [ ] Si ha contactado previamente. Seguir continuida
+-   [ ] Retornar SQL
+-   [ ] Retornar JSON
+-   [ ] Recibir JSON
 
 ```js
 // bootstrap.js Como iniciar el provider
@@ -98,3 +100,12 @@ answerOne.push(otherAnswer)
 
 inout.addKeywords(['hola', 'hi', 'ola'])
 ```
+
+**Comunidad**
+
+> Forma parte de este proyecto.
+
+-   [Discord](https://link.codigoencasa.com/DISCORD)
+-   [Twitter](https://twitter.com/leifermendez)
+-   [Youtube](https://www.youtube.com/watch?v=5lEMCeWEJ8o&list=PL_WGMLcL4jzWPhdhcUyhbFU6bC0oJd2BR)
+-   [Telegram](https://t.me/leifermendez)
