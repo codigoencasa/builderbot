@@ -6,11 +6,11 @@
 
 **addKeyword** recibe `string | string[]`
 
-> `sensitivy` false _default_
+> `sensitive` false _default_
 
 -   [x] addKeyword
 -   [x] addAnswer
--   [ ] addKeyword: Opciones
+-   [x] addKeyword: Opciones
 -   [ ] addAnswer: Opciones
 -   [ ] Retornar SQL
 -   [ ] Retornar JSON
@@ -72,21 +72,21 @@ await inout
     })
 
 await inout
-    .addKeyword('Modelo C', { sensitivy: false })
+    .addKeyword('Modelo C', { sensitive: false })
     .addAnswer('100USD', { media: 'http//:...' })
 
 await inout
-    .addKeyword('hola!', { sensitivy: false })
+    .addKeyword('hola!', { sensitive: false })
     .addAnswer('Bievenido Escribe *productos*')
 
 await inout
-    .addKeyword('productos', { sensitivy: false })
+    .addKeyword('productos', { sensitive: false })
     .addAnswer('Esto son los mas vendidos')
     .addAnswer('*PC1* Precio 10USD', { media: 'https://....' })
     .addAnswer('*PC2* Precio 10USD', { media: 'https://....' })
 
 await inout
-    .addKeyword('PC1', { sensitivy: false })
+    .addKeyword('PC1', { sensitive: false })
     .addAnswer('Bievenido Escribe *productos*')
 
 const answerOne = await inout.addAnswer({

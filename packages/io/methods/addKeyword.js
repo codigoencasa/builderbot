@@ -8,16 +8,30 @@ const { addAnswer } = require('./addAnswer')
 /**
  *
  * @param {*} message `string | string[]`
- * @param {*} options {sensitivy:boolean} defaulta false
+ * @param {*} options {sensitive:boolean} default
  */
 const addKeyword = (message, options) => {
+    /**
+     * Esta funcion deberia parsear y validar las opciones
+     * del keyword
+     * @returns
+     */
+    const parseOptions = () => {
+        const defaultProperties = {
+            sensitive: options?.sensitive ?? true,
+        }
+
+        return defaultProperties
+    }
+
     const ctxAddKeyword = () => {
         const ref = generateRef()
+        const options = parseOptions()
         /**
          * Se guarda en db
          */
 
-        return { ref, keyword: message }
+        return { ref, keyword: message, options }
     }
 
     const ctx = ctxAddKeyword()

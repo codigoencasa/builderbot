@@ -12,6 +12,15 @@ test('Debere probar las propeidades', () => {
     assert.is(MAIN_CTX.ctx.keyword, ARRANGE.keyword)
 })
 
+test('Debere probar las propeidades array', () => {
+    const ARRANGE = {
+        keyword: ['hola!', 'ole'],
+    }
+    const MAIN_CTX = addKeyword(ARRANGE.keyword)
+
+    assert.is(MAIN_CTX.ctx.keyword, ARRANGE.keyword)
+})
+
 test('Debere probar el paso de contexto', () => {
     const ARRANGE = {
         keyword: 'hola!',
@@ -36,6 +45,12 @@ test('Debere probar la anidación', () => {
         .addAnswer(ARRANGE.answer_B)
 
     assert.is(MAIN_CTX.ctx.answer, ARRANGE.answer_B)
+})
+
+test('Debere probar las poptions', () => {
+    const MAIN_CTX = addKeyword('etc', { sensitive: false })
+
+    assert.is(MAIN_CTX.ctx.options.sensitive, false)
 })
 
 test.run()
