@@ -1,6 +1,6 @@
 const { red } = require('kleur')
 const spawn = require('cross-spawn')
-const { detect } = require('detect-package-manager')
+// const { detect } = require('detect-package-manager')
 const PKG_OPTION = {
     npm: 'install',
     yarn: 'add',
@@ -8,8 +8,9 @@ const PKG_OPTION = {
 }
 
 const getPkgManage = async () => {
-    const pkg = await detect()
-    return pkg
+    // const pkg = await detect()
+    // return pkg
+    return 'npm'
 }
 
 const installDeps = (pkgManager, packageList) => {

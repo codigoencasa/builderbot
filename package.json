@@ -1,65 +1,71 @@
 {
-  "name": "bot-whatsapp",
-  "version": "1.0.0",
-  "description": "Bot de wahtsapp open source para MVP o pequeños negocios",
-  "main": "app.js",
-  "scripts": {
-    "start": "node ./app.js",
-    "cli": "node ./packages/cli/bin/cli.js"
-  },
-  "workspaces": [
-    "packages/cli",
-    "packages/io",
-    "packages/provider"
-  ],
-  "keywords": [
-    "whatsapp",
-    "bot-whatsapp",
-    "node-bot-whatsapp"
-  ],
-  "contributors": [
-    {
-      "email": "leifer33@gmail.com",
-      "name": "Leifer Mendez",
-      "url": "https://leifermendez.github.io"
+    "name": "bot-whatsapp",
+    "version": "1.0.0",
+    "description": "Bot de wahtsapp open source para MVP o pequeños negocios",
+    "main": "app.js",
+    "scripts": {
+        "start": "node ./app.js",
+        "cli": "node ./packages/cli/bin/cli.js",
+        "preinstall": ""
     },
-    {
-      "name": "aurik3",
-      "email": "aurik3@aurik3.com",
-      "url": "https://github.com/aurik3"
+    "workspaces": [
+        "packages/cli",
+        "packages/io",
+        "packages/providers"
+    ],
+    "keywords": [
+        "whatsapp",
+        "bot-whatsapp",
+        "node-bot-whatsapp"
+    ],
+    "contributors": [
+        {
+            "email": "leifer33@gmail.com",
+            "name": "Leifer Mendez",
+            "url": "https://leifermendez.github.io"
+        },
+        {
+            "name": "aurik3",
+            "email": "aurik3@aurik3.com",
+            "url": "https://github.com/aurik3"
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/leifermendez/bot-whatsapp"
+    },
+    "license": "ISC",
+    "dependencies": {
+        "@google-cloud/dialogflow": "^5.2.0",
+        "cors": "^2.8.5",
+        "dotenv": "^16.0.1",
+        "exceljs": "^4.3.0",
+        "express": "^4.18.1",
+        "file-type": "^17.1.6",
+        "mime-db": "^1.52.0",
+        "moment": "^2.29.4",
+        "mysql": "^2.18.1",
+        "qr-image": "^3.2.0",
+        "qrcode-terminal": "^0.12.0",
+        "socket.io": "^4.5.1",
+        "stormdb": "^0.6.0",
+        "whatsapp-web.js": "^1.18.0",
+        "xlsx": "^0.18.5"
+    },
+    "devDependencies": {
+        "@rollup/plugin-commonjs": "^23.0.2",
+        "eslint": "^8.26.0",
+        "eslint-config-prettier": "^8.5.0",
+        "pm2": "^5.2.0",
+        "prettier": "^2.7.1",
+        "rollup": "^3.2.3",
+        "cross-spawn": "^7.0.3",
+        "kleur": "^4.1.5",
+        "prompts": "^2.4.2",
+        "rimraf": "^3.0.2",
+        "detect-package-manager": "^2.0.1"
+    },
+    "engines": {
+        "node": "16.x"
     }
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/leifermendez/bot-whatsapp"
-  },
-  "license": "ISC",
-  "dependencies": {
-    "@google-cloud/dialogflow": "^5.2.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.1",
-    "exceljs": "^4.3.0",
-    "express": "^4.18.1",
-    "file-type": "^17.1.6",
-    "mime-db": "^1.52.0",
-    "moment": "^2.29.4",
-    "mysql": "^2.18.1",
-    "qr-image": "^3.2.0",
-    "qrcode-terminal": "^0.12.0",
-    "socket.io": "^4.5.1",
-    "stormdb": "^0.6.0",
-    "whatsapp-web.js": "^1.18.0",
-    "xlsx": "^0.18.5"
-  },
-  "devDependencies": {
-    "@rollup/plugin-commonjs": "^23.0.2",
-    "eslint": "^8.26.0",
-    "eslint-config-prettier": "^8.5.0",
-    "pm2": "^5.2.0",
-    "prettier": "^2.7.1",
-    "rollup": "^3.2.3"
-  },
-  "engines": {
-    "node": "16.x"
-  }
 }

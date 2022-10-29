@@ -1,6 +1,6 @@
 const { readFileSync, existsSync } = require('fs')
 const { join } = require('path')
-const { installDeps } = require('./tool')
+const { installDeps, getPkgManage } = require('./tool')
 
 const PATHS_DIR = [
     join(__dirname, 'pkg-to-update.json'),
@@ -16,8 +16,8 @@ const PKG_TO_UPDATE = () => {
 }
 
 const installAll = async () => {
-    // const pkg = await getPkgManage()
-    installDeps('npm', PKG_TO_UPDATE()).runInstall()
+    const pkg = await getPkgManage()
+    installDeps(pkg, PKG_TO_UPDATE()).runInstall()
 }
 
 module.exports = { installAll }

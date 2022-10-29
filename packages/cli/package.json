@@ -16,11 +16,8 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "devDependencies": {
-        "cross-spawn": "^7.0.3",
-        "detect-package-manager": "^2.0.1",
-        "kleur": "^4.1.5",
-        "prompts": "^2.4.2",
-        "rimraf": "^3.0.2"
+    "devDependencies": {},
+    "dependencies": {
+        "whatsapp-web.js": "^1.18.2"
     }
 }
