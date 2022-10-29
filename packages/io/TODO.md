@@ -8,8 +8,10 @@
 
 > `sensitivy` false _default_
 
--   [ ] addKeyword
--   [ ] addAnswer
+-   [x] addKeyword
+-   [x] addAnswer
+-   [ ] addKeyword: Opciones
+-   [ ] addAnswer: Opciones
 -   [ ] Si ha contactado previamente. Seguir continuida
 
 ```js

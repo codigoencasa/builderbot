@@ -6,7 +6,7 @@
     "private": true,
     "scripts": {
         "io:dev": "node ./index.js",
-        "io:rollup": "rollup index.js --config ./rollup-cli.config.js",
+        "io:rollup": "node ../../node_modules/.bin/rollup index.js --config ./rollup-cli.config.js",
         "format:check": "prettier --check .",
         "format:write": "prettier --write .",
         "lint:check": "eslint .",

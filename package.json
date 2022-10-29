@@ -4,9 +4,9 @@
     "description": "Bot de wahtsapp open source para MVP o pequeños negocios",
     "main": "app.js",
     "scripts": {
-        "start": "node ./app.js",
         "cli": "node ./packages/cli/bin/cli.js",
-        "preinstall": ""
+        "cli:rollup": "rollup ./packages/cli/index.js --config ./packages/cli/rollup-cli.config.js",
+        "io:rollup": "rollup ./packages/io/index.js --config ./packages/io/rollup-cli.config.js"
     },
     "workspaces": [
         "packages/cli",
@@ -64,7 +64,8 @@
         "prettier": "^2.7.1",
         "prompts": "^2.4.2",
         "rimraf": "^3.0.2",
-        "rollup": "^3.2.3"
+        "rollup": "^3.2.3",
+        "uvu": "^0.5.6"
     },
     "engines": {
         "node": "16.x"
