@@ -1,8 +1,9 @@
 {
     "name": "cli",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "description": "",
     "main": "index.js",
+    "private":true,
     "scripts": {
         "cli:dev": "NODE_ENV=dev node ./index.js",
         "cli:rollup": "rollup index.js --config ./rollup-cli.config.js",
@@ -21,8 +22,5 @@
         "kleur": "^4.1.5",
         "prompts": "^2.4.2",
         "rimraf": "^3.0.2"
-    },
-    "dependencies": {
-        "whatsapp-web.js": "^1.18.2"
     }
 }

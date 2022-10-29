@@ -1,5 +1,16 @@
 # @bot-whatsapp/io
 
+
+### Caso de uso
+> Una persona escribe `hola`
+
+__addKeyword__ recibe `string | string[]` 
+> `sensitivy` false _default_
+
+- [] addKeyword
+- [] addAnswer
+- [] Si ha contactado previamente. Seguir continuida
+
 ```js
 // bootstrap.js Como iniciar el provider
 const { inout, provider, database } = require('@bot-whatsapp')
@@ -82,10 +93,3 @@ answerOne.push(otherAnswer)
 inout.addKeywords(['hola','hi','ola'])
 
 ```
-
-### Caso de uso
-> Una persona escribe `hola`
-
-- [] Revisar si en las ultimas 24 ha contactado
-- [] Si no INICIAR hilo
-- [] Si ha contactado previamente. Seguir continuida
