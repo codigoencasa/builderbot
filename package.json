@@ -54,6 +54,7 @@
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^23.0.2",
+        "c8": "^7.12.0",
         "cross-env": "^7.0.3",
         "cross-spawn": "^7.0.3",
         "detect-package-manager": "^2.0.1",

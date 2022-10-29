@@ -1,6 +1,6 @@
 const { generateRef } = require('../utils')
 
-const addAnswer = (inCtx) => (message, options) => {
+const addAnswer = (inCtx) => (answer, options) => {
     const lastCtx = inCtx.hasOwnProperty('ctx') ? inCtx.ctx : inCtx
     const ctxAnswer = () => {
         const ref = generateRef()
@@ -8,7 +8,7 @@ const addAnswer = (inCtx) => (message, options) => {
          * Se guarda en db
          */
 
-        return { ...lastCtx, ref, message }
+        return { ...lastCtx, ref, answer }
     }
 
     const ctx = ctxAnswer()

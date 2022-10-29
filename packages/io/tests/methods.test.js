@@ -1,25 +1,41 @@
-const { test, suite } = require('uvu')
-const { snapshot, is } = require('uvu/assert')
+const { test } = require('uvu')
+const assert = require('uvu/assert')
+const { addKeyword, addAnswer } = require('../methods')
 
-test('sum', () => {
-    assert.type(math.sum, 'function')
-    assert.is(math.sum(1, 2), 3)
-    assert.is(math.sum(-1, -2), -3)
-    assert.is(math.sum(-1, 1), 0)
+test('Debere probar las propeidades', () => {
+    const ARRANGE = {
+        keyword: 'hola!',
+    }
+    const MAIN_CTX = addKeyword(ARRANGE.keyword)
+
+    assert.type(MAIN_CTX.addAnswer, 'function')
+    assert.is(MAIN_CTX.ctx.keyword, ARRANGE.keyword)
 })
 
-test('div', () => {
-    assert.type(math.div, 'function')
-    assert.is(math.div(1, 2), 0.5)
-    assert.is(math.div(-1, -2), 0.5)
-    assert.is(math.div(-1, 1), -1)
+test('Debere probar el paso de contexto', () => {
+    const ARRANGE = {
+        keyword: 'hola!',
+        answer: 'Bienvenido',
+    }
+    const CTX_A = addKeyword(ARRANGE.keyword)
+    const CTX_B = addAnswer(CTX_A)(ARRANGE.answer)
+
+    assert.is(CTX_A.ctx.keyword, ARRANGE.keyword)
+    assert.is(CTX_B.ctx.keyword, ARRANGE.keyword)
+    assert.is(CTX_B.ctx.answer, ARRANGE.answer)
 })
 
-test('mod', () => {
-    assert.type(math.mod, 'function')
-    assert.is(math.mod(1, 2), 1)
-    assert.is(math.mod(-3, -2), -1)
-    assert.is(math.mod(7, 4), 3)
+test('Debere probar la anidación', () => {
+    const ARRANGE = {
+        keyword: 'hola!',
+        answer_A: 'Bienvenido',
+        answer_B: 'Continuar',
+    }
+    const MAIN_CTX = addKeyword(ARRANGE.keyword)
+        .addAnswer(ARRANGE.answer_A)
+        .addAnswer(ARRANGE.answer_B)
+
+    assert.is(MAIN_CTX.ctx.answer, ARRANGE.answer_B)
 })
 
 test.run()

@@ -11,3 +11,5 @@ mediaSend/*
 .wwebjs_auth
 packages/cli/config.json
 config.json
+coverage/
+*.lcov
