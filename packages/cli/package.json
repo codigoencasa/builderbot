@@ -1,8 +1,9 @@
 {
     "name": "cli",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "description": "",
     "main": "index.js",
+    "private":true,
     "scripts": {
         "cli:dev": "NODE_ENV=dev node ./index.js",
         "cli:rollup": "rollup index.js --config ./rollup-cli.config.js",
