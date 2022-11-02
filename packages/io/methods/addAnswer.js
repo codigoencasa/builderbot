@@ -1,5 +1,5 @@
 const { generateRef } = require('../utils')
-
+const { toJson } = require('./toJson')
 /**
  *
  * @param answer string
@@ -14,7 +14,15 @@ const addAnswer = (inCtx) => (answer, options) => {
 
     const lastCtx = inCtx.hasOwnProperty('ctx') ? inCtx.ctx : inCtx
     const ctxAnswer = () => {
-        const ref = generateRef()
+        const ref = `ans_${generateRef()}`
+
+        const json = [].concat(inCtx.json).concat([
+            {
+                ref,
+                keyword: lastCtx.ref,
+                answer,
+            },
+        ])
         /**
          * Se guarda en db
          */
@@ -24,7 +32,7 @@ const addAnswer = (inCtx) => (answer, options) => {
             keyword: {},
         }
 
-        return { ...lastCtx, ref, answer, options }
+        return { ...lastCtx, ref, answer, json, options }
     }
 
     const ctx = ctxAnswer()
@@ -33,6 +41,7 @@ const addAnswer = (inCtx) => (answer, options) => {
         ctx,
         ref: ctx.ref,
         addAnswer: addAnswer(ctx),
+        toJson: toJson(ctx),
     }
 }
 

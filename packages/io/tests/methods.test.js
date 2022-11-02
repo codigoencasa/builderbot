@@ -75,4 +75,20 @@ test('Debere probar error las addAnswer', () => {
     assert.is(MAIN_CTX.ctx.options.answer.buttons.length, 0)
 })
 
+test('Obtener toJson', () => {
+    const [ctxA, ctxB, ctxC] = addKeyword('hola')
+        .addAnswer('pera!')
+        .addAnswer('chao')
+        .toJson()
+
+    assert.is(ctxA.keyword, 'hola')
+    assert.match(ctxA.ref, /^key_/)
+
+    assert.is(ctxB.answer, 'pera!')
+    assert.match(ctxB.ref, /^ans_/)
+
+    assert.is(ctxC.answer, 'chao')
+    assert.match(ctxC.ref, /^ans_/)
+})
+
 test.run()

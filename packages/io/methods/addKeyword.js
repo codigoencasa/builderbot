@@ -10,7 +10,7 @@ const { addAnswer } = require('./addAnswer')
  * @param {*} message `string | string[]`
  * @param {*} options {sensitive:boolean} default
  */
-const addKeyword = (message, options) => {
+const addKeyword = (keyword, options) => {
     /**
      * Esta funcion deberia parsear y validar las opciones
      * del keyword
@@ -25,13 +25,19 @@ const addKeyword = (message, options) => {
     }
 
     const ctxAddKeyword = () => {
-        const ref = generateRef()
+        const ref = `key_${generateRef()}`
         const options = parseOptions()
+        const json = [
+            {
+                ref,
+                keyword,
+            },
+        ]
         /**
          * Se guarda en db
          */
 
-        return { ref, keyword: message, options }
+        return { ref, keyword, options, json }
     }
 
     const ctx = ctxAddKeyword()
