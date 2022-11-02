@@ -53,4 +53,26 @@ test('Debere probar las poptions', () => {
     assert.is(MAIN_CTX.ctx.options.sensitive, false)
 })
 
+test('Debere probar las addAnswer', () => {
+    const MOCK_OPT = {
+        media: 'http://image.mock/mock.png',
+        buttons: [1],
+    }
+    const MAIN_CTX = addKeyword('hola').addAnswer('etc', MOCK_OPT)
+
+    assert.is(MAIN_CTX.ctx.options.answer.media, MOCK_OPT.media)
+    assert.is(MAIN_CTX.ctx.options.answer.buttons.length, 1)
+})
+
+test('Debere probar error las addAnswer', () => {
+    const MOCK_OPT = {
+        media: { a: 1, b: [] },
+        buttons: 'test',
+    }
+    const MAIN_CTX = addKeyword('hola').addAnswer('etc', MOCK_OPT)
+
+    assert.is(MAIN_CTX.ctx.options.answer.media, null)
+    assert.is(MAIN_CTX.ctx.options.answer.buttons.length, 0)
+})
+
 test.run()

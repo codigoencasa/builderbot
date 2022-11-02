@@ -1,6 +1,17 @@
 const { generateRef } = require('../utils')
 
+/**
+ *
+ * @param answer string
+ * @param options {media:string, buttons:[]}
+ * @returns
+ */
 const addAnswer = (inCtx) => (answer, options) => {
+    const getAnswerOptions = () => ({
+        media: typeof options?.media === 'string' ? `${options?.media}` : null,
+        buttons: Array.isArray(options?.buttons) ? options.buttons : [],
+    })
+
     const lastCtx = inCtx.hasOwnProperty('ctx') ? inCtx.ctx : inCtx
     const ctxAnswer = () => {
         const ref = generateRef()
@@ -8,7 +19,12 @@ const addAnswer = (inCtx) => (answer, options) => {
          * Se guarda en db
          */
 
-        return { ...lastCtx, ref, answer }
+        const options = {
+            answer: getAnswerOptions(),
+            keyword: {},
+        }
+
+        return { ...lastCtx, ref, answer, options }
     }
 
     const ctx = ctxAnswer()
@@ -21,8 +37,3 @@ const addAnswer = (inCtx) => (answer, options) => {
 }
 
 module.exports = { addAnswer }
-
-// await inout
-//     .addKeyword('hola')
-//     .addAnswer('Bienvenido a tu tienda 🥲')
-//     .addAnswer('escribe *catalogo* o *ofertas*')
