@@ -7,7 +7,8 @@
         "cli": "node ./packages/cli/bin/cli.js",
         "cli:rollup": "rollup ./packages/cli/index.js --config ./packages/cli/rollup-cli.config.js",
         "io:rollup": "rollup ./packages/io/index.js --config ./packages/io/rollup-cli.config.js",
-        "test:io": "node ./node_modules/uvu/bin.js ./packages/io/tests"
+        "test.unit": "node ./node_modules/uvu/bin.js packages test",
+        "test.coverage": "node ./node_modules/c8/bin/c8.js --check-coverage --lines=90 npm run test.unit"
     },
     "workspaces": [
         "packages/cli",
