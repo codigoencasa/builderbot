@@ -12,8 +12,7 @@
 -   [x] addAnswer
 -   [x] addKeyword: Opciones
 -   [x] addAnswer: Opciones, media, buttons
--   [ ] Retornar SQL
--   [ ] Retornar JSON (options)
+-   [x] Retornar JSON (options)
 -   [ ] Recibir JSON
 
 ```js

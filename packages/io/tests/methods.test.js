@@ -112,4 +112,19 @@ test('addAnswer toJson con IMG', () => {
     assert.is(ctxC.options.media, 'http://mock.img/file-b.png')
 })
 
+test('addAnswer toJson con BUTTONS', () => {
+    const [, ctxB] = addKeyword('hola')
+        .addAnswer('mis opciones!', {
+            buttons: [{ body: 'BTN_1' }, { body: 'BTN_2' }],
+        })
+        .toJson()
+
+    assert.is(ctxB.options.buttons.length, 2)
+
+    const [btnA, btnB] = ctxB.options.buttons
+
+    assert.is(btnA.body, 'BTN_1')
+    assert.is(btnB.body, 'BTN_2')
+})
+
 test.run()
