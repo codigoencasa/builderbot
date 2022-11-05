@@ -16,21 +16,19 @@ const addAnswer = (inCtx) => (answer, options) => {
     const ctxAnswer = () => {
         const ref = `ans_${generateRef()}`
 
+        const options = {
+            ...getAnswerOptions(),
+            keyword: {},
+        }
+
         const json = [].concat(inCtx.json).concat([
             {
                 ref,
                 keyword: lastCtx.ref,
                 answer,
+                options,
             },
         ])
-        /**
-         * Se guarda en db
-         */
-
-        const options = {
-            answer: getAnswerOptions(),
-            keyword: {},
-        }
 
         return { ...lastCtx, ref, answer, json, options }
     }

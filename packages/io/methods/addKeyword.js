@@ -1,5 +1,6 @@
 const { generateRef } = require('../utils')
 const { addAnswer } = require('./addAnswer')
+const { toJson } = require('./toJson')
 /**
  * addKeyword:
  * Es necesario que genere id|hash
@@ -8,7 +9,7 @@ const { addAnswer } = require('./addAnswer')
 /**
  *
  * @param {*} message `string | string[]`
- * @param {*} options {sensitive:boolean} default
+ * @param {*} options {sensitive:boolean} default false
  */
 const addKeyword = (keyword, options) => {
     /**
@@ -18,7 +19,10 @@ const addKeyword = (keyword, options) => {
      */
     const parseOptions = () => {
         const defaultProperties = {
-            sensitive: options?.sensitive ?? true,
+            sensitive:
+                typeof options?.sensitive === 'boolean'
+                    ? options?.sensitive
+                    : false,
         }
 
         return defaultProperties
@@ -31,6 +35,7 @@ const addKeyword = (keyword, options) => {
             {
                 ref,
                 keyword,
+                options,
             },
         ]
         /**
@@ -46,6 +51,7 @@ const addKeyword = (keyword, options) => {
         ctx,
         ref: ctx.ref,
         addAnswer: addAnswer(ctx),
+        toJson: toJson(ctx),
     }
 }
 

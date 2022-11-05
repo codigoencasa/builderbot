@@ -60,8 +60,8 @@ test('Debere probar las addAnswer', () => {
     }
     const MAIN_CTX = addKeyword('hola').addAnswer('etc', MOCK_OPT)
 
-    assert.is(MAIN_CTX.ctx.options.answer.media, MOCK_OPT.media)
-    assert.is(MAIN_CTX.ctx.options.answer.buttons.length, 1)
+    assert.is(MAIN_CTX.ctx.options.media, MOCK_OPT.media)
+    assert.is(MAIN_CTX.ctx.options.buttons.length, 1)
 })
 
 test('Debere probar error las addAnswer', () => {
@@ -71,8 +71,8 @@ test('Debere probar error las addAnswer', () => {
     }
     const MAIN_CTX = addKeyword('hola').addAnswer('etc', MOCK_OPT)
 
-    assert.is(MAIN_CTX.ctx.options.answer.media, null)
-    assert.is(MAIN_CTX.ctx.options.answer.buttons.length, 0)
+    assert.is(MAIN_CTX.ctx.options.media, null)
+    assert.is(MAIN_CTX.ctx.options.buttons.length, 0)
 })
 
 test('Obtener toJson', () => {
@@ -89,6 +89,27 @@ test('Obtener toJson', () => {
 
     assert.is(ctxC.answer, 'chao')
     assert.match(ctxC.ref, /^ans_/)
+})
+
+test('addKeyword toJson con sensitive', () => {
+    const [ctxA] = addKeyword('hola').toJson()
+    assert.is(ctxA.options.sensitive, false)
+    const [ctxB] = addKeyword('hola', { sensitive: true }).toJson()
+    assert.is(ctxB.options.sensitive, true)
+})
+
+test('addAnswer toJson con IMG', () => {
+    const [, ctxB, ctxC] = addKeyword('hola')
+        .addAnswer('bye!', {
+            media: 'http://mock.img/file-a.png',
+        })
+        .addAnswer('otro!', {
+            media: 'http://mock.img/file-b.png',
+        })
+        .toJson()
+
+    assert.is(ctxB.options.media, 'http://mock.img/file-a.png')
+    assert.is(ctxC.options.media, 'http://mock.img/file-b.png')
 })
 
 test.run()
