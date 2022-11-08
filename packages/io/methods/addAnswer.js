@@ -3,13 +3,15 @@ const { toJson } = require('./toJson')
 /**
  *
  * @param answer string
- * @param options {media:string, buttons:[]}
+ * @param options {media:string, buttons:[], capture:true default false}
  * @returns
  */
 const addAnswer = (inCtx) => (answer, options) => {
     const getAnswerOptions = () => ({
         media: typeof options?.media === 'string' ? `${options?.media}` : null,
         buttons: Array.isArray(options?.buttons) ? options.buttons : [],
+        capture:
+            typeof options?.capture === 'boolean' ? options?.capture : false,
     })
 
     const lastCtx = inCtx.hasOwnProperty('ctx') ? inCtx.ctx : inCtx
