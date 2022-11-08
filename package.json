@@ -17,6 +17,7 @@
         "test.unit": "node ./node_modules/uvu/bin.js packages test",
         "test.e2e": "node ./node_modules/uvu/bin.js __tests__ test",
         "test.coverage": "node ./node_modules/c8/bin/c8.js --check-coverage --lines=90 npm run test.unit",
+        "test": "npm run test.unit && npm run test.e2e",
         "cli": "node ./packages/cli/bin/cli.js"
     },
     "husky": {
