@@ -4,15 +4,6 @@
     "description": "",
     "main": "index.js",
     "private": true,
-    "scripts": {
-        "cli:dev": "cross-env NODE_ENV=dev node ./index.js",
-        "cli:rollup": "rollup index.js --config ./rollup-cli.config.js",
-        "format:check": "prettier --check .",
-        "format:write": "prettier --write .",
-        "lint:check": "eslint .",
-        "lint:fix": "eslint --fix .",
-        "build:cli": "npm run format:write && npm run lint:fix && npm run cli:rollup"
-    },
     "keywords": [],
     "author": "",
     "license": "ISC"

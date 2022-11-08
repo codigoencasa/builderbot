@@ -4,12 +4,26 @@
     "description": "Bot de wahtsapp open source para MVP o pequeños negocios",
     "main": "app.js",
     "scripts": {
-        "cli": "node ./packages/cli/bin/cli.js",
         "cli:rollup": "rollup ./packages/cli/index.js --config ./packages/cli/rollup-cli.config.js",
         "io:rollup": "rollup ./packages/io/index.js --config ./packages/io/rollup-cli.config.js",
+        "core:rollup": "rollup ./packages/core/index.js --config ./packages/core/rollup-cli.config.js",
+        "provider:rollup": "rollup ./packages/provider/index.js --config ./packages/provider/rollup-cli.config.js",
+        "all:rollup": "rollup ./packages/index.js --config ./packages/rollup-cli.config.js",
+        "format:check": "prettier --check ./packages",
+        "format:write": "prettier --write ./packages",
+        "lint:check": "eslint ./packages",
+        "lint:fix": "eslint --fix ./packages",
+        "build": "npm run all:rollup",
         "test.unit": "node ./node_modules/uvu/bin.js packages test",
         "test.e2e": "node ./node_modules/uvu/bin.js __tests__ test",
-        "test.coverage": "node ./node_modules/c8/bin/c8.js --check-coverage --lines=90 npm run test.unit"
+        "test.coverage": "node ./node_modules/c8/bin/c8.js --check-coverage --lines=90 npm run test.unit",
+        "cli": "node ./packages/cli/bin/cli.js"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "npm run format:check && npm run lint:fix",
+            "pre-push": "npm run test"
+        }
     },
     "workspaces": [
         "packages/cli",
@@ -63,6 +77,7 @@
         "detect-package-manager": "^2.0.1",
         "eslint": "^8.26.0",
         "eslint-config-prettier": "^8.5.0",
+        "husky": "^8.0.2",
         "kleur": "^4.1.5",
         "pm2": "^5.2.0",
         "prettier": "^2.7.1",

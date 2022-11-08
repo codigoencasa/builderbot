@@ -3,7 +3,7 @@ const commonjs = require('@rollup/plugin-commonjs')
 module.exports = {
     input: 'index.js',
     output: {
-        file: 'lib/cli/bundle.cli.cjs',
+        file: 'lib/index.cjs',
         format: 'cjs',
     },
     plugins: [commonjs()],

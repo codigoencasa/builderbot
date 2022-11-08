@@ -4,16 +4,6 @@
     "description": "",
     "main": "index.js",
     "private": true,
-    "scripts": {
-        "io:dev": "node ./index.js",
-        "io:rollup": "node ../../node_modules/.bin/rollup index.js --config ./rollup-cli.config.js",
-        "format:check": "prettier --check .",
-        "format:write": "prettier --write .",
-        "lint:check": "eslint .",
-        "lint:fix": "eslint --fix .",
-        "test:io": "node ../../node_modules/uvu/bin.js tests",
-        "build:io": "npm run format:write && npm run lint:fix && npm run io:rollup"
-    },
     "keywords": [],
     "author": "",
     "license": "ISC",

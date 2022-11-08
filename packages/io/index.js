@@ -1,4 +1,3 @@
 const { addKeyword, addAnswer } = require('./methods')
-module.exports = { addKeyword, addAnswer }
-
-
+const FlowClass = require('./classes/flow.class')
+module.exports = { addKeyword, addAnswer, instance: FlowClass }

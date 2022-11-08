@@ -1,0 +1,21 @@
+{
+    "name": "bot-core",
+    "version": "0.0.1",
+    "description": "",
+    "main": "index.js",
+    "private": true,
+    "scripts": {
+        "core:dev": "node ./index.js",
+        "core:rollup": "node ../../node_modules/.bin/rollup index.js --config ./rollup-cli.config.js",
+        "format:check": "prettier --check .",
+        "format:write": "prettier --write .",
+        "lint:check": "eslint .",
+        "lint:fix": "eslint --fix .",
+        "test:core": "node ../../node_modules/uvu/bin.js tests",
+        "build:core": "npm run format:write && npm run lint:fix && npm run io:rollup"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {}
+}
