@@ -85,10 +85,6 @@ class ProviderMock {
  */
 
 class BotClass extends EventEmitter {
-    /**
-     * Emitter para tener on and emit
-     */
-
     flowClass
     databaseClass
     providerClass
@@ -97,15 +93,27 @@ class BotClass extends EventEmitter {
         this.flowClass = _flow
         this.databaseClass = _database
         this.providerClass = _provider
+
+        this.on('message', (ctxMessage) => {
+            this.databaseClass.saveLog(ctxMessage)
+            this.continue(ctxMessage.body)
+        })
     }
 
-    continue = () => {
-        const r = this.flowClass.find()
-        if (r) {
-            this.provider.sendMessage(r.answer)
-            this.continue(null, r.ref)
-            console.log(r)
+    continue = (message, ref = false) => {
+        const responde = this.flowClass.find(message, ref)
+        if (responde) {
+            this.providerClass.sendMessage(responde.answer)
+            this.continue(null, responde.ref)
         }
+    }
+}
+
+class ProviderClass {
+    constructor() {}
+
+    sendMessage = (message) => {
+        console.log('Enviar...', message)
     }
 }
 
@@ -119,7 +127,8 @@ class FlowClass {
         let keyRef = ref
         let ansRef = null
         if (!keyRef) {
-            keyRef = this.flow.find((n) => n.keyword.includes(message)).ref
+            keyRef =
+                this.flow.find((n) => n.keyword.includes(message))?.ref || null
         }
         ansRef = this.flow.find((n) => n.keyword === keyRef)
         if (ansRef) return ansRef
@@ -127,14 +136,25 @@ class FlowClass {
     }
 }
 
+class DatabaseClass {
+    constructor() {}
+
+    saveLog = (ctx) => {
+        console.log('Guardando...', ctx)
+    }
+}
+
 test(`[Flow Basico]: Saludar y Responder`, () => {
     let messages = []
 
-    const botBasic = new BotClass(new FlowClass(flow), null, null)
+    const botBasic = new BotClass(
+        new FlowClass(flow),
+        new DatabaseClass(),
+        new ProviderClass()
+    )
 
     botBasic.on('message', (ctx) => messages.push(ctx.body))
 
-    // Esta linea emula el llegar un mensaje!
     botBasic.emit('message', { body: 'hola' })
 
     assert.is(messages.join(','), 'hola')
