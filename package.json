@@ -1,5 +1,5 @@
 {
-    "name": "bot-whatsapp",
+    "name": "@bot-whatsapp/root",
     "version": "1.0.0",
     "description": "Bot de wahtsapp open source para MVP o pequeños negocios",
     "main": "app.js",
@@ -20,16 +20,9 @@
         "test": "npm run test.unit && npm run test.e2e",
         "cli": "node ./packages/cli/bin/cli.js"
     },
-    "husky": {
-        "hooks": {
-            "pre-commit": "npm run format:check && npm run lint:fix",
-            "pre-push": "npm run test"
-        }
-    },
     "workspaces": [
-        "packages/cli",
-        "packages/io",
-        "packages/providers"
+        "packages/*",
+        "docs"
     ],
     "keywords": [
         "whatsapp",
@@ -78,7 +71,6 @@
         "detect-package-manager": "^2.0.1",
         "eslint": "^8.26.0",
         "eslint-config-prettier": "^8.5.0",
-        "husky": "^8.0.2",
         "kleur": "^4.1.5",
         "pm2": "^5.2.0",
         "prettier": "^2.7.1",
