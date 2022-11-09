@@ -1,7 +1,7 @@
 {
-    "name": "@bot-whatsapp/provider",
+    "name": "@bot-whatsapp/database",
     "version": "0.0.1",
-    "description": "Esto es el conector a Twilio, Meta, etc...",
+    "description": "Esto es el conector a  mysql, pg, mongo",
     "main": "index.js",
     "private": true,
     "keywords": [],

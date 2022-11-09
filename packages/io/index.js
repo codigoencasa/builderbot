@@ -1,3 +1,13 @@
 const { addKeyword, addAnswer } = require('./methods')
 const FlowClass = require('./classes/flow.class')
-module.exports = { addKeyword, addAnswer, instance: FlowClass }
+
+/**
+ * Crear instancia de clase
+ * @param {*} args
+ * @returns
+ */
+const create = (args) => {
+    return new FlowClass(args)
+}
+
+module.exports = { addKeyword, addAnswer, create }

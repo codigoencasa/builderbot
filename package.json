@@ -8,6 +8,7 @@
         "io:rollup": "rollup ./packages/io/index.js --config ./packages/io/rollup-cli.config.js",
         "core:rollup": "rollup ./packages/core/index.js --config ./packages/core/rollup-cli.config.js",
         "provider:rollup": "rollup ./packages/provider/index.js --config ./packages/provider/rollup-cli.config.js",
+        "database:rollup": "rollup ./packages/database/index.js --config ./packages/database/rollup-cli.config.js",
         "all:rollup": "rollup ./packages/index.js --config ./packages/rollup-cli.config.js",
         "format:check": "prettier --check ./packages",
         "format:write": "prettier --write ./packages",

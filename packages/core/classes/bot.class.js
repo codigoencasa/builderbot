@@ -1,19 +1,18 @@
-const { EventEmitter } = require('node:events')
-
 /**
  * Clase principal del BOT
  */
-class BotClass extends EventEmitter {
+class BotClass {
     flowClass
     databaseClass
     providerClass
     constructor(_flow, _database, _provider) {
-        super()
         this.flowClass = _flow
         this.databaseClass = _database
         this.providerClass = _provider
 
-        this.on('message', (ctxMessage) => this.handleOnMessage(ctxMessage))
+        this.providerClass.on('message', (ctxMessage) =>
+            this.handleOnMessage(ctxMessage)
+        )
     }
 
     handleOnMessage = (ctxMessage) => {

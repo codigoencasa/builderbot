@@ -1,4 +1,8 @@
 class ProviderClass {
+    /**
+     * events: message | auth | auth_error | ...
+     *
+     */
     constructor() {}
 
     sendMessage = (message) => {
