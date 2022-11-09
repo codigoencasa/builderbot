@@ -1,56 +1,54 @@
-const { test } = require('uvu')
-const assert = require('uvu/assert')
+// const { test } = require('uvu')
+// const assert = require('uvu/assert')
 
-// const { inout, provider, database, botcore } = require('../lib/index.cjs')
-const { inout, provider, database, botcore } = require('../packages/index')
+// // const { inout, provider, database, botcore } = require('../lib/index.cjs')
+// const { inout, provider, database, botcore } = require('../packages/index')
 
-const adapterDB = database.create({
-    engine: 'json', // 'mysql / pg / mongo / json (json-default)',
-    credentials: {},
-})
+// const makeFlow = () => {
+//     const flowA = inout
+//         .addKeyword('hola')
+//         .addAnswer('Bienvenido a tu tienda 🥲')
+//         .addAnswer('escribe *catalogo* o *ofertas*')
+//         .toJson()
 
-const adapterProvider = provider.create({
-    vendor: 'web', //'twilio / web / meta',
-    credentials: {},
-})
+//     return [...flowA]
+// }
 
-const makeFlow = () => {
-    const flowA = inout
-        .addKeyword('hola')
-        .addAnswer('Bienvenido a tu tienda 🥲')
-        .addAnswer('escribe *catalogo* o *ofertas*')
-        .toJson()
+// test(`[BotClass]: recibe los mensajes entrantes del provider`, async () => {
+//     const adapterFlow = await inout.create(makeFlow())
+//     const adapterProvider = await provider.create({
+//         vendor: 'mock',
+//         credentials: {},
+//     })
+//     const adapterDB = await database.create({
+//         engine: 'mock',
+//         credentials: {},
+//     })
 
-    return [...flowA]
-}
+//     let messages = []
 
-const adapterFlow = inout.create(makeFlow())
+//     const bot = await botcore.create({
+//         flow: adapterFlow,
+//         database: adapterDB,
+//         provider: adapterProvider,
+//     })
 
-test(`[BotClass]: recibe los mensajes entrantes del provider`, () => {
-    let messages = []
+//     bot.on('message', (ctx) => messages.push(ctx))
+//     bot.emit('message', 'hola')
+//     bot.emit('message', 'otro')
 
-    const bot = botcore.create({
-        flow: adapterFlow,
-        database: adapterDB,
-        provider: adapterProvider,
-    })
+//     const getHistoryFromDB = adapterDB.engineDB.listHistory
 
-    bot.on('message', (ctx) => messages.push(ctx))
-    bot.emit('message', 'hola')
-    bot.emit('message', 'otro')
+//     assert.is(messages.join(), ['hola', 'otro'].join())
+//     assert.is(
+//         getHistoryFromDB.join(),
+//         [
+//             'hola',
+//             'Bienvenido a tu tienda 🥲',
+//             'escribe *catalogo* o *ofertas*',
+//             'otro',
+//         ].join()
+//     )
+// })
 
-    const getHistoryFromDB = adapterDB.engineDB.listHistory
-
-    assert.is(messages.join(), ['hola', 'otro'].join())
-    assert.is(
-        getHistoryFromDB.join(),
-        [
-            'hola',
-            'Bienvenido a tu tienda 🥲',
-            'escribe *catalogo* o *ofertas*',
-            'otro',
-        ].join()
-    )
-})
-
-test.run()
+// test.run()

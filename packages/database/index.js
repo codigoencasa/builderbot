@@ -13,7 +13,7 @@ const prepareEngine = ({ engine, credentials }) => {
  * @param {*} args
  * @returns
  */
-const create = (args) => {
+const create = async (args) => {
     const engine = prepareEngine(args)
     return new DatabaseClass(engine)
 }

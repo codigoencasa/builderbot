@@ -10,8 +10,8 @@ class BotClass {
         this.databaseClass = _database
         this.providerClass = _provider
 
-        this.providerClass.on('message', (ctxMessage) =>
-            this.handleOnMessage(ctxMessage)
+        this.providerClass.on('message', ({ message }) =>
+            this.handleOnMessage(message)
         )
     }
 

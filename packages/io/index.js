@@ -6,7 +6,7 @@ const FlowClass = require('./classes/flow.class')
  * @param {*} args
  * @returns
  */
-const create = (args) => {
+const create = async (args) => {
     return new FlowClass(args)
 }
 

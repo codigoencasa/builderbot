@@ -5,7 +5,7 @@ const BotClass = require('./classes/bot.class')
  * @param {*} args
  * @returns
  */
-const create = ({ flow, database, provider }) => {
+const create = async ({ flow, database, provider }) => {
     return Object.setPrototypeOf(
         new BotClass(flow, database, provider),
         provider

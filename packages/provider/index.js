@@ -14,7 +14,7 @@ const prepareVendor = ({ vendor, credentials }) => {
  * @param {*} args
  * @returns
  */
-const create = (args) => {
+const create = async (args) => {
     const vendor = prepareVendor(args)
     return Object.setPrototypeOf(new ProviderClass(), vendor)
 }
