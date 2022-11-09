@@ -35,11 +35,22 @@ test(`[BotClass]: recibe los mensajes entrantes del provider`, () => {
         provider: adapterProvider,
     })
 
-    bot.on('message', (ctx) => messages.push(ctx.body))
-    bot.emit('message', { body: 'hola' })
-    bot.emit('message', { body: 'otro' })
+    bot.on('message', (ctx) => messages.push(ctx))
+    bot.emit('message', 'hola')
+    bot.emit('message', 'otro')
 
-    assert.is(messages.join(','), ['hola', 'otro'].join(','))
+    const getHistoryFromDB = adapterDB.engineDB.listHistory
+
+    assert.is(messages.join(), ['hola', 'otro'].join())
+    assert.is(
+        getHistoryFromDB.join(),
+        [
+            'hola',
+            'Bienvenido a tu tienda 🥲',
+            'escribe *catalogo* o *ofertas*',
+            'otro',
+        ].join()
+    )
 })
 
 test.run()

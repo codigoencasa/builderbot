@@ -1,7 +1,11 @@
 class DatabaseClass {
-    constructor() {}
+    engineDB
+    constructor(_engineDB) {
+        this.engineDB = _engineDB
+    }
 
     saveLog = (ctx) => {
+        this.engineDB.save(ctx)
         return ctx
     }
 }

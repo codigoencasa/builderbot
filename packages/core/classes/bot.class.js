@@ -17,13 +17,14 @@ class BotClass {
 
     handleOnMessage = (ctxMessage) => {
         this.databaseClass.saveLog(ctxMessage)
-        this.continue(ctxMessage.body)
+        this.continue(ctxMessage)
     }
 
     continue = (message, ref = false) => {
         const responde = this.flowClass.find(message, ref)
         if (responde) {
             this.providerClass.sendMessage(responde.answer)
+            this.databaseClass.saveLog(responde.answer)
             this.continue(null, responde.ref)
         }
     }
