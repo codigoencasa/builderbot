@@ -1,5 +1,8 @@
 /**
- * Clase principal del BOT
+ * [ ] Escuchar eventos del provider
+ * [ ] Guardar historial en db
+ * [ ] Buscar mensaje en flow
+ *
  */
 class BotClass {
     flowClass
@@ -15,11 +18,26 @@ class BotClass {
         )
     }
 
+    /**
+     * @private
+     * @param {*} ctxMessage
+     */
     handleOnMessage = (ctxMessage) => {
         this.databaseClass.saveLog(ctxMessage)
         this.continue(ctxMessage)
     }
 
+    handleEvents = (eventName) => {
+        if (eventName === 'message') return
+        if (eventName === 'auth_success') return
+        if (eventName === 'auth_error') return
+    }
+
+    /**
+     * @private
+     * @param {*} message
+     * @param {*} ref
+     */
     continue = (message, ref = false) => {
         const responde = this.flowClass.find(message, ref)
         if (responde) {

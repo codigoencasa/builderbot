@@ -4,7 +4,10 @@
     "description": "",
     "main": "index.js",
     "private": true,
-    "keywords": [],
-    "author": "",
-    "license": "ISC"
+    "devDependencies": {
+        "cross-env": "^7.0.3",
+        "cross-spawn": "^7.0.3",
+        "detect-package-manager": "^2.0.1",
+        "kleur": "^4.1.5"
+    }
 }

@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-const index = require('../lib/bundle.cjs')
+const index = require('../../../lib/cli/bundle.cli.cjs')
 index.startInteractive()

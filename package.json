@@ -22,7 +22,11 @@
         "cli": "node ./packages/cli/bin/cli.js"
     },
     "workspaces": [
-        "packages/*",
+        "packages/cli",
+        "packages/core",
+        "packages/database",
+        "packages/io",
+        "packages/provider",
         "docs"
     ],
     "keywords": [
@@ -47,34 +51,13 @@
         "url": "https://github.com/leifermendez/bot-whatsapp"
     },
     "license": "ISC",
-    "dependencies": {
-        "@google-cloud/dialogflow": "^5.2.0",
-        "cors": "^2.8.5",
-        "dotenv": "^16.0.1",
-        "exceljs": "^4.3.0",
-        "express": "^4.18.1",
-        "file-type": "^17.1.6",
-        "mime-db": "^1.52.0",
-        "moment": "^2.29.4",
-        "mysql": "^2.18.1",
-        "qr-image": "^3.2.0",
-        "qrcode-terminal": "^0.12.0",
-        "socket.io": "^4.5.1",
-        "stormdb": "^0.6.0",
-        "whatsapp-web.js": "^1.18.0",
-        "xlsx": "^0.18.5"
-    },
+    "dependencies": {},
     "devDependencies": {
         "@rollup/plugin-commonjs": "^23.0.2",
         "c8": "^7.12.0",
-        "cross-env": "^7.0.3",
-        "cross-spawn": "^7.0.3",
-        "detect-package-manager": "^2.0.1",
+        "prettier": "^2.7.1",
         "eslint": "^8.26.0",
         "eslint-config-prettier": "^8.5.0",
-        "kleur": "^4.1.5",
-        "pm2": "^5.2.0",
-        "prettier": "^2.7.1",
         "prompts": "^2.4.2",
         "rimraf": "^3.0.2",
         "rollup": "^3.2.3",

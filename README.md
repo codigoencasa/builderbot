@@ -1,4 +1,4 @@
-Estamos mejorando esto para llevarlo a un siguiente nivel!
+-   [ ] Evitar dependencias
 
 **Comunidad**
 
