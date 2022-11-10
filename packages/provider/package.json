@@ -9,7 +9,7 @@
     "license": "ISC",
     "devDependencies": {},
     "dependencies": {
-        "qr-image": "^3.2.0",
-        "whatsapp-web.js": "^1.18.2"
+        "@bot-whatsapp/core": "*",
+        "qr-image": "^3.2.0"
     }
 }

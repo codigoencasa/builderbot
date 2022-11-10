@@ -1,8 +1,9 @@
 {
     "name": "@bot-whatsapp/root",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "description": "Bot de wahtsapp open source para MVP o pequeños negocios",
     "main": "app.js",
+    "private": true,
     "scripts": {
         "cli:rollup": "rollup ./packages/cli/index.js --config ./packages/cli/rollup-cli.config.js",
         "io:rollup": "rollup ./packages/io/index.js --config ./packages/io/rollup-cli.config.js",
@@ -19,7 +20,8 @@
         "test.e2e": "node ./node_modules/uvu/bin.js __tests__ test",
         "test.coverage": "node ./node_modules/c8/bin/c8.js --check-coverage --lines=90 npm run test.unit",
         "test": "npm run test.unit && npm run test.e2e",
-        "cli": "node ./packages/cli/bin/cli.js"
+        "cli": "node ./packages/cli/bin/cli.js",
+        "dev": "node ./example-app/app.js"
     },
     "workspaces": [
         "packages/*",
@@ -42,25 +44,25 @@
             "url": "https://github.com/aurik3"
         }
     ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/leifermendez/bot-whatsapp"
-    },
+    "repository": "https://github.com/leifermendez/bot-whatsapp",
     "license": "ISC",
-    "dependencies": {},
+    "dependencies": {
+        "whatsapp-web.js": "^1.18.2"
+    },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^23.0.2",
         "c8": "^7.12.0",
-        "prettier": "^2.7.1",
         "eslint": "^8.26.0",
         "eslint-config-prettier": "^8.5.0",
+        "prettier": "^2.7.1",
         "prompts": "^2.4.2",
         "rimraf": "^3.0.2",
         "rollup": "^3.2.3",
         "uvu": "^0.5.6"
     },
+    "packageManager": "yarn@3.2.0",
     "engines": {
-        "node": "16.x",
-        "npm": ">=6.0.0"
-    }
+        "node": ">=16"
+    },
+    "author": "Leifer Mendez <leifer33@gmail.com>"
 }
