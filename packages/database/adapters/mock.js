@@ -4,6 +4,7 @@ class MockDatabase {
     constructor() {}
 
     save = (ctx) => {
+        console.log('Guardando DB...', ctx)
         this.listHistory.push(ctx)
     }
 }

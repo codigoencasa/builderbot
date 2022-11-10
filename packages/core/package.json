@@ -17,5 +17,7 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "devDependencies": {}
+    "devDependencies": {
+        "kleur": "^4.1.5"
+    }
 }
