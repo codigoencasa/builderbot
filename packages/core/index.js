@@ -1,4 +1,5 @@
 const BotClass = require('./classes/bot.class')
+const ProviderClass = require('./classes/provider.class')
 
 /**
  * Crear instancia de clase
@@ -6,10 +7,7 @@ const BotClass = require('./classes/bot.class')
  * @returns
  */
 const create = async ({ flow, database, provider }) => {
-    return Object.setPrototypeOf(
-        new BotClass(flow, database, provider),
-        provider
-    )
+    new BotClass(flow, database, provider)
 }
 
-module.exports = { create }
+module.exports = { create, ProviderClass }

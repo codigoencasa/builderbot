@@ -7,5 +7,9 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "devDependencies": {}
+    "devDependencies": {},
+    "dependencies": {
+        "qr-image": "^3.2.0",
+        "whatsapp-web.js": "^1.18.2"
+    }
 }

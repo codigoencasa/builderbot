@@ -22,11 +22,7 @@
         "cli": "node ./packages/cli/bin/cli.js"
     },
     "workspaces": [
-        "packages/cli",
-        "packages/core",
-        "packages/database",
-        "packages/io",
-        "packages/provider",
+        "packages/*",
         "docs"
     ],
     "keywords": [

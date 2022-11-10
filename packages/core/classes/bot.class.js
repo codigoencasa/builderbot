@@ -1,5 +1,5 @@
 /**
- * [ ] Escuchar eventos del provider
+ * [ ] Escuchar eventos del provider asegurarte que los provider emitan eventos
  * [ ] Guardar historial en db
  * [ ] Buscar mensaje en flow
  *
@@ -13,8 +13,16 @@ class BotClass {
         this.databaseClass = _database
         this.providerClass = _provider
 
-        this.providerClass.on('message', ({ message }) =>
-            this.handleOnMessage(message)
+        this.providerClass.on('require_action', (a) => console.log('here??', a))
+        this.providerClass.on('ready', (a) => console.log('ready??', a))
+        this.providerClass.on('auth_failure', (a) =>
+            console.log('auth_failure??', a)
+        )
+        this.providerClass.on('authenticated', (a) =>
+            console.log('authenticated??', a)
+        )
+        this.providerClass.on('message', (message) =>
+            console.log('message?', message)
         )
     }
 
