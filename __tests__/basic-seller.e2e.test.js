@@ -1,9 +1,9 @@
 const { test } = require('uvu')
 const assert = require('uvu/assert')
 
-const { MOCK_MOBILE_WS } = require('../__mocks__/mobile.mock')
 const { inout, database, botcore } = require('../packages/index')
-const mockProvider = require('../packages/provider/adapters/mock')
+const MockProvider = require('../packages/provider/adapters/mock')
+const MockDB = require('../packages/database/adapters/mock')
 
 const makeFlow = () => {
     const flowA = inout
@@ -24,28 +24,18 @@ test(`[BotClass]: recibe los mensajes entrantes del provider`, async () => {
 
     const adapterFlow = inout.create(makeFlow())
 
-    const adapterProvider = mockProvider
-    const adapterDB = await database.create({
-        engine: 'mock',
-        credentials: {},
-    })
+    const adapterProvider = new MockProvider()
+    const adapterDB = await database.create(new MockDB())
 
-    const bot = await botcore.create({
+    await botcore.create({
         flow: adapterFlow,
         database: adapterDB,
         provider: adapterProvider,
     })
 
-    adapterProvider.on('message', (ctx) => messagesIn.push(ctx.message))
-
-    adapterProvider.emit('message', { ...MOCK_MOBILE_WS, message: 'hola' })
-    assert.is(messagesIn.join(), ['hola'].join())
-    await delay(200)
-    adapterProvider.emit('message', { ...MOCK_MOBILE_WS, message: 'Pedro!' })
-    console.log(messagesIn)
-    assert.is(messagesIn.join(), ['hola', 'Pedro!'].join())
+    await delay(1000)
     messagesOut = adapterDB.history
-    // assert.is(messagesOut.join(), ['Pedro!'].join())
+    assert.is(messagesOut.join(), ['hola'].join())
 })
 
 function delay(miliseconds) {

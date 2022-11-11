@@ -3,21 +3,28 @@ const { ProviderClass } = require('@bot-whatsapp/core')
 
 const { cleanNumber, generateImage } = require('./utils')
 
-const WebWhatsappVendor = new Client({
-    authStrategy: new LocalAuth(),
-})
-
 class WebWhatsappProvider extends ProviderClass {
     vendor
     constructor(_vendor) {
         super()
-        this.vendor = _vendor
+        this.vendor = new Client({
+            authStrategy: new LocalAuth(),
+        })
 
-        for (const { event, func } of this.busEvents()) {
+        const listEvents = this.busEvents()
+
+        for (const { event, func } of listEvents) {
             this.vendor.on(event, func)
         }
 
-        this.vendor.initialize()
+        this.vendor.initialize().catch((e) =>
+            this.emit('require_action', {
+                instructions: [
+                    `Debes eliminar la carpeta .wwebjs_auth`,
+                    `y reiniciar nuevamente el bot `,
+                ],
+            })
+        )
     }
 
     /**
@@ -26,6 +33,10 @@ class WebWhatsappProvider extends ProviderClass {
      * @returns
      */
     busEvents = () => [
+        {
+            event: 'auth_failure',
+            func: (payload) => this.emit('error', payload),
+        },
         {
             event: 'qr',
             func: (qr) => {
@@ -44,10 +55,6 @@ class WebWhatsappProvider extends ProviderClass {
             func: () => this.emit('ready', true),
         },
         {
-            event: 'auth_failure',
-            func: (payload) => this.emit('error', payload),
-        },
-        {
             event: 'authenticated',
             func: () => this.emit('ready', true),
         },
@@ -63,4 +70,4 @@ class WebWhatsappProvider extends ProviderClass {
     }
 }
 
-module.exports = new WebWhatsappProvider(WebWhatsappVendor)
+module.exports = WebWhatsappProvider

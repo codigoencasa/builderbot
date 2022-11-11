@@ -21,13 +21,13 @@ class MockProvider extends ProviderClass {
 
     init = () =>
         Promise.all([
-            this.delaySendMessage(500, 'ready', null),
-            this.delaySendMessage(1500, 'message', {
+            this.delaySendMessage(50, 'ready', null),
+            this.delaySendMessage(500, 'message', {
                 from: 'XXXXXX',
-                body: 'ola',
+                body: 'hola',
                 hasMedia: false,
             }),
         ])
 }
 
-module.exports = new MockProvider()
+module.exports = MockProvider
