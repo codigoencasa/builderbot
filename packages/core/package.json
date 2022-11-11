@@ -11,8 +11,7 @@
         "format:write": "prettier --write .",
         "lint:check": "eslint .",
         "lint:fix": "eslint --fix .",
-        "test:core": "node ../../node_modules/uvu/bin.js tests",
-        "build:core": "npm run format:write && npm run lint:fix && npm run io:rollup"
+        "build:core": "yarn run format:write && yarn run lint:fix && yarn run io:rollup"
     },
     "keywords": [],
     "author": "",

@@ -12,4 +12,10 @@ const generateImage = (base64) => {
     qr_svg.pipe(createWriteStream(`${process.cwd()}/qr.svg`))
 }
 
-module.exports = { cleanNumber, generateImage }
+const isValidNumber = (rawNumber) => {
+    const regexGroup = /\@g.us\b/gm
+    const exist = rawNumber.match(regexGroup)
+    return !exist
+}
+
+module.exports = { cleanNumber, generateImage, isValidNumber }

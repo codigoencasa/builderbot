@@ -1,10 +1,14 @@
 const commonjs = require('@rollup/plugin-commonjs')
+const { nodeResolve } = require('@rollup/plugin-node-resolve')
+const { join } = require('path')
+
+const PATH = join(__dirname, 'lib', 'core', 'bundle.core.cjs')
 
 module.exports = {
     input: 'index.js',
     output: {
-        file: 'lib/core/bundle.core.cjs',
+        file: PATH,
         format: 'cjs',
     },
-    plugins: [commonjs()],
+    plugins: [commonjs(), nodeResolve()],
 }

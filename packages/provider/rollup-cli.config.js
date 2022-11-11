@@ -1,10 +1,12 @@
-const commonjs = require('@rollup/plugin-commonjs')
+const { join } = require('path')
+
+const PATH = join(__dirname, 'lib', 'provider', 'bundle.provider.cjs')
 
 module.exports = {
     input: 'index.js',
     output: {
-        file: 'lib/provider/bundle.provider.cjs',
+        file: PATH,
         format: 'cjs',
     },
-    plugins: [commonjs()],
+    plugins: [],
 }

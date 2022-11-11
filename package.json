@@ -5,17 +5,17 @@
     "main": "app.js",
     "private": true,
     "scripts": {
-        "cli:rollup": "rollup ./packages/cli/index.js --config ./packages/cli/rollup-cli.config.js",
+        "cli:rollup": "rollup ./packages/cli/index.js --config ./packages/cli/rollup-cli.config.js ",
         "io:rollup": "rollup ./packages/io/index.js --config ./packages/io/rollup-cli.config.js",
         "core:rollup": "rollup ./packages/core/index.js --config ./packages/core/rollup-cli.config.js",
         "provider:rollup": "rollup ./packages/provider/index.js --config ./packages/provider/rollup-cli.config.js",
         "database:rollup": "rollup ./packages/database/index.js --config ./packages/database/rollup-cli.config.js",
-        "all:rollup": "rollup ./packages/index.js --config ./packages/rollup-cli.config.js",
         "format:check": "prettier --check ./packages",
         "format:write": "prettier --write ./packages",
         "lint:check": "eslint ./packages",
         "lint:fix": "eslint --fix ./packages",
-        "build": "npm run all:rollup",
+        "build": "yarn run cli:rollup && yarn run io:rollup && yarn run core:rollup && yarn run provider:rollup && yarn run database:rollup",
+        "link.dist": "",
         "test.unit": "node ./node_modules/uvu/bin.js packages test",
         "test.e2e": "node ./node_modules/uvu/bin.js __tests__ test",
         "test.coverage": "node ./node_modules/c8/bin/c8.js --check-coverage --lines=90 npm run test.unit",
@@ -48,6 +48,9 @@
     "repository": "https://github.com/leifermendez/bot-whatsapp",
     "license": "ISC",
     "dependencies": {
+        "@rollup/plugin-json": "^5.0.1",
+        "@rollup/plugin-node-resolve": "^15.0.1",
+        "@rollup/plugin-replace": "^5.0.1",
         "whatsapp-web.js": "^1.18.2"
     },
     "devDependencies": {

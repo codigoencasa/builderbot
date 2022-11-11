@@ -1,7 +1,7 @@
 const { Client, LocalAuth } = require('whatsapp-web.js')
 const { ProviderClass } = require('@bot-whatsapp/core')
 
-const { cleanNumber, generateImage } = require('./utils')
+const { cleanNumber, generateImage, isValidNumber } = require('./utils')
 
 class WebWhatsappProvider extends ProviderClass {
     vendor
@@ -60,7 +60,17 @@ class WebWhatsappProvider extends ProviderClass {
         },
         {
             event: 'message',
-            func: (payload) => this.emit('message', payload),
+            func: (payload) => {
+                if (payload.from === 'status@broadcast') {
+                    return
+                }
+
+                if (!isValidNumber(payload.from)) {
+                    return
+                }
+
+                this.emit('message', payload)
+            },
         },
     ]
 

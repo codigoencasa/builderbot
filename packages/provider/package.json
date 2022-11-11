@@ -7,9 +7,11 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "devDependencies": {},
     "dependencies": {
         "@bot-whatsapp/core": "*",
         "qr-image": "^3.2.0"
-    }
+    },
+    "files": [
+        "./lib/provider/bundle.provider.cjs"
+    ]
 }
