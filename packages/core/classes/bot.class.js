@@ -18,10 +18,6 @@ class BotClass {
         for (const { event, func } of this.listenerBusEvents()) {
             this.providerClass.on(event, func)
         }
-
-        this.providerClass.on('message', (message) =>
-            console.log('message?', message)
-        )
     }
 
     listenerBusEvents = () => [
@@ -50,10 +46,18 @@ class BotClass {
      * @private
      * @param {*} ctxMessage
      */
-    handleMsg = ({ body }) => {
+    handleMsg = ({ body, to, from }) => {
         this.databaseClass.saveLog(body)
-        const a = this.flowClass.find(body)
-        console.log(a)
+        const messageToSend = this.flowClass.find(body) || []
+        if (Array.isArray(messageToSend)) this.sendFlow(messageToSend, from)
+    }
+
+    sendFlow = (messageToSend, numberOrId) => {
+        const queue = []
+        for (const message of messageToSend) {
+            queue.push(this.providerClass.sendMessage(numberOrId, message))
+        }
+        return Promise.all(queue)
     }
 
     /**
