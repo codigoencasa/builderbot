@@ -5,7 +5,7 @@ const { cleanNumber, generateImage } = require('./utils')
 
 class WebWhatsappProvider extends ProviderClass {
     vendor
-    constructor(_vendor) {
+    constructor() {
         super()
         this.vendor = new Client({
             authStrategy: new LocalAuth(),

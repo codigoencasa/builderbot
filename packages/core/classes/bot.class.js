@@ -47,8 +47,9 @@ class BotClass {
      * @param {*} ctxMessage
      */
     handleMsg = ({ body, to, from }) => {
-        this.databaseClass.saveLog(body)
+        this.databaseClass.save(body)
         const messageToSend = this.flowClass.find(body) || []
+        console.log(messageToSend)
         if (Array.isArray(messageToSend)) this.sendFlow(messageToSend, from)
     }
 
