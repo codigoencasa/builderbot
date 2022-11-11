@@ -2,6 +2,7 @@ const { EventEmitter } = require('node:events')
 const { test } = require('uvu')
 const assert = require('uvu/assert')
 const { create } = require('../')
+const BotClass = require('../classes/bot.class')
 
 class MockFlow {}
 
@@ -16,7 +17,7 @@ test(`BotClass`, async () => {
         provider: new MockProvider(),
     }
     const bot = await create(setting)
-    bot.on('message', (ctx) => console.log(ctx))
+    assert.is(bot instanceof BotClass, true)
 })
 
 test.run()
