@@ -11,6 +11,7 @@
         "format:write": "prettier --write .",
         "lint:check": "eslint .",
         "lint:fix": "eslint --fix .",
+        "test.unit": "cross-env NODE_ENV=test node ../../node_modules/uvu/bin.js tests",
         "build:core": "yarn run format:write && yarn run lint:fix && yarn run io:rollup"
     },
     "keywords": [],

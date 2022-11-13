@@ -23,8 +23,8 @@ class BotClass {
     listenerBusEvents = () => [
         {
             event: 'require_action',
-            func: ({ instructions }) =>
-                printer(instructions, '⚡⚡ ACCION REQUERIDA ⚡⚡'),
+            func: ({ instructions, title = '⚡⚡ ACCION REQUERIDA ⚡⚡' }) =>
+                printer(instructions, title),
         },
         {
             event: 'ready',
