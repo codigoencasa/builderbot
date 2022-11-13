@@ -1,7 +1,7 @@
-const MockProvider = require('./adapters/mock')
-const WebWhatsappProvider = require('./adapters/web-whatsapp')
-const TwilioProvider = require('./adapters/twilio')
 const { ProviderClass } = require('@bot-whatsapp/bot')
+const MockProvider = require('./mock')
+const WebWhatsappProvider = require('./web-whatsapp')
+const TwilioProvider = require('./twilio')
 
 module.exports = {
     WebWhatsappProvider,

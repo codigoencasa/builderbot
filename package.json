@@ -8,7 +8,7 @@
         "cli:rollup": "rollup ./packages/cli/index.js --config ./packages/cli/rollup-cli.config.js ",
         "io:rollup": "rollup ./packages/io/index.js --config ./packages/io/rollup-cli.config.js",
         "bot:rollup": "rollup ./packages/bot/index.js --config ./packages/bot/rollup-bot.config.js",
-        "provider:rollup": "rollup ./packages/provider/index.js --config ./packages/provider/rollup-cli.config.js",
+        "provider:rollup": "rollup ./packages/provider/index.js --config ./packages/provider/rollup-provider.config.js",
         "database:rollup": "rollup ./packages/database/index.js --config ./packages/database/rollup-cli.config.js",
         "format:check": "prettier --check ./packages",
         "format:write": "prettier --write ./packages",
@@ -63,6 +63,7 @@
         "prompts": "^2.4.2",
         "rimraf": "^3.0.2",
         "rollup": "^3.2.3",
+        "rollup-plugin-copy": "^3.4.0",
         "uvu": "^0.5.6"
     },
     "packageManager": "yarn@3.2.0",

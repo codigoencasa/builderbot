@@ -4,7 +4,7 @@ const FlowClass = require('./io/flow.class')
 const { addKeyword, addAnswer } = require('./io/methods')
 
 /**
- * Crear instancia de clase
+ * Crear instancia de clase Bot
  * @param {*} args
  * @returns
  */
@@ -12,7 +12,7 @@ const createBot = async ({ flow, database, provider }) =>
     new CoreClass(flow, database, provider)
 
 /**
- * Crear instancia de clase
+ * Crear instancia de clase Io (Flow)
  * @param {*} args
  * @returns
  */

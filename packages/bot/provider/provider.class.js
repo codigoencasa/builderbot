@@ -11,6 +11,8 @@ const { EventEmitter } = require('node:events')
  *  - error
  *  - require_action
  */
+
+const NODE_ENV = process.env.NODE_ENV || 'dev'
 class ProviderClass extends EventEmitter {
     /**
      * events: message | auth | auth_error | ...
@@ -18,8 +20,18 @@ class ProviderClass extends EventEmitter {
      */
 
     sendMessage = async (userId, message) => {
+        if (NODE_ENV !== 'production')
+            console.log('[sendMessage]', { userId, message })
         return message
     }
+
+    MockDelaySendMessage = (miliseconds, eventName, payload) =>
+        new Promise((res) =>
+            setTimeout(() => {
+                this.emit(eventName, payload)
+                res
+            }, miliseconds)
+        )
 }
 
 module.exports = ProviderClass
