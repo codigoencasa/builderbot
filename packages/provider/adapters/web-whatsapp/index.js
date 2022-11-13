@@ -1,5 +1,5 @@
 const { Client, LocalAuth } = require('whatsapp-web.js')
-const { ProviderClass } = require('@bot-whatsapp/core')
+const { ProviderClass } = require('@bot-whatsapp/bot')
 
 const { cleanNumber, generateImage, isValidNumber } = require('./utils')
 

@@ -1,8 +1,8 @@
 const { test } = require('uvu')
 const assert = require('uvu/assert')
 const MockProvider = require('../../../__mocks__/mock.provider')
-const { create } = require('../')
-const BotClass = require('../classes/bot.class')
+const { create } = require('@bot-whatsapp/bot')
+const BotClass = require('@bot-whatsapp/bot/classes/bot.class')
 
 class MockFlow {
     find = () => {}

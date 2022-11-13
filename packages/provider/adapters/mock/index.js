@@ -1,4 +1,4 @@
-const { ProviderClass } = require('@bot-whatsapp/core')
+const { ProviderClass } = require('@bot-whatsapp/bot')
 
 class MockProvider extends ProviderClass {
     constructor() {
