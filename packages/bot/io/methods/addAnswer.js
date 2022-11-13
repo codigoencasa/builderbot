@@ -1,4 +1,4 @@
-const { generateRef } = require('../utils')
+const { generateRef } = require('../../utils/hash')
 const { toJson } = require('./toJson')
 /**
  *

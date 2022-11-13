@@ -6,7 +6,7 @@ const { printer } = require('../utils/interactive')
  * [ ] Buscar mensaje en flow
  *
  */
-class BotClass {
+class CoreClass {
     flowClass
     databaseClass
     providerClass
@@ -75,4 +75,4 @@ class BotClass {
         }
     }
 }
-module.exports = BotClass
+module.exports = CoreClass

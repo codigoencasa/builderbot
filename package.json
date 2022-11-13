@@ -7,7 +7,7 @@
     "scripts": {
         "cli:rollup": "rollup ./packages/cli/index.js --config ./packages/cli/rollup-cli.config.js ",
         "io:rollup": "rollup ./packages/io/index.js --config ./packages/io/rollup-cli.config.js",
-        "core:rollup": "rollup ./packages/core/index.js --config ./packages/core/rollup-cli.config.js",
+        "bot:rollup": "rollup ./packages/bot/index.js --config ./packages/bot/rollup-bot.config.js",
         "provider:rollup": "rollup ./packages/provider/index.js --config ./packages/provider/rollup-cli.config.js",
         "database:rollup": "rollup ./packages/database/index.js --config ./packages/database/rollup-cli.config.js",
         "format:check": "prettier --check ./packages",

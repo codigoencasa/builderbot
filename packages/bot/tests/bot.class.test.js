@@ -1,8 +1,7 @@
 const { test } = require('uvu')
 const assert = require('uvu/assert')
 const MockProvider = require('../../../__mocks__/mock.provider')
-const { create } = require('@bot-whatsapp/bot')
-const BotClass = require('@bot-whatsapp/bot/classes/bot.class')
+const { createBot, CoreClass } = require('@bot-whatsapp/bot')
 
 class MockFlow {
     find = () => {}
@@ -12,17 +11,17 @@ class MockDB {
     save = () => {}
 }
 
-test(`[BotClass] Probando instanciamiento de clase`, async () => {
+test(`[CoreClass] Probando instanciamiento de clase`, async () => {
     const setting = {
         flow: new MockFlow(),
         database: new MockDB(),
         provider: new MockProvider(),
     }
-    const bot = await create(setting)
-    assert.is(bot instanceof BotClass, true)
+    const bot = await createBot(setting)
+    assert.is(bot instanceof CoreClass, true)
 })
 
-test(`[BotClass] Eventos 'require_action,ready,auth_failure,message '`, async () => {
+test(`[Bot] Eventos 'require_action,ready,auth_failure,message '`, async () => {
     let responseEvents = {}
 
     const MOCK_EVENTS = {
@@ -47,7 +46,7 @@ test(`[BotClass] Eventos 'require_action,ready,auth_failure,message '`, async ()
         database: new MockDB(),
         provider: mockProvider,
     }
-    await create(setting)
+    await createBot(setting)
 
     /// Escuchamos eventos
     mockProvider.on(

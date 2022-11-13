@@ -1,6 +1,6 @@
 const { test } = require('uvu')
 const assert = require('uvu/assert')
-const { addKeyword, addAnswer } = require('../methods')
+const { addKeyword, addAnswer } = require('@bot-whatsapp/bot')
 
 test('Debere probar las propeidades', () => {
     const ARRANGE = {

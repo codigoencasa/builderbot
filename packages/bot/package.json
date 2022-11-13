@@ -2,11 +2,10 @@
     "name": "@bot-whatsapp/bot",
     "version": "0.0.1",
     "description": "",
-    "main": "index.js",
+    "main": "./lib/bundle.bot.cjs",
     "private": true,
     "scripts": {
-        "core:dev": "node ./index.js",
-        "core:rollup": "node ../../node_modules/.bin/rollup index.js --config ./rollup-cli.config.js",
+        "bot:rollup": "node ../../node_modules/.bin/rollup index.js --config ./rollup-cli.config.js",
         "format:check": "prettier --check .",
         "format:write": "prettier --write .",
         "lint:check": "eslint .",
@@ -14,6 +13,12 @@
         "test.unit": "cross-env NODE_ENV=test node ../../node_modules/uvu/bin.js tests"
     },
     "keywords": [],
+    "files": [
+        "./lib/bundle.bot.cjs",
+        "./provider/*",
+        "./core/*",
+        "./io/*"
+    ],
     "author": "",
     "license": "ISC",
     "devDependencies": {
