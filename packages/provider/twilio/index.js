@@ -1,5 +1,5 @@
 const twilio = require('twilio')
-const ProviderClass = require('../classes/provider.class')
+const { ProviderClass } = require('@bot-whatsapp/bot')
 
 const TwilioVendor = new twilio(accountSid, authToken)
 
