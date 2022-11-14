@@ -5,7 +5,7 @@ const { join } = require('path')
 const PATH = join(__dirname, 'lib', 'database', 'bundle.database.cjs')
 
 module.exports = {
-    input: 'index.js',
+    input: join(__dirname, 'index.js'),
     output: {
         file: PATH,
         format: 'cjs',

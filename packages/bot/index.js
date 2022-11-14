@@ -20,9 +20,19 @@ const createFlow = (args) => {
     return new FlowClass(args)
 }
 
+/**
+ * Crear instancia de clase Provider
+ * @param {*} args
+ * @returns
+ */
+const createProvider = (args) => {
+    return new FlowClass(args)
+}
+
 module.exports = {
     createBot,
     createFlow,
+    createProvider,
     addKeyword,
     addAnswer,
     ProviderClass,
