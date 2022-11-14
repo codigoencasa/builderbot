@@ -1,5 +1,11 @@
 const { Client, LocalAuth } = require('whatsapp-web.js')
 const { ProviderClass } = require('@bot-whatsapp/bot')
+const { Console } = require('console')
+const { createWriteStream } = require('fs')
+
+const logger = new Console({
+    stdout: createWriteStream('./log'),
+})
 
 const { cleanNumber, generateImage, isValidNumber } = require('./utils')
 
@@ -17,14 +23,15 @@ class WebWhatsappProvider extends ProviderClass {
             this.vendor.on(event, func)
         }
 
-        this.vendor.initialize().catch((e) =>
+        this.vendor.initialize().catch((e) => {
+            logger.log(e)
             this.emit('require_action', {
                 instructions: [
                     `Debes eliminar la carpeta .wwebjs_auth`,
                     `y reiniciar nuevamente el bot `,
                 ],
             })
-        )
+        })
     }
 
     /**

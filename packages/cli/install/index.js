@@ -5,6 +5,7 @@ const { installDeps, getPkgManage } = require('./tool')
 const PATHS_DIR = [
     join(__dirname, 'pkg-to-update.json'),
     join(__dirname, '..', 'pkg-to-update.json'),
+    join(__dirname, '..', '..', 'pkg-to-update.json'),
 ]
 
 const PKG_TO_UPDATE = () => {

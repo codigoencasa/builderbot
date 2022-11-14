@@ -12,5 +12,8 @@
     },
     "files": [
         "./lib/cli/bundle.cli.cjs"
-    ]
+    ],
+    "bin": {
+        "bot": "./bin/cli.js"
+    }
 }

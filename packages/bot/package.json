@@ -22,6 +22,7 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "@bot-whatsapp/cli": "*",
         "kleur": "^4.1.5"
     }
 }

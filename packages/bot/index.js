@@ -25,8 +25,11 @@ const createFlow = (args) => {
  * @param {*} args
  * @returns
  */
-const createProvider = (args) => {
-    return new FlowClass(args)
+const createProvider = (providerClass = class {}) => {
+    const providerInstance = new providerClass()
+    if (!providerClass.prototype instanceof ProviderClass)
+        throw new Error('El provider no implementa ProviderClass')
+    return providerInstance
 }
 
 module.exports = {

@@ -4,7 +4,6 @@
     "description": "Bot de wahtsapp open source para MVP o pequeños negocios",
     "main": "app.js",
     "private": true,
-    "type": "module",
     "scripts": {
         "cli:rollup": "rollup --config ./packages/cli/rollup-cli.config.js ",
         "bot:rollup": "rollup --config ./packages/bot/rollup-bot.config.js",
@@ -50,8 +49,7 @@
     "dependencies": {
         "@rollup/plugin-json": "^5.0.1",
         "@rollup/plugin-node-resolve": "^15.0.1",
-        "@rollup/plugin-replace": "^5.0.1",
-        "whatsapp-web.js": "^1.18.2"
+        "@rollup/plugin-replace": "^5.0.1"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^23.0.2",
