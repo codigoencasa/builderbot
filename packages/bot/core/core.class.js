@@ -47,16 +47,30 @@ class CoreClass {
      * @param {*} ctxMessage
      */
     handleMsg = ({ body, to, from }) => {
-        this.databaseClass.save(body)
-        const messageToSend = this.flowClass.find(body) || []
-        console.log(messageToSend)
-        if (Array.isArray(messageToSend)) this.sendFlow(messageToSend, from)
+        let msgToSend = []
+        console.log('____', this.databaseClass.listHistory)
+        const prevMsg = [...this.databaseClass.listHistory].pop()
+
+        if (prevMsg?.ref && prevMsg?.options?.capture) {
+            msgToSend = this.flowClass.find(prevMsg.ref, true) || []
+        } else {
+            msgToSend = this.flowClass.find(body) || []
+        }
+        if (Array.isArray(msgToSend)) this.sendFlow(msgToSend, from)
+    }
+
+    sendProviderAndSave = (numberOrId, ctxMessage) => {
+        const { answer } = ctxMessage
+        return Promise.all([
+            this.providerClass.sendMessage(numberOrId, answer),
+            this.databaseClass.save(ctxMessage),
+        ])
     }
 
     sendFlow = (messageToSend, numberOrId) => {
         const queue = []
-        for (const message of messageToSend) {
-            queue.push(this.providerClass.sendMessage(numberOrId, message))
+        for (const ctxMessage of messageToSend) {
+            queue.push(this.sendProviderAndSave(numberOrId, ctxMessage))
         }
         return Promise.all(queue)
     }

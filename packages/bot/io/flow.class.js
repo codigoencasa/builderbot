@@ -5,20 +5,20 @@ class FlowClass {
     }
 
     find = (keyOrWord, symbol = false) => {
+        let capture = false
         let messages = []
-        const findIn = (keyOrWord, symbol = false, flow = this.flow) => {
-            if (symbol) {
-                const refSymbol = flow.find((c) => c.keyword === keyOrWord)
-                if (refSymbol && refSymbol.answer)
-                    messages.push(refSymbol.answer)
-                if (refSymbol && refSymbol.ref) findIn(refSymbol.ref, true)
-            } else {
-                const refSymbolByKeyworkd = flow.find((c) =>
-                    c.keyword.includes(keyOrWord)
-                )
-                if (refSymbolByKeyworkd && refSymbolByKeyworkd.ref)
-                    findIn(refSymbolByKeyworkd.ref, true)
+        let refSymbol
 
+        const findIn = (keyOrWord, symbol = false, flow = this.flow) => {
+            capture = refSymbol?.options?.capture || false
+            if (capture) return messages
+            if (symbol) {
+                refSymbol = flow.find((c) => c.keyword === keyOrWord)
+                if (refSymbol?.answer) messages.push(refSymbol)
+                if (refSymbol?.ref) findIn(refSymbol.ref, true)
+            } else {
+                refSymbol = flow.find((c) => c.keyword.includes(keyOrWord))
+                if (refSymbol?.ref) findIn(refSymbol.ref, true)
                 return messages
             }
         }
