@@ -2,7 +2,7 @@
     "name": "@bot-whatsapp/database",
     "version": "0.0.1",
     "description": "Esto es el conector a  mysql, pg, mongo",
-    "main": "index.js",
+    "main": "./lib/bundle.database.cjs",
     "private": true,
     "keywords": [],
     "author": "",

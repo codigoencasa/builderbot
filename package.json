@@ -14,7 +14,7 @@
         "lint:check": "eslint ./packages",
         "lint:fix": "eslint --fix ./packages",
         "build": "yarn run cli:rollup && yarn run bot:rollup && yarn run provider:rollup && yarn run database:rollup",
-        "link.dist": "",
+        "link.dist": "cd packages/bot && npm link && cd ../provider && npm link && cd ../cli && npm link",
         "test.unit": "node ./node_modules/uvu/bin.js packages test",
         "test.e2e": "node ./node_modules/uvu/bin.js __tests__ test",
         "test.coverage": "node ./node_modules/c8/bin/c8.js --check-coverage --lines=90 npm run test.unit",
@@ -46,13 +46,12 @@
     ],
     "repository": "https://github.com/leifermendez/bot-whatsapp",
     "license": "ISC",
-    "dependencies": {
-        "@rollup/plugin-json": "^5.0.1",
-        "@rollup/plugin-node-resolve": "^15.0.1",
-        "@rollup/plugin-replace": "^5.0.1"
-    },
+    "dependencies": {},
     "devDependencies": {
         "@rollup/plugin-commonjs": "^23.0.2",
+        "@rollup/plugin-json": "^5.0.1",
+        "@rollup/plugin-node-resolve": "^15.0.1",
+        "@rollup/plugin-replace": "^5.0.1",
         "c8": "^7.12.0",
         "cross-env": "^7.0.3",
         "eslint": "^8.26.0",
@@ -61,6 +60,7 @@
         "prompts": "^2.4.2",
         "rimraf": "^3.0.2",
         "rollup": "^3.2.3",
+        "rollup-plugin-cleanup": "^3.2.1",
         "rollup-plugin-copy": "^3.4.0",
         "uvu": "^0.5.6"
     },

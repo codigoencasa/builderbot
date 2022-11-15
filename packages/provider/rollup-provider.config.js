@@ -5,7 +5,7 @@ module.exports = [
     {
         input: join(__dirname, 'web-whatsapp', 'index.js'),
         output: {
-            file: join(__dirname, 'lib', 'bundle.web-whatsapp.cjs'),
+            file: join(__dirname, 'lib', 'web-whatsapp', 'index.cjs'),
             format: 'cjs',
         },
         plugins: [commonjs()],
@@ -13,7 +13,7 @@ module.exports = [
     {
         input: join(__dirname, 'twilio', 'index.js'),
         output: {
-            file: join(__dirname, 'lib', 'bundle.twilio.cjs'),
+            file: join(__dirname, 'lib', 'twilio', 'index.cjs'),
             format: 'cjs',
         },
         plugins: [commonjs()],
@@ -21,7 +21,7 @@ module.exports = [
     {
         input: join(__dirname, 'mock', 'index.js'),
         output: {
-            file: join(__dirname, 'lib', 'bundle.mock.cjs'),
+            file: join(__dirname, 'lib', 'mock', 'index.cjs'),
             format: 'cjs',
         },
         plugins: [commonjs()],

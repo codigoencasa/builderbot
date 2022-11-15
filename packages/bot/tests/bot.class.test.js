@@ -1,13 +1,14 @@
 const { test } = require('uvu')
 const assert = require('uvu/assert')
 const MockProvider = require('../../../__mocks__/mock.provider')
-const { createBot, CoreClass } = require('@bot-whatsapp/bot')
+const { createBot, CoreClass } = require('../index')
 
 class MockFlow {
     find = () => {}
 }
 
 class MockDB {
+    listHistory = []
     save = () => {}
 }
 

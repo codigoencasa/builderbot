@@ -1,7 +1,12 @@
 class MockDatabase {
     listHistory = []
 
-    constructor() {}
+    constructor() {
+        /**
+         * Se debe cargar listHistory con historial de mensajes
+         * para que se pueda continuar el flow
+         */
+    }
 
     save = (ctx) => {
         console.log('Guardando DB...', ctx)

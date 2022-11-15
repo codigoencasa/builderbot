@@ -46,9 +46,8 @@ class CoreClass {
      * @private
      * @param {*} ctxMessage
      */
-    handleMsg = ({ body, to, from }) => {
+    handleMsg = ({ body, from }) => {
         let msgToSend = []
-        console.log('____', this.databaseClass.listHistory)
         const prevMsg = [...this.databaseClass.listHistory].pop()
 
         if (prevMsg?.ref && prevMsg?.options?.capture) {

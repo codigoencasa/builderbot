@@ -2,7 +2,7 @@ const commonjs = require('@rollup/plugin-commonjs')
 const { nodeResolve } = require('@rollup/plugin-node-resolve')
 const { join } = require('path')
 
-const PATH = join(__dirname, 'lib', 'database', 'bundle.database.cjs')
+const PATH = join(__dirname, 'lib', 'bundle.database.cjs')
 
 module.exports = {
     input: join(__dirname, 'index.js'),

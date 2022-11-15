@@ -2,7 +2,7 @@
     "name": "@bot-whatsapp/provider",
     "version": "0.0.1",
     "description": "Esto es el conector a Twilio, Meta, etc...",
-    "main": "./lib/bundle.mock.cjs",
+    "main": "./lib/mock/index.cjs",
     "private": true,
     "scripts": {
         "test.unit": "cross-env NODE_ENV=test node ../../node_modules/uvu/bin.js tests"
@@ -15,6 +15,8 @@
         "qr-image": "^3.2.0"
     },
     "files": [
-        "./lib/*"
+        "./lib/mock/*",
+        "./lib/twilio/*",
+        "./lib/web-whatsapp/*"
     ]
 }
