@@ -2,12 +2,11 @@ const { Client, LocalAuth } = require('whatsapp-web.js')
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const { Console } = require('console')
 const { createWriteStream } = require('fs')
+const { cleanNumber, generateImage, isValidNumber } = require('./utils')
 
 const logger = new Console({
     stdout: createWriteStream('./log'),
 })
-
-const { cleanNumber, generateImage, isValidNumber } = require('./utils')
 
 class WebWhatsappProvider extends ProviderClass {
     vendor
@@ -75,7 +74,7 @@ class WebWhatsappProvider extends ProviderClass {
                 if (!isValidNumber(payload.from)) {
                     return
                 }
-
+                payload.from = cleanNumber(payload.from, true)
                 this.emit('message', payload)
             },
         },

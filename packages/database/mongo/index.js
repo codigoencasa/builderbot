@@ -9,7 +9,6 @@ class MongoAdapter {
     listHistory = []
 
     constructor() {
-        console.log({ DB_URI })
         this.init().then()
     }
 
@@ -17,7 +16,7 @@ class MongoAdapter {
         try {
             const client = new MongoClient(DB_URI, {})
             await client.connect()
-            console.log('Connected successfully to server')
+            console.log('🆗 Conexión Correcta DB')
             const db = client.db(DB_NAME)
             this.db = db
             return true
@@ -25,6 +24,16 @@ class MongoAdapter {
             console.log('Error', e)
             return
         }
+    }
+
+    getPrevByNumber = async (from) => {
+        const result = await this.db
+            .collection('history')
+            .find({ from })
+            .sort({ _id: -1 })
+            .limit(1)
+            .toArray()
+        return result[0]
     }
 
     save = async (ctx) => {

@@ -1,9 +1,9 @@
 const { createWriteStream } = require('fs')
 const qr = require('qr-image')
 
-const cleanNumber = (number) => {
+const cleanNumber = (number, full = false) => {
     number = number.replace('@c.us', '')
-    number = `${number}@c.us`
+    number = !full ? `${number}@c.us` : `${number}`
     return number
 }
 

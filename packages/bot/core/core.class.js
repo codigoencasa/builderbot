@@ -1,3 +1,4 @@
+const { validateCtx } = require('../io/methods')
 const { printer } = require('../utils/interactive')
 
 /**
@@ -46,9 +47,9 @@ class CoreClass {
      * @private
      * @param {*} ctxMessage
      */
-    handleMsg = ({ body, from }) => {
+    handleMsg = async ({ body, from }) => {
         let msgToSend = []
-        const prevMsg = [...this.databaseClass.listHistory].pop()
+        const prevMsg = await this.databaseClass.getPrevByNumber(from)
 
         if (prevMsg?.ref && prevMsg?.options?.capture) {
             msgToSend = this.flowClass.find(prevMsg.ref, true) || []
@@ -62,7 +63,7 @@ class CoreClass {
         const { answer } = ctxMessage
         return Promise.all([
             this.providerClass.sendMessage(numberOrId, answer),
-            this.databaseClass.save(ctxMessage),
+            this.databaseClass.save({ ...ctxMessage, from: numberOrId }),
         ])
     }
 
