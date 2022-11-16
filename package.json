@@ -8,7 +8,7 @@
         "cli:rollup": "rollup --config ./packages/cli/rollup-cli.config.js ",
         "bot:rollup": "rollup --config ./packages/bot/rollup-bot.config.js",
         "provider:rollup": "rollup --config ./packages/provider/rollup-provider.config.js ",
-        "database:rollup": "rollup ./packages/database/index.js --config ./packages/database/rollup-cli.config.js",
+        "database:rollup": "rollup --config ./packages/database/rollup-database.config.js",
         "format:check": "prettier --check ./packages",
         "format:write": "prettier --write ./packages",
         "lint:check": "eslint ./packages",
