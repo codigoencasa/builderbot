@@ -1,4 +1,4 @@
-const { validateCtx } = require('../io/methods')
+const { toCtx } = require('../io/methods')
 const { printer } = require('../utils/interactive')
 
 /**
@@ -51,8 +51,20 @@ class CoreClass {
         let msgToSend = []
         const prevMsg = await this.databaseClass.getPrevByNumber(from)
 
-        if (prevMsg?.ref && prevMsg?.options?.capture) {
-            msgToSend = this.flowClass.find(prevMsg.ref, true) || []
+        if (prevMsg?.ref) {
+            const ctxByNumber = toCtx({
+                body,
+                from,
+                prevRef: prevMsg.refSerialize,
+            })
+            this.databaseClass.save(ctxByNumber)
+        }
+
+        if (prevMsg?.refSerialize && prevMsg?.options?.capture) {
+            const refToContinue = this.flowClass.findBySerialize(
+                prevMsg.refSerialize
+            )
+            msgToSend = this.flowClass.find(refToContinue?.ref, true) || []
         } else {
             msgToSend = this.flowClass.find(body) || []
         }

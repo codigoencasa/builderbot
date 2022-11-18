@@ -1,7 +1,9 @@
+const { toSerialize } = require('./methods')
+
 class FlowClass {
     flow
     constructor(_flow) {
-        this.flow = _flow
+        this.flow = toSerialize(_flow)
     }
 
     find = (keyOrWord, symbol = false) => {
@@ -25,6 +27,9 @@ class FlowClass {
         findIn(keyOrWord, symbol)
         return messages
     }
+
+    findBySerialize = (refSerialize) =>
+        this.flow.find((r) => r.refSerialize === refSerialize)
 }
 
 module.exports = FlowClass

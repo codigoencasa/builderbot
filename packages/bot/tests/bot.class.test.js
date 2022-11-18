@@ -10,6 +10,7 @@ class MockFlow {
 class MockDB {
     listHistory = []
     save = () => {}
+    getPrevByNumber = () => {}
 }
 
 test(`[CoreClass] Probando instanciamiento de clase`, async () => {

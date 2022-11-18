@@ -1,6 +1,7 @@
 const { addAnswer } = require('./addAnswer')
 const { addKeyword } = require('./addKeyword')
-const { validateCtx } = require('./validateCtx')
+const { toSerialize } = require('./toSerialize')
+const { toCtx } = require('./toCtx')
 const { toJson } = require('./toJson')
 
-module.exports = { addAnswer, addKeyword, validateCtx, toJson }
+module.exports = { addAnswer, addKeyword, toCtx, toJson, toSerialize }

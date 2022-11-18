@@ -1,6 +1,7 @@
 const { test } = require('uvu')
 const assert = require('uvu/assert')
-const { addKeyword, addAnswer } = require('@bot-whatsapp/bot')
+const { generateRefSerialize } = require('../utils/hash')
+const { addKeyword, addAnswer, toSerialize } = require('../io/methods')
 
 test('Debere probar las propeidades', () => {
     const ARRANGE = {
@@ -19,6 +20,26 @@ test('Debere probar las propeidades array', () => {
     const MAIN_CTX = addKeyword(ARRANGE.keyword)
 
     assert.is(MAIN_CTX.ctx.keyword, ARRANGE.keyword)
+})
+
+test('Debere probar toSerialize', () => {
+    const ARRANGE = {
+        keyword: ['hola!', 'ole'],
+    }
+    const MAIN_CTX = addKeyword(ARRANGE.keyword)
+        .addAnswer('Segundo!')
+        .addAnswer('Segundo!')
+        .toJson()
+
+    const [ANSWER_A] = MAIN_CTX
+
+    assert.is(
+        toSerialize(MAIN_CTX)[0].refSerialize,
+        generateRefSerialize({
+            index: 0,
+            answer: ANSWER_A.answer,
+        })
+    )
 })
 
 test('Debere probar el paso de contexto', () => {
