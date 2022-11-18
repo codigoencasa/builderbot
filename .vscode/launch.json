@@ -8,9 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "Iniciar el programa",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
+            "skipFiles": ["<node_internals>/**"],
             "program": "${workspaceFolder}\\example-app\\app.js"
         }
     ]

@@ -21,7 +21,8 @@
         "test": "npm run test.unit && npm run test.e2e",
         "cli": "node ./packages/cli/bin/cli.js",
         "dev:debug": "node --inspect ./example-app/app.js",
-        "dev": "node ./example-app/app.js"
+        "dev": "node ./example-app/app.js",
+        "prepare": "husky install"
     },
     "workspaces": [
         "packages/*",
@@ -46,7 +47,6 @@
     ],
     "repository": "https://github.com/leifermendez/bot-whatsapp",
     "license": "ISC",
-    "dependencies": {},
     "devDependencies": {
         "@rollup/plugin-commonjs": "^23.0.2",
         "@rollup/plugin-json": "^5.0.1",
@@ -62,7 +62,8 @@
         "rollup": "^3.2.3",
         "rollup-plugin-cleanup": "^3.2.1",
         "rollup-plugin-copy": "^3.4.0",
-        "uvu": "^0.5.6"
+        "uvu": "^0.5.6",
+        "husky": "^8.0.2"
     },
     "packageManager": "yarn@3.2.0",
     "engines": {
