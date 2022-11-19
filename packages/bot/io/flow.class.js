@@ -1,17 +1,12 @@
 const { toSerialize } = require('./methods')
 
 class FlowClass {
-    allContexts = []
     allCallbacks = []
     flowSerialize = []
     flowRaw = []
     constructor(_flow) {
         if (!Array.isArray(_flow)) throw new Error('Esto debe ser un ARRAY')
         this.flowRaw = _flow
-        this.allContexts = _flow
-            .map((ctxs) => ctxs.ctx.contexts)
-            .flat(2)
-            .map((c, i) => ({ getCtx: c?.getCtx, index: i }))
 
         this.allCallbacks = _flow
             .map((cbIn) => cbIn.ctx.callbacks)

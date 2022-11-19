@@ -52,13 +52,6 @@ const addAnswer =
                 },
             ])
 
-            const contexts = [].concat(inCtx.contexts).concat([
-                {
-                    ref: lastCtx.ref,
-                    getCtx: () => lastCtx,
-                },
-            ])
-
             return {
                 ...lastCtx,
                 ref,
@@ -66,7 +59,6 @@ const addAnswer =
                 json,
                 options,
                 callbacks,
-                contexts,
             }
         }
 
