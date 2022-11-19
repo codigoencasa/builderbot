@@ -6,43 +6,78 @@ const { toJson } = require('./toJson')
  * @param options {media:string, buttons:[], capture:true default false}
  * @returns
  */
-const addAnswer = (inCtx) => (answer, options) => {
-    const getAnswerOptions = () => ({
-        media: typeof options?.media === 'string' ? `${options?.media}` : null,
-        buttons: Array.isArray(options?.buttons) ? options.buttons : [],
-        capture:
-            typeof options?.capture === 'boolean' ? options?.capture : false,
-    })
+const addAnswer =
+    (inCtx) =>
+    (answer, options, cb = null) => {
+        const getAnswerOptions = () => ({
+            media:
+                typeof options?.media === 'string' ? `${options?.media}` : null,
+            buttons: Array.isArray(options?.buttons) ? options.buttons : [],
+            capture:
+                typeof options?.capture === 'boolean'
+                    ? options?.capture
+                    : false,
+            child:
+                typeof options?.child === 'string' ? `${options?.child}` : null,
+        })
 
-    const lastCtx = inCtx.hasOwnProperty('ctx') ? inCtx.ctx : inCtx
-    const ctxAnswer = () => {
-        const ref = `ans_${generateRef()}`
+        const lastCtx = inCtx.hasOwnProperty('ctx') ? inCtx.ctx : inCtx
+        const ctxAnswer = () => {
+            const ref = `ans_${generateRef()}`
 
-        const options = {
-            ...getAnswerOptions(),
-            keyword: {},
+            const callback =
+                typeof cb === 'function'
+                    ? cb
+                    : () => console.log('Callback no definida')
+
+            const options = {
+                ...getAnswerOptions(),
+                keyword: {},
+                callback: !!cb,
+            }
+
+            const json = [].concat(inCtx.json).concat([
+                {
+                    ref,
+                    keyword: lastCtx.ref,
+                    answer,
+                    options,
+                },
+            ])
+
+            const callbacks = [].concat(inCtx.callbacks).concat([
+                {
+                    ref: lastCtx.ref,
+                    callback,
+                },
+            ])
+
+            const contexts = [].concat(inCtx.contexts).concat([
+                {
+                    ref: lastCtx.ref,
+                    getCtx: () => lastCtx,
+                },
+            ])
+
+            return {
+                ...lastCtx,
+                ref,
+                answer,
+                json,
+                options,
+                callbacks,
+                contexts,
+            }
         }
 
-        const json = [].concat(inCtx.json).concat([
-            {
-                ref,
-                keyword: lastCtx.ref,
-                answer,
-                options,
-            },
-        ])
+        const ctx = ctxAnswer()
 
-        return { ...lastCtx, ref, answer, json, options }
+        return {
+            ctx,
+            ref: ctx.ref,
+            addAnswer: addAnswer(ctx),
+            toJson: toJson(ctx),
+        }
     }
-
-    const ctx = ctxAnswer()
-
-    return {
-        ctx,
-        ref: ctx.ref,
-        addAnswer: addAnswer(ctx),
-        toJson: toJson(ctx),
-    }
-}
 
 module.exports = { addAnswer }

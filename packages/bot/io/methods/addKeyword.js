@@ -1,10 +1,6 @@
 const { generateRef } = require('../../utils/hash')
 const { addAnswer } = require('./addAnswer')
 const { toJson } = require('./toJson')
-/**
- * addKeyword:
- * Es necesario que genere id|hash
- */
 
 /**
  *
@@ -12,11 +8,6 @@ const { toJson } = require('./toJson')
  * @param {*} options {sensitive:boolean} default false
  */
 const addKeyword = (keyword, options) => {
-    /**
-     * Esta funcion deberia parsear y validar las opciones
-     * del keyword
-     * @returns
-     */
     const parseOptions = () => {
         const defaultProperties = {
             sensitive:

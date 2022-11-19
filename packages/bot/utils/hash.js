@@ -1,7 +1,13 @@
 const crypto = require('crypto')
 
-const generateRef = () => {
-    return crypto.randomUUID()
+/**
+ * Generamos un UUID unico con posibilidad de tener un prefijo
+ * @param {*} prefix
+ * @returns
+ */
+const generateRef = (prefix = false) => {
+    const id = crypto.randomUUID()
+    return prefix ? `${prefix}_${id}` : id
 }
 
 /**

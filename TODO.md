@@ -1,1 +1,5 @@
 - [ ] Cuando Envian Sticket devuelve mensaje raro
+- [ ] Posibilidad de en el capture meter todo un nuevo CTX  de FLOW .addAnswer('Marca la opcion',{capture:true, join:CTX})
+- [ ] .addKeyword('1') no funciona con 1 caracter
+- [ ] sensitivy viene activado por defecto
+- [ ] colocar mensaje esperando conectando whatsapp (provider)

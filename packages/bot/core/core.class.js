@@ -47,7 +47,8 @@ class CoreClass {
      * @private
      * @param {*} ctxMessage
      */
-    handleMsg = async ({ body, from }) => {
+    handleMsg = async (messageInComming) => {
+        const { body, from } = messageInComming
         let msgToSend = []
         const prevMsg = await this.databaseClass.getPrevByNumber(from)
 
@@ -64,6 +65,17 @@ class CoreClass {
             const refToContinue = this.flowClass.findBySerialize(
                 prevMsg.refSerialize
             )
+
+            if (refToContinue && prevMsg?.options?.callback) {
+                const indexFlow = this.flowClass.findIndexByRef(
+                    refToContinue?.ref
+                )
+
+                this.flowClass.allCallbacks[indexFlow].callback(
+                    messageInComming
+                )
+            }
+
             msgToSend = this.flowClass.find(refToContinue?.ref, true) || []
         } else {
             msgToSend = this.flowClass.find(body) || []
