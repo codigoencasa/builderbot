@@ -7,18 +7,6 @@ class FlowClass {
     flowRaw = []
     constructor(_flow) {
         if (!Array.isArray(_flow)) throw new Error('Esto debe ser un ARRAY')
-        _flow.forEach((ctxFlow, parentIndex) => {
-            const callbacks = ctxFlow.ctx?.callbacks || []
-            const contexts = ctxFlow.ctx?.contexts || []
-
-            callbacks.forEach((deepCallbacks) => {
-                if (deepCallbacks && contexts[parentIndex]) {
-                    const ctxChild = contexts[parentIndex]
-                    deepCallbacks.callback(null, ctxChild)
-                }
-            })
-        })
-
         this.flowRaw = _flow
         this.allContexts = _flow
             .map((ctxs) => ctxs.ctx.contexts)
