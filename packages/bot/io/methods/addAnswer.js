@@ -1,5 +1,6 @@
 const { generateRef } = require('../../utils/hash')
 const { toJson } = require('./toJson')
+const { toSerialize } = require('./toSerialize')
 /**
  *
  * @param answer string
@@ -8,7 +9,11 @@ const { toJson } = require('./toJson')
  */
 const addAnswer =
     (inCtx) =>
-    (answer, options, cb = null) => {
+    (answer, options, cb = null, nested = []) => {
+        /**
+         * Todas las opciones referentes a el mensaje en concreto options:{}
+         * @returns
+         */
         const getAnswerOptions = () => ({
             media:
                 typeof options?.media === 'string' ? `${options?.media}` : null,
@@ -21,17 +26,28 @@ const addAnswer =
                 typeof options?.child === 'string' ? `${options?.child}` : null,
         })
 
+        const getNested = () => ({
+            nested: Array.isArray(nested) ? nested : [],
+        })
+
+        const callback =
+            typeof cb === 'function'
+                ? cb
+                : () => console.log('Callback no definida')
+
         const lastCtx = inCtx.hasOwnProperty('ctx') ? inCtx.ctx : inCtx
+
+        /**
+         * Esta funcion se encarga de mapear y transformar todo antes
+         * de retornar
+         * @returns
+         */
         const ctxAnswer = () => {
             const ref = `ans_${generateRef()}`
 
-            const callback =
-                typeof cb === 'function'
-                    ? cb
-                    : () => console.log('Callback no definida')
-
             const options = {
                 ...getAnswerOptions(),
+                ...getNested(),
                 keyword: {},
                 callback: !!cb,
             }

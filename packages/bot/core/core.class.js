@@ -50,7 +50,13 @@ class CoreClass {
     handleMsg = async (messageInComming) => {
         const { body, from } = messageInComming
         let msgToSend = []
+
+        //Consultamos mensaje previo en DB
         const prevMsg = await this.databaseClass.getPrevByNumber(from)
+        //Consultamos for refSerializada en el flow actual
+        const refToContinue = this.flowClass.findBySerialize(
+            prevMsg?.refSerialize
+        )
 
         if (prevMsg?.ref) {
             const ctxByNumber = toCtx({
@@ -61,26 +67,32 @@ class CoreClass {
             this.databaseClass.save(ctxByNumber)
         }
 
-        if (prevMsg?.refSerialize && prevMsg?.options?.capture) {
-            const refToContinue = this.flowClass.findBySerialize(
-                prevMsg.refSerialize
-            )
+        //Si se tiene un callback se ejecuta
+        if (refToContinue && prevMsg?.options?.callback) {
+            const indexFlow = this.flowClass.findIndexByRef(refToContinue?.ref)
+            this.flowClass.allCallbacks[indexFlow].callback(messageInComming)
+        }
 
-            if (refToContinue && prevMsg?.options?.callback) {
-                const indexFlow = this.flowClass.findIndexByRef(
-                    refToContinue?.ref
-                )
+        //Si se tiene anidaciones de flows, si tienes anidados obligatoriamente capture:true
+        if (prevMsg?.options?.nested?.length) {
+            const nestedRef = prevMsg.options.nested
+            const flowStandalone = nestedRef.map((f) => ({
+                ...this.flowClass.findBySerialize(f),
+            }))
 
-                this.flowClass.allCallbacks[indexFlow].callback(
-                    messageInComming
-                )
-            }
+            msgToSend = this.flowClass.find(body, false, flowStandalone) || []
+            this.sendFlow(msgToSend, from)
+            return
+        }
 
+        //Consultamos si se espera respuesta por parte de cliente "Ejemplo: Dime tu nombre"
+        if (!prevMsg?.options?.nested?.length && prevMsg?.options?.capture) {
             msgToSend = this.flowClass.find(refToContinue?.ref, true) || []
         } else {
             msgToSend = this.flowClass.find(body) || []
         }
-        if (Array.isArray(msgToSend)) this.sendFlow(msgToSend, from)
+
+        this.sendFlow(msgToSend, from)
     }
 
     sendProviderAndSave = (numberOrId, ctxMessage) => {

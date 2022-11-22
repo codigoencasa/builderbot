@@ -3,7 +3,7 @@ const { generateRefSerialize } = require('../../utils/hash')
 /**
  * Crear referencia serializada
  * @param {*} flowJson
- * @returns
+ * @returns array[]
  */
 const toSerialize = (flowJson) => {
     if (!Array.isArray(flowJson)) throw new Error('Esto debe ser un ARRAY')

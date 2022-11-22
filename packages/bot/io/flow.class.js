@@ -1,4 +1,4 @@
-const { toSerialize } = require('./methods')
+const { toSerialize } = require('./methods/toSerialize')
 
 class FlowClass {
     allCallbacks = []
@@ -20,16 +20,13 @@ class FlowClass {
         this.flowSerialize = toSerialize(mergeToJsonSerialize)
     }
 
-    find = (keyOrWord, symbol = false) => {
+    find = (keyOrWord, symbol = false, overFlow = null) => {
         let capture = false
         let messages = []
         let refSymbol = null
+        overFlow = overFlow ?? this.flowSerialize
 
-        const findIn = (
-            keyOrWord,
-            symbol = false,
-            flow = this.flowSerialize
-        ) => {
+        const findIn = (keyOrWord, symbol = false, flow = overFlow) => {
             capture = refSymbol?.options?.capture || false
             if (capture) return messages
 
