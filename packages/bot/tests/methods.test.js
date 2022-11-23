@@ -31,8 +31,6 @@ test('Debere probar toSerialize', () => {
         .addAnswer('Segundo!')
         .toJson()
 
-    console.log(MAIN_CTX)
-
     const [ANSWER_A] = MAIN_CTX
 
     assert.is(
