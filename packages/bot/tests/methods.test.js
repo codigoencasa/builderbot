@@ -40,6 +40,7 @@ test('Debere probar toSerialize', () => {
         generateRefSerialize({
             index: 0,
             answer: ANSWER_A.answer,
+            keyword: ANSWER_A.keyword,
         })
     )
 })

@@ -5,6 +5,8 @@ const { createBot, CoreClass } = require('../index')
 
 class MockFlow {
     find = () => {}
+    findBySerialize = () => {}
+    findIndexByRef = () => {}
 }
 
 class MockDB {
