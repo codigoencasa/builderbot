@@ -3,3 +3,4 @@
 - [ ] .addKeyword('1') no funciona con 1 caracter
 - [ ] sensitivy viene activado por defecto
 - [ ] colocar mensaje esperando conectando whatsapp (provider)
+- [ ] fallback respuesta en hijo

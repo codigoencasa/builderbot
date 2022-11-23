@@ -12,6 +12,7 @@ const toSerialize = (flowJson) => {
         ...row,
         refSerialize: `${generateRefSerialize({
             index,
+            keyword: row.keyword,
             answer: row.answer,
         })}`,
     }))

@@ -77,7 +77,7 @@ class CoreClass {
         if (prevMsg?.options?.nested?.length) {
             const nestedRef = prevMsg.options.nested
             const flowStandalone = nestedRef.map((f) => ({
-                ...this.flowClass.findBySerialize(f),
+                ...nestedRef.find((r) => r.refSerialize === f.refSerialize),
             }))
 
             msgToSend = this.flowClass.find(body, false, flowStandalone) || []

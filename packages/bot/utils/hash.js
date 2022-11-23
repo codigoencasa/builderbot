@@ -15,10 +15,10 @@ const generateRef = (prefix = false) => {
  * @param {*} param0
  * @returns
  */
-const generateRefSerialize = ({ index, answer }) =>
+const generateRefSerialize = ({ index, answer, keyword }) =>
     crypto
         .createHash('md5')
-        .update(JSON.stringify({ index, answer }))
+        .update(JSON.stringify({ index, answer, keyword }))
         .digest('hex')
 
 module.exports = { generateRef, generateRefSerialize }
