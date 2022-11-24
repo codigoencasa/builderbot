@@ -1,6 +1,8 @@
-- [ ] Cuando Envian Sticket devuelve mensaje raro
 - [X] Posibilidad de en el capture meter todo un nuevo CTX  de FLOW .addAnswer('Marca la opcion',{capture:true, join:CTX})
 - [X] .addKeyword('1') no funciona con 1 caracter
 - [X] sensitivy viene activado por defecto
+- [ ] fallback respuesta en hijo: Se puede colocar en option el ref de la answer fallback
 - [ ] colocar mensaje esperando conectando whatsapp (provider)
-- [ ] fallback respuesta en hijo
+- [ ] Cuando Envian Sticket devuelve mensaje raro
+- [ ] WhatsappWeb provider enviar imagenes
+- [ ] WhatsappWeb provider enviar audio
