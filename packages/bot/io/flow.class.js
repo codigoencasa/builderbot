@@ -26,8 +26,24 @@ class FlowClass {
         let refSymbol = null
         overFlow = overFlow ?? this.flowSerialize
 
+        const mapSensitiveString = (str, flag = false) => {
+            if (!flag && Array.isArray(str)) {
+                return str.map((c) => c.toLowerCase())
+            }
+
+            if (!flag && typeof str === 'string') {
+                return str.toLowerCase()
+            }
+
+            return str
+        }
+
         const findIn = (keyOrWord, symbol = false, flow = overFlow) => {
+            const sensitive = refSymbol?.options?.sensitive || false
             capture = refSymbol?.options?.capture || false
+
+            keyOrWord = mapSensitiveString(keyOrWord, sensitive)
+
             if (capture) return messages
 
             if (symbol) {
@@ -35,7 +51,9 @@ class FlowClass {
                 if (refSymbol?.answer) messages.push(refSymbol)
                 if (refSymbol?.ref) findIn(refSymbol.ref, true)
             } else {
-                refSymbol = flow.find((c) => c.keyword.includes(keyOrWord))
+                refSymbol = flow.find((c) =>
+                    mapSensitiveString(c.keyword, sensitive).includes(keyOrWord)
+                )
                 if (refSymbol?.ref) findIn(refSymbol.ref, true)
                 return messages
             }
