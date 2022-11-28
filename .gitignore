@@ -19,6 +19,7 @@ coverage/
 log
 lib
 tmp/
+.yarn/*
 .fleet/
 example-app/
 qr.svg

@@ -7,7 +7,6 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "devDependencies": {},
     "dependencies": {
         "dotenv": "^16.0.3",
         "mongodb": "^4.11.0"

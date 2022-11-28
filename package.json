@@ -68,11 +68,12 @@
         "prompts": "^2.4.2",
         "rimraf": "^3.0.2",
         "rollup": "^3.2.3",
+        "git-cz": "^4.9.0",
         "rollup-plugin-cleanup": "^3.2.1",
         "rollup-plugin-copy": "^3.4.0",
         "uvu": "^0.5.6"
     },
-    "packageManager": "yarn@1.22.19",
+    "packageManager": "yarn@3.3.0",
     "engines": {
         "node": ">=16",
         "npm": "please-use-yarn",
@@ -81,7 +82,7 @@
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "config": {
         "commitizen": {
-            "path": "./node_modules/cz-conventional-changelog"
+            "path": "git-cz"
         }
     }
 }
