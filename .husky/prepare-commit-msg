@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "⭐⭐⭐⭐⭐⭐⭐⭐ git-cz"
+exec < /dev/tty && node_modules/.bin/cz --hook || true
