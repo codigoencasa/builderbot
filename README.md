@@ -2,6 +2,7 @@
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
 🦊 Documentación: [https://bot-whatsapp.pages.dev/](https://bot-whatsapp.pages.dev/)
+Video como hacer PR: https://youtu.be/Lxt8Acob6aU
 
 
 -   [ ] Evitar dependencias
@@ -16,3 +17,4 @@
 -   [Telegram](https://t.me/leifermendez)
 
 
+ 
