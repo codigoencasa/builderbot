@@ -1,36 +1,28 @@
-### 🚀 Packages
+### 🚀 Package (@bot-whatsapp/database)
 
-Se separaran responsabilidades del proyecto en diferentes packages, de esta manera se podra versionar y controlar los diferentes versionamientos y cambios con un mayor desacoplamiento.
+Este package tiene como reponsabilidad proveer de diferentes adaptadores para la capa de datos. 
+La idea es brindar multiples opciones como un adaptador de MySQL, Mongo, entre otros.
 
-##### Principales Funciones
+Ejemplo de como se implementaria:
 
-El bot tiene tres funciones principales hasta este momento la cuales divideremos en paquetes para que puedan trabajarse y por separador sin acoplamiento.
+```js
+const MongoAdapter = require('@bot-whatsapp/database/mongo')
+/// o
+const MySQLAdapter = require('@bot-whatsapp/database/mysql')
 
-**Package CLI** (_Command Line Interface_)
+const main = async () => {
 
-> Sera basicamente un asistente via `cosola` el cual nos ayudara a realizar las instalacion de las dependencias necesarias y a crear un archivo de configuracion para tener un migrado rápido.
-> La idea esque se pueda ejecutar un commando parecido a `npm create bot@leifermendez` o algo parecido y comienze a instalar todo.
+    const adapterDB = new MongoAdapter()
+    const adapterFlow = createFlow([flujoBot])
+    const adapterProvider = createProvider(WebWhatsappProvider)
 
-🤞 Funciones deseadas:
-
--   Que actualice y corrija los problema de versionamientos más frecuetes
--   Verificar la versión de NODE correcta
--   Verificar OS para brindar mejor soporte de puppeter
--   Limpiar sesion, borrar carpeta de sesion
--   Seleccionar provider
--   Poder usar un archivo .json con la configuración
-
-**Package Provider**
-
-> Es parte clave del proyecto la idea es poder tener la opcion de incluir otro proveedor de mensajeria como la api oficial o api de twilio
-
--   WhatsappWeb (_default_)
--   Whatsapp API official
--   Twilio
-
-**Package Input/Output**
-
-> Gestionar los diferentes mensajes entranates y poder responder, a la vez de mantener un registro de los datos
+    createBot({
+        flow: adapterFlow,
+        provider: adapterProvider,
+        database: adapterDB,
+    })
+}
+```
 
 ---
 
