@@ -2,4 +2,3 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 exec < /dev/tty && node_modules/.bin/git-cz --hook || true
-echo "PEPE"
