@@ -27,54 +27,54 @@ module.exports = {
     types: {
         chore: {
             description: 'Build process or auxiliary tool changes',
-            emoji: '🤖',
+            emoji: '(🤖)',
             value: 'chore',
         },
         ci: {
             description: 'CI related changes',
-            emoji: '🎡',
+            emoji: '(🎡)',
             value: 'ci',
         },
         docs: {
             description: 'Documentation only changes',
-            emoji: '✏️',
+            emoji: '(✏️)',
             value: 'docs',
         },
         feat: {
             description: 'A new feature',
-            emoji: '🎸',
+            emoji: '(🎸)',
             value: 'feat',
         },
         fix: {
             description: 'A bug fix',
-            emoji: '🐛',
+            emoji: '(🐛)',
             value: 'fix',
         },
         perf: {
             description: 'A code change that improves performance',
-            emoji: '⚡️',
+            emoji: '(⚡️)',
             value: 'perf',
         },
         refactor: {
             description:
                 'A code change that neither fixes a bug or adds a feature',
-            emoji: '💡',
+            emoji: '(💡)',
             value: 'refactor',
         },
         release: {
             description: 'Create a release commit',
-            emoji: '🏹',
+            emoji: '(🏹)',
             value: 'release',
         },
         style: {
             description:
                 'Markup, white-space, formatting, missing semi-colons...',
-            emoji: '💄',
+            emoji: '(💄)',
             value: 'style',
         },
         test: {
             description: 'Adding missing tests',
-            emoji: '💍',
+            emoji: '(💍)',
             value: 'test',
         },
         messages: {
