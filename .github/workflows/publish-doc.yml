@@ -10,9 +10,7 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v3
-
-            - run: npm install
-            - run: npm run build --if-present
+            - run: cd packages/docs && npm i && npm run build
 
             - name: Publish Docs
               uses: cloudflare/pages-action@1
