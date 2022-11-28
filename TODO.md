@@ -14,7 +14,7 @@
 - [ ] createDatabase validar implementacion de funciones
 
 ### @bot-whatsapp/database
-- [ ] agregar export package
+- [X] agregar export package
 - [X] __(doc):__ Video para explicar como implementar nuevos database
 - [X] Mongo adapter
 - [ ] MySQL adapter

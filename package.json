@@ -25,8 +25,11 @@
         "prepare": "husky install"
     },
     "workspaces": [
-        "packages/*",
-        "docs"
+        "packages/bot",
+        "packages/cli",
+        "packages/database",
+        "packages/provider",
+        "packages/docs"
     ],
     "keywords": [
         "whatsapp",

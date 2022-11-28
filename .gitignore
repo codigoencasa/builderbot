@@ -1,5 +1,7 @@
 /node_modules
 /packages/*/node_modules
+/packages/*/dist
+/packages/*/docs/dist
 session.json
 chats/*
 !chats/.gitkeep
