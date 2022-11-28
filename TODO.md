@@ -1,5 +1,6 @@
 ### Genral
 - [ ] __(doc)__ Video de como colaborar PR
+- [ ] __(doc)__ Video implementación de test y cobertura
 
 ### @bot-whatsapp/bot
 - [ ] agregar export package
