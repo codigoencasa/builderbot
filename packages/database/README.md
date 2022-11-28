@@ -5,7 +5,6 @@ La idea es brindar multiples opciones como un adaptador de MySQL, Mongo, entre o
 
 Ejemplo de como se implementaria:
 
-__[👉 Ver video explicativo](https://youtu.be/Sjzkpg1OJuY)__
 
 ```js
 const MongoAdapter = require('@bot-whatsapp/database/mongo')
@@ -25,6 +24,14 @@ const main = async () => {
     })
 }
 ```
+
+#### Video
+
+> Video explicando como debes de agregar nuevos adaptadores 
+
+<a target="_blank" src="https://youtu.be/Sjzkpg1OJuY">
+<img src="https://i.imgur.com/DlxJIKV.gif" width="450" alt="@bot-whatsapp/database"/>
+</a>
 
 ---
 

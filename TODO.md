@@ -1,3 +1,6 @@
+### Genral
+- [ ] __(doc)__ Video de como colaborar PR
+
 ### @bot-whatsapp/bot
 - [X] Posibilidad de en el capture meter todo un nuevo CTX  de FLOW .addAnswer('Marca la opcion',{capture:true, join:CTX})
 - [X] .addKeyword('1') no funciona con 1 caracter
