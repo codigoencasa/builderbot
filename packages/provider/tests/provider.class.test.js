@@ -1,6 +1,6 @@
 const { test } = require('uvu')
 const assert = require('uvu/assert')
-const MockProvider = require('../mock')
+const MockProvider = require('../../../__mocks__/mock.provider')
 
 test(`ProviderClass`, async () => {
     const provider = new MockProvider()
