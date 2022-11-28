@@ -16,7 +16,6 @@
         "build": "yarn run cli:rollup && yarn run bot:rollup && yarn run provider:rollup && yarn run database:rollup",
         "link.dist": "cd packages/bot && npm link && cd ../provider && npm link && cd ../cli && npm link",
         "test.unit": "node ./node_modules/uvu/bin.js packages test",
-        "test.e2e": "node ./node_modules/uvu/bin.js __tests__ test",
         "test.coverage": "node ./node_modules/c8/bin/c8.js npm run test.unit",
         "test": "npm run test.coverage && npm run test.e2e",
         "cli": "node ./packages/cli/bin/cli.js",
