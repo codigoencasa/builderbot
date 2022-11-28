@@ -4,9 +4,6 @@
     "description": "Esto es el conector a Twilio, Meta, etc...",
     "main": "./lib/mock/index.cjs",
     "private": true,
-    "scripts": {
-        "test.unit": "cross-env NODE_ENV=test node ../../node_modules/uvu/bin.js tests"
-    },
     "keywords": [],
     "author": "",
     "license": "ISC",
@@ -14,9 +11,9 @@
         "@bot-whatsapp/bot": "*",
         "qr-image": "^3.2.0"
     },
-    "files": [
-        "./lib/mock/*",
-        "./lib/twilio/*",
-        "./lib/web-whatsapp/*"
-    ]
+    "exports": {
+        "./mock": "./lib/mock/index.cjs",
+        "./twilio": "./lib/twilio/index.cjs",
+        "./web-whatsapp": "./lib/web-whatsapp/index.cjs"
+    }
 }

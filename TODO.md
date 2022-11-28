@@ -21,7 +21,7 @@
 - [ ] JsonFile adapter
 
 ### @bot-whatsapp/provider
-- [ ] agregar export package
+- [X] agregar export package
 - [ ] __(doc):__ Video para explicar como implementar nuevos providers
 - [ ] WhatsappWeb provider enviar imagenes
 - [ ] WhatsappWeb provider enviar audio

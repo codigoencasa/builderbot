@@ -22,7 +22,8 @@
         "cli": "node ./packages/cli/bin/cli.js",
         "dev:debug": "node --inspect ./example-app/app.js",
         "dev": "node ./example-app/app.js",
-        "prepare": "npx husky install"
+        "prepare": "npx husky install",
+        "preinstall": "npx only-allow yarn"
     },
     "workspaces": [
         "packages/bot",
@@ -62,6 +63,7 @@
         "eslint": "^8.26.0",
         "eslint-config-prettier": "^8.5.0",
         "husky": "^8.0.2",
+        "only-allow": "^1.1.1",
         "prettier": "^2.7.1",
         "prompts": "^2.4.2",
         "rimraf": "^3.0.2",
@@ -70,9 +72,11 @@
         "rollup-plugin-copy": "^3.4.0",
         "uvu": "^0.5.6"
     },
-    "packageManager": "yarn@3.2.0",
+    "packageManager": "yarn@1.22.19",
     "engines": {
-        "node": ">=16"
+        "node": ">=16",
+        "npm": "please-use-yarn",
+        "yarn": ">=1"
     },
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "config": {
