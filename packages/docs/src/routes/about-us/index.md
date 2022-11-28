@@ -1,10 +1,10 @@
 ---
-title: About Qwik
+title: About Bot-Whatsapp
 ---
 
 # About Qwik
 
-This page is at the root level, so it only uses the `/src/routes/layout.tsx` layout to wrap the page content.
+Hola soy una prueba
 
 ## More info:
 
