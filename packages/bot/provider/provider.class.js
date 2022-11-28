@@ -24,14 +24,6 @@ class ProviderClass extends EventEmitter {
             console.log('[sendMessage]', { userId, message })
         return message
     }
-
-    MockDelaySendMessage = (miliseconds, eventName, payload) =>
-        new Promise((res) =>
-            setTimeout(() => {
-                this.emit(eventName, payload)
-                res
-            }, miliseconds)
-        )
 }
 
 module.exports = ProviderClass

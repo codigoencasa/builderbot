@@ -1,7 +1,14 @@
 const { test } = require('uvu')
 const assert = require('uvu/assert')
+const FlowClass = require('../io/flow.class')
 const MockProvider = require('../../../__mocks__/mock.provider')
-const { createBot, CoreClass } = require('../index')
+const {
+    createBot,
+    CoreClass,
+    createFlow,
+    createProvider,
+    ProviderClass,
+} = require('../index')
 
 class MockFlow {
     allCallbacks = [{ callback: () => console.log('') }]
@@ -53,6 +60,16 @@ test(`[CoreClass] Probando instanciamiento de clase`, async () => {
     }
     const bot = await createBot(setting)
     assert.is(bot instanceof CoreClass, true)
+})
+
+test(`[CoreClass createFlow] Probando instanciamiento de clase`, async () => {
+    const mockCreateFlow = createFlow([])
+    assert.is(mockCreateFlow instanceof FlowClass, true)
+})
+
+test(`[CoreClass createProvider] Probando instanciamiento de clase`, async () => {
+    const mockCreateProvider = createProvider(MockProvider)
+    assert.is(mockCreateProvider instanceof ProviderClass, true)
 })
 
 test(`[Bot] Eventos 'require_action,ready,auth_failure,message '`, async () => {

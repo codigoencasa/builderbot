@@ -4,5 +4,5 @@
     "reporter": ["html"],
     "report-dir": "./coverage",
     "check-coverage": true,
-    "lines": 90
+    "lines": 95
 }

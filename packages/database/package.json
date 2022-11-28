@@ -12,7 +12,8 @@
         "dotenv": "^16.0.3",
         "mongodb": "^4.11.0"
     },
-    "files": [
-        "./lib/*"
-    ]
+    "exports": {
+        "./mock": "./lib/mock/index.cjs",
+        "./mongo": "./lib/mongo/index.cjs"
+    }
 }

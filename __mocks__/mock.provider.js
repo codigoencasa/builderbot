@@ -1,6 +1,9 @@
-const { EventEmitter } = require('node:events')
+const ProviderClass = require('../packages/bot/provider/provider.class')
+class MockProvider extends ProviderClass {
+    constructor() {
+        super()
+    }
 
-class MockProvider extends EventEmitter {
     delaySendMessage = (miliseconds, eventName, payload) =>
         new Promise((res) =>
             setTimeout(() => {
@@ -10,6 +13,7 @@ class MockProvider extends EventEmitter {
         )
 
     sendMessage = async (userId, message) => {
+        console.log(`Enviando... ${userId}, ${message}`)
         return Promise.resolve({ userId, message })
     }
 }

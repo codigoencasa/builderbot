@@ -2,6 +2,7 @@
 - [ ] __(doc)__ Video de como colaborar PR
 
 ### @bot-whatsapp/bot
+- [ ] agregar export package
 - [X] Posibilidad de en el capture meter todo un nuevo CTX  de FLOW .addAnswer('Marca la opcion',{capture:true, join:CTX})
 - [X] .addKeyword('1') no funciona con 1 caracter
 - [X] sensitivy viene activado por defecto
@@ -11,12 +12,14 @@
 - [ ] createDatabase validar implementacion de funciones
 
 ### @bot-whatsapp/database
+- [ ] agregar export package
 - [X] __(doc):__ Video para explicar como implementar nuevos database
 - [X] Mongo adapter
 - [ ] MySQL adapter
 - [ ] JsonFile adapter
 
 ### @bot-whatsapp/provider
+- [ ] agregar export package
 - [ ] __(doc):__ Video para explicar como implementar nuevos providers
 - [ ] WhatsappWeb provider enviar imagenes
 - [ ] WhatsappWeb provider enviar audio

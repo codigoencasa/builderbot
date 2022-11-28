@@ -3,7 +3,7 @@ const { join } = require('path')
 
 module.exports = [
     {
-        input: join(__dirname, 'mock', 'index.js'),
+        input: join(__dirname, 'src', 'mock', 'index.js'),
         output: {
             file: join(__dirname, 'lib', 'mock', 'index.cjs'),
             format: 'cjs',
@@ -11,7 +11,7 @@ module.exports = [
         plugins: [commonjs()],
     },
     {
-        input: join(__dirname, 'mongo', 'index.js'),
+        input: join(__dirname, 'src', 'mongo', 'index.js'),
         output: {
             file: join(__dirname, 'lib', 'mongo', 'index.cjs'),
             format: 'cjs',
