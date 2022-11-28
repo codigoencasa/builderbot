@@ -8,8 +8,8 @@
 - [ ] createDatabase validar implementacion de funciones
 
 ### @bot-whatsapp/database
-- [ ] __(doc):__ Video para explicar como implementar nuevos database
-- [ ] Mongo adapter
+- [X] __(doc):__ Video para explicar como implementar nuevos database
+- [X] Mongo adapter
 - [ ] MySQL adapter
 - [ ] JsonFile adapter
 
@@ -21,6 +21,3 @@
 - [ ] Meta adapter
 
 ### @bot-whatsapp/cli
-- [ ] Mongo adapter
-- [ ] MySQL adapter
-- [ ] JsonFile adapter
