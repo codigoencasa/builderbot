@@ -29,3 +29,4 @@
 - [ ] Meta adapter
 
 ### @bot-whatsapp/cli
+- [ ] Hacer comando para crear `example-app`
