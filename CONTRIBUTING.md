@@ -16,6 +16,13 @@ cd bot-whatsapp
 yarn set version 3.3.0
 yarn
 ```
+> __ATENCIÓN__ Si esta estas en ubuntu/linux ejecutar lo siguiente comandos adicionales.
+
+```sheell
+npx husky install
+chmod ug+x .husky/*
+```
+
 __Commit y Push__
 El proyecto tiene implementado __[husky](https://typicode.github.io/husky/#/)__ es una herramienta que dispara unas acciones al momento de hacer commit y hacer push
 
