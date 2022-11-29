@@ -4,6 +4,8 @@
 - Necesitas __[yarn](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable)__ como gestor de paquetes. En el link conseguiras las intrucciones para instalar yarn.
 - Se usara la rama __dev__ *(https://github.com/leifermendez/bot-whatsapp/tree/dev)* como rama principal hasta que se haga oficialmente el lanzamiento de la V2
 
+>💡 Se usa la version 3.3.0 o superior de Yarn para establecer esta version simplemente `yarn set version 3.3.0`
+
 __Clonar repo rama dev__
 ```shell
 git clone --branch dev https://github.com/leifermendez/bot-whatsapp
@@ -11,6 +13,7 @@ git clone --branch dev https://github.com/leifermendez/bot-whatsapp
 __Instalar dependencias__
 ```shell 
 cd bot-whatsapp
+yarn set version 3.3.0
 yarn
 ```
 __Commit y Push__
