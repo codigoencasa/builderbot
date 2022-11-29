@@ -22,7 +22,7 @@
         "cli": "node ./packages/cli/bin/cli.js",
         "dev:debug": "node --inspect ./example-app/app.js",
         "dev": "node ./example-app/app.js",
-        "prepare": "npx husky install",
+        "postinstall": "npx husky install",
         "preinstall": "npx only-allow yarn",
         "release": "standard-version"
     },
