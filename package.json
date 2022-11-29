@@ -52,6 +52,8 @@
     "repository": "https://github.com/leifermendez/bot-whatsapp",
     "license": "ISC",
     "devDependencies": {
+        "@commitlint/cli": "^17.3.0",
+        "@commitlint/config-conventional": "^17.3.0",
         "@rollup/plugin-commonjs": "^23.0.2",
         "@rollup/plugin-json": "^5.0.1",
         "@rollup/plugin-node-resolve": "^15.0.1",
@@ -62,13 +64,13 @@
         "cz-conventional-changelog": "^3.3.0",
         "eslint": "^8.26.0",
         "eslint-config-prettier": "^8.5.0",
+        "git-cz": "^4.9.0",
         "husky": "^8.0.2",
         "only-allow": "^1.1.1",
         "prettier": "^2.7.1",
         "prompts": "^2.4.2",
         "rimraf": "^3.0.2",
         "rollup": "^3.2.3",
-        "git-cz": "^4.9.0",
         "rollup-plugin-cleanup": "^3.2.1",
         "rollup-plugin-copy": "^3.4.0",
         "uvu": "^0.5.6"
@@ -82,7 +84,7 @@
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "config": {
         "commitizen": {
-            "path": "git-cz"
+            "path": "./node_modules/cz-conventional-changelog"
         }
     }
 }
