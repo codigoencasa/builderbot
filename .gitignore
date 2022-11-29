@@ -1,5 +1,7 @@
 /node_modules
-/node_modules/*
+/packages/*/node_modules
+/packages/*/dist
+/packages/*/docs/dist
 session.json
 chats/*
 !chats/.gitkeep
@@ -10,3 +12,15 @@ mediaSend/*
 !mediaSend/nota-de-voz.mp3
 .env
 .wwebjs_auth
+packages/cli/config.json
+config.json
+coverage/
+*.lcov
+log
+lib
+tmp/
+.yarn/*
+.fleet/
+example-app/
+qr.svg
+package-lock.json

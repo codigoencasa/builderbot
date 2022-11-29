@@ -1,37 +1,92 @@
 {
-  "name": "test-ws-bot",
-  "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
-  "scripts": {
-    "start": "node ./app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@google-cloud/dialogflow": "^4.6.0",
-    "cors": "^2.8.5",
-    "dotenv": "^11.0.0",
-    "exceljs": "^4.3.0",
-    "express": "^4.17.2",
-    "file-type": "^16.5.3",
-    "mime-db": "^1.51.0",
-    "moment": "^2.29.1",
-    "mysql": "^2.18.1",
-    "nanoid": "^3.1.32",
-    "qr-image": "^3.2.0",
-    "qrcode-terminal": "^0.12.0",
-    "socket.io": "^4.4.1",
-    "stormdb": "^0.5.2",
-    "whatsapp-web.js": "^1.16.4"
-  },
-  "devDependencies": {
-    "pm2": "^5.1.2",
-    "prettier": "2.5.1"
-  },
-  "engines": {
-    "node": "14.x"
-  }
+    "name": "@bot-whatsapp/root",
+    "version": "0.1.1",
+    "description": "Bot de wahtsapp open source para MVP o pequeños negocios",
+    "main": "app.js",
+    "private": true,
+    "scripts": {
+        "commit": "git-cz",
+        "cli:rollup": "rollup --config ./packages/cli/rollup-cli.config.js ",
+        "bot:rollup": "rollup --config ./packages/bot/rollup-bot.config.js",
+        "provider:rollup": "rollup --config ./packages/provider/rollup-provider.config.js ",
+        "database:rollup": "rollup --config ./packages/database/rollup-database.config.js",
+        "format:check": "prettier --check ./packages",
+        "format:write": "prettier --write ./packages",
+        "lint:check": "eslint ./packages",
+        "lint:fix": "eslint --fix ./packages",
+        "build": "yarn run cli:rollup && yarn run bot:rollup && yarn run provider:rollup && yarn run database:rollup",
+        "link.dist": "cd packages/bot && npm link && cd ../provider && npm link && cd ../cli && npm link",
+        "test.unit": "node ./node_modules/uvu/bin.js packages test",
+        "test.coverage": "node ./node_modules/c8/bin/c8.js npm run test.unit",
+        "test": "npm run test.coverage",
+        "cli": "node ./packages/cli/bin/cli.js",
+        "dev:debug": "node --inspect ./example-app/app.js",
+        "dev": "node ./example-app/app.js",
+        "prepare": "npx husky install",
+        "preinstall": "npx only-allow yarn",
+        "release": "standard-version"
+    },
+    "workspaces": [
+        "packages/bot",
+        "packages/cli",
+        "packages/database",
+        "packages/provider",
+        "packages/docs"
+    ],
+    "keywords": [
+        "whatsapp",
+        "bot-whatsapp",
+        "node-bot-whatsapp"
+    ],
+    "contributors": [
+        {
+            "email": "leifer33@gmail.com",
+            "name": "Leifer Mendez",
+            "url": "https://leifermendez.github.io"
+        },
+        {
+            "name": "aurik3",
+            "email": "aurik3@aurik3.com",
+            "url": "https://github.com/aurik3"
+        }
+    ],
+    "repository": "https://github.com/leifermendez/bot-whatsapp",
+    "license": "ISC",
+    "devDependencies": {
+        "@commitlint/cli": "^17.3.0",
+        "@commitlint/config-conventional": "^17.3.0",
+        "@rollup/plugin-commonjs": "^23.0.2",
+        "@rollup/plugin-json": "^5.0.1",
+        "@rollup/plugin-node-resolve": "^15.0.1",
+        "@rollup/plugin-replace": "^5.0.1",
+        "c8": "^7.12.0",
+        "commitizen": "^4.2.5",
+        "cross-env": "^7.0.3",
+        "cz-conventional-changelog": "^3.3.0",
+        "eslint": "^8.26.0",
+        "eslint-config-prettier": "^8.5.0",
+        "git-cz": "^4.9.0",
+        "husky": "^8.0.2",
+        "only-allow": "^1.1.1",
+        "prettier": "^2.7.1",
+        "prompts": "^2.4.2",
+        "rimraf": "^3.0.2",
+        "rollup": "^3.2.3",
+        "rollup-plugin-cleanup": "^3.2.1",
+        "rollup-plugin-copy": "^3.4.0",
+        "standard-version": "^9.5.0",
+        "uvu": "^0.5.6"
+    },
+    "packageManager": "yarn@3.3.0",
+    "engines": {
+        "node": ">=16",
+        "npm": "please-use-yarn",
+        "yarn": ">=1"
+    },
+    "author": "Leifer Mendez <leifer33@gmail.com>",
+    "config": {
+        "commitizen": {
+            "path": "git-cz"
+        }
+    }
 }
