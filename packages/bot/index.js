@@ -1,7 +1,7 @@
 const CoreClass = require('./core/core.class')
 const ProviderClass = require('./provider/provider.class')
 const FlowClass = require('./io/flow.class')
-const { addKeyword, addAnswer, toSerialize } = require('./io/methods')
+const { addKeyword, addAnswer, addChild, toSerialize } = require('./io/methods')
 
 /**
  * Crear instancia de clase Bot
@@ -38,6 +38,7 @@ module.exports = {
     createProvider,
     addKeyword,
     addAnswer,
+    addChild,
     toSerialize,
     ProviderClass,
     CoreClass,

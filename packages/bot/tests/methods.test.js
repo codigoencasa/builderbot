@@ -22,6 +22,15 @@ test('Debere probar las propeidades array', () => {
     assert.is(MAIN_CTX.ctx.keyword, ARRANGE.keyword)
 })
 
+test('Debere probar las propeidades array en answer', () => {
+    const ARRANGE = {
+        keyword: ['hola!', 'ole'],
+    }
+    const MAIN_CTX = addKeyword(ARRANGE.keyword).addAnswer(['hola', 'chao'])
+
+    assert.is(MAIN_CTX.ctx.keyword, ARRANGE.keyword)
+})
+
 test('Debere probar toSerialize', () => {
     const ARRANGE = {
         keyword: ['hola!', 'ole'],

@@ -14,13 +14,16 @@ mediaSend/*
 .wwebjs_auth
 packages/cli/config.json
 config.json
+.yarnrc.yml
 coverage/
 *.lcov
 log
 lib
 tmp/
 .yarn/*
+!.yarn/releases
 .fleet/
 example-app/
 qr.svg
 package-lock.json
+yarn-error.log

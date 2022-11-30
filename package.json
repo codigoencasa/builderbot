@@ -15,7 +15,7 @@
         "lint:check": "eslint ./packages",
         "lint:fix": "eslint --fix ./packages",
         "build": "yarn run cli:rollup && yarn run bot:rollup && yarn run provider:rollup && yarn run database:rollup",
-        "link.dist": "cd packages/bot && npm link && cd ../provider && npm link && cd ../cli && npm link",
+        "link.dist": "cd packages/bot && npm link && cd ../provider && npm link && cd ../cli && npm link && cd ../database && npm link && cd ../provider && npm link",
         "test.unit": "node ./node_modules/uvu/bin.js packages test",
         "test.coverage": "node ./node_modules/c8/bin/c8.js npm run test.unit",
         "test": "npm run test.coverage",
@@ -24,6 +24,7 @@
         "dev": "node ./example-app/app.js",
         "prepare": "npx husky install",
         "preinstall": "npx only-allow yarn",
+        "postinstall": "npx prettier --write .",
         "release": "standard-version"
     },
     "workspaces": [
@@ -81,7 +82,7 @@
     "engines": {
         "node": ">=16",
         "npm": "please-use-yarn",
-        "yarn": ">=1"
+        "yarn": ">=3"
     },
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "config": {
