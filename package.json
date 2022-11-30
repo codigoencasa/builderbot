@@ -66,6 +66,7 @@
         "cz-conventional-changelog": "^3.3.0",
         "eslint": "^8.26.0",
         "eslint-config-prettier": "^8.5.0",
+        "fs-extra": "^11.1.0",
         "git-cz": "^4.9.0",
         "husky": "^8.0.2",
         "only-allow": "^1.1.1",

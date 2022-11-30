@@ -43,6 +43,20 @@ __Linking__
 yarn link.dist
 ```
 
+__Example-app__
+```
+yarn run cli
+```
+
+Abrir carpeta example-app-base
+```
+npm link @bot-whatsapp/bot -S
+npm link @bot-whatsapp/provider -S
+npm link @bot-whatsapp/database -S
+npm i
+npm start
+```
+
 __Commit y Push__
 El proyecto tiene implementado __[husky](https://typicode.github.io/husky/#/)__ es una herramienta que dispara unas acciones al momento de hacer commit y hacer push
 
@@ -52,7 +66,7 @@ __push:__ Cada push ejecutar `yarn run test` el cual ejecuta los test internos q
 
 
 
-__Example-app__
+
 
 
 
