@@ -16,11 +16,11 @@ __Instalar dependencias__
 cd bot-whatsapp
 yarn set version 3.3.0
 yarn install
+npx husky install && npx prettier --write .
 ```
 > __ATENCIÓN__ Si esta estas en ubuntu/linux ejecutar lo siguiente comandos adicionales.
 
 ```sheell
-npx husky install
 chmod ug+x .husky/*
 ```
 
