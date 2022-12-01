@@ -62,9 +62,7 @@
         "@rollup/plugin-node-resolve": "^15.0.1",
         "@rollup/plugin-replace": "^5.0.1",
         "c8": "^7.12.0",
-        "commitizen": "^4.2.5",
         "cross-env": "^7.0.3",
-        "cz-conventional-changelog": "^3.3.0",
         "eslint": "^8.26.0",
         "eslint-config-prettier": "^8.5.0",
         "fs-extra": "^11.1.0",
@@ -87,10 +85,5 @@
         "npm": "please-use-yarn",
         "yarn": ">=3"
     },
-    "author": "Leifer Mendez <leifer33@gmail.com>",
-    "config": {
-        "commitizen": {
-            "path": "git-cz"
-        }
-    }
+    "author": "Leifer Mendez <leifer33@gmail.com>"
 }
