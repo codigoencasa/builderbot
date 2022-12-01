@@ -1,10 +1,10 @@
 {
-    "name": "bot-whatsapp-base",
+    "name": "bot-whatsapp-basic",
     "version": "1.0.0",
     "description": "",
     "main": "app.js",
     "scripts": {
-        "pre-copy": "cd .. && yarn run copy.lib",
+        "pre-copy": "cd .. && yarn run copy.lib example-app-basic",
         "start": "node app.js"
     },
     "keywords": [],
