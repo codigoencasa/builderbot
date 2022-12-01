@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 0.2.0-alpha.0 (2022-12-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* 🧨 NO
+
+### Features
+
+* (🎸) add onClick prop to component ([4ae3898](https://github.com/leifermendez/bot-whatsapp/commit/4ae389846d38c133f6bb2129ae373eed39d9d08d))
+
+
+### Bug Fixes
+
+* **ci:** ci ([f55cfae](https://github.com/leifermendez/bot-whatsapp/commit/f55cfae6e4ccc1df949212999406680020d27f9c))
+* **ci:** ci ([671c5b3](https://github.com/leifermendez/bot-whatsapp/commit/671c5b37f33360e8cb754625b8dd6e83bce9014d))
+* **linter:** update linter and commitlint ([70a94ab](https://github.com/leifermendez/bot-whatsapp/commit/70a94ab2c6f8e4122780c77bc3a621944883e621))
+
+
+* (💍) Is justa test! ([37d04e9](https://github.com/leifermendez/bot-whatsapp/commit/37d04e9e89d3f01fdc367654ba60fb11ab2614c4))
+
 ## 0.1.0 (2022-11-29)
 
 

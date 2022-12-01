@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/root",
-    "version": "0.1.1",
+    "version": "0.2.0-alpha.0",
     "description": "Bot de wahtsapp open source para MVP o pequeños negocios",
     "main": "app.js",
     "private": true,
@@ -62,6 +62,7 @@
         "@rollup/plugin-node-resolve": "^15.0.1",
         "@rollup/plugin-replace": "^5.0.1",
         "c8": "^7.12.0",
+        "conventional-changelog": "^3.1.25",
         "cross-env": "^7.0.3",
         "eslint": "^8.26.0",
         "eslint-config-prettier": "^8.5.0",
