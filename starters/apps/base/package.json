@@ -4,7 +4,7 @@
     "description": "",
     "main": "app.js",
     "scripts": {
-        "pre-copy": "cd .. && yarn run copy.lib",
+        "pre-copy": "cd .. && yarn run copy.lib example-app-base",
         "start": "node app.js"
     },
     "keywords": [],
