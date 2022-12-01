@@ -1,5 +1,7 @@
 # CONTRIBUTING
 
+![](https://i.giphy.com/media/ntMt6TvalpstTIx7Ak/giphy.webp)
+
 __Requerimientos:__
 - Node v16 o superior __[descargar node](https://nodejs.org/es/download/)__
 - __[Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable)__ como gestor de paquetes. En el link conseguiras las intrucciones para instalar yarn.
