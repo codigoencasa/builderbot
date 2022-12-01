@@ -60,11 +60,6 @@ __push:__ Cada push ejecutar `yarn run test` el cual ejecuta los test internos q
 
 
 
-
-
-
-
-
 ------
 -   [Discord](https://link.codigoencasa.com/DISCORD)
 -   [Twitter](https://twitter.com/leifermendez)
