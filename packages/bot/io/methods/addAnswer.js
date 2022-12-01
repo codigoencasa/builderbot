@@ -10,6 +10,7 @@ const { toSerialize } = require('./toSerialize')
 const addAnswer =
     (inCtx) =>
     (answer, options, cb = null, nested = []) => {
+        answer = Array.isArray(answer) ? answer.join('\n') : answer
         /**
          * Todas las opciones referentes a el mensaje en concreto options:{}
          * @returns

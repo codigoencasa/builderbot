@@ -1,15 +1,20 @@
+/**
+ * Si necesitas saber que trae el "ctx"
+ * Puedes ver el README.md dentro packages/database
+ */
+
 class MockDatabase {
+    db
     listHistory = []
 
-    constructor() {
-        /**
-         * Se debe cargar listHistory con historial de mensajes
-         * para que se pueda continuar el flow
-         */
+    constructor() {}
+
+    getPrevByNumber = (from) => {
+        const history = this.listHistory.slice().reverse()
+        return history.find((a) => a.from === from)
     }
 
     save = (ctx) => {
-        console.log('Guardando DB...', ctx)
         this.listHistory.push(ctx)
     }
 }

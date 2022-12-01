@@ -21,7 +21,9 @@ log
 lib
 tmp/
 .yarn/*
+!.yarn/releases
 .fleet/
-example-app/
+example-app*/
 qr.svg
 package-lock.json
+yarn-error.log

@@ -2,6 +2,7 @@ const prompts = require('prompts')
 const { yellow, red } = require('kleur')
 const { installAll } = require('../install')
 const { cleanSession } = require('../clean')
+const { copyBaseApp } = require('../create-app')
 const { checkNodeVersion, checkOs } = require('../check')
 const { jsonConfig } = require('../configuration')
 
@@ -9,10 +10,15 @@ const startInteractive = async () => {
     const questions = [
         {
             type: 'text',
-            name: 'dependencies',
-            message:
-                'Quieres actualizar las librerias "whatsapp-web.js"? (Y/n)',
+            name: 'exampeOpt',
+            message: 'Quieres crear una app de ejemplo "example-app"? (Y/n)',
         },
+        // {
+        //     type: 'text',
+        //     name: 'dependencies',
+        //     message:
+        //         'Quieres actualizar las librerias "whatsapp-web.js"? (Y/n)',
+        // },
         {
             type: 'text',
             name: 'cleanTmp',
@@ -57,11 +63,12 @@ const startInteractive = async () => {
     const {
         dependencies = '',
         cleanTmp = '',
+        exampeOpt = '',
         providerDb = [],
         providerWs = [],
     } = response
     /**
-     * Question #1
+     * Question
      * @returns
      */
     const installOrUdpateDep = async () => {
@@ -75,7 +82,7 @@ const startInteractive = async () => {
     }
 
     /**
-     * Question #2
+     * Question
      * @returns
      */
     const cleanAllSession = async () => {
@@ -84,6 +91,16 @@ const startInteractive = async () => {
 
         if (answer.includes('y')) {
             await cleanSession()
+            return true
+        }
+    }
+
+    const createApp = async () => {
+        const answer = exampeOpt.toLowerCase() || 'n'
+        if (answer.includes('n')) return true
+
+        if (answer.includes('y')) {
+            await copyBaseApp()
             return true
         }
     }
@@ -117,6 +134,7 @@ const startInteractive = async () => {
         }
     }
 
+    await createApp()
     await installOrUdpateDep()
     await cleanAllSession()
     await vendorProvider()

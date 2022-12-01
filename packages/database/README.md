@@ -25,6 +25,28 @@ const main = async () => {
 }
 ```
 
+
+#### CTX
+```json
+ {
+    ref: 'ans_7d9981e5-5019-422c-a19a-565cbb021391',
+    keyword: 'ans_cfdad31b-ff6d-475f-873a-4ed6f8a79a43',
+    answer: 'Esperando respuesta...',
+    options: {
+      media: null,
+      buttons: [],
+      capture: true,
+      child: null,
+      nested: [Array],
+      keyword: {},
+      callback: true
+    },
+    refSerialize: '81f18f563fd26a6c6d12c62aed98095f',
+    from: 'NUMERO_PERSONA_QUE_ESCRIBE'
+  }
+```
+
+
 #### Video
 
 > Video explicando como debes de agregar nuevos adaptadores 
