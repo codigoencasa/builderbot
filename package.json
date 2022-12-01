@@ -12,6 +12,7 @@
         "database:rollup": "rollup --config ./packages/database/rollup-database.config.js",
         "format:check": "prettier --check ./packages",
         "format:write": "prettier --write ./packages",
+        "fmt.staged": "pretty-quick --staged",
         "lint:check": "eslint ./packages",
         "lint:fix": "eslint --fix ./packages",
         "build": "yarn run cli:rollup && yarn run bot:rollup && yarn run provider:rollup && yarn run database:rollup",
