@@ -3,9 +3,11 @@
 __Requerimientos:__
 - Node v16 o superior __[descargar node](https://nodejs.org/es/download/)__
 - __[Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable)__ como gestor de paquetes. En el link conseguiras las intrucciones para instalar yarn.
+- __[VSCode](https://code.visualstudio.com/download)__ (recomendado): Editor de codigo con plugins
+- __[Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits&ssr=false#overview)__ (plugin-vscode) este plugin te ayudara a crear commit semantico.
 - Se usara la rama __dev__ *(https://github.com/leifermendez/bot-whatsapp/tree/dev)* como rama principal hasta que se haga oficialmente el lanzamiento de la V2
 
->💡 Se usa la version 3.3.0 o superior de Yarn para establecer esta version simplemente ejecuta el siguiente comando: `yarn set version 3.3.0`
+### 🚀 Iniciando
 
 __Clonar repo rama dev__
 ```
@@ -23,7 +25,9 @@ Para compilar la aplicación es necesario ejecutar, eso te genera dentro de pack
 ```
 yarn build
 ```
-Luego de ejecutar el comando conseguiras algo como lo siguiente. Esas carpetas lib NO se suben al repo estan ignoradas.
+
+> (Solo informativo) Luego de ejecutar el comando conseguiras algo como lo siguiente. Esas carpetas lib NO se suben al repo ya estan ignoradas.
+
 ```
 packages/bot/lib
 packages/cli/lib
@@ -32,16 +36,20 @@ packages/provider/lib
 ```
 
 __Linking__
+
+Es el proceso que se realiza para poder hacer uso de los paquetes compilados en tu local.
+
 ```
 yarn link.dist
 ```
 
 __Example-app__
+Se ejecuta el CLI (Command Line Interface) para ayudarte a crear un app-bot de ejemplo
 ```
 yarn run cli
 ```
 
-Abrir carpeta example-app-base
+Abrir carpeta __example-app-base__ y ejecutar
 ```
 npm link @bot-whatsapp/bot -S
 npm link @bot-whatsapp/provider -S
@@ -58,7 +66,7 @@ __commit:__ Los commit son semanticos esto quiere decir que deben cumplir un sta
 __push:__ Cada push ejecutar `yarn run test` el cual ejecuta los test internos que tienen que cumplir con __95% de cobertura__.
 
 
-
+> Documento en constaten actualización....
 
 ------
 -   [Discord](https://link.codigoencasa.com/DISCORD)

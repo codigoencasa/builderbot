@@ -958,6 +958,7 @@ __metadata:
     "@rollup/plugin-node-resolve": ^15.0.1
     "@rollup/plugin-replace": ^5.0.1
     c8: ^7.12.0
+    conventional-changelog: ^3.1.25
     cross-env: ^7.0.3
     eslint: ^8.26.0
     eslint-config-prettier: ^8.5.0
@@ -2928,7 +2929,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"conventional-changelog@npm:3.1.25":
+"conventional-changelog@npm:3.1.25, conventional-changelog@npm:^3.1.25":
   version: 3.1.25
   resolution: "conventional-changelog@npm:3.1.25"
   dependencies:
