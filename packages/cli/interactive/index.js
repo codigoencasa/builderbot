@@ -11,7 +11,8 @@ const startInteractive = async () => {
         {
             type: 'text',
             name: 'exampeOpt',
-            message: 'Quieres crear una app de ejemplo "example-app"? (Y/n)',
+            message:
+                'Quieres crear una app de ejemplo "example-app-example"? (Y/n)',
         },
         // {
         //     type: 'text',

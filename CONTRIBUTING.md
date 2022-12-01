@@ -26,23 +26,6 @@ Para compilar la aplicación es necesario ejecutar, eso te genera dentro de pack
 yarn build
 ```
 
-> (Solo informativo) Luego de ejecutar el comando conseguiras algo como lo siguiente. Esas carpetas lib NO se suben al repo ya estan ignoradas.
-
-```
-packages/bot/lib
-packages/cli/lib
-packages/database/lib
-packages/provider/lib
-```
-
-__Linking__
-
-Es el proceso que se realiza para poder hacer uso de los paquetes compilados en tu local.
-
-```
-yarn link.dist
-```
-
 __Example-app__
 Se ejecuta el CLI (Command Line Interface) para ayudarte a crear un app-bot de ejemplo
 ```
@@ -51,10 +34,9 @@ yarn run cli
 
 Abrir carpeta __example-app-base__ y ejecutar
 ```
-npm link @bot-whatsapp/bot -S
-npm link @bot-whatsapp/provider -S
-npm link @bot-whatsapp/database -S
+cd example-app-base
 npm i
+npm run pre-copy
 npm start
 ```
 

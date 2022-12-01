@@ -4,13 +4,11 @@
     "description": "",
     "main": "app.js",
     "scripts": {
+        "pre-copy": "cd .. && yarn run copy.lib",
         "start": "node app.js"
     },
     "keywords": [],
     "dependencies": {
-        "@bot-whatsapp/bot": "file:../packages/bot",
-        "@bot-whatsapp/database": "file:../packages/database",
-        "@bot-whatsapp/provider": "file:../packages/provider",
         "whatsapp-web.js": "^1.18.3"
     },
     "author": "",
