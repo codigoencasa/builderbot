@@ -1,27 +1,4 @@
 ## Chatbot Whatsapp (OpenSource)
-#### Actualizado Abril 2022
-
-El siguiente proyecto se realizó con fines educativos para el canal de [Youtube (Leifer Mendez)](https://www.youtube.com/channel/UCgrIGp5QAnC0J8LfNJxDRDw?sub_confirmation=1) donde aprendemos a crear y implementar un chatbot increíble usando [node.js](https://codigoencasa.com/tag/nodejs/) además le agregamos inteligencia artificial gracias al servicio de __dialogflow__.
-
-[![Video](https://i.giphy.com/media/OBDi3CXC83WkNeLEZP/giphy.webp)](https://youtu.be/5lEMCeWEJ8o) 
-
-### ATENCION 🔴
-> 💥💥 Si te aparece el Error Multi-device es porque tienes la cuenta de whatsapp afiliada al modo "BETA de Multi dispositivo" por el momento no se tiene soporte para esas personas si tu quieres hacer uso de este __BOT__ debes de salir del modo BETA y intentarlo de la manera tradicional
-
-> El core de whatsapp esta en constante actualizaciones por lo cual siempre revisa la ultima fecha de la actualizacion 
-> [VER](https://github.com/leifermendez/bot-whatsapp/commits/main)
-
-### Busco colaboradores ⭐
-Hola amigos me gusta mucho este proyecto pero por cuestiones de tiempo se me dificulta mantener las actualizaciones si alguno quieres participar en el proyecto escribeme a leifer.contacto@gmail.com
-
-#### Acceso rápido 
-> Si tienes una cuenta en __heroku__ puedes desplegar este proyecto con (1 click)
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/leifermendez/bot-whatsapp) 
-
-> Comprarme un cafe!
-
-[![Comprar](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/leifermendez)
 
 #### Actualización
 
@@ -81,7 +58,6 @@ await sendMediaVoiceNote(client, from, 'PTT-20220223-WA0000.opus')
 
 ## Instruciones
 __Descargar o Clonar repositorio__
-![](https://i.imgur.com/dSpUbFz.png)
 
 __Usas ¿Ubuntu / Linux?__
 > Asegurate de instalar los siguientes paquetes
@@ -93,9 +69,9 @@ sudo apt install -y gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups
 __Instalar dependencias (npm install)__
 > Ubicate en le directorio que descargaste y via consola o terminal ejecuta el siguiente comando
 
-`npm install` 
-
-![](https://i.imgur.com/BJuMjGR.png)
+```
+npm i
+``` 
 
 __Configurar .env__
 > Con el editor de texto crea un archivo `.env` el cual debes de guiarte del archivo `.env.example`
@@ -114,21 +90,14 @@ SQL_PASS=
 SQL_DATABASE=
 ```
 
-![](https://i.imgur.com/9poNnW0.png)
-
 __Ejecutar el script__
 > Ubicate en le directorio que descargaste y via consola o terminal ejecuta el siguiente comando
 `npm run start`
 
-![](https://i.imgur.com/eMkBkuJ.png)
-
 __Whatsapp en tu celular__
 > Ahora abre la aplicación de Whatsapp en tu dispositivo y escanea el código QR
 <img src="https://i.imgur.com/RSbPtat.png" width="500"  />
-Visitar la pagina 
-`http://localhost:3000/qr` 
-
-![](https://i.imgur.com/Q3JEDlP.png)
+Tambien puedes visitar la pagina http://127.0.0.1:3000/qr
 
 __Listo 😎__
 > Cuando sale este mensaje tu BOT está __listo__ para trabajar!
@@ -145,11 +114,3 @@ __Listo 😎__
 
 > Ahora deberías  obtener un arespuesta por parte del BOT como la siguiente, ademas de esto tambien se crea un archivo excel
 con el historial de conversación  con el número de tu cliente
-
-![](https://i.imgur.com/lrMLgR8.png)
-![](https://i.imgur.com/UYcoUSV.png)
-
-## Preguntar al BOT
-> Puedes interactuar con el bot ejemplo escribele __hola__ y el bot debe responderte!
-
-![](https://i.imgur.com/cNAS51I.png)
