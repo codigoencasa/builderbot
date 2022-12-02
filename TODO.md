@@ -4,7 +4,7 @@
 - [ ] __(doc)__ Video explicacion de github action
 
 ### @bot-whatsapp/bot
-- [ ] agregar export package
+- [X] agregar export package
 - [X] Posibilidad de en el capture meter todo un nuevo CTX  de FLOW .addAnswer('Marca la opcion',{capture:true, join:CTX})
 - [X] .addKeyword('1') no funciona con 1 caracter
 - [X] sensitivy viene activado por defecto
@@ -12,6 +12,7 @@
 - [ ] colocar mensaje esperando conectando whatsapp (provider)
 - [ ] Cuando Envian Sticket devuelve mensaje raro
 - [ ] createDatabase validar implementacion de funciones
+- [ ] limitar caracteres de mensajes
 
 ### @bot-whatsapp/database
 - [X] agregar export package
@@ -29,4 +30,8 @@
 - [ ] Meta adapter
 
 ### @bot-whatsapp/cli
-- [ ] Hacer comando para crear `example-app`
+- [X] Hacer comando para crear `example-app`
+
+
+### @bot-whatsapp/create-bot
+- [ ] 

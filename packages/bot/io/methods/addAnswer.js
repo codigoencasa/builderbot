@@ -1,6 +1,5 @@
 const { generateRef } = require('../../utils/hash')
 const { toJson } = require('./toJson')
-const { toSerialize } = require('./toSerialize')
 /**
  *
  * @param answer string
@@ -79,6 +78,7 @@ const addAnswer =
             }
         }
 
+        /// Retornar contexto no colocar nada más abajo de esto
         const ctx = ctxAnswer()
 
         return {

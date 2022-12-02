@@ -67,13 +67,13 @@ class CoreClass {
             this.databaseClass.save(ctxByNumber)
         }
 
-        //Si se tiene un callback se ejecuta
+        // 📄 [options: callback]: Si se tiene un callback se ejecuta
         if (refToContinue && prevMsg?.options?.callback) {
             const indexFlow = this.flowClass.findIndexByRef(refToContinue?.ref)
             this.flowClass.allCallbacks[indexFlow].callback(messageInComming)
         }
 
-        //Si se tiene anidaciones de flows, si tienes anidados obligatoriamente capture:true
+        // 📄🤘(tiene return) [options: nested(array)]: Si se tiene flujos hijos los implementa
         if (prevMsg?.options?.nested?.length) {
             const nestedRef = prevMsg.options.nested
             const flowStandalone = nestedRef.map((f) => ({
@@ -85,13 +85,19 @@ class CoreClass {
             return
         }
 
-        //Consultamos si se espera respuesta por parte de cliente "Ejemplo: Dime tu nombre"
-        if (!prevMsg?.options?.nested?.length && prevMsg?.options?.capture) {
-            msgToSend = this.flowClass.find(refToContinue?.ref, true) || []
-        } else {
-            msgToSend = this.flowClass.find(body) || []
+        // 📄🤘(tiene return) [options: capture (boolean)]: Si se tiene option boolean
+        if (!prevMsg?.options?.nested?.length) {
+            const typeCapture = typeof prevMsg?.options?.capture
+            const valueCapture = prevMsg?.options?.capture
+
+            if (['string', 'boolean'].includes(typeCapture) && valueCapture) {
+                msgToSend = this.flowClass.find(refToContinue?.ref, true) || []
+                this.sendFlow(msgToSend, from)
+                return
+            }
         }
 
+        msgToSend = this.flowClass.find(body) || []
         this.sendFlow(msgToSend, from)
     }
 
