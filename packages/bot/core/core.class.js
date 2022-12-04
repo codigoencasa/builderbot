@@ -21,6 +21,9 @@ class CoreClass {
         }
     }
 
+    /**
+     * Manejador de eventos
+     */
     listenerBusEvents = () => [
         {
             event: 'require_action',
@@ -51,12 +54,16 @@ class CoreClass {
         const { body, from } = messageInComming
         let msgToSend = []
 
-        //Consultamos mensaje previo en DB
         const prevMsg = await this.databaseClass.getPrevByNumber(from)
-        //Consultamos for refSerializada en el flow actual
         const refToContinue = this.flowClass.findBySerialize(
             prevMsg?.refSerialize
         )
+
+        const fallBack = () => {
+            msgToSend = this.flowClass.find(refToContinue?.keyword, true) || []
+            this.sendFlow(msgToSend, from)
+            return refToContinue
+        }
 
         if (prevMsg?.ref) {
             const ctxByNumber = toCtx({
@@ -70,7 +77,9 @@ class CoreClass {
         // 📄 [options: callback]: Si se tiene un callback se ejecuta
         if (refToContinue && prevMsg?.options?.callback) {
             const indexFlow = this.flowClass.findIndexByRef(refToContinue?.ref)
-            this.flowClass.allCallbacks[indexFlow].callback(messageInComming)
+            this.flowClass.allCallbacks[indexFlow].callback(messageInComming, {
+                fallBack,
+            })
         }
 
         // 📄🤘(tiene return) [options: nested(array)]: Si se tiene flujos hijos los implementa
