@@ -4,14 +4,15 @@
 - [ ] __(doc)__ Video explicacion de github action
 
 ### @bot-whatsapp/bot
-- [ ] agregar export package
+- [X] agregar export package
 - [X] Posibilidad de en el capture meter todo un nuevo CTX  de FLOW .addAnswer('Marca la opcion',{capture:true, join:CTX})
 - [X] .addKeyword('1') no funciona con 1 caracter
 - [X] sensitivy viene activado por defecto
-- [ ] fallback respuesta en hijo: Se puede colocar en option el ref de la answer fallback
+- [X] fallback respuesta en hijo: Se puede colocar en option el ref de la answer fallback
+- [X] Cuando Envian Sticket devuelve mensaje raro
 - [ ] colocar mensaje esperando conectando whatsapp (provider)
-- [ ] Cuando Envian Sticket devuelve mensaje raro
 - [ ] createDatabase validar implementacion de funciones
+- [ ] limitar caracteres de mensajes
 
 ### @bot-whatsapp/database
 - [X] agregar export package
@@ -23,10 +24,25 @@
 ### @bot-whatsapp/provider
 - [X] agregar export package
 - [ ] __(doc):__ Video para explicar como implementar nuevos providers
-- [ ] WhatsappWeb provider enviar imagenes
-- [ ] WhatsappWeb provider enviar audio
+- [X] WhatsappWeb provider enviar imagenes
+- [X] WhatsappWeb provider enviar audio
+- [X] WhatsappWeb botones (Tiene truco) github:leifermendez/whatsapp-web.js
 - [ ] Twilio adapter
 - [ ] Meta adapter
 
 ### @bot-whatsapp/cli
-- [ ] Hacer comando para crear `example-app`
+- [X] Hacer comando para crear `example-app`
+
+
+### @bot-whatsapp/create-bot
+- [ ] 
+
+### Starters
+- [X] Base
+- [X] Basico
+- [ ] Enviando Imagen
+- [ ] Enviando Botones
+- [ ] Mezclando flujos hijos
+
+### Extra
+- [X] Crear CI mantener fork update https://stackoverflow.com/questions/23793062/can-forks-be-synced-automatically-in-github

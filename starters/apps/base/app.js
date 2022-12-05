@@ -5,11 +5,6 @@ const {
     addKeyword,
 } = require('@bot-whatsapp/bot')
 
-/**
- *  ATENCION: Si vas a usar el provider whatsapp-web.js
- *  recuerda ejecutar npm i whatsapp-web.js@latest
- */
-
 const WebWhatsappProvider = require('@bot-whatsapp/provider/web-whatsapp')
 const MockAdapter = require('@bot-whatsapp/database/mock')
 

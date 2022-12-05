@@ -1,10 +1,9 @@
 const { generateRef } = require('../../utils/hash')
 const { toJson } = require('./toJson')
-const { toSerialize } = require('./toSerialize')
 /**
  *
  * @param answer string
- * @param options {media:string, buttons:[], capture:true default false}
+ * @param options {media:string, buttons:[{"body":"😎 Cursos"}], capture:true default false}
  * @returns
  */
 const addAnswer =
@@ -79,6 +78,7 @@ const addAnswer =
             }
         }
 
+        /// Retornar contexto no colocar nada más abajo de esto
         const ctx = ctxAnswer()
 
         return {

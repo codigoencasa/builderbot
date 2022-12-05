@@ -2,7 +2,7 @@ name: Test / Coverage
 
 on:
     push:
-        branches: [feature/monorepo]
+        branches: [dev]
     pull_request:
         branches: [main]
 

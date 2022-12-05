@@ -21,6 +21,9 @@ class CoreClass {
         }
     }
 
+    /**
+     * Manejador de eventos
+     */
     listenerBusEvents = () => [
         {
             event: 'require_action',
@@ -44,16 +47,18 @@ class CoreClass {
     ]
 
     /**
-     * @private
-     * @param {*} ctxMessage
+     *
+     * @param {*} messageInComming
+     * @returns
      */
     handleMsg = async (messageInComming) => {
         const { body, from } = messageInComming
         let msgToSend = []
+        let fallBackFlag = false
 
-        //Consultamos mensaje previo en DB
+        if (!body.length) return
+
         const prevMsg = await this.databaseClass.getPrevByNumber(from)
-        //Consultamos for refSerializada en el flow actual
         const refToContinue = this.flowClass.findBySerialize(
             prevMsg?.refSerialize
         )
@@ -67,14 +72,24 @@ class CoreClass {
             this.databaseClass.save(ctxByNumber)
         }
 
-        //Si se tiene un callback se ejecuta
-        if (refToContinue && prevMsg?.options?.callback) {
-            const indexFlow = this.flowClass.findIndexByRef(refToContinue?.ref)
-            this.flowClass.allCallbacks[indexFlow].callback(messageInComming)
+        // 📄 [options: fallback]: esta funcion se encarga de repetir el ultimo mensaje
+        const fallBack = () => {
+            fallBackFlag = true
+            msgToSend = this.flowClass.find(refToContinue?.keyword, true) || []
+            this.sendFlow(msgToSend, from)
+            return refToContinue
         }
 
-        //Si se tiene anidaciones de flows, si tienes anidados obligatoriamente capture:true
-        if (prevMsg?.options?.nested?.length) {
+        // 📄 [options: callback]: Si se tiene un callback se ejecuta
+        if (!fallBackFlag && refToContinue && prevMsg?.options?.callback) {
+            const indexFlow = this.flowClass.findIndexByRef(refToContinue?.ref)
+            this.flowClass.allCallbacks[indexFlow].callback(messageInComming, {
+                fallBack,
+            })
+        }
+
+        // 📄🤘(tiene return) [options: nested(array)]: Si se tiene flujos hijos los implementa
+        if (!fallBackFlag && prevMsg?.options?.nested?.length) {
             const nestedRef = prevMsg.options.nested
             const flowStandalone = nestedRef.map((f) => ({
                 ...nestedRef.find((r) => r.refSerialize === f.refSerialize),
@@ -85,20 +100,32 @@ class CoreClass {
             return
         }
 
-        //Consultamos si se espera respuesta por parte de cliente "Ejemplo: Dime tu nombre"
-        if (!prevMsg?.options?.nested?.length && prevMsg?.options?.capture) {
-            msgToSend = this.flowClass.find(refToContinue?.ref, true) || []
-        } else {
-            msgToSend = this.flowClass.find(body) || []
+        // 📄🤘(tiene return) [options: capture (boolean)]: Si se tiene option boolean
+        if (!fallBackFlag && !prevMsg?.options?.nested?.length) {
+            const typeCapture = typeof prevMsg?.options?.capture
+            const valueCapture = prevMsg?.options?.capture
+
+            if (['string', 'boolean'].includes(typeCapture) && valueCapture) {
+                msgToSend = this.flowClass.find(refToContinue?.ref, true) || []
+                this.sendFlow(msgToSend, from)
+                return
+            }
         }
 
+        msgToSend = this.flowClass.find(body) || []
         this.sendFlow(msgToSend, from)
     }
 
+    /**
+     * Enviar mensaje con contexto atraves del proveedor de whatsapp
+     * @param {*} numberOrId
+     * @param {*} ctxMessage ver más en GLOSSARY.md
+     * @returns
+     */
     sendProviderAndSave = (numberOrId, ctxMessage) => {
         const { answer } = ctxMessage
         return Promise.all([
-            this.providerClass.sendMessage(numberOrId, answer),
+            this.providerClass.sendMessage(numberOrId, answer, ctxMessage),
             this.databaseClass.save({ ...ctxMessage, from: numberOrId }),
         ])
     }
