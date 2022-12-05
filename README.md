@@ -8,6 +8,8 @@ Video como hacer PR: https://youtu.be/Lxt8Acob6aU
 
 
 **Comunidad**
+<!-- readme: collaborators,contributors -start -->
+<!-- readme: collaborators,contributors -end -->
 
 > Forma parte de este proyecto.
 
@@ -15,6 +17,3 @@ Video como hacer PR: https://youtu.be/Lxt8Acob6aU
 -   [Twitter](https://twitter.com/leifermendez)
 -   [Youtube](https://www.youtube.com/watch?v=5lEMCeWEJ8o&list=PL_WGMLcL4jzWPhdhcUyhbFU6bC0oJd2BR)
 -   [Telegram](https://t.me/leifermendez)
-
-
- 
