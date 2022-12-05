@@ -1,7 +1,7 @@
-const { Client, LocalAuth } = require('whatsapp-web.js')
+const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js')
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const { Console } = require('console')
-const { createWriteStream } = require('fs')
+const { createWriteStream, existsSync } = require('fs')
 const { cleanNumber, generateImage, isValidNumber } = require('./utils')
 
 const logger = new Console({
@@ -80,9 +80,21 @@ class WebWhatsappProvider extends ProviderClass {
         },
     ]
 
-    sendMessage = async (userId, message) => {
-        const number = cleanNumber(userId)
+    sendMedia = async (number, mediaInput = null) => {
+        if (!existsSync(mediaInput))
+            throw new Error(`NO_SE_ENCONTRO: ${mediaInput}`)
+        const media = MessageMedia.fromFilePath(mediaInput)
+        return this.vendor.sendMessage(number, media)
+    }
+
+    sendText = async (number, message) => {
         return this.vendor.sendMessage(number, message)
+    }
+
+    sendMessage = async (userId, message, { options }) => {
+        const number = cleanNumber(userId)
+        if (options?.media) return this.sendMedia(number, options.media)
+        return this.sendText(number, message)
     }
 }
 

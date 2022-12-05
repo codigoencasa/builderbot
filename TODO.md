@@ -8,8 +8,8 @@
 - [X] Posibilidad de en el capture meter todo un nuevo CTX  de FLOW .addAnswer('Marca la opcion',{capture:true, join:CTX})
 - [X] .addKeyword('1') no funciona con 1 caracter
 - [X] sensitivy viene activado por defecto
-- [ ] fallback respuesta en hijo: Se puede colocar en option el ref de la answer fallback
-- [ ] envia imagen
+- [X] fallback respuesta en hijo: Se puede colocar en option el ref de la answer fallback
+- [X] envia imagen
 - [ ] envia nota de voz
 - [ ] colocar mensaje esperando conectando whatsapp (provider)
 - [ ] Cuando Envian Sticket devuelve mensaje raro

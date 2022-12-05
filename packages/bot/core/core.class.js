@@ -47,8 +47,9 @@ class CoreClass {
     ]
 
     /**
-     * @private
-     * @param {*} ctxMessage
+     *
+     * @param {*} messageInComming
+     * @returns
      */
     handleMsg = async (messageInComming) => {
         const { body, from } = messageInComming
@@ -67,6 +68,8 @@ class CoreClass {
             })
             this.databaseClass.save(ctxByNumber)
         }
+
+        // 📄 [options: fallback]: esta funcion se encarga de repetir el ultimo mensaje
         const fallBack = () => {
             fallBackFlag = true
             msgToSend = this.flowClass.find(refToContinue?.keyword, true) || []
@@ -110,10 +113,16 @@ class CoreClass {
         this.sendFlow(msgToSend, from)
     }
 
+    /**
+     * Enviar mensaje con contexto atraves del proveedor de whatsapp
+     * @param {*} numberOrId
+     * @param {*} ctxMessage ver más en GLOSSARY.md
+     * @returns
+     */
     sendProviderAndSave = (numberOrId, ctxMessage) => {
         const { answer } = ctxMessage
         return Promise.all([
-            this.providerClass.sendMessage(numberOrId, answer),
+            this.providerClass.sendMessage(numberOrId, answer, ctxMessage),
             this.databaseClass.save({ ...ctxMessage, from: numberOrId }),
         ])
     }

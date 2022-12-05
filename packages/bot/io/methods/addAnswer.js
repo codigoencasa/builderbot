@@ -3,7 +3,7 @@ const { toJson } = require('./toJson')
 /**
  *
  * @param answer string
- * @param options {media:string, buttons:[], capture:true default false}
+ * @param options {media:string, buttons:[{"body":"😎 Cursos"}], capture:true default false}
  * @returns
  */
 const addAnswer =
