@@ -9,10 +9,8 @@
 - [X] .addKeyword('1') no funciona con 1 caracter
 - [X] sensitivy viene activado por defecto
 - [X] fallback respuesta en hijo: Se puede colocar en option el ref de la answer fallback
-- [X] envia imagen
-- [ ] envia nota de voz
+- [X] Cuando Envian Sticket devuelve mensaje raro
 - [ ] colocar mensaje esperando conectando whatsapp (provider)
-- [ ] Cuando Envian Sticket devuelve mensaje raro
 - [ ] createDatabase validar implementacion de funciones
 - [ ] limitar caracteres de mensajes
 
@@ -26,8 +24,9 @@
 ### @bot-whatsapp/provider
 - [X] agregar export package
 - [ ] __(doc):__ Video para explicar como implementar nuevos providers
-- [ ] WhatsappWeb provider enviar imagenes
-- [ ] WhatsappWeb provider enviar audio
+- [X] WhatsappWeb provider enviar imagenes
+- [X] WhatsappWeb provider enviar audio
+- [X] WhatsappWeb botones (Tiene truco) github:leifermendez/whatsapp-web.js
 - [ ] Twilio adapter
 - [ ] Meta adapter
 
@@ -37,3 +36,6 @@
 
 ### @bot-whatsapp/create-bot
 - [ ] 
+
+### Extra
+- [X] Crear CI mantener fork update https://stackoverflow.com/questions/23793062/can-forks-be-synced-automatically-in-github

@@ -55,6 +55,9 @@ class CoreClass {
         const { body, from } = messageInComming
         let msgToSend = []
         let fallBackFlag = false
+
+        if (!body.length) return
+
         const prevMsg = await this.databaseClass.getPrevByNumber(from)
         const refToContinue = this.flowClass.findBySerialize(
             prevMsg?.refSerialize
