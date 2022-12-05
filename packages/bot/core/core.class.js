@@ -53,17 +53,11 @@ class CoreClass {
     handleMsg = async (messageInComming) => {
         const { body, from } = messageInComming
         let msgToSend = []
-
+        let fallBackFlag = false
         const prevMsg = await this.databaseClass.getPrevByNumber(from)
         const refToContinue = this.flowClass.findBySerialize(
             prevMsg?.refSerialize
         )
-
-        const fallBack = () => {
-            msgToSend = this.flowClass.find(refToContinue?.keyword, true) || []
-            this.sendFlow(msgToSend, from)
-            return refToContinue
-        }
 
         if (prevMsg?.ref) {
             const ctxByNumber = toCtx({
@@ -73,9 +67,15 @@ class CoreClass {
             })
             this.databaseClass.save(ctxByNumber)
         }
+        const fallBack = () => {
+            fallBackFlag = true
+            msgToSend = this.flowClass.find(refToContinue?.keyword, true) || []
+            this.sendFlow(msgToSend, from)
+            return refToContinue
+        }
 
         // 📄 [options: callback]: Si se tiene un callback se ejecuta
-        if (refToContinue && prevMsg?.options?.callback) {
+        if (!fallBackFlag && refToContinue && prevMsg?.options?.callback) {
             const indexFlow = this.flowClass.findIndexByRef(refToContinue?.ref)
             this.flowClass.allCallbacks[indexFlow].callback(messageInComming, {
                 fallBack,
@@ -83,7 +83,7 @@ class CoreClass {
         }
 
         // 📄🤘(tiene return) [options: nested(array)]: Si se tiene flujos hijos los implementa
-        if (prevMsg?.options?.nested?.length) {
+        if (!fallBackFlag && prevMsg?.options?.nested?.length) {
             const nestedRef = prevMsg.options.nested
             const flowStandalone = nestedRef.map((f) => ({
                 ...nestedRef.find((r) => r.refSerialize === f.refSerialize),
@@ -95,7 +95,7 @@ class CoreClass {
         }
 
         // 📄🤘(tiene return) [options: capture (boolean)]: Si se tiene option boolean
-        if (!prevMsg?.options?.nested?.length) {
+        if (!fallBackFlag && !prevMsg?.options?.nested?.length) {
             const typeCapture = typeof prevMsg?.options?.capture
             const valueCapture = prevMsg?.options?.capture
 
