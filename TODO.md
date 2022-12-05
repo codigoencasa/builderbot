@@ -37,5 +37,12 @@
 ### @bot-whatsapp/create-bot
 - [ ] 
 
+### Starters
+- [X] Base
+- [X] Basico
+- [ ] Enviando Imagen
+- [ ] Enviando Botones
+- [ ] Mezclando flujos hijos
+
 ### Extra
 - [X] Crear CI mantener fork update https://stackoverflow.com/questions/23793062/can-forks-be-synced-automatically-in-github
