@@ -18,7 +18,7 @@
 - [X] agregar export package
 - [X] __(doc):__ Video para explicar como implementar nuevos database
 - [X] Mongo adapter
-- [ ] MySQL adapter
+- [X] MySQL adapter
 - [ ] JsonFile adapter
 
 ### @bot-whatsapp/provider

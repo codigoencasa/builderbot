@@ -26,6 +26,10 @@ class CoreClass {
      */
     listenerBusEvents = () => [
         {
+            event: 'preinit',
+            func: () => printer('Iniciando provider espere...'),
+        },
+        {
             event: 'require_action',
             func: ({ instructions, title = '⚡⚡ ACCION REQUERIDA ⚡⚡' }) =>
                 printer(instructions, title),

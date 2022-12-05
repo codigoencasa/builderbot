@@ -1,19 +1,24 @@
 const twilio = require('twilio')
 const { ProviderClass } = require('@bot-whatsapp/bot')
 
-const TwilioVendor = new twilio(accountSid, authToken)
-
+const WebHookServer = require('./server')
 class TwilioProvider extends ProviderClass {
-    constructor() {
-        super(TwilioVendor)
+    vendor
+    vendorNumber
+    constructor({ accountSid, authToken, vendorNumber }) {
+        super()
+        this.vendor = new twilio(accountSid, authToken)
+        this.vendorNumber = vendorNumber
+        new WebHookServer().start()
     }
 
-    sendMessage = (message) =>
-        this.vendor.messages.create({
+    sendMessage = async (number, message) => {
+        return this.vendor.messages.create({
             body: message,
-            to: '+12345678901', // Text this number
-            from: '+12345678901', // From a valid Twilio number
+            from: ['whatsapp:', this.vendorNumber].join(''),
+            to: ['whatsapp:', number].join(''),
         })
+    }
 }
 
 module.exports = TwilioProvider
