@@ -18,6 +18,8 @@ config.json
 coverage/
 *.lcov
 log
+log/*
+*.log
 lib
 tmp/
 .yarn/*

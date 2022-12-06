@@ -13,6 +13,7 @@
 - [ ] colocar mensaje esperando conectando whatsapp (provider)
 - [ ] createDatabase validar implementacion de funciones
 - [ ] limitar caracteres de mensajes
+- [ ] cuando envias numeros (5 o 1) se dispara el flujo
 
 ### @bot-whatsapp/database
 - [X] agregar export package
