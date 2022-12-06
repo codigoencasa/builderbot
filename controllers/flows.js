@@ -15,8 +15,8 @@ const responseMessages = async (step) => {
     return data
 }
 
-const bothResponse = async (message) => {
-    const data = await getIA(message)
+const bothResponse = async (message, sessionId) => {
+    const data = await getIA(message, sessionId)
     if(data && data.media){
         const file = await saveExternalFile(data.media)
         return {...data,...{media:file}}
