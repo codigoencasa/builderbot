@@ -13,12 +13,13 @@
 - [ ] colocar mensaje esperando conectando whatsapp (provider)
 - [ ] createDatabase validar implementacion de funciones
 - [ ] limitar caracteres de mensajes
+- [ ] cuando envias numeros (5 o 1) se dispara el flujo
 
 ### @bot-whatsapp/database
 - [X] agregar export package
 - [X] __(doc):__ Video para explicar como implementar nuevos database
 - [X] Mongo adapter
-- [ ] MySQL adapter
+- [X] MySQL adapter
 - [ ] JsonFile adapter
 
 ### @bot-whatsapp/provider

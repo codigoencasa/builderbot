@@ -3136,6 +3136,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"create-bot-whatsapp@workspace:packages/create-bot-whatsapp":
+  version: 0.0.0-use.local
+  resolution: "create-bot-whatsapp@workspace:packages/create-bot-whatsapp"
+  dependencies:
+    "@bot-whatsapp/cli": "*"
+  bin:
+    bot: ./lib/bin/bundle.create.cjs
+  languageName: unknown
+  linkType: soft
+
 "create-require@npm:^1.1.0":
   version: 1.1.1
   resolution: "create-require@npm:1.1.1"

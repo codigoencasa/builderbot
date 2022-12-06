@@ -1,24 +1,17 @@
-require('dotenv').config()
 const mysql = require('mysql2')
-
-const DB_NAME = process.env.DB_NAME || 'db_bot'
-const DB_HOST = process.env.DB_HOST || 'localhost'
-const DB_USER = process.env.DB_USER || 'root'
 
 class MyslAdapter {
     db
     listHistory = []
+    credentials = { host: null, user: null, database: null }
 
-    constructor() {
+    constructor(_credentials) {
+        this.credentials = _credentials
         this.init().then()
     }
 
     async init() {
-        this.db = mysql.createConnection({
-            host: DB_HOST,
-            user: DB_USER,
-            database: DB_NAME,
-        })
+        this.db = mysql.createConnection(this.credentials)
 
         await this.db.connect((error) => {
             if (!error) {

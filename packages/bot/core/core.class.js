@@ -1,6 +1,11 @@
 const { toCtx } = require('../io/methods')
 const { printer } = require('../utils/interactive')
+const { Console } = require('console')
+const { createWriteStream } = require('fs')
 
+const logger = new Console({
+    stdout: createWriteStream(`${process.cwd()}/core.class.log`),
+})
 /**
  * [ ] Escuchar eventos del provider asegurarte que los provider emitan eventos
  * [ ] Guardar historial en db
@@ -25,6 +30,10 @@ class CoreClass {
      * Manejador de eventos
      */
     listenerBusEvents = () => [
+        {
+            event: 'preinit',
+            func: () => printer('Iniciando provider espere...'),
+        },
         {
             event: 'require_action',
             func: ({ instructions, title = '⚡⚡ ACCION REQUERIDA ⚡⚡' }) =>
@@ -52,6 +61,7 @@ class CoreClass {
      * @returns
      */
     handleMsg = async (messageInComming) => {
+        logger.log(`[handleMsg]: `, messageInComming)
         const { body, from } = messageInComming
         let msgToSend = []
         let fallBackFlag = false
