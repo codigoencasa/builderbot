@@ -6,7 +6,7 @@ const fs = require('fs');
 const express = require('express');
 const cors = require('cors')
 const qrcode = require('qrcode-terminal');
-const { Client,LocalAuth  } = require('whatsapp-web.js');
+const { Client, LocalAuth } = require('whatsapp-web.js');
 const mysqlConnection = require('./config/mysql')
 const { middlewareClient } = require('./middleware/client')
 const { generateImage, cleanNumber, checkEnvFile, createClient, isValidNumber } = require('./controllers/handle')
@@ -30,7 +30,7 @@ app.use('/', require('./routes/web'))
 const listenMessage = () => client.on('message', async msg => {
     const { from, body, hasMedia } = msg;
 
-    if(!isValidNumber(from)){
+    if (!isValidNumber(from)) {
         return
     }
 
@@ -39,7 +39,7 @@ const listenMessage = () => client.on('message', async msg => {
         return
     }
     message = body.toLowerCase();
-    console.log('BODY',message)
+    console.log('BODY', message)
     const number = cleanNumber(from)
     await readChat(number, message)
 
@@ -56,8 +56,8 @@ const listenMessage = () => client.on('message', async msg => {
      */
 
     if (process.env.DATABASE === 'dialogflow') {
-        if(!message.length) return;
-        const response = await bothResponse(message);
+        if (!message.length) return;
+        const response = await bothResponse(message, number);
         await sendMessage(client, from, response.replyMessage);
         if (response.media) {
             sendMedia(client, from, response.media);
@@ -91,7 +91,7 @@ const listenMessage = () => client.on('message', async msg => {
 
         await sendMessage(client, from, response.replyMessage, response.trigger);
 
-        if(response.hasOwnProperty('actions')){
+        if (response.hasOwnProperty('actions')) {
             const { actions } = response;
             await sendMessageButton(client, from, null, actions);
             return
@@ -116,7 +116,7 @@ const listenMessage = () => client.on('message', async msg => {
         /**
          * Si quieres enviar botones
          */
-        if(response.hasOwnProperty('actions')){
+        if (response.hasOwnProperty('actions')) {
             const { actions } = response;
             await sendMessageButton(client, from, null, actions);
         }
@@ -127,33 +127,33 @@ const listenMessage = () => client.on('message', async msg => {
 
 
 client = new Client({
-        authStrategy: new LocalAuth(),
-        puppeteer: { headless: true }
-    });
-    
+    authStrategy: new LocalAuth(),
+    puppeteer: { headless: true }
+});
+
 client.on('qr', qr => generateImage(qr, () => {
-        qrcode.generate(qr, { small: true });
-        
-        console.log(`Ver QR http://localhost:${port}/qr`)
-        socketEvents.sendQR(qr)
+    qrcode.generate(qr, { small: true });
+
+    console.log(`Ver QR http://localhost:${port}/qr`)
+    socketEvents.sendQR(qr)
 }))
 
 client.on('ready', (a) => {
-        connectionReady()
-        listenMessage()
-        // socketEvents.sendStatus(client)
+    connectionReady()
+    listenMessage()
+    // socketEvents.sendStatus(client)
 });
 
 client.on('auth_failure', (e) => {
-        // console.log(e)
-        // connectionLost()
+    // console.log(e)
+    // connectionLost()
 });
 
 client.on('authenticated', () => {
-        console.log('AUTHENTICATED'); 
+    console.log('AUTHENTICATED');
 });
 
-    client.initialize();
+client.initialize();
 
 
 
@@ -169,4 +169,3 @@ server.listen(port, () => {
     console.log(`El server esta listo por el puerto ${port}`);
 })
 checkEnvFile();
-
