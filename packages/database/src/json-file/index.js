@@ -1,6 +1,8 @@
-const Path = require('path')
+const path = require('path')
 const StormDB = require('stormdb')
-const engine = new StormDB.localFileEngine(Path.join(__dirname, './db.stormdb'))
+const engine = new StormDB.localFileEngine(
+    path.join(process.cwd(), './db.stormdb')
+)
 
 class JsonFileAdapter {
     db
@@ -30,14 +32,13 @@ class JsonFileAdapter {
 
         return {
             ...result,
-            options: JSON.parse(result.options),
         }
     }
 
     save = async (ctx) => {
         await this.db
             .get('history')
-            .push({ ...ctx, options: JSON.stringify(ctx.options) })
+            .push({ ...ctx })
             .save()
         console.log('Guardado en DB...', ctx)
         this.listHistory.push(ctx)
