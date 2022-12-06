@@ -47,13 +47,20 @@ Video como hacer PR: https://youtu.be/Lxt8Acob6aU
         </a>
     </td>
     <td align="center">
+        <a href="https://github.com/jzvi12">
+            <img src="https://avatars.githubusercontent.com/u/10729787?v=4" width="50;" alt="jzvi12"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
+    </td></tr>
+<tr>
+    <td align="center">
         <a href="https://github.com/tonyvazgar">
             <img src="https://avatars.githubusercontent.com/u/21047090?v=4" width="50;" alt="tonyvazgar"/>
             <br />
             <sub><b>Luis Antonio Vázquez García</b></sub>
         </a>
-    </td></tr>
-<tr>
+    </td>
     <td align="center">
         <a href="https://github.com/ulisesvina">
             <img src="https://avatars.githubusercontent.com/u/20508563?v=4" width="50;" alt="ulisesvina"/>
