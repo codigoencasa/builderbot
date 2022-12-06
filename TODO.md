@@ -2,6 +2,7 @@
 - [X] __(doc)__ Video de como colaborar PR
 - [ ] __(doc)__ Video implementación de test y cobertura
 - [ ] __(doc)__ Video explicacion de github action
+- [ ] Crear packages list externas
 
 ### @bot-whatsapp/bot
 - [X] agregar export package
@@ -13,7 +14,7 @@
 - [ ] colocar mensaje esperando conectando whatsapp (provider)
 - [ ] createDatabase validar implementacion de funciones
 - [ ] limitar caracteres de mensajes
-- [ ] cuando envias numeros (5 o 1) se dispara el flujo
+- [X] cuando envias numeros (5 o 1) se dispara el flujo
 
 ### @bot-whatsapp/database
 - [X] agregar export package

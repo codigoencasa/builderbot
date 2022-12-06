@@ -1,16 +1,23 @@
+const { EventEmitter } = require('node:events')
 const polka = require('polka')
-const parsePolka = require('@polka/parse')
+const { urlencoded } = require('body-parser')
+const { parseNumber } = require('./utils')
 
-class WebHookServer {
-    incomingMsg = (req, res, next) => {
+class TwilioWebHookServer extends EventEmitter {
+    incomingMsg = (req, res) => {
         const { body } = req
-        let json = JSON.stringify({ error: 'Missing CSRF token', body })
+        this.emit('message', {
+            from: parseNumber(body.From),
+            to: parseNumber(body.To),
+            body: body.Body,
+        })
+        const json = JSON.stringify({ body })
         res.end(json)
     }
 
     start = () => {
         polka()
-            .use(parsePolka.urlencoded({ extended: false }))
+            .use(urlencoded({ extended: true }))
             .post('/hook', this.incomingMsg)
             .listen(3000, () => {
                 console.log(`> Running on localhost:3000 /hook`)
@@ -18,4 +25,4 @@ class WebHookServer {
     }
 }
 
-module.exports = WebHookServer
+module.exports = TwilioWebHookServer
