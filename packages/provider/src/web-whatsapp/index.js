@@ -1,13 +1,24 @@
-const { Client, LocalAuth } = require('whatsapp-web.js')
+const {
+    Client,
+    LocalAuth,
+    MessageMedia,
+    Buttons,
+    List,
+} = require('whatsapp-web.js')
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const { Console } = require('console')
-const { createWriteStream } = require('fs')
+const { createWriteStream, existsSync } = require('fs')
 const { cleanNumber, generateImage, isValidNumber } = require('./utils')
 
 const logger = new Console({
     stdout: createWriteStream('./log'),
 })
 
+/**
+ * WebWhatsappProvider: Es una clase tipo adaptor
+ * que extiende clases de ProviderClass (la cual es como interfaz para sber que funciones rqueridas)
+ * https://github.com/pedroslopez/whatsapp-web.js
+ */
 class WebWhatsappProvider extends ProviderClass {
     vendor
     constructor() {
@@ -21,13 +32,14 @@ class WebWhatsappProvider extends ProviderClass {
         for (const { event, func } of listEvents) {
             this.vendor.on(event, func)
         }
-
+        this.vendor.emit('preinit')
         this.vendor.initialize().catch((e) => {
             logger.log(e)
             this.emit('require_action', {
                 instructions: [
-                    `Debes eliminar la carpeta .wwebjs_auth`,
-                    `y reiniciar nuevamente el bot `,
+                    `(Opcion 1): Debes eliminar la carpeta .wwebjs_auth y reiniciar nuevamente el bot. `,
+                    `(Opcion 2): Intenta actualizar el paquete [npm install whatsapp-web.js] `,
+                    `(Opcion 3): Ir FORO de discord https://link.codigoencasa.com/DISCORD `,
                 ],
             })
         })
@@ -61,10 +73,6 @@ class WebWhatsappProvider extends ProviderClass {
             func: () => this.emit('ready', true),
         },
         {
-            event: 'authenticated',
-            func: () => this.emit('ready', true),
-        },
-        {
             event: 'message',
             func: (payload) => {
                 if (payload.from === 'status@broadcast') {
@@ -80,9 +88,86 @@ class WebWhatsappProvider extends ProviderClass {
         },
     ]
 
-    sendMessage = async (userId, message) => {
-        const number = cleanNumber(userId)
+    /**
+     * Enviar un archivo multimedia
+     * https://docs.wwebjs.dev/MessageMedia.html
+     * @private
+     * @param {*} number
+     * @param {*} mediaInput
+     * @returns
+     */
+    sendMedia = async (number, mediaInput = null) => {
+        if (!existsSync(mediaInput))
+            throw new Error(`NO_SE_ENCONTRO: ${mediaInput}`)
+        const media = MessageMedia.fromFilePath(mediaInput)
+        return this.vendor.sendMessage(number, media, {
+            sendAudioAsVoice: true,
+        })
+    }
+
+    /**
+     * Enviar botones
+     * https://docs.wwebjs.dev/Buttons.html
+     * @private
+     * @param {*} number
+     * @param {*} message
+     * @param {*} buttons []
+     * @returns
+     */
+    sendButtons = async (number, message, buttons = []) => {
+        const buttonMessage = new Buttons(message, buttons, '', '')
+        return this.vendor.sendMessage(number, buttonMessage)
+    }
+
+    /**
+     * Enviar lista
+     * https://docs.wwebjs.dev/List.html
+     * @private
+     * @alpha No funciona en whatsapp bussines
+     * @param {*} number
+     * @param {*} message
+     * @param {*} buttons []
+     * @returns
+     */
+    sendList = async (number, message, listInput = []) => {
+        let sections = [
+            {
+                title: 'sectionTitle',
+                rows: [
+                    { title: 'ListItem1', description: 'desc' },
+                    { title: 'ListItem2' },
+                ],
+            },
+        ]
+        let list = new List('List body', 'btnText', sections, 'Title', 'footer')
+        return this.vendor.sendMessage(number, list)
+    }
+
+    /**
+     * Enviar un mensaje solo texto
+     * https://docs.wwebjs.dev/Message.html
+     * @private
+     * @param {*} number
+     * @param {*} message
+     * @returns
+     */
+    sendText = async (number, message) => {
         return this.vendor.sendMessage(number, message)
+    }
+
+    /**
+     *
+     * @param {*} userId
+     * @param {*} message
+     * @param {*} param2
+     * @returns
+     */
+    sendMessage = async (userId, message, { options }) => {
+        const number = cleanNumber(userId)
+        if (options?.media) return this.sendMedia(number, options.media)
+        if (options?.buttons?.length)
+            return this.sendButtons(number, message, options.buttons)
+        return this.sendText(number, message)
     }
 }
 

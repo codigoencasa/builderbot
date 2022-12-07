@@ -21,28 +21,24 @@ class FlowClass {
     }
 
     find = (keyOrWord, symbol = false, overFlow = null) => {
+        keyOrWord = `${keyOrWord}`
         let capture = false
         let messages = []
         let refSymbol = null
         overFlow = overFlow ?? this.flowSerialize
 
-        const mapSensitiveString = (str, flag = false) => {
-            if (!flag && Array.isArray(str)) {
-                return str.map((c) => c.toLowerCase())
+        /** Retornar expresion regular para buscar coincidencia */
+        const mapSensitive = (str, flag = false) => {
+            const regexSensitive = flag ? 'g' : 'i'
+            if (Array.isArray(str)) {
+                return new RegExp(str.join('|'), regexSensitive)
             }
-
-            if (!flag && typeof str === 'string') {
-                return str.toLowerCase()
-            }
-
-            return str
+            return new RegExp(str, regexSensitive)
         }
 
         const findIn = (keyOrWord, symbol = false, flow = overFlow) => {
             const sensitive = refSymbol?.options?.sensitive || false
             capture = refSymbol?.options?.capture || false
-
-            keyOrWord = mapSensitiveString(keyOrWord, sensitive)
 
             if (capture) return messages
 
@@ -51,9 +47,9 @@ class FlowClass {
                 if (refSymbol?.answer) messages.push(refSymbol)
                 if (refSymbol?.ref) findIn(refSymbol.ref, true)
             } else {
-                refSymbol = flow.find((c) =>
-                    mapSensitiveString(c.keyword, sensitive).includes(keyOrWord)
-                )
+                refSymbol = flow.find((c) => {
+                    return mapSensitive(c.keyword, sensitive).test(keyOrWord)
+                })
                 if (refSymbol?.ref) findIn(refSymbol.ref, true)
                 return messages
             }

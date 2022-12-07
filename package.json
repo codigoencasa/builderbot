@@ -7,6 +7,7 @@
     "scripts": {
         "commit": "git-cz",
         "cli:rollup": "rollup --config ./packages/cli/rollup-cli.config.js ",
+        "create-bot:rollup": "rollup --config ./packages/create-bot-whatsapp/rollup-create.config.js ",
         "bot:rollup": "rollup --config ./packages/bot/rollup-bot.config.js",
         "provider:rollup": "rollup --config ./packages/provider/rollup-provider.config.js ",
         "database:rollup": "rollup --config ./packages/database/rollup-database.config.js",
@@ -16,12 +17,12 @@
         "lint:check": "eslint ./packages",
         "lint:fix": "eslint --fix ./packages",
         "build": "yarn run cli:rollup && yarn run bot:rollup && yarn run provider:rollup && yarn run database:rollup",
-        "link.dist": "cd packages/bot && npm link && cd ../provider && npm link && cd ../cli && npm link && cd ../database && npm link && cd ../provider && npm link",
         "copy.lib": "node ./scripts/move.js",
         "test.unit": "node ./node_modules/uvu/bin.js packages test",
         "test.coverage": "node ./node_modules/c8/bin/c8.js npm run test.unit",
         "test": "npm run test.coverage",
         "cli": "node ./packages/cli/bin/cli.js",
+        "create": "node ./packages/create-bot-whatsapp/bin/create.js",
         "dev:debug": "node --inspect ./example-app/app.js",
         "dev": "node ./example-app/app.js",
         "prepare": "npx husky install",
@@ -30,6 +31,7 @@
         "release": "standard-version"
     },
     "workspaces": [
+        "packages/create-bot-whatsapp",
         "packages/bot",
         "packages/cli",
         "packages/database",
