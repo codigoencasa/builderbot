@@ -5,6 +5,12 @@ const TwilioWebHookServer = require('./server')
 const { parseNumber } = require('./utils')
 
 /**
+ * ⚙️TwilioProvider: Es un provedor que te ofrece enviar
+ * mensaje a Whatsapp via API
+ * info: https://www.twilio.com/es-mx/messaging/whatsapp
+ * video: https://youtu.be/KoOmsHylxUw
+ *
+ * Necesitas las siguientes tokens y valores
  * { accountSid, authToken, vendorNumber }
  */
 class TwilioProvider extends ProviderClass {
@@ -15,7 +21,7 @@ class TwilioProvider extends ProviderClass {
         super()
         this.vendor = new twilio(accountSid, authToken)
         this.twilioHook = new TwilioWebHookServer(_port)
-        this.vendorNumber = vendorNumber
+        this.vendorNumber = parseNumber(vendorNumber)
 
         this.twilioHook.start()
         const listEvents = this.busEvents()
@@ -23,14 +29,6 @@ class TwilioProvider extends ProviderClass {
         for (const { event, func } of listEvents) {
             this.twilioHook.on(event, func)
         }
-    }
-
-    sendMessage = async (number, message) => {
-        return this.vendor.messages.create({
-            body: message,
-            from: ['whatsapp:+', parseNumber(this.vendorNumber)].join(''),
-            to: ['whatsapp:+', parseNumber(number)].join(''),
-        })
     }
 
     /**
@@ -54,6 +52,65 @@ class TwilioProvider extends ProviderClass {
             },
         },
     ]
+
+    /**
+     * Enviar un archivo multimedia
+     * https://www.twilio.com/es-mx/docs/whatsapp/tutorial/send-and-receive-media-messages-whatsapp-nodejs
+     * @private
+     * @param {*} number
+     * @param {*} mediaInput
+     * @returns
+     */
+    sendMedia = async (number, message, mediaInput = null) => {
+        if (!mediaInput) throw new Error(`MEDIA_INPUT_NULL_: ${mediaInput}`)
+        number = parseNumber(number)
+        return this.vendor.messages.create({
+            mediaUrl: [`${mediaInput}`],
+            body: message,
+            from: `whatsapp:+${this.vendorNumber}`,
+            to: `whatsapp:+${number}`,
+        })
+    }
+
+    /**
+     * Enviar botones
+     * https://www.twilio.com/es-mx/docs/whatsapp/buttons
+     * @private
+     * @param {*} number
+     * @param {*} message
+     * @param {*} buttons []
+     * @returns
+     */
+    sendButtons = async (number, message, buttons = []) => {
+        console.log(``)
+        console.log(
+            `[NOTA]: Actualmente enviar botons con Twilio esta en desarrollo`
+        )
+        console.log(
+            `[NOTA]: https://www.twilio.com/es-mx/docs/whatsapp/buttons`
+        )
+        console.log(``)
+    }
+
+    /**
+     *
+     * @param {*} userId
+     * @param {*} message
+     * @param {*} param2
+     * @returns
+     */
+    sendMessage = async (number, message, { options }) => {
+        number = parseNumber(number)
+        if (options?.buttons?.length)
+            this.sendButtons(number, message, options.buttons)
+        if (options?.media)
+            return this.sendMedia(number, message, options.media)
+        return this.vendor.messages.create({
+            body: message,
+            from: `whatsapp:+${this.vendorNumber}`,
+            to: `whatsapp:+${number}`,
+        })
+    }
 }
 
 module.exports = TwilioProvider

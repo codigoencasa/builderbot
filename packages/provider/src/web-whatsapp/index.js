@@ -8,14 +8,19 @@ const {
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const { Console } = require('console')
 const { createWriteStream, existsSync } = require('fs')
-const { cleanNumber, generateImage, isValidNumber } = require('./utils')
+const {
+    cleanNumber,
+    generateImage,
+    isValidNumber,
+    downloadMedia,
+} = require('./utils')
 
 const logger = new Console({
     stdout: createWriteStream('./log'),
 })
 
 /**
- * WebWhatsappProvider: Es una clase tipo adaptor
+ * ⚙️ WebWhatsappProvider: Es una clase tipo adaptor
  * que extiende clases de ProviderClass (la cual es como interfaz para sber que funciones rqueridas)
  * https://github.com/pedroslopez/whatsapp-web.js
  */
@@ -97,9 +102,9 @@ class WebWhatsappProvider extends ProviderClass {
      * @returns
      */
     sendMedia = async (number, mediaInput = null) => {
-        if (!existsSync(mediaInput))
-            throw new Error(`NO_SE_ENCONTRO: ${mediaInput}`)
-        const media = MessageMedia.fromFilePath(mediaInput)
+        if (!mediaInput) throw new Error(`NO_SE_ENCONTRO: ${mediaInput}`)
+        const fileDownloaded = await downloadMedia(mediaInput)
+        const media = MessageMedia.fromFilePath(fileDownloaded)
         return this.vendor.sendMessage(number, media, {
             sendAudioAsVoice: true,
         })
@@ -164,9 +169,9 @@ class WebWhatsappProvider extends ProviderClass {
      */
     sendMessage = async (userId, message, { options }) => {
         const number = cleanNumber(userId)
-        if (options?.media) return this.sendMedia(number, options.media)
         if (options?.buttons?.length)
             return this.sendButtons(number, message, options.buttons)
+        if (options?.media) return this.sendMedia(number, options.media)
         return this.sendText(number, message)
     }
 }
