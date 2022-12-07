@@ -11,9 +11,10 @@
 - [X] sensitivy viene activado por defecto
 - [X] fallback respuesta en hijo: Se puede colocar en option el ref de la answer fallback
 - [X] Cuando Envian Sticket devuelve mensaje raro
+- [ ] addAnswer agregar delay
 - [ ] colocar mensaje esperando conectando whatsapp (provider)
 - [ ] createDatabase validar implementacion de funciones
-- [ ] limitar caracteres de mensajes
+- [ ] limitar caracteres de mensajes 4000
 - [X] cuando envias numeros (5 o 1) se dispara el flujo
 
 ### @bot-whatsapp/database

@@ -1,5 +1,7 @@
 const { toCtx } = require('../io/methods')
 const { printer } = require('../utils/interactive')
+const { delay } = require('../utils/delay')
+const Queue = require('../utils/queue')
 const { Console } = require('console')
 const { createWriteStream } = require('fs')
 
@@ -140,10 +142,14 @@ class CoreClass {
         ])
     }
 
-    sendFlow = (messageToSend, numberOrId) => {
+    sendFlow = async (messageToSend, numberOrId) => {
         const queue = []
         for (const ctxMessage of messageToSend) {
-            queue.push(this.sendProviderAndSave(numberOrId, ctxMessage))
+            const delayMs = ctxMessage?.options?.delay || 0
+            if (delayMs) await delay(delayMs)
+            Queue.enqueue(() =>
+                this.sendProviderAndSave(numberOrId, ctxMessage)
+            )
         }
         return Promise.all(queue)
     }
