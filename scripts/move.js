@@ -11,6 +11,7 @@ const copyLibPkg = async (pkgName, to) => {
 }
 
 Promise.all([
+    copyLibPkg('create-bot-whatsapp', appDir),
     copyLibPkg('bot', appDir),
     copyLibPkg('database', appDir),
     copyLibPkg('provider', appDir),

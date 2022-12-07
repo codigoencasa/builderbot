@@ -22,11 +22,13 @@ const createFlow = (args) => {
 
 /**
  * Crear instancia de clase Provider
+ * Depdendiendo del Provider puedes pasar argumentos
+ * Ver Documentacion
  * @param {*} args
  * @returns
  */
-const createProvider = (providerClass = class {}) => {
-    const providerInstance = new providerClass()
+const createProvider = (providerClass = class {}, args = null) => {
+    const providerInstance = new providerClass(args)
     if (!providerClass.prototype instanceof ProviderClass)
         throw new Error('El provider no implementa ProviderClass')
     return providerInstance

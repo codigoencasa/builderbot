@@ -3,7 +3,7 @@ const { toJson } = require('./toJson')
 /**
  *
  * @param answer string
- * @param options {media:string, buttons:[{"body":"😎 Cursos"}], capture:true default false}
+ * @param options {media:string, buttons:[{"body":"😎 Cursos"}], delay:ms, capture:true default false}
  * @returns
  */
 const addAnswer =
@@ -24,6 +24,7 @@ const addAnswer =
                     : false,
             child:
                 typeof options?.child === 'string' ? `${options?.child}` : null,
+            delay: typeof options?.delay === 'number' ? options?.delay : 0,
         })
 
         const getNested = () => ({

@@ -2,6 +2,7 @@
 - [X] __(doc)__ Video de como colaborar PR
 - [ ] __(doc)__ Video implementación de test y cobertura
 - [ ] __(doc)__ Video explicacion de github action
+- [ ] Crear packages list externas
 
 ### @bot-whatsapp/bot
 - [X] agregar export package
@@ -10,15 +11,17 @@
 - [X] sensitivy viene activado por defecto
 - [X] fallback respuesta en hijo: Se puede colocar en option el ref de la answer fallback
 - [X] Cuando Envian Sticket devuelve mensaje raro
+- [x] addAnswer agregar delay
 - [ ] colocar mensaje esperando conectando whatsapp (provider)
 - [ ] createDatabase validar implementacion de funciones
-- [ ] limitar caracteres de mensajes
+- [ ] limitar caracteres de mensajes 4000
+- [X] cuando envias numeros (5 o 1) se dispara el flujo
 
 ### @bot-whatsapp/database
 - [X] agregar export package
 - [X] __(doc):__ Video para explicar como implementar nuevos database
 - [X] Mongo adapter
-- [ ] MySQL adapter
+- [X] MySQL adapter
 - [ ] JsonFile adapter
 
 ### @bot-whatsapp/provider

@@ -1,6 +1,13 @@
 const { toCtx } = require('../io/methods')
 const { printer } = require('../utils/interactive')
+const { delay } = require('../utils/delay')
+const Queue = require('../utils/queue')
+const { Console } = require('console')
+const { createWriteStream } = require('fs')
 
+const logger = new Console({
+    stdout: createWriteStream(`${process.cwd()}/core.class.log`),
+})
 /**
  * [ ] Escuchar eventos del provider asegurarte que los provider emitan eventos
  * [ ] Guardar historial en db
@@ -25,6 +32,10 @@ class CoreClass {
      * Manejador de eventos
      */
     listenerBusEvents = () => [
+        {
+            event: 'preinit',
+            func: () => printer('Iniciando provider espere...'),
+        },
         {
             event: 'require_action',
             func: ({ instructions, title = '⚡⚡ ACCION REQUERIDA ⚡⚡' }) =>
@@ -52,6 +63,7 @@ class CoreClass {
      * @returns
      */
     handleMsg = async (messageInComming) => {
+        logger.log(`[handleMsg]: `, messageInComming)
         const { body, from } = messageInComming
         let msgToSend = []
         let fallBackFlag = false
@@ -130,10 +142,14 @@ class CoreClass {
         ])
     }
 
-    sendFlow = (messageToSend, numberOrId) => {
+    sendFlow = async (messageToSend, numberOrId) => {
         const queue = []
         for (const ctxMessage of messageToSend) {
-            queue.push(this.sendProviderAndSave(numberOrId, ctxMessage))
+            const delayMs = ctxMessage?.options?.delay || 0
+            if (delayMs) await delay(delayMs)
+            Queue.enqueue(() =>
+                this.sendProviderAndSave(numberOrId, ctxMessage)
+            )
         }
         return Promise.all(queue)
     }
