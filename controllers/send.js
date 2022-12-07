@@ -69,12 +69,14 @@ const sendMessage = async (client, number = null, text = null, trigger = null) =
  * @param {*} number 
  */
 const sendMessageButton = async (client, number = null, text = null, actionButtons) => {
+    setTimeout(async () => {
     number = cleanNumber(number)
     const { title = null, message = null, footer = null, buttons = [] } = actionButtons;
     let button = new Buttons(message,[...buttons], title, footer);
     client.sendMessage(number, button);
-
+    await readChat(number, message, actionButtons)
     console.log(`⚡⚡⚡ Enviando mensajes....`);
+    }, DELAY_TIME)
 }
 
 
