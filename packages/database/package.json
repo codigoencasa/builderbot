@@ -10,11 +10,13 @@
     "dependencies": {
         "dotenv": "^16.0.3",
         "mongodb": "^4.11.0",
+        "stormdb": "^0.6.0",
         "mysql2": "^2.3.3"
     },
     "exports": {
         "./mock": "./lib/mock/index.cjs",
         "./mongo": "./lib/mongo/index.cjs",
+        "./json-file": "./lib/json-file/index.cjs",
         "./mysql": "./lib/mysql/index.cjs"
     }
 }
