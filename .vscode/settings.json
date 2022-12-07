@@ -4,6 +4,7 @@
         "contributing",
         "cli",
         "bot",
-        "provider"
+        "provider",
+        "adapter"
     ]
 }

@@ -13,9 +13,10 @@ class MyslAdapter {
     async init() {
         this.db = mysql.createConnection(this.credentials)
 
-        await this.db.connect((error) => {
+        await this.db.connect(async (error) => {
             if (!error) {
                 console.log(`Solicitud de conexión a base de datos exitosa`)
+                await this.checkTableExists()
             }
 
             if (error) {
@@ -64,6 +65,42 @@ class MyslAdapter {
         })
         this.listHistory.push(ctx)
     }
+
+    createTable = () =>
+        new Promise((resolve) => {
+            const tableName = 'history'
+
+            const sql = `CREATE TABLE ${tableName} 
+        (id INT AUTO_INCREMENT PRIMARY KEY, 
+        ref varchar(255) NOT NULL,
+        keyword varchar(255) NOT NULL,
+        answer longtext NOT NULL,
+        refSerialize varchar(255) NOT NULL,
+        phone varchar(255) NOT NULL,
+        options longtext NOT NULL
+        )`
+
+            this.db.query(sql, (err) => {
+                if (err) throw err
+                console.log(`Tabla ${tableName} creada correctamente `)
+                resolve(true)
+            })
+        })
+
+    checkTableExists = () =>
+        new Promise((resolve) => {
+            const sql = "SHOW TABLES LIKE 'history'"
+
+            this.db.query(sql, (err, rows) => {
+                if (err) throw err
+
+                if (!rows.length) {
+                    this.createTable()
+                }
+
+                resolve(!!rows.length)
+            })
+        })
 }
 
 module.exports = MyslAdapter
