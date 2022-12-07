@@ -57,8 +57,12 @@ const listenMessage = () => client.on('message', async msg => {
 
     if (process.env.DATABASE === 'dialogflow') {
         if (!message.length) return;
-        const response = await bothResponse(message, number);
+        const response = await bothResponse(message.substring(256,-1), number);
         await sendMessage(client, from, response.replyMessage);
+        if(response.actions){
+        await sendMessageButton(client, from, null, response.actions);
+        return            
+        }
         if (response.media) {
             sendMedia(client, from, response.media);
         }
