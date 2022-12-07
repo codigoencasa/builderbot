@@ -11,10 +11,10 @@ class TwilioProvider extends ProviderClass {
     twilioHook
     vendor
     vendorNumber
-    constructor({ accountSid, authToken, vendorNumber }) {
+    constructor({ accountSid, authToken, vendorNumber }, _port = 3000) {
         super()
         this.vendor = new twilio(accountSid, authToken)
-        this.twilioHook = new TwilioWebHookServer()
+        this.twilioHook = new TwilioWebHookServer(_port)
         this.vendorNumber = vendorNumber
 
         this.twilioHook.start()
