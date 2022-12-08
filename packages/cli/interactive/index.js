@@ -12,43 +12,43 @@ const startInteractive = async () => {
             type: 'text',
             name: 'exampeOpt',
             message:
-                'Quieres crear una app de ejemplo "example-app-example"? (Y/n)',
+                '¿Quieres crear una app de ejemplo "example-app-example"? (Y/n)',
         },
         // {
         //     type: 'text',
         //     name: 'dependencies',
         //     message:
-        //         'Quieres actualizar las librerias "whatsapp-web.js"? (Y/n)',
+        //         '¿Quieres actualizar las librerías "whatsapp-web.js"? (Y/n)',
         // },
         {
             type: 'text',
             name: 'cleanTmp',
-            message: 'Quieres limpiar la session del bot? (Y/n)',
+            message: '¿Quieres limpiar la sesión del bot? (Y/n)',
         },
         {
             type: 'multiselect',
             name: 'providerWs',
-            message: 'Proveedor de Whatsapp',
+            message: '¿Cuál proveedor de whatsapp quieres utilizar?',
             choices: [
                 { title: 'whatsapp-web.js', value: 'whatsapp-web.js' },
                 { title: 'API Oficial (Meta)', value: 'meta', disabled: true },
                 { title: 'Twilio', value: 'twilio', disabled: true },
             ],
             max: 1,
-            hint: 'Espacio para selecionar',
+            hint: 'Espacio para seleccionar',
             instructions: '↑/↓',
         },
         {
             type: 'multiselect',
             name: 'providerDb',
-            message: 'Cual base de datos quieres usar',
+            message: '¿Cuál base de datos quieres utilizar?',
             choices: [
                 { title: 'JSONFile', value: 'json' },
                 { title: 'MySQL', value: 'mysql', disabled: true },
                 { title: 'Mongo', value: 'mongo', disabled: true },
             ],
             max: 1,
-            hint: 'Espacio para selecionar',
+            hint: 'Espacio para seleccionar',
             instructions: '↑/↓',
         },
     ]
@@ -57,7 +57,7 @@ const startInteractive = async () => {
     checkNodeVersion()
     checkOs()
     const onCancel = () => {
-        console.log('Proceso cancelado!')
+        console.log('¡Proceso cancelado!')
         return true
     }
     const response = await prompts(questions, { onCancel })
@@ -110,12 +110,12 @@ const startInteractive = async () => {
         if (!providerWs.length) {
             console.log(
                 red(
-                    `Debes de seleccionar una WS Provider. Tecla [Space] para seleccionar`
+                    `Debes seleccionar un proveedor de whatsapp. Tecla [Space] para seleccionar`
                 )
             )
             process.exit(1)
         }
-        console.log(yellow(`'Deberia crer una carpeta en root/provider'`))
+        console.log(yellow(`'Debería crear una carpeta en root/provider'`))
         return true
     }
 
@@ -124,13 +124,13 @@ const startInteractive = async () => {
         if (!providerDb.length) {
             console.log(
                 red(
-                    `Debes de seleccionar una DB Provider. Tecla [Space] para seleccionar`
+                    `Debes seleccionar un proveedor de base de datos. Tecla [Space] para seleccionar`
                 )
             )
             process.exit(1)
         }
         if (answer === 'json') {
-            console.log('Deberia crer una carpeta en root/data')
+            console.log('Debería crear una carpeta en root/data')
             return 1
         }
     }
