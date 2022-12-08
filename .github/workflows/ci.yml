@@ -23,3 +23,7 @@ jobs:
             - run: corepack enable
             - name: Install NPM Dependencies
               run: yarn install --immutable --network-timeout 300000
+            - name: Build
+              run: yarn build
+            - name: Test
+              run: yarn test
