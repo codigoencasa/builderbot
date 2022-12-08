@@ -5,6 +5,7 @@
         "cli",
         "bot",
         "provider",
-        "adapter"
+        "adapter",
+        "ci"
     ]
 }
