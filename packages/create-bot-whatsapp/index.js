@@ -4,8 +4,8 @@
 const main = () => {
     console.clear()
     console.log(``)
-    console.log(`[PostInstall]: Este es el main function.`)
-    console.log(`[PostInstall]: 👌 Aqui podrias instalar cosas`)
+    console.log(`[PostInstall]: Esta es la 'main function'.`)
+    console.log(`[PostInstall]: 👌 Aquí podrías instalar cosas`)
     console.log(``)
 }
 
