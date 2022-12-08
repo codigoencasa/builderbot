@@ -2,7 +2,7 @@ name: Bot Relases
 
 on:
     release:
-        types: [released]
+        types: [released, published]
 jobs:
     build:
         runs-on: ubuntu-latest
