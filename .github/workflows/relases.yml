@@ -1,11 +1,8 @@
-name: Bot CI Test
+name: Bot Relases
 
 on:
-    push:
-        branches: [dev]
-    pull_request:
-        branches: [main]
-
+    release:
+        types: [released]
 jobs:
     build:
         runs-on: ubuntu-latest
@@ -25,3 +22,5 @@ jobs:
               run: yarn install --immutable --network-timeout 300000
             - name: Test
               run: yarn test
+            - name: Build
+              run: yarn build
