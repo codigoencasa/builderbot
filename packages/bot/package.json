@@ -3,7 +3,6 @@
     "version": "0.0.1",
     "description": "",
     "main": "./lib/bundle.bot.cjs",
-    "private": true,
     "scripts": {
         "bot:rollup": "node ../../node_modules/.bin/rollup index.js --config ./rollup-cli.config.js",
         "format:check": "prettier --check .",

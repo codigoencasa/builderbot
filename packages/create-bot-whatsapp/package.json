@@ -3,7 +3,6 @@
     "version": "0.0.1",
     "description": "",
     "main": "./lib/bin/bundle.create.cjs",
-    "private": true,
     "dependencies": {
         "@bot-whatsapp/cli": "*"
     },

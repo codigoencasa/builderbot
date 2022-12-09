@@ -3,7 +3,6 @@
     "version": "0.0.1",
     "description": "Esto es el conector a  mysql, pg, mongo",
     "main": "./lib/mock/index.cjs",
-    "private": true,
     "keywords": [],
     "author": "",
     "license": "ISC",
