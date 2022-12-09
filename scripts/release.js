@@ -1,6 +1,6 @@
 const { writeFile, readFileSync } = require('fs')
 const { join } = require('path')
-const { spawn, execFile } = require('node:child_process')
+const { execFile } = require('node:child_process')
 const process = require('node:process')
 const util = require('node:util')
 
@@ -77,7 +77,7 @@ const packRelease = async (packageName) => {
 }
 
 const publishRelease = async (packageName, latest = false) => {
-    const args = !latest ? ['--tag', 'next'] : ['--access', 'public']
+    const args = !latest ? ['--tag', 'dev'] : ['--access', 'public']
     const pkgJson = join(PATH_PACKAGES, packageName)
     const { stdout } = await cmd(NPM_COMMAND, ['publish'].concat(args), {
         stdio: 'inherit',
