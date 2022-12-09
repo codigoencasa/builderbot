@@ -904,7 +904,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bot-whatsapp/bot@*, @bot-whatsapp/bot@workspace:packages/bot":
+"@bot-whatsapp/bot@npm:*":
+  version: 0.0.1
+  resolution: "@bot-whatsapp/bot@npm:0.0.1"
+  dependencies:
+    dotenv: ^16.0.3
+  checksum: 4a9e6e4e3793149f65a569a2b672a6c71aa5ca34e169ca2230b4617c268ee0cd68a9bf10311f7a856a514a55e63fba97c2257f796056c25c3881646cebb18107
+  languageName: node
+  linkType: hard
+
+"@bot-whatsapp/bot@workspace:packages/bot":
   version: 0.0.0-use.local
   resolution: "@bot-whatsapp/bot@workspace:packages/bot"
   dependencies:
@@ -916,7 +925,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bot-whatsapp/cli@*, @bot-whatsapp/cli@workspace:packages/cli":
+"@bot-whatsapp/cli@npm:*":
+  version: 0.0.1
+  resolution: "@bot-whatsapp/cli@npm:0.0.1"
+  bin:
+    bot: bin/cli.js
+  checksum: f58373f5cc4014bc22664452d20ec676645d04ba95c4ea8525db1a6adafa3b183e403c72c8ff670670bad8b56be6da098cc6767c1bffffa086b76e987cf79e86
+  languageName: node
+  linkType: hard
+
+"@bot-whatsapp/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@bot-whatsapp/cli@workspace:packages/cli"
   dependencies:
@@ -929,7 +947,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bot-whatsapp/database@*, @bot-whatsapp/database@workspace:packages/database":
+"@bot-whatsapp/database@npm:*":
+  version: 0.0.1
+  resolution: "@bot-whatsapp/database@npm:0.0.1"
+  dependencies:
+    dotenv: ^16.0.3
+    mongodb: ^4.11.0
+  checksum: cc86a9a1117d5a3b4092f42cb138f8d04f6cacf0b9d6994a2c6f8ead7317c1d4acd8aee824ad4dfb4d6294646d1a32a49d37847d3b44bd35df86cdc18af675c4
+  languageName: node
+  linkType: hard
+
+"@bot-whatsapp/database@workspace:packages/database":
   version: 0.0.0-use.local
   resolution: "@bot-whatsapp/database@workspace:packages/database"
   dependencies:
@@ -940,7 +968,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bot-whatsapp/provider@*, @bot-whatsapp/provider@workspace:packages/provider":
+"@bot-whatsapp/provider@npm:*":
+  version: 0.0.1
+  resolution: "@bot-whatsapp/provider@npm:0.0.1"
+  dependencies:
+    "@bot-whatsapp/bot": "*"
+    qr-image: ^3.2.0
+  checksum: 01ffa3f06ed90cffd4157b2c81b7ed705ffd708ca49cb2b051de767959b97c100b84ab0ae2f1c46407007e42e3bbb29ad04e074829041b048317939ebf6569ca
+  languageName: node
+  linkType: hard
+
+"@bot-whatsapp/provider@workspace:packages/provider":
   version: 0.0.0-use.local
   resolution: "@bot-whatsapp/provider@workspace:packages/provider"
   dependencies:
@@ -964,7 +1002,6 @@ __metadata:
     cross-env: ^7.0.3
     eslint: ^8.26.0
     eslint-config-prettier: ^8.5.0
-    execa: ^6.1.0
     fs-extra: ^11.1.0
     git-cz: ^4.9.0
     husky: ^8.0.2
