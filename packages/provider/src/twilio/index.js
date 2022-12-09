@@ -81,7 +81,7 @@ class TwilioProvider extends ProviderClass {
      * @param {*} buttons []
      * @returns
      */
-    sendButtons = async (number, message, buttons = []) => {
+    sendButtons = async () => {
         console.log(``)
         console.log(
             `[NOTA]: Actualmente enviar botons con Twilio esta en desarrollo`
