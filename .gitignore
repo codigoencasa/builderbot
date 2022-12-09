@@ -31,3 +31,4 @@ example-app*/
 qr.svg
 package-lock.json
 yarn-error.log
+.npmrc
