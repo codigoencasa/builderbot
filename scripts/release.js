@@ -8,10 +8,25 @@ const OS_ENVIROMENT_WIN = process.platform.includes('win32')
 const semver = require('semver')
 
 const NPM_COMMAND = OS_ENVIROMENT_WIN ? 'npm.cmd' : 'npm'
-const [PKG_ARG, PKG_ARG_VERSION] = process.argv.slice(2) || [null]
+const [PKG_ARG, PKG_ARG_VERSION, NPM_TOKEN] = process.argv.slice(2) || [null]
 const PATH_PACKAGES = join(__dirname, '..', `packages`)
 
 const cmd = util.promisify(execFile)
+
+/**
+ * Create Token
+ */
+const npmToken = (token = null) =>
+    new Promise((resolve, reject) => {
+        writeFile(
+            `${process.cwd()}/.npmrc`,
+            `//registry.npmjs.org/:_authToken=${token}`,
+            (error) => {
+                if (error) reject(error)
+                resolve()
+            }
+        )
+    })
 
 /**
  * Leer package json
@@ -76,7 +91,7 @@ const packRelease = async (packageName) => {
     return stdout
 }
 
-const publishRelease = async (packageName, latest = false) => {
+const publishRelease = async (packageName, latest = null) => {
     const args = !latest ? ['--tag', 'dev'] : ['--access', 'public']
     const pkgJson = join(PATH_PACKAGES, packageName)
     const { stdout } = await cmd(NPM_COMMAND, ['publish'].concat(args), {
@@ -93,13 +108,15 @@ const publishRelease = async (packageName, latest = false) => {
 
 const main = async () => {
     if (PKG_ARG) {
+        const tokenNpm = NPM_TOKEN ? NPM_TOKEN.split('=').at(1) : null
         const pkgName = PKG_ARG ? PKG_ARG.split('=').at(1) : null
         const pkgNumber = PKG_ARG_VERSION
             ? PKG_ARG_VERSION.split('=').at(1)
             : null
+        if (tokenNpm) await npmToken(tokenNpm)
         await updateVersion(pkgName, pkgNumber)
         await packRelease(pkgName)
-        await publishRelease(pkgName)
+        await publishRelease(pkgName, pkgNumber)
     }
 }
 
