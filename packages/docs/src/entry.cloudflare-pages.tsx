@@ -7,10 +7,10 @@
  * - https://qwik.builder.io/qwikcity/adaptors/cloudflare-pages/
  *
  */
-import { createQwikCity } from '@builder.io/qwik-city/middleware/cloudflare-pages';
-import qwikCityPlan from '@qwik-city-plan';
-import render from './entry.ssr';
+import { createQwikCity } from '@builder.io/qwik-city/middleware/cloudflare-pages'
+import qwikCityPlan from '@qwik-city-plan'
+import render from './entry.ssr'
 
-const onRequest = createQwikCity({ render, qwikCityPlan });
+const onRequest = createQwikCity({ render, qwikCityPlan })
 
-export { onRequest };
+export { onRequest }

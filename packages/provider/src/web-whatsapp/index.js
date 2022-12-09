@@ -1,13 +1,7 @@
-const {
-    Client,
-    LocalAuth,
-    MessageMedia,
-    Buttons,
-    List,
-} = require('whatsapp-web.js')
+const { Client, LocalAuth, MessageMedia, Buttons } = require('whatsapp-web.js')
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const { Console } = require('console')
-const { createWriteStream, existsSync } = require('fs')
+const { createWriteStream } = require('fs')
 const {
     cleanNumber,
     generateImage,
@@ -134,19 +128,19 @@ class WebWhatsappProvider extends ProviderClass {
      * @param {*} buttons []
      * @returns
      */
-    sendList = async (number, message, listInput = []) => {
-        let sections = [
-            {
-                title: 'sectionTitle',
-                rows: [
-                    { title: 'ListItem1', description: 'desc' },
-                    { title: 'ListItem2' },
-                ],
-            },
-        ]
-        let list = new List('List body', 'btnText', sections, 'Title', 'footer')
-        return this.vendor.sendMessage(number, list)
-    }
+    // sendList = async (number, message, listInput = []) => {
+    //     let sections = [
+    //         {
+    //             title: 'sectionTitle',
+    //             rows: [
+    //                 { title: 'ListItem1', description: 'desc' },
+    //                 { title: 'ListItem2' },
+    //             ],
+    //         },
+    //     ]
+    //     let list = new List('List body', 'btnText', sections, 'Title', 'footer')
+    //     return this.vendor.sendMessage(number, list)
+    // }
 
     /**
      * Enviar un mensaje solo texto

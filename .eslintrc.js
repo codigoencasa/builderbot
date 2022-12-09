@@ -10,5 +10,9 @@ module.exports = {
     parserOptions: {
         ecmaVersion: 'latest',
     },
-    rules: {},
+    rules: {
+        'no-unsafe-negation': 'off',
+        'no-prototype-builtins': 'off',
+        'no-useless-escape': 'off',
+    },
 }

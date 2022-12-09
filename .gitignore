@@ -20,6 +20,7 @@ coverage/
 log
 log/*
 *.log
+*.tgz
 lib
 tmp/
 .yarn/*
