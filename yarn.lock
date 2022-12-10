@@ -935,6 +935,7 @@ __metadata:
   dependencies:
     dotenv: ^16.0.3
     mongodb: ^4.11.0
+    mysql2: ^2.3.3
     stormdb: ^0.6.0
   languageName: unknown
   linkType: soft
