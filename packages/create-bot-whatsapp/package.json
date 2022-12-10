@@ -1,12 +1,15 @@
 {
     "name": "create-bot-whatsapp",
-    "version": "0.0.9-alpha.0",
+    "version": "0.0.13-alpha.0",
     "description": "",
-    "main": "./lib/bin/bundle.create.cjs",
+    "main": "./lib/bundle.create-bot-whatsapp.cjs",
+    "files": [
+        "./starters/",
+        "./bin/create.js",
+        "./lib/bundle.create-bot-whatsapp.cjs"
+    ],
+    "bin": "./bin/create.js",
     "dependencies": {
         "@bot-whatsapp/cli": "*"
-    },
-    "bin": {
-        "bot": "./lib/bin/bundle.create.cjs"
     }
 }

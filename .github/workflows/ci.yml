@@ -72,9 +72,6 @@ jobs:
             - name: Release @bot-whatsapp/create-bot-whatsapp
               run: yarn node ./scripts/release.js --name=create-bot-whatsapp --version= --token="${{ secrets.NPM_TOKEN }}"
 
-            - name: Release @bot-whatsapp/create-bot-whatsapp
-              run: yarn node ./scripts/release.js --name=create-bot-whatsapp --version= --token="${{ secrets.NPM_TOKEN }}"
-
             - name: Release @bot-whatsapp/database
               run: yarn node ./scripts/release.js --name=database --version= --token="${{ secrets.NPM_TOKEN }}"
 

@@ -10,29 +10,18 @@ const startInteractive = async () => {
     const questions = [
         {
             type: 'text',
-            name: 'exampeOpt',
-            message:
-                'Quieres crear una app de ejemplo "example-app-example"? (Y/n)',
-        },
-        // {
-        //     type: 'text',
-        //     name: 'dependencies',
-        //     message:
-        //         'Quieres actualizar las librerias "whatsapp-web.js"? (Y/n)',
-        // },
-        {
-            type: 'text',
-            name: 'cleanTmp',
-            message: 'Quieres limpiar la session del bot? (Y/n)',
+            name: 'outDir',
+            message: 'Quieres crear un bot? (Y/n)',
         },
         {
             type: 'multiselect',
             name: 'providerWs',
             message: 'Proveedor de Whatsapp',
             choices: [
-                { title: 'whatsapp-web.js', value: 'whatsapp-web.js' },
+                { title: 'whatsapp-web.js (gratis)', value: 'wweb' },
+                { title: 'Twilio', value: 'twilio' },
+                { title: 'Baileys (gratis)', value: 'bailey', disabled: true },
                 { title: 'API Oficial (Meta)', value: 'meta', disabled: true },
-                { title: 'Twilio', value: 'twilio', disabled: true },
             ],
             max: 1,
             hint: 'Espacio para selecionar',
@@ -43,9 +32,10 @@ const startInteractive = async () => {
             name: 'providerDb',
             message: 'Cual base de datos quieres usar',
             choices: [
-                { title: 'JSONFile', value: 'json' },
-                { title: 'MySQL', value: 'mysql', disabled: true },
-                { title: 'Mongo', value: 'mongo', disabled: true },
+                { title: 'Memory', value: 'memory' },
+                { title: 'Mongo', value: 'mongo' },
+                { title: 'MySQL', value: 'mysql' },
+                { title: 'Json', value: 'json', disabled: true },
             ],
             max: 1,
             hint: 'Espacio para selecionar',
@@ -64,11 +54,12 @@ const startInteractive = async () => {
     const {
         dependencies = '',
         cleanTmp = '',
-        exampeOpt = '',
+        outDir = '',
         providerDb = [],
         providerWs = [],
     } = response
     /**
+     * @deprecated
      * Question
      * @returns
      */
@@ -83,6 +74,7 @@ const startInteractive = async () => {
     }
 
     /**
+     * @deprecated
      * Question
      * @returns
      */
@@ -96,17 +88,28 @@ const startInteractive = async () => {
         }
     }
 
-    const createApp = async () => {
-        const answer = exampeOpt.toLowerCase() || 'n'
+    /**
+     * Crear una app (copiar plantilla)
+     * @returns
+     */
+    const createApp = async (templateName = null) => {
+        if (!templateName)
+            throw new Error('TEMPLATE_NAME_INVALID: ', templateName)
+        const answer = outDir.toLowerCase() || 'n'
         if (answer.includes('n')) return true
 
         if (answer.includes('y')) {
-            await copyBaseApp()
-            return true
+            await copyBaseApp(templateName)
+            return outDir
         }
     }
 
+    /**
+     * Selccionar Provider (meta, twilio, etc...)
+     * @returns
+     */
     const vendorProvider = async () => {
+        const [answer] = providerWs
         if (!providerWs.length) {
             console.log(
                 red(
@@ -116,11 +119,15 @@ const startInteractive = async () => {
             process.exit(1)
         }
         console.log(yellow(`'Deberia crer una carpeta en root/provider'`))
-        return true
+        return answer
     }
 
+    /**
+     * Selecionar adaptador de base de datos
+     * @returns
+     */
     const dbProvider = async () => {
-        const answer = providerDb
+        const [answer] = providerDb
         if (!providerDb.length) {
             console.log(
                 red(
@@ -129,18 +136,13 @@ const startInteractive = async () => {
             )
             process.exit(1)
         }
-        if (answer === 'json') {
-            console.log('Deberia crer una carpeta en root/data')
-            return 1
-        }
+        return answer
     }
 
-    await createApp()
-    await installOrUdpateDep()
-    await cleanAllSession()
-    await vendorProvider()
-    await dbProvider()
-    await jsonConfig()
+    const providerAdapter = await vendorProvider()
+    const dbAdapter = await dbProvider()
+    const NAME_DIR = ['base', providerAdapter, dbAdapter].join('-')
+    await createApp(NAME_DIR)
 }
 
 module.exports = { startInteractive }

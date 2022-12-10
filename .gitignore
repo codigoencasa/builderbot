@@ -1,4 +1,5 @@
 /node_modules
+/packages/create-bot-whatsapp/starters
 /packages/*/node_modules
 /packages/*/dist
 /packages/*/docs/dist
@@ -28,6 +29,8 @@ tmp/
 !.yarn/plugins/@yarnpkg/plugin-postinstall.cjs
 .fleet/
 example-app*/
+base-*/
+!starters/apps/base-*/
 qr.svg
 package-lock.json
 yarn-error.log
