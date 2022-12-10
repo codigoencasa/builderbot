@@ -1,10 +1,7 @@
 const prompts = require('prompts')
 const { yellow, red } = require('kleur')
-const { installAll } = require('../install')
-const { cleanSession } = require('../clean')
 const { copyBaseApp } = require('../create-app')
 const { checkNodeVersion, checkOs } = require('../check')
-const { jsonConfig } = require('../configuration')
 
 const startInteractive = async () => {
     const questions = [
@@ -51,42 +48,36 @@ const startInteractive = async () => {
         return true
     }
     const response = await prompts(questions, { onCancel })
-    const {
-        dependencies = '',
-        cleanTmp = '',
-        outDir = '',
-        providerDb = [],
-        providerWs = [],
-    } = response
+    const { outDir = '', providerDb = [], providerWs = [] } = response
     /**
      * @deprecated
      * Question
      * @returns
      */
-    const installOrUdpateDep = async () => {
-        const answer = dependencies.toLowerCase() || 'n'
-        if (answer.includes('n')) return true
+    // const installOrUdpateDep = async () => {
+    //     const answer = dependencies.toLowerCase() || 'n'
+    //     if (answer.includes('n')) return true
 
-        if (answer.includes('y')) {
-            await installAll()
-            return true
-        }
-    }
+    //     if (answer.includes('y')) {
+    //         await installAll()
+    //         return true
+    //     }
+    // }
 
     /**
      * @deprecated
      * Question
      * @returns
      */
-    const cleanAllSession = async () => {
-        const answer = cleanTmp.toLowerCase() || 'n'
-        if (answer.includes('n')) return true
+    // const cleanAllSession = async () => {
+    //     const answer = cleanTmp.toLowerCase() || 'n'
+    //     if (answer.includes('n')) return true
 
-        if (answer.includes('y')) {
-            await cleanSession()
-            return true
-        }
-    }
+    //     if (answer.includes('y')) {
+    //         await cleanSession()
+    //         return true
+    //     }
+    // }
 
     /**
      * Crear una app (copiar plantilla)
