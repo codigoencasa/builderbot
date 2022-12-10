@@ -34,16 +34,16 @@ class CoreClass {
     listenerBusEvents = () => [
         {
             event: 'preinit',
-            func: () => printer('Iniciando provider espere...'),
+            func: () => printer('Iniciando proveedor, espere...'),
         },
         {
             event: 'require_action',
-            func: ({ instructions, title = '⚡⚡ ACCION REQUERIDA ⚡⚡' }) =>
+            func: ({ instructions, title = '⚡⚡ ACCIÓN REQUERIDA ⚡⚡' }) =>
                 printer(instructions, title),
         },
         {
             event: 'ready',
-            func: () => printer('Provider conectado y listo'),
+            func: () => printer('Proveedor conectado y listo'),
         },
         {
             event: 'auth_failure',

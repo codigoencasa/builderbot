@@ -16,7 +16,7 @@ const startInteractive = async () => {
         {
             type: 'multiselect',
             name: 'providerWs',
-            message: 'Proveedor de Whatsapp',
+            message: '¿Cuál proveedor de whatsapp quieres utilizar?',
             choices: [
                 { title: 'whatsapp-web.js (gratis)', value: 'wweb' },
                 { title: 'Twilio', value: 'twilio' },
@@ -24,13 +24,13 @@ const startInteractive = async () => {
                 { title: 'API Oficial (Meta)', value: 'meta', disabled: true },
             ],
             max: 1,
-            hint: 'Espacio para selecionar',
+            hint: 'Espacio para seleccionar',
             instructions: '↑/↓',
         },
         {
             type: 'multiselect',
             name: 'providerDb',
-            message: 'Cual base de datos quieres usar',
+            message: '¿Cuál base de datos quieres utilizar?',
             choices: [
                 { title: 'Memory', value: 'memory' },
                 { title: 'Mongo', value: 'mongo' },
@@ -38,7 +38,7 @@ const startInteractive = async () => {
                 { title: 'Json', value: 'json', disabled: true },
             ],
             max: 1,
-            hint: 'Espacio para selecionar',
+            hint: 'Espacio para seleccionar',
             instructions: '↑/↓',
         },
     ]
@@ -47,7 +47,7 @@ const startInteractive = async () => {
     checkNodeVersion()
     checkOs()
     const onCancel = () => {
-        console.log('Proceso cancelado!')
+        console.log('¡Proceso cancelado!')
         return true
     }
     const response = await prompts(questions, { onCancel })
@@ -113,7 +113,7 @@ const startInteractive = async () => {
         if (!providerWs.length) {
             console.log(
                 red(
-                    `Debes de seleccionar una WS Provider. Tecla [Space] para seleccionar`
+                    `Debes seleccionar un proveedor de whatsapp. Tecla [Space] para seleccionar`
                 )
             )
             process.exit(1)
@@ -131,7 +131,7 @@ const startInteractive = async () => {
         if (!providerDb.length) {
             console.log(
                 red(
-                    `Debes de seleccionar una DB Provider. Tecla [Space] para seleccionar`
+                    `Debes seleccionar un proveedor de base de datos. Tecla [Space] para seleccionar`
                 )
             )
             process.exit(1)
