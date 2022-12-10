@@ -1,4 +1,4 @@
-const { startInteractive } = require('@bot-whatsapp/cli')
+const { startInteractive } = require('../cli')
 /**
  * Voy a llamar directo a CLI
  * Temporalmente luego mejoro esta
