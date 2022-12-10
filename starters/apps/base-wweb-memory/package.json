@@ -1,0 +1,16 @@
+{
+    "name": "bot-whatsapp-base",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "pre-copy": "cd .. && yarn run copy.lib example-app-base",
+        "start": "node app.js"
+    },
+    "keywords": [],
+    "dependencies": {
+        "whatsapp-web.js": "^1.18.3"
+    },
+    "author": "",
+    "license": "ISC"
+}

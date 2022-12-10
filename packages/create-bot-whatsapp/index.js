@@ -1,12 +1,10 @@
+const { startInteractive } = require('@bot-whatsapp/cli')
 /**
- * Main function
+ * Voy a llamar directo a CLI
+ * Temporalmente luego mejoro esta
+ * parte
+ * @returns
  */
-const main = () => {
-    console.clear()
-    console.log(``)
-    console.log(`[PostInstall]: Esta es la 'main function'.`)
-    console.log(`[PostInstall]: 👌 Aquí podrías instalar cosas`)
-    console.log(``)
-}
+const main = () => startInteractive()
 
 module.exports = main
