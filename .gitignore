@@ -1,5 +1,5 @@
 /node_modules
-/packages/create-bot-whatsapp/starters
+/packages/*/starters
 /packages/*/node_modules
 /packages/*/dist
 /packages/*/docs/dist
