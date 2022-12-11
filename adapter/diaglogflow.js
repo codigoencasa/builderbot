@@ -34,6 +34,7 @@ const checkFileCredentials = () => {
 const detectIntent = async (queryText, waPhoneNumber) => {
     let media = null;
     let actions = null;
+    let listas = null;
     const sessionId = KEEP_DIALOG_FLOW ? 1 : waPhoneNumber;
     const sessionPath = sessionClient.projectAgentSessionPath(PROJECID, sessionId);
     const languageCode = process.env.LANGUAGE
@@ -55,16 +56,25 @@ const detectIntent = async (queryText, waPhoneNumber) => {
     const parsePayload = queryResult['fulfillmentMessages'].find((a) => a.message === 'payload');
     // console.log(singleResponse)
     if (parsePayload && parsePayload.payload) {
-        const { fields } = parsePayload.payload
-        actions = struct.decode(fields.actions.structValue) || null;
-        media = fields.media.stringValue || null
-    }
+        const { fields } = parsePayload.payload;        
+      
+        if (fields.actions) {
+          actions = struct.decode(fields.actions.structValue) || null;
+        }
+        if (fields.listas) {
+          listas = struct.decode(fields.listas.structValue) || null;
+        }
+        if (fields.media) {
+          media = fields.media.stringValue || null;
+        }
+      }
     const customPayload = parsePayload ? parsePayload['payload'] : null
 
     const parseData = {
         replyMessage: queryResult.fulfillmentText,
         media,
         actions,
+        listas,
         trigger: null
     }
     return parseData
