@@ -16,9 +16,9 @@ const copyFiles = async (from, to) => {
  * Copiar directorio con archivos
  * @param {*} templateName
  */
-const copyBaseApp = async (templateName = null) => {
-    const BASEP_APP_PATH_FROM = `${process.cwd()}/starters/apps/${templateName}`
-    const BASEP_APP_PATH_TO = `${process.cwd()}/${templateName}`
+const copyBaseApp = async (templateName = null, rootDir = process.cwd()) => {
+    const BASEP_APP_PATH_FROM = `${rootDir}/starters/apps/${templateName}`
+    const BASEP_APP_PATH_TO = `${rootDir}/${templateName}`
     await copyFiles(BASEP_APP_PATH_FROM, BASEP_APP_PATH_TO)
 }
 

@@ -64,11 +64,6 @@ const startInteractive = async () => {
     //     }
     // }
 
-    /**
-     * @deprecated
-     * Question
-     * @returns
-     */
     // const cleanAllSession = async () => {
     //     const answer = cleanTmp.toLowerCase() || 'n'
     //     if (answer.includes('n')) return true
