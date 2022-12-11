@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/cli",
-    "version": "0.0.5-alpha.0",
+    "version": "0.0.14-alpha.0",
     "description": "",
     "main": "index.js",
     "devDependencies": {
@@ -10,6 +10,7 @@
         "kleur": "^4.1.5"
     },
     "files": [
+        "./starters/",
         "./lib/cli/bundle.cli.cjs"
     ],
     "bin": {

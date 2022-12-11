@@ -1,7 +1,24 @@
 const prompts = require('prompts')
-const { yellow, red } = require('kleur')
+const { yellow, red, cyan } = require('kleur')
 const { copyBaseApp } = require('../create-app')
+const { join } = require('path')
+const { existsSync } = require('fs')
 const { checkNodeVersion, checkOs } = require('../check')
+
+const bannerDone = () => {
+    console.log(``)
+    console.log(
+        cyan(
+            [
+                `[Agradecimientos]: Este es un proyecto OpenSource, si tienes intenciones de colaborar puedes hacerlo:`,
+                `[😉] Comprando un cafe https://www.buymeacoffee.com/leifermendez`,
+                `[⭐] Dar estrella  https://github.com/leifermendez/bot-whatsapp`,
+                `[🚀] Realizando mejoras en el codigo`,
+            ].join('\n')
+        )
+    )
+    console.log(``)
+}
 
 const startInteractive = async () => {
     const questions = [
@@ -49,48 +66,29 @@ const startInteractive = async () => {
     }
     const response = await prompts(questions, { onCancel })
     const { outDir = '', providerDb = [], providerWs = [] } = response
-    /**
-     * @deprecated
-     * Question
-     * @returns
-     */
-    // const installOrUdpateDep = async () => {
-    //     const answer = dependencies.toLowerCase() || 'n'
-    //     if (answer.includes('n')) return true
 
-    //     if (answer.includes('y')) {
-    //         await installAll()
-    //         return true
-    //     }
-    // }
-
-    /**
-     * @deprecated
-     * Question
-     * @returns
-     */
-    // const cleanAllSession = async () => {
-    //     const answer = cleanTmp.toLowerCase() || 'n'
-    //     if (answer.includes('n')) return true
-
-    //     if (answer.includes('y')) {
-    //         await cleanSession()
-    //         return true
-    //     }
-    // }
-
-    /**
-     * Crear una app (copiar plantilla)
-     * @returns
-     */
     const createApp = async (templateName = null) => {
         if (!templateName)
             throw new Error('TEMPLATE_NAME_INVALID: ', templateName)
+
+        const possiblesPath = [
+            join(__dirname, 'starters', 'apps', templateName),
+            join(__dirname, '..', 'starters', 'apps', templateName),
+            join(__dirname, '..', '..', 'starters', 'apps', templateName),
+        ]
+
         const answer = outDir.toLowerCase() || 'n'
         if (answer.includes('n')) return true
 
         if (answer.includes('y')) {
-            await copyBaseApp(templateName)
+            const indexOfPath = possiblesPath.find((a) => existsSync(a))
+            await copyBaseApp(indexOfPath, join(process.cwd(), templateName))
+            console.log(``)
+            console.log(yellow(`cd ${templateName}`))
+            console.log(yellow(`npm install`))
+            console.log(yellow(`npm start`))
+            console.log(``)
+
             return outDir
         }
     }
@@ -109,7 +107,6 @@ const startInteractive = async () => {
             )
             process.exit(1)
         }
-        console.log(yellow(`'Deberia crer una carpeta en root/provider'`))
         return answer
     }
 
@@ -134,6 +131,7 @@ const startInteractive = async () => {
     const dbAdapter = await dbProvider()
     const NAME_DIR = ['base', providerAdapter, dbAdapter].join('-')
     await createApp(NAME_DIR)
+    bannerDone()
 }
 
 module.exports = { startInteractive }
