@@ -78,6 +78,13 @@ jobs:
             - name: Release @bot-whatsapp/provider
               run: yarn node ./scripts/release.js --name=provider --version= --token="${{ secrets.NPM_TOKEN }}"
 
+            - name: Commit Versioning
+              run: |
+                  git config --global user.name 'Leifer Mendez (githubaction)'
+                  git config --global user.email 'leifermendez@users.noreply.github.com'
+                  git commit -am "Update versioning"
+                  git push
+
     ############ UNIT TEST ############
     test-unit:
         name: Unit Tests
