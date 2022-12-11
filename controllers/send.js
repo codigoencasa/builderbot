@@ -2,7 +2,7 @@
 const ExcelJS = require('exceljs');
 const moment = require('moment');
 const fs = require('fs');
-const { MessageMedia, Buttons } = require('whatsapp-web.js');
+const { MessageMedia, Buttons, List } = require('whatsapp-web.js');
 const { cleanNumber } = require('./handle')
 const DELAY_TIME = 170; //ms
 const DIR_MEDIA = `${__dirname}/../mediaSend`;
@@ -79,6 +79,20 @@ const sendMessageButton = async (client, number = null, text = null, actionButto
     }, DELAY_TIME)
 }
 
+/**
+ * Enviamos un mensaje con lista a nuestro cliente
+ * @param {*} number 
+ */
+ const sendMessageList = async (client, number = null, text = null, actionList) => {
+    setTimeout(async () => {
+    number = cleanNumber(number)
+    const { body = null, buttonText = null, sections = [], title = null, footer = null } = actionList;
+    let aList = new List( body, buttonText, [...sections], title, footer);
+    client.sendMessage(number, aList);
+    await readChat(number, message, actionList)
+    console.log(`⚡⚡⚡ Enviando lista....`);
+    }, DELAY_TIME)
+}
 
 /**
  * Opte
@@ -112,4 +126,4 @@ const readChat = async (number, message, trigger = null) => {
     console.log('Saved')
 }
 
-module.exports = { sendMessage, sendMedia, lastTrigger, sendMessageButton, readChat, sendMediaVoiceNote }
+module.exports = { sendMessage, sendMedia, lastTrigger, sendMessageButton, sendMessageList, readChat, sendMediaVoiceNote }
