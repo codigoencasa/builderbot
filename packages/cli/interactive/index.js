@@ -72,9 +72,9 @@ const startInteractive = async () => {
             throw new Error('TEMPLATE_NAME_INVALID: ', templateName)
 
         const possiblesPath = [
-            join(__dirname, 'starters', 'apps', templateName),
-            join(__dirname, '..', 'starters', 'apps', templateName),
             join(__dirname, '..', '..', 'starters', 'apps', templateName),
+            join(__dirname, '..', 'starters', 'apps', templateName),
+            join(__dirname, 'starters', 'apps', templateName),
         ]
 
         const answer = outDir.toLowerCase() || 'n'
