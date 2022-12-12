@@ -38,6 +38,18 @@ export default component$(() => {
                 </thead>
                 <tbody>
                     <tr>
+                        <td>Menus y Submenus</td>
+                        <td>
+                            <g-emoji
+                                class="g-emoji"
+                                alias="white_check_mark"
+                                fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/2705.png"
+                            >
+                                ✅
+                            </g-emoji>
+                        </td>
+                    </tr>
+                    <tr>
                         <td>Dialogflow</td>
                         <td>
                             <g-emoji
