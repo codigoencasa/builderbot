@@ -82,6 +82,24 @@ const updateVersion = async (packageName = null, number = null) => {
     return { version: newVersion }
 }
 
+const checkExistVersion = async (packageName = null, version = null) => {
+    try {
+        const pkgJson = join(PATH_PACKAGES, packageName)
+        const pkgJsonObject = readPackage(packageName)
+        const { stdout } = await cmd(
+            NPM_COMMAND,
+            ['view', `${pkgJsonObject.name}@${version}`],
+            {
+                stdio: 'inherit',
+                cwd: pkgJson,
+            }
+        )
+        return true
+    } catch (e) {
+        return false
+    }
+}
+
 const packRelease = async (packageName) => {
     const pkgJson = join(PATH_PACKAGES, packageName)
     const { stdout } = await cmd(NPM_COMMAND, ['pack'], {
@@ -108,14 +126,19 @@ const publishRelease = async (packageName, latest = null) => {
 
 const main = async () => {
     if (PKG_ARG) {
+        let EXIST_VERSION = true
         const tokenNpm = NPM_TOKEN ? NPM_TOKEN.split('=').at(1) : null
         const pkgName = PKG_ARG ? PKG_ARG.split('=').at(1) : null
         const pkgNumber = PKG_ARG_VERSION
             ? PKG_ARG_VERSION.split('=').at(1)
             : null
         if (tokenNpm) await npmToken(tokenNpm)
-        await updateVersion(pkgName, pkgNumber)
-        await packRelease(pkgName)
+
+        while (EXIST_VERSION) {
+            const { version } = await updateVersion(pkgName, pkgNumber)
+            EXIST_VERSION = await checkExistVersion(pkgName, version)
+            console.log(`[${pkgName} - Version]: `, version, EXIST_VERSION)
+        }
         await publishRelease(pkgName, pkgNumber)
     }
 }
