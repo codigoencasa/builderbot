@@ -3,8 +3,8 @@
 --------
 🦊 Documentación: [https://bot-whatsapp.pages.dev/](https://bot-whatsapp.pages.dev/)
 Video como hacer PR: https://youtu.be/Lxt8Acob6aU
- 
--   [ ] Evitar dependencias
+
+🚀 __Roadmap:__ [https://github.com/users/leifermendez/projects/4/views/1](https://github.com/users/leifermendez/projects/4/views/1)
 
 
 **Comunidad**
