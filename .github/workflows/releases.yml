@@ -1,8 +1,7 @@
 name: BotWhatsapp Releases
 
 on:
-    pull_request:
-        types: [closed]
+    push:
         branches:
             - next-release
 
@@ -11,7 +10,6 @@ jobs:
     release:
         name: Release
         runs-on: ubuntu-latest
-        if: github.event.pull_request.merged == 'true'
         steps:
             - name: Checkout
               uses: actions/checkout@v3
@@ -55,4 +53,4 @@ jobs:
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   message: 'ci(version): :zap: automatic - ${date} updated versions every packages'
-                  branch: 'next-release'
+                  branch: 'dev'
