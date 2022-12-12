@@ -1,4 +1,4 @@
-name: BotWhatsapp Releases
+name: BotWhatsapp Releases(DEV)
 
 on:
     push:
@@ -34,23 +34,23 @@ jobs:
               run: yarn build
 
             - name: Release @bot-whatsapp/bot
-              run: yarn node ./scripts/release.js --name=bot --version= --token="${{ secrets.NPM_TOKEN }}"
+              run: yarn node ./scripts/release.js --name=bot --version="${{ github.event.inputs.disttag }}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/cli
-              run: yarn node ./scripts/release.js --name=cli --version= --token="${{ secrets.NPM_TOKEN }}"
+              run: yarn node ./scripts/release.js --name=cli --version="${{ github.event.inputs.disttag }}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/create-bot-whatsapp
-              run: yarn node ./scripts/release.js --name=create-bot-whatsapp --version= --token="${{ secrets.NPM_TOKEN }}"
+              run: yarn node ./scripts/release.js --name=create-bot-whatsapp --version="${{ github.event.inputs.disttag }}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/database
-              run: yarn node ./scripts/release.js --name=database --version= --token="${{ secrets.NPM_TOKEN }}"
+              run: yarn node ./scripts/release.js --name=database --version="${{ github.event.inputs.disttag }}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/provider
-              run: yarn node ./scripts/release.js --name=provider --version= --token="${{ secrets.NPM_TOKEN }}"
+              run: yarn node ./scripts/release.js --name=provider --version="${{ github.event.inputs.disttag }}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Commit Versioning & Push changes
               uses: actions-js/push@master
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
-                  message: 'ci(version): :zap: automatic - ${date} updated versions every packages'
+                  message: 'ci(version): :zap: automatic - "${date}" updated versions every packages'
                   branch: 'dev'
