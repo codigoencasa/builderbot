@@ -1,4 +1,4 @@
-name: BotWhatsapp Releases(DEV)
+name: BotWhatsapp Releases(Prod)
 
 on:
     push:
@@ -18,6 +18,10 @@ jobs:
                   persist-credentials: false
                   fetch-depth: 0
 
+            - name: Set output
+              id: vars
+              run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+
             - name: Setup Node
               uses: actions/setup-node@v3
               with:
@@ -34,19 +38,19 @@ jobs:
               run: yarn build
 
             - name: Release @bot-whatsapp/bot
-              run: yarn node ./scripts/release.js --name=bot --version="${{ github.event.inputs.disttag }}" --token="${{ secrets.NPM_TOKEN }}"
+              run: yarn node ./scripts/release.js --name=bot --version="${{ steps.vars.outputs.tag }}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/cli
-              run: yarn node ./scripts/release.js --name=cli --version="${{ github.event.inputs.disttag }}" --token="${{ secrets.NPM_TOKEN }}"
+              run: yarn node ./scripts/release.js --name=cli --version="${{ steps.vars.outputs.tag }}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/create-bot-whatsapp
-              run: yarn node ./scripts/release.js --name=create-bot-whatsapp --version="${{ github.event.inputs.disttag }}" --token="${{ secrets.NPM_TOKEN }}"
+              run: yarn node ./scripts/release.js --name=create-bot-whatsapp --version="${{ steps.vars.outputs.tag }}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/database
-              run: yarn node ./scripts/release.js --name=database --version="${{ github.event.inputs.disttag }}" --token="${{ secrets.NPM_TOKEN }}"
+              run: yarn node ./scripts/release.js --name=database --version="${{ steps.vars.outputs.tag }}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/provider
-              run: yarn node ./scripts/release.js --name=provider --version="${{ github.event.inputs.disttag }}" --token="${{ secrets.NPM_TOKEN }}"
+              run: yarn node ./scripts/release.js --name=provider --version="${{ steps.vars.outputs.tag }}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Commit Versioning & Push changes
               uses: actions-js/push@master
