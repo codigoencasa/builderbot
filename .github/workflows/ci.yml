@@ -4,6 +4,7 @@ on:
     pull_request:
         branches:
             - dev
+            - next-release
 
 jobs:
     ############ BUILD PACKAGE ############
@@ -38,6 +39,7 @@ jobs:
     release:
         name: Release
         runs-on: ubuntu-latest
+        if: github.head_ref == 'next-release'
         needs:
             - build-package
         steps:
@@ -81,7 +83,7 @@ jobs:
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   message: 'ci(version): :zap: automatic - ${date} updated versions every packages'
-                  branch: 'dev'
+                  branch: 'next-release'
 
     ############ UNIT TEST ############
     test-unit:
