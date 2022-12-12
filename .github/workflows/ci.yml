@@ -1,4 +1,4 @@
-name: BotWhatsapp CI
+name: BotWhatsapp Build-Test
 
 on:
     pull_request:
