@@ -17,7 +17,6 @@ module.exports = {
         copy({
             targets: [{ src: 'starters/*', dest: join(__dirname, 'starters') }],
         }),
-        ,
         commonjs(),
         nodeResolve(),
     ],
