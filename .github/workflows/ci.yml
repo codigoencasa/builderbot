@@ -4,6 +4,7 @@ on:
     pull_request:
         branches:
             - dev
+            - next-release
 
 jobs:
     ############ BUILD PACKAGE ############
@@ -38,6 +39,7 @@ jobs:
     release:
         name: Release
         runs-on: ubuntu-latest
+        if: github.head_ref == 'next-release'
         needs:
             - build-package
         steps:
