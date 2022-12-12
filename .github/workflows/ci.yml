@@ -81,7 +81,7 @@ jobs:
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   message: 'ci(version): :zap: automatic - ${date} updated versions every packages'
-                  branch: 'dev'
+                  branch: 'next-release'
 
     ############ UNIT TEST ############
     test-unit:
