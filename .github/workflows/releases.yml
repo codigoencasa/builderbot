@@ -1,8 +1,9 @@
 name: BotWhatsapp Releases(DEV)
 
 on:
-    release:
-        types: [published]
+    push:
+        tags:
+            - 'v*.*.*'
 
 jobs:
     ############ RELEASE ############
