@@ -33,6 +33,35 @@
             "title":"¿Que te interesa ver?",
             "message":"Recuerda todo este contenido es gratis y estaria genial que me siguas!",
             "footer":"Gracias",
+            "listas": {
+            "body": "Cuerpo del mensaje",
+            "buttonText": "Texto del boton",
+            "title": "El Titulo",
+            "footer": "footer",
+            "sections": [
+                {
+                    "title": "Titulo de lista",
+                    "rows": [
+                        {
+                            "title": "prueba1"
+                        },
+                        {
+                            "title": "prueba2",
+                            "id": "prueba-2"
+                        },
+                        {
+                            "title": "prueba3",
+                            "description": "esta es una descripcion"
+                        },
+                        {
+                            "title": "prueba4",
+                            "description": "esta es una descripcion",
+                            "id": "prueba4"
+                        }
+                    ]
+                }
+            ]
+        },
             "buttons":[
                 {"body":"Cursos"},
                 {"body":"Youtube"},
