@@ -1,4 +1,3 @@
-global.nombre = []
 const {
     createBot,
     createProvider,
@@ -22,11 +21,11 @@ const flowZapatos2 = addKeyword(['zapatos2', '2'])
     .addAnswer('🤯 repito que tengo *MUCHOS* zapatos.')
     .addAnswer('y algunas otras cosas.')
 
-const flowZapatos = addKeyword(['zapatos', 'ZAPATOS', '4'])
+const flowZapatos = addKeyword(['zapatos', 'ZAPATOS'])
     .addAnswer('🤯 Veo que elegiste zapatos')
     .addAnswer('Tengo muchos zapatos...bla bla')
     .addAnswer(
-        'Manda:\n*2* \n o \n*zapatos2*\n para mas información',
+        ['Manda:', '*2*', 'o', '*zapatos2*', 'para mas información'],
         { capture: true },
         (ctx) => {
             console.log('Aqui puedes ver más info del usuario...')
@@ -40,7 +39,7 @@ const flowBolsos = addKeyword(['bolsos', 'BOLSOS'])
     .addAnswer('🙌 Veo que elegiste bolsos')
     .addAnswer('Tengo muchos bolsos...bla bla')
     .addAnswer(
-        'Manda:\n*2*\n o \n*bolsos2*\npara mas información.',
+        ['Manda:', '*2*', 'o', '*bolsos2*', 'para mas información.'],
         { capture: true },
         (ctx) => {
             console.log('Aqui puedes ver más info del usuario...')
@@ -58,7 +57,7 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
     .addAnswer('Como puedo ayudarte?')
     .addAnswer(['Tengo:', 'Zapatos', 'Bolsos', 'etc..'])
     .addAnswer(
-        'Para continuar escribe:\n*Zapatos*\n o \n*Bolsos*',
+        ['Para continuar escribe:', '*Zapatos*', 'o', '*Bolsos*'],
         { capture: true },
         (ctx) => {
             console.log('Aqui puedes ver más info del usuario...')
