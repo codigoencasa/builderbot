@@ -4,7 +4,7 @@ import type { DocumentHead } from '@builder.io/qwik-city'
 export default component$(() => {
     return (
         <>
-            <h1>Bienvenido,</h1>
+            <h1>Bienvenido</h1>
 
             <p>
                 Un robot (bot) de Whatsapp es un programa que reconoce palabras
@@ -18,6 +18,15 @@ export default component$(() => {
                     Open Source
                 </a>
                 .
+            </p>
+            <p>
+                Está programado de tal forma que se pueden usar varias librerías
+                (hasta ahora whatsapp-web.js, twilio y Venom) y se puden agregar
+                más.
+            </p>
+            <p>
+                Si se quere cambiar la librería que se está usando, esto se
+                puede hacer con solo cambiar unas lineas en el código.
             </p>
 
             <table border>
