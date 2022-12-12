@@ -3,6 +3,7 @@
 /packages/*/node_modules
 /packages/*/dist
 /packages/*/docs/dist
+/packages/provider/src/venom/tokens
 session.json
 chats/*
 !chats/.gitkeep
