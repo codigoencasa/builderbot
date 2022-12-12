@@ -1,12 +1,8 @@
-name: BotWhatsapp CI
+name: BotWhatsapp Build-Test
 
 on:
-    push:
-        branches:
-            - main
     pull_request:
         branches:
-            - main
             - dev
 
 jobs:
@@ -37,46 +33,6 @@ jobs:
 
             - name: Build Eslint rules
               run: yarn lint:fix
-
-    ############ RELEASE ############
-    release:
-        name: Release
-        runs-on: ubuntu-latest
-        needs:
-            - build-package
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v3
-
-            - name: Setup Node
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 16.x
-                  cache: 'yarn'
-                  registry-url: https://registry.npmjs.org/
-
-            - run: corepack enable
-
-            - name: Install NPM Dependencies
-              run: yarn install --immutable --network-timeout 300000
-
-            - name: Build Package
-              run: yarn build
-
-            - name: Release @bot-whatsapp/bot
-              run: yarn node ./scripts/release.js --name=bot --version= --token="${{ secrets.NPM_TOKEN }}"
-
-            - name: Release @bot-whatsapp/cli
-              run: yarn node ./scripts/release.js --name=cli --version= --token="${{ secrets.NPM_TOKEN }}"
-
-            - name: Release @bot-whatsapp/create-bot-whatsapp
-              run: yarn node ./scripts/release.js --name=create-bot-whatsapp --version= --token="${{ secrets.NPM_TOKEN }}"
-
-            - name: Release @bot-whatsapp/database
-              run: yarn node ./scripts/release.js --name=database --version= --token="${{ secrets.NPM_TOKEN }}"
-
-            - name: Release @bot-whatsapp/provider
-              run: yarn node ./scripts/release.js --name=provider --version= --token="${{ secrets.NPM_TOKEN }}"
 
     ############ UNIT TEST ############
     test-unit:
