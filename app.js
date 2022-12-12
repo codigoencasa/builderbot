@@ -13,7 +13,7 @@ const { generateImage, cleanNumber, checkEnvFile, createClient, isValidNumber } 
 const { connectionReady, connectionLost } = require('./controllers/connection')
 const { saveMedia } = require('./controllers/save')
 const { getMessages, responseMessages, bothResponse } = require('./controllers/flows')
-const { sendMedia, sendMessage, lastTrigger, sendMessageButton, readChat } = require('./controllers/send')
+const { sendMedia, sendMessage, lastTrigger, sendMessageButton, sendMessageList, readChat } = require('./controllers/send')
 const app = express();
 app.use(cors())
 app.use(express.json())
@@ -59,9 +59,11 @@ const listenMessage = () => client.on('message', async msg => {
         if (!message.length) return;
         const response = await bothResponse(message.substring(256,-1), number);
         await sendMessage(client, from, response.replyMessage);
-        if(response.actions){
-        await sendMessageButton(client, from, null, response.actions);
-        return            
+        if (response.actions) {
+            sendMessageButton (client, from, null, response.actions);                   
+        }
+        if (response.listas) {
+            sendMessageList (client, from, null, response.listas);                   
         }
         if (response.media) {
             sendMedia(client, from, response.media);
@@ -90,15 +92,18 @@ const listenMessage = () => client.on('message', async msg => {
         const response = await responseMessages(step);
 
         /**
-         * Si quieres enviar botones
+         * Si quieres enviar botones y/o listas
          */
 
         await sendMessage(client, from, response.replyMessage, response.trigger);
 
         if (response.hasOwnProperty('actions')) {
             const { actions } = response;
-            await sendMessageButton(client, from, null, actions);
-            return
+            await sendMessageButton(client, from, null, actions);            
+        }
+        if (response.hasOwnProperty('listas')) {
+            const { listas } = response;
+            sendMessageList(client, from, null, listas);                        
         }
 
         if (!response.delay && response.media) {
@@ -122,7 +127,11 @@ const listenMessage = () => client.on('message', async msg => {
          */
         if (response.hasOwnProperty('actions')) {
             const { actions } = response;
-            await sendMessageButton(client, from, null, actions);
+            sendMessageButton(client, from, null, actions);
+        }
+        if (response.hasOwnProperty('listas')) {
+            const { listas } = response;
+            sendMessageList(client, from, null, listas);                        
         }
         return
     }
