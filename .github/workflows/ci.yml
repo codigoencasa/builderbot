@@ -1,12 +1,8 @@
 name: BotWhatsapp CI
 
 on:
-    push:
-        branches:
-            - main
     pull_request:
         branches:
-            - main
             - dev
 
 jobs:
@@ -80,12 +76,12 @@ jobs:
             - name: Release @bot-whatsapp/provider
               run: yarn node ./scripts/release.js --name=provider --version= --token="${{ secrets.NPM_TOKEN }}"
 
-            - name: Commit Versioning
-              run: |
-                  git config --global user.name 'Leifer Mendez (githubaction)'
-                  git config --global user.email 'leifermendez@users.noreply.github.com'
-                  git commit -am "ci(version): :zap: updated versions every packages"
-                  git push
+            - name: Commit Versioning & Push changes
+              uses: actions-js/push@master
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  message: 'ci(version): :zap: automatic - ${date} updated versions every packages'
+                  branch: 'dev'
 
     ############ UNIT TEST ############
     test-unit:
