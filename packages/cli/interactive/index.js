@@ -1,5 +1,5 @@
 const prompts = require('prompts')
-const { yellow, red, cyan } = require('kleur')
+const { yellow, red, cyan, bgMagenta } = require('kleur')
 const { copyBaseApp } = require('../create-app')
 const { join } = require('path')
 const { existsSync } = require('fs')
@@ -72,9 +72,9 @@ const startInteractive = async () => {
             throw new Error('TEMPLATE_NAME_INVALID: ', templateName)
 
         const possiblesPath = [
-            join(__dirname, 'starters', 'apps', templateName),
-            join(__dirname, '..', 'starters', 'apps', templateName),
             join(__dirname, '..', '..', 'starters', 'apps', templateName),
+            join(__dirname, '..', 'starters', 'apps', templateName),
+            join(__dirname, 'starters', 'apps', templateName),
         ]
 
         const answer = outDir.toLowerCase() || 'n'
@@ -84,6 +84,7 @@ const startInteractive = async () => {
             const indexOfPath = possiblesPath.find((a) => existsSync(a))
             await copyBaseApp(indexOfPath, join(process.cwd(), templateName))
             console.log(``)
+            console.log(bgMagenta(`⚡⚡⚡INSTRUCCIONES⚡⚡⚡`))
             console.log(yellow(`cd ${templateName}`))
             console.log(yellow(`npm install`))
             console.log(yellow(`npm start`))
