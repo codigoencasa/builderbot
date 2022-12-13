@@ -1,6 +1,6 @@
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const venom = require('venom-bot')
-const { cleanNumber, generateImage } = require('./utils/utils')
+const { cleanNumber } = require('./utils/utils')
 
 class VenomProvider extends ProviderClass {
     constructor() {
@@ -23,7 +23,7 @@ class VenomProvider extends ProviderClass {
             })
     }
 
-    generateQr = (qr) => {
+    generateQr = () => {
         this.emit('require_action', {
             instructions: [
                 `Debes escanear el QR Code para iniciar session reivsa qr.svg`,
@@ -39,16 +39,6 @@ class VenomProvider extends ProviderClass {
             payload.from = cleanNumber(payload.from, true)
             this.emit('message', payload)
         })
-    }
-
-    sendMessage = async (number, message) => {
-        const numero = cleanNumber(number)
-        return this.client.sendText(numero, message)
-    }
-
-    sendButtons = async (number, message, buttons = []) => {
-        const buttonMessage = new Buttons(message, buttons, '', '')
-        return this.vendor.sendMessage(number, buttonMessage)
     }
 
     sendMessage = async (userId, message, { options }) => {
