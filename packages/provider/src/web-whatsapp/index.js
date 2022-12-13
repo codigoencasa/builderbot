@@ -31,6 +31,7 @@ class WebWhatsappProvider extends ProviderClass {
         for (const { event, func } of listEvents) {
             this.vendor.on(event, func)
         }
+
         this.vendor.emit('preinit')
         this.vendor.initialize().catch((e) => {
             logger.log(e)
