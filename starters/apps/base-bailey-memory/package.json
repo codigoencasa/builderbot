@@ -10,6 +10,7 @@
     "keywords": [],
     "dependencies": {
         "@adiwajshing/baileys": "^4.4.0",
+        "mime-types": "^2.1.35",
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",
