@@ -6,7 +6,7 @@ const {
     addChild,
 } = require('@bot-whatsapp/bot')
 
-const WebWhatsappProvider = require('@bot-whatsapp/provider/web-whatsapp')
+const BaileysProvider = require('@bot-whatsapp/provider/baileys')
 const MockAdapter = require('@bot-whatsapp/database/mock')
 
 /**
@@ -71,7 +71,7 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
 const main = async () => {
     const adapterDB = new MockAdapter()
     const adapterFlow = createFlow([flowPrincipal])
-    const adapterProvider = createProvider(WebWhatsappProvider)
+    const adapterProvider = createProvider(BaileysProvider)
     createBot({
         flow: adapterFlow,
         provider: adapterProvider,

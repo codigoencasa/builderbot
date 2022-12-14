@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.1...v0.1.2) (2022-12-12)
+
+
+### Bug Fixes
+
+* **cli:** :art: starters ([79e2318](https://github.com/leifermendez/bot-whatsapp/commit/79e231825613f33bfec2ae8e93139f885c199c7a))
+* **cli:** :art: starters ([87ba43a](https://github.com/leifermendez/bot-whatsapp/commit/87ba43a5535be0893a7701a3b6a085ee5d29e7c5))
+* fix dependencias ([61d0324](https://github.com/leifermendez/bot-whatsapp/commit/61d032426119341187a470035d49b8b252ca46cd))
+
 ### [0.1.1](https://github.com/leifermendez/bot-whatsapp/compare/v0.3.0...v0.1.1) (2022-12-12)
 
 ## 0.3.0 (2022-12-12)
