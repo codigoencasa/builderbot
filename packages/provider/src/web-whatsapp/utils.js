@@ -4,18 +4,18 @@ const { tmpdir } = require('os')
 const http = require('http')
 const https = require('https')
 
-const cleanNumber = (number, full = false) => {
+const wwebCleanNumber = (number, full = false) => {
     number = number.replace('@c.us', '')
     number = !full ? `${number}@c.us` : `${number}`
     return number
 }
 
-const generateImage = (base64) => {
+const wwebGenerateImage = (base64) => {
     let qr_svg = qr.image(base64, { type: 'png', margin: 4 })
-    qr_svg.pipe(createWriteStream(`${process.cwd()}/qr.svg`))
+    qr_svg.pipe(createWriteStream(`${process.cwd()}/qr.png`))
 }
 
-const isValidNumber = (rawNumber) => {
+const wwebIsValidNumber = (rawNumber) => {
     const regexGroup = /\@g.us\b/gm
     const exist = rawNumber.match(regexGroup)
     return !exist
@@ -27,7 +27,7 @@ const isValidNumber = (rawNumber) => {
  * @param {*} url
  * @returns
  */
-const downloadMedia = (url) => {
+const wwebDownloadMedia = (url) => {
     return new Promise((resolve, reject) => {
         const ext = url.split('.').pop()
         const checkProtocol = url.includes('https:')
@@ -50,4 +50,9 @@ const downloadMedia = (url) => {
     })
 }
 
-module.exports = { cleanNumber, generateImage, isValidNumber, downloadMedia }
+module.exports = {
+    wwebCleanNumber,
+    wwebGenerateImage,
+    wwebIsValidNumber,
+    wwebDownloadMedia,
+}

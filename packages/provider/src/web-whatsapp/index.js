@@ -3,10 +3,10 @@ const { ProviderClass } = require('@bot-whatsapp/bot')
 const { Console } = require('console')
 const { createWriteStream } = require('fs')
 const {
-    cleanNumber,
-    generateImage,
-    isValidNumber,
-    downloadMedia,
+    wwebCleanNumber,
+    wwebDownloadMedia,
+    wwebGenerateImage,
+    wwebIsValidNumber,
 } = require('./utils')
 
 const logger = new Console({
@@ -65,7 +65,7 @@ class WebWhatsappProvider extends ProviderClass {
                         `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
                     ],
                 })
-                generateImage(qr)
+                wwebGenerateImage(qr)
             },
         },
         {
@@ -79,10 +79,10 @@ class WebWhatsappProvider extends ProviderClass {
                     return
                 }
 
-                if (!isValidNumber(payload.from)) {
+                if (!wwebIsValidNumber(payload.from)) {
                     return
                 }
-                payload.from = cleanNumber(payload.from, true)
+                payload.from = wwebCleanNumber(payload.from, true)
                 this.emit('message', payload)
             },
         },
@@ -98,7 +98,7 @@ class WebWhatsappProvider extends ProviderClass {
      */
     sendMedia = async (number, mediaInput = null) => {
         if (!mediaInput) throw new Error(`NO_SE_ENCONTRO: ${mediaInput}`)
-        const fileDownloaded = await downloadMedia(mediaInput)
+        const fileDownloaded = await wwebDownloadMedia(mediaInput)
         const media = MessageMedia.fromFilePath(fileDownloaded)
         return this.vendor.sendMessage(number, media, {
             sendAudioAsVoice: true,
@@ -163,7 +163,7 @@ class WebWhatsappProvider extends ProviderClass {
      * @returns
      */
     sendMessage = async (userId, message, { options }) => {
-        const number = cleanNumber(userId)
+        const number = wwebCleanNumber(userId)
         if (options?.buttons?.length)
             return this.sendButtons(number, message, options.buttons)
         if (options?.media) return this.sendMedia(number, options.media)
