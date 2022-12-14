@@ -1,79 +1,171 @@
 const { ProviderClass } = require('@bot-whatsapp/bot')
-const PINO = require('pino')
-const makeWASocket = require('@adiwajshing/baileys').default
-const { useMultiFileAuthState } = require('@adiwajshing/baileys')
+const pino = require('pino')
+const {
+    default: makeWASocket,
+    useMultiFileAuthState,
+} = require('@adiwajshing/baileys')
+const {
+    baileyGenerateImage,
+    baileyCleanNumber,
+    baileyIsValidNumber,
+} = require('./utils')
 
-class Baileys extends ProviderClass {
+/**
+ * ⚙️ BaileysProvider: Es una clase tipo adaptor
+ * que extiende clases de ProviderClass (la cual es como interfaz para sber que funciones rqueridas)
+ * https://github.com/adiwajshing/Baileys
+ */
+class BaileysProvider extends ProviderClass {
+    vendor
     constructor() {
         super()
-        this.sock
+        this.initBailey().then(() => this.initBusEvents())
     }
 
-    async baileys() {
-        const { state, saveCreds } = await useMultiFileAuthState(
-            'baileys_auth_whatsapp'
-        )
+    /**
+     * Iniciar todo Bailey
+     */
+    async initBailey() {
+        const { state, saveCreds } = await useMultiFileAuthState('sessions')
 
-        this.sock = await makeWASocket({
-            printQRInTerminal: true,
-            auth: state,
-            logger: PINO({ level: 'error' }),
-        })
+        try {
+            this.vendor = makeWASocket({
+                printQRInTerminal: false,
+                auth: state,
+                logger: pino({ level: 'error' }),
+            })
 
-        this.sock.ev.on(
-            'connection.update',
-            ({ connection, lastDisconnect }) => {
+            this.vendor.ev.on(
+                'connection.update',
+                async ({ qr, connection, lastDisconnect }) => {
+                    if (qr) baileyGenerateImage(qr)
+                    if (connection === 'open') this.emit('ready', true)
+                    if (lastDisconnect?.error) {
+                        saveCreds()
+                        this.initBailey()
+                    }
+                }
+            )
+        } catch (e) {
+            this.emit('error', e)
+        }
+    }
+
+    /**
+     * Mapeamos los eventos nativos a los que la clase Provider espera
+     * para tener un standar de eventos
+     * @returns
+     */
+    busEvents = () => [
+        {
+            event: 'connection.update',
+            func: async ({ qr, connection, lastDisconnect }) => {
+                if (qr) {
+                    this.emit('require_action', {
+                        instructions: [
+                            `Debes escanear el QR Code para iniciar session reivsa qr.png`,
+                            `Recuerda que el QR se actualiza cada minuto `,
+                            `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
+                        ],
+                    })
+                    baileyGenerateImage(qr)
+                }
+
                 if (lastDisconnect?.error) {
-                    saveCreds()
-
-                    this.baileys()
+                    this.emit('require_action', {
+                        instructions: [
+                            `Algo sucedio reinicia el bot o revisa tu whatsapp`,
+                            `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
+                        ],
+                    })
                 }
 
-                if (connection === 'open') {
-                    console.log('Baileys is connected')
+                if (connection === 'open') this.emit('ready', true)
+            },
+        },
+        {
+            event: 'messages.upsert',
+            func: ({ messages }) => {
+                const [messageCtx] = messages
+                let payload = {
+                    ...messageCtx,
+                    body: messageCtx?.message?.conversation,
+                    from: messageCtx?.key?.remoteJid,
                 }
-            }
-        )
+                if (payload.from === 'status@broadcast') {
+                    return
+                }
+
+                if (!baileyIsValidNumber(payload.from)) {
+                    return
+                }
+                payload.from = baileyCleanNumber(payload.from, true)
+                this.emit('message', payload)
+            },
+        },
+    ]
+
+    initBusEvents = () => {
+        const listEvents = this.busEvents()
+
+        for (const { event, func } of listEvents) {
+            this.vendor.ev.on(event, func)
+        }
     }
 
     /**
-     *
+     * @alpha
      * @param {string} number
      * @param {string} message
-     * @example await sendMessage('+51925465621', 'Hello World')
-     */
-    async sendMessage(number, message) {
-        const numberClean = number.replace('+', '')
-        await this.sock.sendMessage(`${numberClean}@c.us`, { text: message })
-    }
-
-    /**
-     *
-     * @param {string} number
-     * @param {string} message
-     * @example await sendMessage('+51925465621', 'https://dominio.com/imagen.jpg' | 'img/imagen.jpg')
+     * @example await sendMessage('+XXXXXXXXXXX', 'https://dominio.com/imagen.jpg' | 'img/imagen.jpg')
      */
 
-    async sendImage(number, imageUrl) {
-        const numberClean = number.replace('+', '')
-        await this.sock.sendMessage(`${numberClean}@c.us`, {
+    sendMedia = async (number, imageUrl) => {
+        await this.vendor.sendMessage(number, {
             image: { url: imageUrl },
         })
     }
 
     /**
-     *
+     * @alpha
      * @param {string} number
      * @param {string} message
      * @param {boolean} voiceNote optional
-     * @example await sendMessage('+51925465621', 'audio.mp3')
+     * @example await sendMessage('+XXXXXXXXXXX', 'audio.mp3')
      */
 
-    async sendAudio(number, audioUrl, voiceNote = false) {
+    sendAudio = async (number, audioUrl, voiceNote = false) => {
         const numberClean = number.replace('+', '')
-        await this.sock.sendMessage(`${numberClean}@c.us`, {
+        await this.vendor.sendMessage(`${numberClean}@c.us`, {
             audio: { url: audioUrl },
             ptt: voiceNote,
         })
     }
+
+    /**
+     *
+     * @param {string} number
+     * @param {string} message
+     * @returns
+     */
+    sendText = async (number, message) => {
+        return this.vendor.sendMessage(number, { text: message })
+    }
+    /**
+     * TODO: Necesita terminar de implementar el sendMedia y sendButton guiarse:
+     * https://github.com/leifermendez/bot-whatsapp/blob/4e0fcbd8347f8a430adb43351b5415098a5d10df/packages/provider/src/web-whatsapp/index.js#L165
+     * @param {string} number
+     * @param {string} message
+     * @example await sendMessage('+XXXXXXXXXXX', 'Hello World')
+     */
+    sendMessage = async (numberIn, message, { options }) => {
+        const number = baileyCleanNumber(numberIn)
+
+        // if (options?.buttons?.length)
+        //     return this.sendButtons(number, message, options.buttons)
+        if (options?.media) return this.sendMedia(number, options.media)
+        return this.sendText(number, message)
+    }
 }
+
+module.exports = BaileysProvider

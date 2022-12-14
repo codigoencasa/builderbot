@@ -4,7 +4,7 @@ const {
     venomCleanNumber,
     venomGenerateImage,
     venomisValidNumber,
-} = require('./utils/utils')
+} = require('./utils')
 
 /**
  * ⚙️ VenomProvider: Es una clase tipo adaptor
@@ -13,7 +13,6 @@ const {
  */
 class VenomProvider extends ProviderClass {
     vendor
-
     constructor() {
         super()
         this.init().then(() => this.initBusEvents())
