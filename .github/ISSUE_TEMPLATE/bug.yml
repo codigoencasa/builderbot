@@ -1,33 +1,31 @@
-name: 🐞 Bug Report
-description: Something does not work or is flaky! let us know!
+name:  🐛 Reporte Bug
+description: Algo no va bien?. Hazlo saber
 labels: [bug, triage]
-title: '[🐞]'
+title: '[🐛]'
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report!
+        Gracias por tomarte el tiempo de reportar este problema
 
   - type: dropdown
     id: component
     attributes:
-      label: Which component is affected?
+      label: ¿Sobre que afecta?
       options:
-        - Qwik Runtime
-        - Qwik Rollup / Vite plugin
-        - Qwik Optimizer (rust)
-        - Qwik React
-        - Qwik City (routing)
-        - Starters / CLI
+        - Flujo de palabras (Flow)
+        - DialogFlow
+        - Base de datos
+        - Otro
     validations:
       required: true
 
   - type: textarea
     id: description
     attributes:
-      description: 'A clear and concise description of what you expected to happen instead. If you intend to submit a PR for this issue, tell us in the description. Thanks!'
-      label: Describe the bug
-      placeholder: I am doing ... What I expect is ... What actually happening is ...
+      description: 'Trata de ser lo más claro posible, de esa manera podemos entender el contexto de tu problema y darte una mejor solución'
+      label: Describe tu problema
+      placeholder: Yo tengo un problema....
 
     validations:
       required: true
@@ -35,32 +33,15 @@ body:
   - type: input
     id: reproduction
     attributes:
-      label: Reproduction
-      description: Please provide a link via [qwik.new](https://qwik.new/) or a link to a repo that can reproduce the problem you ran into. `npm create qwik@latest` can be used as a starter template. A [minimal reproduction](https://stackoverflow.com/help/minimal-reproducible-example) is required ([Why?](https://antfu.me/posts/why-reproductions-are-required)). If a report is vague (e.g. just a generic error message) and has no reproduction, it will receive a "need reproduction" label. If no reproduction is provided after 3 days, it will be auto-closed.
+      label: Reproducir error
+      description: __(Recomendación)__ trata de grabar un video puedes usar algunas de las siguientes herramientas [https://www.vidyard.com/](https://www.vidyard.com/) [https://www.loom.com/](https://www.loom.com/) y en lo posbile apoyate en [https://stackblitz.com/](https://stackblitz.com/) para compartir el código de ser necesario
       placeholder: Reproduction URL
     validations:
-      required: true
-
-  - type: textarea
-    id: reproduction-steps
-    attributes:
-      label: Steps to reproduce
-      description: Please provide any reproduction steps that may need to be described. E.g. if it happens only when running the dev or build script make sure it's clear which one to use.
-      placeholder: Run `npm install` followed by `npm run dev`
-
-  - type: textarea
-    id: system-info
-    attributes:
-      label: System Info
-      description: Output of `npx envinfo --system --npmPackages '{vite,@builder.io/*}' --binaries --browsers`
-      render: shell
-      placeholder: System, Binaries, Browsers
-    validations:
-      required: true
+      required: false
 
   - type: textarea
     id: additional_information
     attributes:
-      label: Additional Information
+      label: Información Adicional
     validations:
       required: false
