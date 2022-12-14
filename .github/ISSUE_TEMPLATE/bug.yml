@@ -7,6 +7,17 @@ body:
     attributes:
       value: |
         Gracias por tomarte el tiempo de reportar este problema
+        
+  - type: dropdown
+    id: version
+    attributes:
+      label: ¿Que versión estas usando?
+      description: '__INFO:__ Recuerda que puedes consultar dudas directamente en [discord](https://link.codigoencasa.com/DISCORD)'
+      options:
+        - v2
+        - v1
+    validations:
+      required: true
 
   - type: dropdown
     id: component
@@ -35,7 +46,7 @@ body:
     attributes:
       label: Reproducir error
       description: __(Recomendación)__ trata de grabar un video puedes usar algunas de las siguientes herramientas [https://www.vidyard.com/](https://www.vidyard.com/) [https://www.loom.com/](https://www.loom.com/) y en lo posbile apoyate en [https://stackblitz.com/](https://stackblitz.com/) para compartir el código de ser necesario
-      placeholder: Reproduction URL
+      placeholder: URL video o stackblitz
     validations:
       required: false
 
