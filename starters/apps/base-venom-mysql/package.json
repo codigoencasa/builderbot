@@ -1,17 +1,15 @@
 {
-    "name": "bot-whatsapp-base-twilio-mysql",
+    "name": "bot-whatsapp-base-venom-mysql",
     "version": "1.0.0",
     "description": "",
     "main": "app.js",
     "scripts": {
-        "pre-copy": "cd .. && yarn run copy.lib base-twilio-mysql",
+        "pre-copy": "cd .. && yarn run copy.lib base-venom-mysql",
         "start": "node app.js"
     },
     "keywords": [],
     "dependencies": {
-        "body-parser": "^1.20.1",
-        "polka": "^0.5.2",
-        "twilio": "^3.83.4",
+        "venom-bot": "^4.3.7",
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",

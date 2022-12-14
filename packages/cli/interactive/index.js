@@ -34,7 +34,8 @@ const startInteractive = async () => {
             choices: [
                 { title: 'whatsapp-web.js (gratis)', value: 'wweb' },
                 { title: 'Twilio', value: 'twilio' },
-                { title: 'Baileys (gratis)', value: 'bailey', disabled: true },
+                { title: 'Venom (gratis)', value: 'venom' },
+                { title: 'Baileys (gratis)', value: 'bailey' },
                 { title: 'API Oficial (Meta)', value: 'meta', disabled: true },
             ],
             max: 1,
