@@ -6,6 +6,7 @@
         "bot",
         "provider",
         "adapter",
-        "ci"
+        "ci",
+        "starters"
     ]
 }
