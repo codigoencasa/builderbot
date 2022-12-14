@@ -1,18 +1,12 @@
-# Cual version del BOT es?
-
-- [ ] v2
-- [ ] v1
-
-
-# Que tipo de ISSUE es?
+# Que tipo de Pull Request es?
 
 - [ ] Mejoras
 - [ ] Bug
 - [ ] Docs / tests
 
-# Description
+# Descripción
 
-Por favor agrega una descripción de tu problema para tener más contexto y poder ayudar más rápido. Si es de ayuda puedes usar plataformar como [https://www.loom.com/](https://www.loom.com/) para grabar un video.
+Por favor agrega una descripción de tu aporte para tener más contexto y poder avanzar más rápido. Si es de ayuda puedes usar plataformar como [https://www.loom.com/](https://www.loom.com/) para grabar un video.
 
 
 > Forma parte de este proyecto.
