@@ -11,7 +11,7 @@ const cleanNumber = (number, full = false) => {
 }
 
 const generateImage = (base64) => {
-    let qr_svg = qr.image(base64, { type: 'svg', margin: 4 })
+    let qr_svg = qr.image(base64, { type: 'png', margin: 4 })
     qr_svg.pipe(createWriteStream(`${process.cwd()}/qr.svg`))
 }
 

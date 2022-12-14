@@ -60,7 +60,7 @@ class WebWhatsappProvider extends ProviderClass {
             func: (qr) => {
                 this.emit('require_action', {
                     instructions: [
-                        `Debes escanear el QR Code para iniciar session reivsa qr.svg`,
+                        `Debes escanear el QR Code para iniciar session reivsa qr.png`,
                         `Recuerda que el QR se actualiza cada minuto `,
                         `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
                     ],
