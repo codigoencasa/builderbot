@@ -33,6 +33,17 @@ body:
         - json
     validations:
       required: true
+      
+  - type: dropdown
+    id: result
+    attributes:
+      label: Conclusion de la prueba
+      options:
+        - muy buena
+        - buena
+        - tiene errores
+    validations:
+      required: true
 
   - type: textarea
     id: description
