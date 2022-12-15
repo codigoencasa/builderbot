@@ -58,7 +58,7 @@ body:
       required: false
       
   - type: input
-    id: username
+    id: usernames
     attributes:
       label: ¿Quieres que te mencionemos?
       description: Siempre buscamos fomentar la comunidad por lo cual si quieres que te mencionemos publicamente en nuestras redes sociales puedes dejar tu username
