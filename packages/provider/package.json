@@ -18,6 +18,7 @@
         "./twilio": "./lib/twilio/index.cjs",
         "./web-whatsapp": "./lib/web-whatsapp/index.cjs",
         "./venom": "./lib/venom/index.cjs",
-        "./baileys": "./lib/baileys/index.cjs"
+        "./baileys": "./lib/baileys/index.cjs",
+        "./meta": "./lib/meta/index.cjs"
     }
 }
