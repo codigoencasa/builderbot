@@ -51,6 +51,8 @@ body:
       description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com)
       options:
         - label: I agree to follow this project's Code of Conduct
+        - label: I agree to follow this project's Code of Conduct
+        - label: I agree to follow this project's Code of Conduct
           required: true
 
   - type: textarea
