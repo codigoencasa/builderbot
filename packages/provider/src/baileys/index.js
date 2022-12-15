@@ -1,5 +1,7 @@
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const pino = require('pino')
+const mime = require('mime-types')
+const fs = require('fs')
 const {
     default: makeWASocket,
     useMultiFileAuthState,
@@ -165,6 +167,49 @@ class BaileysProvider extends ProviderClass {
         //     return this.sendButtons(number, message, options.buttons)
         if (options?.media) return this.sendMedia(number, options.media)
         return this.sendText(number, message)
+    }
+
+    /**
+     *
+     * @param {string} number
+     * @param {string} filePath
+     * @example await sendMessage('+XXXXXXXXXXX', './document/file.pdf')
+     */
+
+    sendFile = async (number, filePath) => {
+        if (fs.existsSync(filePath)) {
+            const mimeType = mime.lookup(filePath)
+            const numberClean = number.replace('+', '')
+            const fileName = filePath.split('/').pop()
+
+            await this.vendor.sendMessage(`${numberClean}@c.us`, {
+                document: { url: filePath },
+                mimetype: mimeType,
+                fileName: fileName,
+            })
+        }
+    }
+
+    /**
+     *
+     * @param {string} number
+     * @param {string} text
+     * @param {string} footer
+     * @param {Array} buttons
+     * @example await sendMessage("+XXXXXXXXXXX", "Your Text", "Your Footer", [{"buttonId": "id", "buttonText": {"displayText": "Button"}, "type": 1}])
+     */
+
+    sendButtons = async (number, text, footer, buttons) => {
+        const numberClean = number.replace('+', '')
+
+        const buttonMessage = {
+            text: text,
+            footer: footer,
+            buttons: buttons,
+            headerType: 1,
+        }
+
+        await this.vendor.sendMessage(`${numberClean}@c.us`, buttonMessage)
     }
 }
 
