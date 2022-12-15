@@ -14,6 +14,7 @@
     "exports": {
         "./mock": "./lib/mock/index.cjs",
         "./twilio": "./lib/twilio/index.cjs",
-        "./web-whatsapp": "./lib/web-whatsapp/index.cjs"
+        "./web-whatsapp": "./lib/web-whatsapp/index.cjs",
+        "./meta": "./lib/meta/index.cjs"
     }
 }
