@@ -1,5 +1,5 @@
 name:  🐬 Caso de uso
-description: Reporta tu caso de uso y cuales fueron tus resultados
+description: Reporta tu caso de uso y cuales fueron tus resultados \n puedes comenzar `npm create bot-whatsapp@dev`
 labels: [usecase]
 title: '[🐬]'
 body:
