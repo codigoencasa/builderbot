@@ -3,7 +3,7 @@
 # You can adjust the behavior by modifying this file.
 # For more information, see:
 # https://github.com/actions/stale
-name: Mark stale issues and pull requests
+name: Revisar ISSUES abandonadas
 
 on:
   schedule:
@@ -21,7 +21,8 @@ jobs:
     - uses: actions/stale@v5
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        stale-issue-message: 'Stale issue message'
-        stale-pr-message: 'Stale pull request message'
+        stale-issue-message: '¿Alguna novedad sobre esta ISSUE?'
+        stale-pr-message: '¿Alguna novedad sobre esta PULL REQUEST?'
         stale-issue-label: 'no-issue-activity'
         stale-pr-label: 'no-pr-activity'
+        exempt-issue-assignees: 'leifermendez'
