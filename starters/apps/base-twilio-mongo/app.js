@@ -63,7 +63,6 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
             console.log('Aqui puedes ver más info del usuario...')
             console.log('Puedes enviar un mail, hook, etc..')
             console.log(ctx)
-            console.log(ctx['_data']['notifyName'])
         },
         [...addChild(flowBolsos), ...addChild(flowZapatos)]
     )
