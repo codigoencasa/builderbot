@@ -6,7 +6,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Gracias por tomarte el tiempo de detallar este caso de uso, sera de gran utilidad para mantener un software de calidad  \n puedes comenzar `npm create bot-whatsapp@dev`
+        Gracias por tomarte el tiempo de detallar este caso de uso, sera de gran utilidad para mantener un software de calidad  
+        puedes comenzar `npm create bot-whatsapp@dev`
         
   - type: dropdown
     id: version
