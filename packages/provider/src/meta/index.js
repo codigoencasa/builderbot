@@ -32,7 +32,7 @@ class MetaProvider extends ProviderClass {
     }
 
     /**
-     * Mapeamos los eventos nativos de  whatsapp-web.js a los que la clase Provider espera
+     * Mapeamos los eventos nativos a los que la clase Provider espera
      * para tener un standar de eventos
      * @returns
      */
@@ -53,7 +53,7 @@ class MetaProvider extends ProviderClass {
         },
     ]
 
-    async sendMessageMeta(body) {
+    sendMessageMeta = async (body) => {
         try {
             const response = await axios.post(
                 `${URL}/${this.numberId}/messages`,
@@ -70,7 +70,7 @@ class MetaProvider extends ProviderClass {
         }
     }
 
-    async sendtext(number, message) {
+    sendtext = async (number, message) => {
         const body = {
             messaging_product: 'whatsapp',
             to: number,
@@ -83,7 +83,7 @@ class MetaProvider extends ProviderClass {
         await this.sendMessageMeta(body)
     }
 
-    async sendMedia(number, message, mediaInput = null) {
+    sendMedia = async (number, _, mediaInput = null) => {
         if (!mediaInput) throw new Error(`MEDIA_INPUT_NULL_: ${mediaInput}`)
         const body = {
             messaging_product: 'whatsapp',
