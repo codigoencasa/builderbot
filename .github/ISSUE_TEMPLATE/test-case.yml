@@ -40,9 +40,9 @@ body:
       description: 'Trata de ser lo más claro posible, de esa manera podemos entender el contexto del caso de uso'
       label: Describe tu caso
       placeholder: Yo tengo un caso....
-
     validations:
       required: true
+      
   - type: textarea
     id: logs
     attributes:
@@ -54,5 +54,14 @@ body:
     id: additional_information
     attributes:
       label: Información Adicional
+    validations:
+      required: false
+      
+  - type: input
+    id: username
+    attributes:
+      label: ¿Quieres que te mencionemos?
+      description: Siempre buscamos fomentar la comunidad por lo cual si quieres que te mencionemos publicamente en nuestras redes sociales puedes dejar tu username
+      placeholder: @twitter o @github o @instagram o alguna url
     validations:
       required: false
