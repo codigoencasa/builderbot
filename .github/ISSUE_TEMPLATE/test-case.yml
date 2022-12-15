@@ -62,6 +62,6 @@ body:
     attributes:
       label: ¿Quieres que te mencionemos?
       description: Siempre buscamos fomentar la comunidad por lo cual si quieres que te mencionemos publicamente en nuestras redes sociales puedes dejar tu username
-      placeholder: @twitter o @github o @instagram o alguna url
+      placeholder: twitter o github o instagram o alguna url
     validations:
       required: false
