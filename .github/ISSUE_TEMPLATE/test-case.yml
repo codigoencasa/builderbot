@@ -43,18 +43,13 @@ body:
 
     validations:
       required: true
-
-  - type: checkboxes
-    id: terms
+  - type: textarea
+    id: logs
     attributes:
-      label: Code of Conduct
-      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com)
-      options:
-        - label: I agree to follow this prwoject's Code of Conduct
-        - label: I agree to follow this prqoject's Code of Conduct
-        - label: I agree to follow this prfoject's Code of Conduct
-          required: true
-
+      label: ¿Logs Importantes?
+      description: Si tienes algunos logs importantes a tener en cuenta o que muetren algun error en concreto.
+      render: shell
+      
   - type: textarea
     id: additional_information
     attributes:
