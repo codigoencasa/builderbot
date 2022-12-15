@@ -1,54 +1,59 @@
 const prompts = require('prompts')
-const { yellow, red } = require('kleur')
-const { installAll } = require('../install')
-const { cleanSession } = require('../clean')
+const { yellow, red, cyan, bgMagenta } = require('kleur')
 const { copyBaseApp } = require('../create-app')
+const { join } = require('path')
+const { existsSync } = require('fs')
 const { checkNodeVersion, checkOs } = require('../check')
-const { jsonConfig } = require('../configuration')
+
+const bannerDone = () => {
+    console.log(``)
+    console.log(
+        cyan(
+            [
+                `[Agradecimientos]: Este es un proyecto OpenSource, si tienes intenciones de colaborar puedes hacerlo:`,
+                `[😉] Comprando un cafe https://www.buymeacoffee.com/leifermendez`,
+                `[⭐] Dar estrella  https://github.com/leifermendez/bot-whatsapp`,
+                `[🚀] Realizando mejoras en el codigo`,
+            ].join('\n')
+        )
+    )
+    console.log(``)
+}
 
 const startInteractive = async () => {
     const questions = [
         {
             type: 'text',
-            name: 'exampeOpt',
-            message:
-                'Quieres crear una app de ejemplo "example-app-example"? (Y/n)',
-        },
-        // {
-        //     type: 'text',
-        //     name: 'dependencies',
-        //     message:
-        //         'Quieres actualizar las librerias "whatsapp-web.js"? (Y/n)',
-        // },
-        {
-            type: 'text',
-            name: 'cleanTmp',
-            message: 'Quieres limpiar la session del bot? (Y/n)',
+            name: 'outDir',
+            message: 'Quieres crear un bot? (Y/n)',
         },
         {
             type: 'multiselect',
             name: 'providerWs',
-            message: 'Proveedor de Whatsapp',
+            message: '¿Cuál proveedor de whatsapp quieres utilizar?',
             choices: [
-                { title: 'whatsapp-web.js', value: 'whatsapp-web.js' },
+                { title: 'whatsapp-web.js (gratis)', value: 'wweb' },
+                { title: 'Twilio', value: 'twilio' },
+                { title: 'Venom (gratis)', value: 'venom' },
+                { title: 'Baileys (gratis)', value: 'bailey' },
                 { title: 'API Oficial (Meta)', value: 'meta', disabled: true },
-                { title: 'Twilio', value: 'twilio', disabled: true },
             ],
             max: 1,
-            hint: 'Espacio para selecionar',
+            hint: 'Espacio para seleccionar',
             instructions: '↑/↓',
         },
         {
             type: 'multiselect',
             name: 'providerDb',
-            message: 'Cual base de datos quieres usar',
+            message: '¿Cuál base de datos quieres utilizar?',
             choices: [
-                { title: 'JSONFile', value: 'json' },
-                { title: 'MySQL', value: 'mysql', disabled: true },
-                { title: 'Mongo', value: 'mongo', disabled: true },
+                { title: 'Memory', value: 'memory' },
+                { title: 'Mongo', value: 'mongo' },
+                { title: 'MySQL', value: 'mysql' },
+                { title: 'Json', value: 'json', disabled: true },
             ],
             max: 1,
-            hint: 'Espacio para selecionar',
+            hint: 'Espacio para seleccionar',
             instructions: '↑/↓',
         },
     ]
@@ -57,90 +62,78 @@ const startInteractive = async () => {
     checkNodeVersion()
     checkOs()
     const onCancel = () => {
-        console.log('Proceso cancelado!')
+        console.log('¡Proceso cancelado!')
         return true
     }
     const response = await prompts(questions, { onCancel })
-    const {
-        dependencies = '',
-        cleanTmp = '',
-        exampeOpt = '',
-        providerDb = [],
-        providerWs = [],
-    } = response
-    /**
-     * Question
-     * @returns
-     */
-    const installOrUdpateDep = async () => {
-        const answer = dependencies.toLowerCase() || 'n'
+    const { outDir = '', providerDb = [], providerWs = [] } = response
+
+    const createApp = async (templateName = null) => {
+        if (!templateName)
+            throw new Error('TEMPLATE_NAME_INVALID: ', templateName)
+
+        const possiblesPath = [
+            join(__dirname, '..', '..', 'starters', 'apps', templateName),
+            join(__dirname, '..', 'starters', 'apps', templateName),
+            join(__dirname, 'starters', 'apps', templateName),
+        ]
+
+        const answer = outDir.toLowerCase() || 'n'
         if (answer.includes('n')) return true
 
         if (answer.includes('y')) {
-            await installAll()
-            return true
+            const indexOfPath = possiblesPath.find((a) => existsSync(a))
+            await copyBaseApp(indexOfPath, join(process.cwd(), templateName))
+            console.log(``)
+            console.log(bgMagenta(`⚡⚡⚡INSTRUCCIONES⚡⚡⚡`))
+            console.log(yellow(`cd ${templateName}`))
+            console.log(yellow(`npm install`))
+            console.log(yellow(`npm start`))
+            console.log(``)
+
+            return outDir
         }
     }
 
     /**
-     * Question
+     * Selccionar Provider (meta, twilio, etc...)
      * @returns
      */
-    const cleanAllSession = async () => {
-        const answer = cleanTmp.toLowerCase() || 'n'
-        if (answer.includes('n')) return true
-
-        if (answer.includes('y')) {
-            await cleanSession()
-            return true
-        }
-    }
-
-    const createApp = async () => {
-        const answer = exampeOpt.toLowerCase() || 'n'
-        if (answer.includes('n')) return true
-
-        if (answer.includes('y')) {
-            await copyBaseApp()
-            return true
-        }
-    }
-
     const vendorProvider = async () => {
+        const [answer] = providerWs
         if (!providerWs.length) {
             console.log(
                 red(
-                    `Debes de seleccionar una WS Provider. Tecla [Space] para seleccionar`
+                    `Debes seleccionar un proveedor de whatsapp. Tecla [Space] para seleccionar`
                 )
             )
             process.exit(1)
         }
-        console.log(yellow(`'Deberia crer una carpeta en root/provider'`))
-        return true
+        return answer
     }
 
+    /**
+     * Selecionar adaptador de base de datos
+     * @returns
+     */
     const dbProvider = async () => {
-        const answer = providerDb
+        const [answer] = providerDb
         if (!providerDb.length) {
             console.log(
                 red(
-                    `Debes de seleccionar una DB Provider. Tecla [Space] para seleccionar`
+                    `Debes seleccionar un proveedor de base de datos. Tecla [Space] para seleccionar`
                 )
             )
             process.exit(1)
         }
-        if (answer === 'json') {
-            console.log('Deberia crer una carpeta en root/data')
-            return 1
-        }
+        return answer
     }
 
-    await createApp()
-    await installOrUdpateDep()
-    await cleanAllSession()
-    await vendorProvider()
-    await dbProvider()
-    await jsonConfig()
+    const providerAdapter = await vendorProvider()
+    const dbAdapter = await dbProvider()
+    const NAME_DIR = ['base', providerAdapter, dbAdapter].join('-')
+    await createApp(NAME_DIR)
+    bannerDone()
 }
 
 module.exports = { startInteractive }

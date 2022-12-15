@@ -1,9 +1,9 @@
-### BASIC APP
+### BASE APP
 
 Este bot contiene un flujo basico en el cual una persona (cliente) escribe **"hola"** y el bot responde.
-
-
-![](https://i.imgur.com/0z0G91w.png)
+- Bienvenido a mi tienda
+- Como puedo ayudarte?
+- Tengo: Zapatos Bolsos etc..
 
 ------
 -   [Discord](https://link.codigoencasa.com/DISCORD)

@@ -12,20 +12,20 @@ const checkNodeVersion = () => {
         )
         process.exit(1)
     }
-    console.log(green(`Node.js combatible ${version}`))
+    console.log(green(`Node.js compatible ${version}`))
     console.log(``)
 }
 
 const checkOs = () => {
-    console.log(bgCyan('🙂 Revisando tu Sistema Operativo'))
+    console.log(bgCyan('🙂 Revisando tu sistema operativo'))
     const os = process.platform
     if (!os.includes('win32')) {
         const messages = [
             `El sistema operativo actual (${os}) posiblemente requiera`,
-            `una confiuración adicional referente al puppeter`,
+            `una configuración adicional referente al puppeteer`,
             ``,
             `Recuerda pasar por el WIKI`,
-            `🔗 https://github.com/leifermendez/bot-whatsapp/wiki/Instalaci%C3%B3n`,
+            `🔗 https://github.com/leifermendez/bot-whatsapp/wiki/Instalación`,
             ``,
         ]
 

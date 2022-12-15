@@ -3,8 +3,8 @@
 --------
 🦊 Documentación: [https://bot-whatsapp.pages.dev/](https://bot-whatsapp.pages.dev/)
 Video como hacer PR: https://youtu.be/Lxt8Acob6aU
- 
--   [ ] Evitar dependencias
+
+🚀 __Roadmap:__ [https://github.com/users/leifermendez/projects/4/views/1](https://github.com/users/leifermendez/projects/4/views/1)
 
 
 **Comunidad**
@@ -12,17 +12,24 @@ Video como hacer PR: https://youtu.be/Lxt8Acob6aU
 <table>
 <tr>
     <td align="center">
-        <a href="https://github.com/vicente1992">
-            <img src="https://avatars.githubusercontent.com/u/57806030?v=4" width="50;" alt="vicente1992"/>
-            <br />
-            <sub><b>Manuel Vicente Ortiz</b></sub>
-        </a>
-    </td>
-    <td align="center">
         <a href="https://github.com/leifermendez">
             <img src="https://avatars.githubusercontent.com/u/15802366?v=4" width="50;" alt="leifermendez"/>
             <br />
             <sub><b>Leifer Mendez</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/aurik3">
+            <img src="https://avatars.githubusercontent.com/u/37228512?v=4" width="50;" alt="aurik3"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/vicente1992">
+            <img src="https://avatars.githubusercontent.com/u/57806030?v=4" width="50;" alt="vicente1992"/>
+            <br />
+            <sub><b>Manuel Vicente Ortiz</b></sub>
         </a>
     </td>
     <td align="center">
@@ -35,13 +42,6 @@ Video como hacer PR: https://youtu.be/Lxt8Acob6aU
     <td align="center">
         <a href="https://github.com/Gonzalito87">
             <img src="https://avatars.githubusercontent.com/u/100331586?v=4" width="50;" alt="Gonzalito87"/>
-            <br />
-            <sub><b>Null</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/aurik3">
-            <img src="https://avatars.githubusercontent.com/u/37228512?v=4" width="50;" alt="aurik3"/>
             <br />
             <sub><b>Null</b></sub>
         </a>

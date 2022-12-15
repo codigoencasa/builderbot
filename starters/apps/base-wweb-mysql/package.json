@@ -1,0 +1,20 @@
+{
+    "name": "bot-whatsapp-base-wweb-mysql",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "pre-copy": "cd .. && yarn run copy.lib base-wweb-mysql",
+        "start": "node app.js"
+    },
+    "keywords": [],
+    "dependencies": {
+        "whatsapp-web.js": "^1.18.3",
+        "@bot-whatsapp/bot": "latest",
+        "@bot-whatsapp/cli": "latest",
+        "@bot-whatsapp/database": "latest",
+        "@bot-whatsapp/provider": "latest"
+    },
+    "author": "",
+    "license": "ISC"
+}

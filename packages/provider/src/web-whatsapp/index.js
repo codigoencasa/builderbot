@@ -1,18 +1,12 @@
-const {
-    Client,
-    LocalAuth,
-    MessageMedia,
-    Buttons,
-    List,
-} = require('whatsapp-web.js')
+const { Client, LocalAuth, MessageMedia, Buttons } = require('whatsapp-web.js')
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const { Console } = require('console')
-const { createWriteStream, existsSync } = require('fs')
+const { createWriteStream } = require('fs')
 const {
-    cleanNumber,
-    generateImage,
-    isValidNumber,
-    downloadMedia,
+    wwebCleanNumber,
+    wwebDownloadMedia,
+    wwebGenerateImage,
+    wwebIsValidNumber,
 } = require('./utils')
 
 const logger = new Console({
@@ -37,6 +31,7 @@ class WebWhatsappProvider extends ProviderClass {
         for (const { event, func } of listEvents) {
             this.vendor.on(event, func)
         }
+
         this.vendor.emit('preinit')
         this.vendor.initialize().catch((e) => {
             logger.log(e)
@@ -65,12 +60,12 @@ class WebWhatsappProvider extends ProviderClass {
             func: (qr) => {
                 this.emit('require_action', {
                     instructions: [
-                        `Debes escanear el QR Code para iniciar session reivsa qr.svg`,
+                        `Debes escanear el QR Code para iniciar session reivsa qr.png`,
                         `Recuerda que el QR se actualiza cada minuto `,
                         `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
                     ],
                 })
-                generateImage(qr)
+                wwebGenerateImage(qr)
             },
         },
         {
@@ -84,10 +79,10 @@ class WebWhatsappProvider extends ProviderClass {
                     return
                 }
 
-                if (!isValidNumber(payload.from)) {
+                if (!wwebIsValidNumber(payload.from)) {
                     return
                 }
-                payload.from = cleanNumber(payload.from, true)
+                payload.from = wwebCleanNumber(payload.from, true)
                 this.emit('message', payload)
             },
         },
@@ -103,7 +98,7 @@ class WebWhatsappProvider extends ProviderClass {
      */
     sendMedia = async (number, mediaInput = null) => {
         if (!mediaInput) throw new Error(`NO_SE_ENCONTRO: ${mediaInput}`)
-        const fileDownloaded = await downloadMedia(mediaInput)
+        const fileDownloaded = await wwebDownloadMedia(mediaInput)
         const media = MessageMedia.fromFilePath(fileDownloaded)
         return this.vendor.sendMessage(number, media, {
             sendAudioAsVoice: true,
@@ -134,19 +129,19 @@ class WebWhatsappProvider extends ProviderClass {
      * @param {*} buttons []
      * @returns
      */
-    sendList = async (number, message, listInput = []) => {
-        let sections = [
-            {
-                title: 'sectionTitle',
-                rows: [
-                    { title: 'ListItem1', description: 'desc' },
-                    { title: 'ListItem2' },
-                ],
-            },
-        ]
-        let list = new List('List body', 'btnText', sections, 'Title', 'footer')
-        return this.vendor.sendMessage(number, list)
-    }
+    // sendList = async (number, message, listInput = []) => {
+    //     let sections = [
+    //         {
+    //             title: 'sectionTitle',
+    //             rows: [
+    //                 { title: 'ListItem1', description: 'desc' },
+    //                 { title: 'ListItem2' },
+    //             ],
+    //         },
+    //     ]
+    //     let list = new List('List body', 'btnText', sections, 'Title', 'footer')
+    //     return this.vendor.sendMessage(number, list)
+    // }
 
     /**
      * Enviar un mensaje solo texto
@@ -168,7 +163,7 @@ class WebWhatsappProvider extends ProviderClass {
      * @returns
      */
     sendMessage = async (userId, message, { options }) => {
-        const number = cleanNumber(userId)
+        const number = wwebCleanNumber(userId)
         if (options?.buttons?.length)
             return this.sendButtons(number, message, options.buttons)
         if (options?.media) return this.sendMedia(number, options.media)

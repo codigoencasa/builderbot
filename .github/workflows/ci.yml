@@ -1,26 +1,58 @@
-name: Test / Coverage
+name: BotWhatsapp Build-Test
 
 on:
-    push:
-        branches: [dev]
     pull_request:
-        branches: [main]
+        branches:
+            - dev
 
 jobs:
-    build:
+    ############ BUILD PACKAGE ############
+    build-package:
+        name: Build Package
         runs-on: ubuntu-latest
-
-        strategy:
-            matrix:
-                node-version: [16.x]
-
+        needs:
+            - test-unit
         steps:
-            - uses: actions/checkout@v3
-            - name: Use Node.js ${{ matrix.node-version }}
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Setup Node
               uses: actions/setup-node@v3
               with:
-                  node-version: ${{ matrix.node-version }}
-            - run: npm install
-            - run: npm run build --if-present
-            - run: npm run test.unit
-            - run: npm run test.coverage
+                  node-version: 16.x
+                  cache: 'yarn'
+                  registry-url: https://registry.npmjs.org/
+
+            - run: corepack enable
+
+            - name: Install NPM Dependencies
+              run: yarn install --immutable --network-timeout 300000
+
+            - name: Build Package
+              run: yarn build
+
+            - name: Build Eslint rules
+              run: yarn lint:fix
+
+    ############ UNIT TEST ############
+    test-unit:
+        name: Unit Tests
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Setup Node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16.x
+                  cache: 'yarn'
+                  registry-url: https://registry.npmjs.org/
+
+            - run: corepack enable
+
+            - name: Install NPM Dependencies
+              run: yarn install --immutable --network-timeout 300000
+
+            - name: Unit Tests
+              run: yarn test

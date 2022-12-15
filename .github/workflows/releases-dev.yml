@@ -1,0 +1,56 @@
+name: BotWhatsapp Releases(DEV)
+
+on:
+    push:
+        branches:
+            - next-release
+
+jobs:
+    ############ RELEASE ############
+    release:
+        name: Release
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+              with:
+                  ref: ${{ github.head_ref }}
+                  persist-credentials: false
+                  fetch-depth: 0
+
+            - name: Setup Node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16.x
+                  cache: 'yarn'
+                  registry-url: https://registry.npmjs.org/
+
+            - run: corepack enable
+
+            - name: Install NPM Dependencies
+              run: yarn install --immutable --network-timeout 300000
+
+            - name: Build Package
+              run: yarn build
+
+            - name: Release @bot-whatsapp/bot
+              run: yarn node ./scripts/release.js --name=bot --version=  --token="${{ secrets.NPM_TOKEN }}"
+
+            - name: Release @bot-whatsapp/cli
+              run: yarn node ./scripts/release.js --name=cli --version=  --token="${{ secrets.NPM_TOKEN }}"
+
+            - name: Release @bot-whatsapp/create-bot-whatsapp
+              run: yarn node ./scripts/release.js --name=create-bot-whatsapp --version=  --token="${{ secrets.NPM_TOKEN }}"
+
+            - name: Release @bot-whatsapp/database
+              run: yarn node ./scripts/release.js --name=database --version=  --token="${{ secrets.NPM_TOKEN }}"
+
+            - name: Release @bot-whatsapp/provider
+              run: yarn node ./scripts/release.js --name=provider --version=  --token="${{ secrets.NPM_TOKEN }}"
+
+            - name: Commit Versioning & Push changes
+              uses: actions-js/push@master
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  message: 'ci(version): :zap: automatic - "${date}" updated versions every packages'
+                  branch: 'dev'

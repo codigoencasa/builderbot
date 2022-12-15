@@ -14,7 +14,7 @@ const getPkgManage = async () => {
 }
 
 const installDeps = (pkgManager, packageList) => {
-    const errorMessage = `Ocurrio un error instalando ${packageList}`
+    const errorMessage = `Ocurrió un error instalando ${packageList}`
     let childProcess = []
 
     const installSingle = (pkgInstall) => () => {

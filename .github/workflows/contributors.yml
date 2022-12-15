@@ -1,11 +1,10 @@
 name: Add contributors
 on:
-    schedule:
-        - cron: '20 20 * * *'
-    push:
-        branches: [dev]
     pull_request:
-        branches: [main, dev]
+        branches:
+            - dev
+            - main
+        types: [closed]
 
 jobs:
     contrib-readme-job:
