@@ -1,8 +1,16 @@
 const banner = require('../../config/banner.rollup.json')
 const { join } = require('path')
+const { default: rollupPluginHTML } = require('@web/rollup-plugin-html')
 const commonjs = require('@rollup/plugin-commonjs')
 
 module.exports = [
+    {
+        input: join(__dirname, 'src', 'server', 'pages', 'index.html'),
+        output: {
+            dir: join(__dirname, 'lib', 'server', 'pages'),
+        },
+        plugins: [rollupPluginHTML()],
+    },
     {
         input: join(__dirname, 'src', 'web-whatsapp', 'index.js'),
         output: {

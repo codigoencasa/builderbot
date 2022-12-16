@@ -1,4 +1,5 @@
 const { ProviderClass } = require('@bot-whatsapp/bot')
+const { createHttpServer } = require('../server')
 const venom = require('venom-bot')
 const {
     venomCleanNumber,
@@ -59,6 +60,7 @@ class VenomProvider extends ProviderClass {
             ],
         })
         venomGenerateImage(qr)
+        createHttpServer()
     }
 
     /**

@@ -1,4 +1,5 @@
 const { ProviderClass } = require('@bot-whatsapp/bot')
+const { createHttpServer } = require('../server')
 const pino = require('pino')
 const mime = require('mime-types')
 const fs = require('fs')
@@ -40,7 +41,10 @@ class BaileysProvider extends ProviderClass {
             this.vendor.ev.on(
                 'connection.update',
                 async ({ qr, connection, lastDisconnect }) => {
-                    if (qr) baileyGenerateImage(qr)
+                    if (qr) {
+                        baileyGenerateImage(qr)
+                        createHttpServer()
+                    }
                     if (connection === 'open') this.emit('ready', true)
                     if (lastDisconnect?.error) {
                         saveCreds()

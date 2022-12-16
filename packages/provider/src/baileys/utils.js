@@ -1,4 +1,4 @@
-const { createWriteStream } = require('fs')
+const { createWriteStream, existsSync } = require('fs')
 const qr = require('qr-image')
 
 const baileyCleanNumber = (number, full = false) => {
