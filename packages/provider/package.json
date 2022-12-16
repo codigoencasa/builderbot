@@ -11,9 +11,7 @@
     ],
     "dependencies": {
         "@bot-whatsapp/bot": "*",
-        "body-parser": "^1.20.1",
-        "polka": "^0.5.2",
-        "serve-static": "^1.13.1"
+        "qr-image": "^3.2.0"
     },
     "exports": {
         "./mock": "./lib/mock/index.cjs",

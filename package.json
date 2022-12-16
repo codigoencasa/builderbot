@@ -65,7 +65,6 @@
         "@rollup/plugin-json": "^5.0.1",
         "@rollup/plugin-node-resolve": "^15.0.1",
         "@rollup/plugin-replace": "^5.0.1",
-        "@web/rollup-plugin-html": "^1.11.0",
         "c8": "^7.12.0",
         "conventional-changelog": "^3.1.25",
         "cross-env": "^7.0.3",
