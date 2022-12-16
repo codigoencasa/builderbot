@@ -1,4 +1,5 @@
 const { createWriteStream } = require('fs')
+const combineImage = require('combine-image')
 const qr = require('qr-image')
 const { tmpdir } = require('os')
 const http = require('http')
@@ -11,8 +12,12 @@ const wwebCleanNumber = (number, full = false) => {
 }
 
 const wwebGenerateImage = (base64) => {
+    const PATH_QR = `${process.cwd()}/qr.png`
     let qr_svg = qr.image(base64, { type: 'png', margin: 4 })
-    qr_svg.pipe(createWriteStream(`${process.cwd()}/qr.png`))
+    qr_svg.pipe(createWriteStream(PATH_QR))
+    combineImage([PATH_QR], { margin: 15, color: 0xffffffff }).then((img) => {
+        img.write(PATH_QR)
+    })
 }
 
 const wwebIsValidNumber = (rawNumber) => {

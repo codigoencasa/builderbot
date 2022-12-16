@@ -1,4 +1,5 @@
 const { writeFile } = require('fs')
+const combineImage = require('combine-image')
 
 const venomCleanNumber = (number, full = false) => {
     number = number.replace('@c.us', '')
@@ -7,6 +8,7 @@ const venomCleanNumber = (number, full = false) => {
 }
 
 const venomGenerateImage = (base) => {
+    const PATH_QR = `${process.cwd()}/qr.png`
     const matches = base.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
     if (matches.length !== 3) {
         return new Error('Invalid input string')
@@ -17,15 +19,15 @@ const venomGenerateImage = (base) => {
     response.data = new Buffer.from(matches[2], 'base64')
 
     var imageBuffer = response
-    writeFile(
-        `${process.cwd()}/qr.png`,
-        imageBuffer['data'],
-        'binary',
-        (err) => {
-            if (err != null) throw new Error('ERROR_QR_GENERATE')
-            return
-        }
-    )
+    writeFile(PATH_QR, imageBuffer['data'], 'binary', (err) => {
+        if (err != null) throw new Error('ERROR_QR_GENERATE')
+        combineImage([PATH_QR], { margin: 15, color: 0xffffffff }).then(
+            (img) => {
+                img.write(PATH_QR)
+            }
+        )
+        return
+    })
 }
 
 const venomisValidNumber = (rawNumber) => {
