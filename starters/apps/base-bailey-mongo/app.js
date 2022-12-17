@@ -7,7 +7,7 @@ const {
 } = require('@bot-whatsapp/bot')
 
 const BaileysProvider = require('@bot-whatsapp/provider/baileys')
-const MongoAdapter = require('@bot-whatsapp/database/mock')
+const MongoAdapter = require('@bot-whatsapp/database/mongo')
 
 /**
  * Declaramos las conexiones de Mongo
