@@ -49,7 +49,7 @@ class VenomProvider extends ProviderClass {
     /**
      * Generamos QR Code pra escanear con el Whatsapp
      */
-    generateQr = (qr) => {
+    generateQr = async (qr) => {
         console.clear()
         this.emit('require_action', {
             instructions: [
@@ -58,7 +58,7 @@ class VenomProvider extends ProviderClass {
                 `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
             ],
         })
-        venomGenerateImage(qr)
+        await venomGenerateImage(qr)
     }
 
     /**

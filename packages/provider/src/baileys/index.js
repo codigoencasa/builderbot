@@ -70,7 +70,7 @@ class BaileysProvider extends ProviderClass {
                             `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
                         ],
                     })
-                    baileyGenerateImage(qr)
+                    await baileyGenerateImage(qr)
                 }
 
                 if (lastDisconnect?.error) {
