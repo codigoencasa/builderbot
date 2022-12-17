@@ -1,4 +1,5 @@
 const { createWriteStream } = require('fs')
+const combineImage = require('combine-image')
 const qr = require('qr-image')
 
 const baileyCleanNumber = (number, full = false) => {
@@ -7,9 +8,28 @@ const baileyCleanNumber = (number, full = false) => {
     return number
 }
 
-const baileyGenerateImage = (base64) => {
+/**
+ * Hace promesa el write
+ * @param {*} base64
+ */
+const baileyGenerateImage = async (base64) => {
+    const PATH_QR = `${process.cwd()}/qr.png`
     let qr_svg = qr.image(base64, { type: 'png', margin: 4 })
-    qr_svg.pipe(createWriteStream(`${process.cwd()}/qr.png`))
+
+    const writeFilePromise = () =>
+        new Promise((resolve, reject) => {
+            const file = qr_svg.pipe(createWriteStream(PATH_QR))
+            file.on('finish', () => resolve(true))
+            file.on('error', reject)
+        })
+
+    await writeFilePromise()
+
+    const cleanImage = await combineImage([PATH_QR], {
+        margin: 15,
+        color: 0xffffffff,
+    })
+    cleanImage.write(PATH_QR)
 }
 
 const baileyIsValidNumber = (rawNumber) => {
