@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/provider",
-    "version": "0.0.28-alpha.0",
+    "version": "0.0.29-alpha.0",
     "description": "Esto es el conector a Twilio, Meta, etc...",
     "main": "./lib/mock/index.cjs",
     "keywords": [],
@@ -11,6 +11,7 @@
     ],
     "dependencies": {
         "@bot-whatsapp/bot": "*",
+        "combine-image": "^1.0.3",
         "qr-image": "^3.2.0"
     },
     "exports": {
