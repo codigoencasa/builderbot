@@ -10,6 +10,14 @@ const VenomProvider = require('@bot-whatsapp/provider/venom')
 const MySQLAdapter = require('@bot-whatsapp/database/mysql')
 
 /**
+ * Declaramos las conexiones de MySQL
+ */
+const MYSQL_DB_HOST = 'localhost'
+const MYSQL_DB_USER = 'user'
+const MYSQL_DB_PASSWORD = 'pass'
+const MYSQL_DB_NAME = 'bot'
+
+/**
  * Declarando flujo hijo
  */
 
