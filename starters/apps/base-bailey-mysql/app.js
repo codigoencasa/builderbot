@@ -7,7 +7,15 @@ const {
 } = require('@bot-whatsapp/bot')
 
 const BaileysProvider = require('@bot-whatsapp/provider/baileys')
-const MockAdapter = require('@bot-whatsapp/database/mock')
+const MySQLAdapter = require('@bot-whatsapp/database/mysql')
+
+/**
+ * Declaramos las conexiones de Mongo
+ */
+const MYSQL_DB_HOST = 'localhost'
+const MYSQL_DB_USER = 'user'
+const MYSQL_DB_PASSWORD = 'pass'
+const MYSQL_DB_NAME = 'bot'
 
 /**
  * Declarando flujo hijo
@@ -69,7 +77,12 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
     )
 
 const main = async () => {
-    const adapterDB = new MockAdapter()
+    const adapterDB = new MySQLAdapter({
+        host: MYSQL_DB_HOST,
+        user: MYSQL_DB_USER,
+        database: MYSQL_DB_NAME,
+        password: MYSQL_DB_PASSWORD,
+    })
     const adapterFlow = createFlow([flowPrincipal])
     const adapterProvider = createProvider(BaileysProvider)
     createBot({
