@@ -3,7 +3,7 @@ const mysql = require('mysql2')
 class MyslAdapter {
     db
     listHistory = []
-    credentials = { host: null, user: null, database: null }
+    credentials = { host: null, user: null, database: null, password: null }
 
     constructor(_credentials) {
         this.credentials = _credentials

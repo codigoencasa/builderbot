@@ -1,0 +1,26 @@
+{
+    "Flow Bot (simple)": {
+        "scope": "javascript",
+        "prefix": "bot:flow",
+        "description": "Crear un flujo simple",
+        "body": [
+            "export const ${1:${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}}Flow = addKeyword(['hola', 'buenas'])",
+            "   .addAnswer('Hola! 🚀 Bienvenido a este CHATBOT')",
+            "   .addAnswer('¿Como puedo ayudarte?', {",
+            "    delay: 1500",
+            "})"
+        ]
+    },
+    "Flow Bot (completo)": {
+        "scope": "javascript",
+        "prefix": "bot:flow completo",
+        "description": "Crear un flujo completo",
+        "body": [
+            "export const ${1:${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}}Flow = addKeyword(['hola', 'buenas'])",
+            "   .addAnswer('Hola! 🚀 Bienvenido a este CHATBOT')",
+            "   .addAnswer('¿Como puedo ayudarte?', {",
+            "    delay: 1500",
+            "})"
+        ]
+    }
+}
