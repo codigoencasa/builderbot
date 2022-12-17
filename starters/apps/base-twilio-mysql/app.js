@@ -7,7 +7,15 @@ const {
 } = require('@bot-whatsapp/bot')
 
 const TwilioProvider = require('@bot-whatsapp/provider/twilio')
-const MockAdapter = require('@bot-whatsapp/database/mock')
+const MySQLAdapter = require('@bot-whatsapp/database/mysql')
+
+/**
+ * Declaramos las conexiones de MySQL
+ */
+const MYSQL_DB_HOST = 'localhost'
+const MYSQL_DB_USER = 'user'
+const MYSQL_DB_PASSWORD = 'pass'
+const MYSQL_DB_NAME = 'bot'
 
 /**
  * Declarando flujo hijo
@@ -63,13 +71,17 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
             console.log('Aqui puedes ver más info del usuario...')
             console.log('Puedes enviar un mail, hook, etc..')
             console.log(ctx)
-            console.log(ctx['_data']['notifyName'])
         },
         [...addChild(flowBolsos), ...addChild(flowZapatos)]
     )
 
 const main = async () => {
-    const adapterDB = new MockAdapter()
+    const adapterDB = new MySQLAdapter({
+        host: MYSQL_DB_HOST,
+        user: MYSQL_DB_USER,
+        database: MYSQL_DB_NAME,
+        password: MYSQL_DB_PASSWORD,
+    })
     const adapterFlow = createFlow([flowPrincipal])
     const adapterProvider = createProvider(TwilioProvider, {
         accountSid: 'YOUR_ACCOUNT_SID',

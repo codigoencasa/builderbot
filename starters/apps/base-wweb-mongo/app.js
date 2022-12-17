@@ -7,7 +7,13 @@ const {
 } = require('@bot-whatsapp/bot')
 
 const WebWhatsappProvider = require('@bot-whatsapp/provider/web-whatsapp')
-const MockAdapter = require('@bot-whatsapp/database/mock')
+const MongoAdapter = require('@bot-whatsapp/database/mongo')
+
+/**
+ * Declaramos las conexiones de Mongo
+ */
+const MONGO_DB_URI = 'mongodb://0.0.0.0:27017'
+const MONGO_DB_NAME = 'db_bot'
 
 /**
  * Declarando flujo hijo
@@ -63,13 +69,15 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
             console.log('Aqui puedes ver más info del usuario...')
             console.log('Puedes enviar un mail, hook, etc..')
             console.log(ctx)
-            console.log(ctx['_data']['notifyName'])
         },
         [...addChild(flowBolsos), ...addChild(flowZapatos)]
     )
 
 const main = async () => {
-    const adapterDB = new MockAdapter()
+    const adapterDB = new MongoAdapter({
+        dbUri: MONGO_DB_URI,
+        dbName: MONGO_DB_NAME,
+    })
     const adapterFlow = createFlow([flowPrincipal])
     const adapterProvider = createProvider(WebWhatsappProvider)
     createBot({

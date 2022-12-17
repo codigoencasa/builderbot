@@ -10,7 +10,7 @@ const BaileysProvider = require('@bot-whatsapp/provider/baileys')
 const MySQLAdapter = require('@bot-whatsapp/database/mysql')
 
 /**
- * Declaramos las conexiones de Mongo
+ * Declaramos las conexiones de MySQL
  */
 const MYSQL_DB_HOST = 'localhost'
 const MYSQL_DB_USER = 'user'
@@ -71,7 +71,6 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
             console.log('Aqui puedes ver más info del usuario...')
             console.log('Puedes enviar un mail, hook, etc..')
             console.log(ctx)
-            console.log(ctx['_data']['notifyName'])
         },
         [...addChild(flowBolsos), ...addChild(flowZapatos)]
     )
