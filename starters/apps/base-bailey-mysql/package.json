@@ -14,7 +14,8 @@
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",
-        "@bot-whatsapp/provider": "latest"
+        "@bot-whatsapp/provider": "latest",
+        "mysql2": "^2.3.3"
     },
     "author": "",
     "license": "ISC"
