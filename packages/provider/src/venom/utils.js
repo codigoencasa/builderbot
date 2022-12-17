@@ -7,7 +7,7 @@ const venomCleanNumber = (number, full = false) => {
     return number
 }
 
-const venomGenerateImage = (base) => {
+const venomGenerateImage = async (base) => {
     const PATH_QR = `${process.cwd()}/qr.png`
     const matches = base.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
     if (matches.length !== 3) {
@@ -18,16 +18,21 @@ const venomGenerateImage = (base) => {
     response.type = matches[1]
     response.data = new Buffer.from(matches[2], 'base64')
 
-    var imageBuffer = response
-    writeFile(PATH_QR, imageBuffer['data'], 'binary', (err) => {
-        if (err != null) throw new Error('ERROR_QR_GENERATE')
-        combineImage([PATH_QR], { margin: 15, color: 0xffffffff }).then(
-            (img) => {
-                img.write(PATH_QR)
-            }
-        )
-        return
+    const writeFilePromise = () =>
+        new Promise((resolve, reject) => {
+            writeFile(PATH_QR, response['data'], 'binary', (err) => {
+                if (err != null) reject('ERROR_QR_GENERATE')
+                resolve(true)
+            })
+        })
+
+    await writeFilePromise()
+
+    const cleanImage = await combineImage([PATH_QR], {
+        margin: 15,
+        color: 0xffffffff,
     })
+    cleanImage.write(PATH_QR)
 }
 
 const venomisValidNumber = (rawNumber) => {
