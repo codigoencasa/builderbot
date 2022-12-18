@@ -13,7 +13,7 @@ __Requerimientos:__
 
 __Clonar repo rama dev__
 ```
-git clone --branch dev https://github.com/leifermendez/bot-whatsapp
+git clone --branch dev https://github.com/codigoencasa/bot-whatsapp
 ```
 __Instalar dependencias__
 ``` 
