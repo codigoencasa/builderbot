@@ -46,7 +46,7 @@ En la consola encontraras los pasos a seguir
 - ¿Que son los GithubActions?: [Ver Video](https://youtu.be/nYBEBFKLiqw)
 
 
-> Documento en constante actualización....
+> __NOTA:__ Documento en constante actualización....
 
 ------
 -   [Discord](https://link.codigoencasa.com/DISCORD)
