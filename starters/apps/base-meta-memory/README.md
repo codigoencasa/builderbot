@@ -1,13 +1,23 @@
 ### CHATBOT Whatsapp
 
-Este bot es una aplicación que puedes vincular con tu whatsapp crear flujos para automatizar tareas en tu negocio o procesos repetitivos
+Este bot es una aplicación que puedes vincular con tu whatsapp y crear flujos para automatizar tareas en tu negocio o procesos repetitivos.
 
-Este bot contiene un flujo basico en el cual una persona (cliente) escribe **"hola"** y el bot responde.
+Este bot contiene un flujo básico en el cual una persona (cliente) escribe **"hola"** y el bot responde:
 - Bienvenido a mi tienda
-- Como puedo ayudarte?
-- Tengo: Zapatos Bolsos etc..
+- ¿Como puedo ayudarte?
+- Tengo: Zapatos, Bolsos etc..
 
 __Iniciar__
+
+Los flujos se declaran de atrás para adelante, es decir que si tienes un flujo de este tipo:
+ 
+           Menu Principal
+           - SubMenu 1
+             - Submenu 1.1
+           - Submenu 2
+             - Submenu 2.1
+
+Primero se declaran los submenus 1.1 y 2.1, luego el 1 y 2 y al final el principal.
 
 ```
 npm install
