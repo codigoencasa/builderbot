@@ -1,8 +1,7 @@
-const path = require('path')
 const StormDB = require('stormdb')
-const engine = new StormDB.localFileEngine(
-    path.join(process.cwd(), './db.stormdb')
-)
+const { join } = require('path')
+
+const engine = new StormDB.localFileEngine(join(process.cwd(), './db.stormdb'))
 
 class JsonFileAdapter {
     db
