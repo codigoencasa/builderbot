@@ -34,13 +34,8 @@ Se ejecuta el CLI (Command Line Interface) para ayudarte a crear un app-bot de e
 yarn run cli
 ```
 
-Abrir carpeta __example-app-base__ y ejecutar
-```
-cd example-app-base
-npm i
-npm run pre-copy
-npm start
-```
+__Seguir instrucciones__
+![](https://i.imgur.com/dC6lEwy.png)
 
 ### __Commit y Push__
 

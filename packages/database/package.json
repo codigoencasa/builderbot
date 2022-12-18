@@ -18,7 +18,7 @@
     "exports": {
         "./mock": "./lib/mock/index.cjs",
         "./mongo": "./lib/mongo/index.cjs",
-        "./json-file": "./lib/json-file/index.cjs",
+        "./json": "./lib/json/index.cjs",
         "./mysql": "./lib/mysql/index.cjs"
     }
 }
