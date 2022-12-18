@@ -36,7 +36,7 @@ yarn run cli
 
 Selecionas (mediante las flechas arriba y abajo) el proveedor que quieras usar y cuando estes sobre el presiona la barra de espacio, igualmente selecciona la base de datos que quieras usar.
 
-Se creó un subdirecorio con el nombre del proveedor y base de datos que seleccionaste, ej: `base-bailey-mysql`
+Se creó un subdirecorio con el nombre del proveedor y base de datos que seleccionaste, ejemplo: `base-bailey-mysql`
 
 Dentro de ese directorio necesitas editar el archivo package.json y borrar las siguientes lineas:
 ```
@@ -46,7 +46,7 @@ Dentro de ese directorio necesitas editar el archivo package.json y borrar las s
         "@bot-whatsapp/provider": "latest",
 ```
 
-Cambiate al directorio base-xxxxx-xxxx que se haya creado.
+Cambiate al directorio creado ejemplo: `base-bailey-mysql`
 ```
 cd base-baileys-mysql
 ```
@@ -56,13 +56,24 @@ npm install
 npm run pre-copy
 npm start
 ```
+En el caso de MySql y Mongo es necesario especificar en app.js los datos de la conexión, ejemplo de MySql:
+```
+const BaileysProvider = require('@bot-whatsapp/provider/baileys')
+const MySQLAdapter = require('@bot-whatsapp/database/mysql')
 
+/**
+ * Declaramos las conexiones de MySQL
+ */
+const MYSQL_DB_HOST = 'localhost'
+const MYSQL_DB_USER = 'usr'
+const MYSQL_DB_PASSWORD = 'pass'
+const MYSQL_DB_NAME = 'bot'
+```
 <!-- __Seguir instrucciones__
 En la consola encontraras los pasos a seguir -->
 
 ![](https://i.imgur.com/dC6lEwy.png)
 
-En el caso de MySql y Mongo es necesario especificar en app.js los datos de la conexión.
 
 ### 🤔 Preguntas frecuentes
 - ¿Como puedo hacer aportaciones de código en el proyecto?: [Ver Video](https://youtu.be/Lxt8Acob6aU)
