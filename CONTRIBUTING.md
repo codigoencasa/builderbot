@@ -39,6 +39,16 @@ En la consola encontraras los pasos a seguir
 
 ![](https://i.imgur.com/dC6lEwy.png)
 
+__Observaciones__
+Se debe tener en cuenta que si queremos utilizar una base de datos de MySQL, como muestra el ejemplo, será necesario actualizar las credenciales o crear previamente un usuario y una BBDD para que la conexión se realice correctamente.
+Las credenciales que usará la aplicación por defecto se encuentran en el fichero app.js y serán las siguientes:
+```
+const MYSQL_DB_HOST = 'localhost'
+const MYSQL_DB_USER = 'user'
+const MYSQL_DB_PASSWORD = 'pass'
+const MYSQL_DB_NAME = 'bot'
+```
+
 ### 🤔 Preguntas frecuentes
 - ¿Como puedo hacer aportaciones de código en el proyecto?: [Ver Video](https://youtu.be/Lxt8Acob6aU)
 - ¿Como ejecutar el entorno de pruebas?: [Ver Video](https://youtu.be/Mf9V-dloBfk)
