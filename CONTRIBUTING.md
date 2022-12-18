@@ -35,18 +35,18 @@ yarn run cli
 ```
 
 __Seguir instrucciones__
+En la consola encontraras los pasos a seguir
+
 ![](https://i.imgur.com/dC6lEwy.png)
 
-### __Commit y Push__
-
-El proyecto tiene implementado __[husky](https://typicode.github.io/husky/#/)__, es una herramienta que dispara unas acciones al momento de hacer commit y hacer push.
-
-__commit:__ Los commit son semánticos, esto quiere decir que deben cumplir un standar al momento de escribirlos ejemplo: ` feat(adapter): new adapter myqsl ` puede ver más info sobre esto __[aquí](https://github.com/conventional-changelog/commitlint/#what-is-commitlint)__
-
-__push:__ Cada push ejecutar `yarn run test` el cual realiza los test internos que tienen que cumplir con __95% de cobertura__.
+### 🤔 Preguntas frecuentes
+- ¿Como puedo hacer aportaciones de código en el proyecto?: [Ver Video](https://youtu.be/Lxt8Acob6aU)
+- ¿Como ejecutar el entorno de pruebas?: [Ver Video](https://youtu.be/Mf9V-dloBfk)
+- ¿Como crear un nuevo proveedor?: [Ver Video](https://youtu.be/cahK9zH3SI8)
+- ¿Que son los GithubActions?: [Ver Video](https://youtu.be/nYBEBFKLiqw)
 
 
-> Documento en constante actualización....
+> __NOTA:__ Documento en constante actualización....
 
 ------
 -   [Discord](https://link.codigoencasa.com/DISCORD)
