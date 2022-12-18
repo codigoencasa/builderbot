@@ -34,10 +34,35 @@ Se ejecuta el CLI (Command Line Interface) para ayudarte a crear un app-bot de e
 yarn run cli
 ```
 
-__Seguir instrucciones__
-En la consola encontraras los pasos a seguir
+Selecionas (mediante las flechas arriba y abajo) el proveedor que quieras usar y cuando estes sobre el presiona la barra de espacio, igualmente selecciona la base de datos que quieras usar.
+
+Se creó un subdirecorio con el nombre del proveedor y base de datos que seleccionaste, ej: base-bailey-mysql
+
+Dentro de ese directorio necesitas editar el archivo package.json y borrar las siguientes lineas:
+...
+        "@bot-whatsapp/bot": "latest",
+        "@bot-whatsapp/cli": "latest",
+        "@bot-whatsapp/database": "latest",
+        "@bot-whatsapp/provider": "latest",
+...
+
+Cambiate al directorio base-xxxxx-xxxx que se haya creado.
+...
+cd base-baileys-mysql
+...
+Ejecuta los comandos:
+...
+npm install
+npm run pre-copy
+npm start
+...
+
+<!-- __Seguir instrucciones__
+En la consola encontraras los pasos a seguir -->
 
 ![](https://i.imgur.com/dC6lEwy.png)
+
+En el caso de MySql y Mongo es necesario especificar en app.js los datos de la conexión.
 
 ### 🤔 Preguntas frecuentes
 - ¿Como puedo hacer aportaciones de código en el proyecto?: [Ver Video](https://youtu.be/Lxt8Acob6aU)
