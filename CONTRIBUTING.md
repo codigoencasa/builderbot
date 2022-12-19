@@ -74,7 +74,6 @@ En la consola encontraras los pasos a seguir -->
 
 ![](https://i.imgur.com/dC6lEwy.png)
 
-
 ### 🤔 Preguntas frecuentes
 - ¿Como puedo hacer aportaciones de código en el proyecto?: [Ver Video](https://youtu.be/Lxt8Acob6aU)
 - ¿Como ejecutar el entorno de pruebas?: [Ver Video](https://youtu.be/Mf9V-dloBfk)
