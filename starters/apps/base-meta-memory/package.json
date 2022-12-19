@@ -11,7 +11,6 @@
     "dependencies": {
         "body-parser": "^1.20.1",
         "polka": "^0.5.2",
-        "twilio": "^3.83.4",
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",

@@ -1,0 +1,24 @@
+{
+    "Flow Bot (simple)": {
+        "scope": "javascript",
+        "prefix": "bot:flow",
+        "description": "Crear un flujo simple",
+        "body": [
+            "export const flow${1} = addKeyword(['hola', 'buenas'])",
+            "   .addAnswer('Hola! 🚀 Bienvenido a este CHATBOT')",
+            "   .addAnswer('¿Como puedo ayudarte?')"
+        ]
+    },
+    "Flow Bot (completo)": {
+        "scope": "javascript",
+        "prefix": "bot:flow completo",
+        "description": "Crear un flujo completo",
+        "body": [
+            "export const flow${1} = addKeyword(['categorias'])",
+            "   .addAnswer('⚡ Tenemos las siguientes categorias')",
+            "   .addAnswer(['🚀 Computadoras', '🚀 Celulares', '🚀 Otros'], {",
+            "       delay: 1500, //Milisegundo 1500 = 1.5segundos",
+            "})"
+        ]
+    }
+}

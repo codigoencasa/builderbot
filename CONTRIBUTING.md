@@ -13,7 +13,7 @@ __Requerimientos:__
 
 __Clonar repo rama dev__
 ```
-git clone --branch dev https://github.com/leifermendez/bot-whatsapp
+git clone --branch dev https://github.com/codigoencasa/bot-whatsapp
 ```
 __Instalar dependencias__
 ``` 
@@ -34,24 +34,55 @@ Se ejecuta el CLI (Command Line Interface) para ayudarte a crear un app-bot de e
 yarn run cli
 ```
 
-Abrir carpeta __example-app-base__ y ejecutar
+Selecionas (mediante las flechas arriba y abajo) el proveedor que quieras usar y cuando estes sobre el presiona la barra de espacio, igualmente selecciona la base de datos que quieras usar.
+
+Se creó un subdirecorio con el nombre del proveedor y base de datos que seleccionaste, ejemplo: `base-bailey-mysql`
+
+Dentro de ese directorio necesitas editar el archivo package.json y borrar las siguientes lineas:
 ```
-cd example-app-base
-npm i
+        "@bot-whatsapp/bot": "latest",
+        "@bot-whatsapp/cli": "latest",
+        "@bot-whatsapp/database": "latest",
+        "@bot-whatsapp/provider": "latest",
+```
+
+Cambiate al directorio creado ejemplo: `base-bailey-mysql`
+```
+cd base-baileys-mysql
+```
+Ejecuta los comandos:
+```
+npm install
 npm run pre-copy
 npm start
 ```
+En el caso de MySql y Mongo es necesario especificar en app.js los datos de la conexión, ejemplo de MySql:
+```
+const BaileysProvider = require('@bot-whatsapp/provider/baileys')
+const MySQLAdapter = require('@bot-whatsapp/database/mysql')
 
-### __Commit y Push__
+/**
+ * Declaramos las conexiones de MySQL
+ */
+const MYSQL_DB_HOST = 'localhost'
+const MYSQL_DB_USER = 'usr'
+const MYSQL_DB_PASSWORD = 'pass'
+const MYSQL_DB_NAME = 'bot'
+```
+<!-- __Seguir instrucciones__
+En la consola encontraras los pasos a seguir -->
 
-El proyecto tiene implementado __[husky](https://typicode.github.io/husky/#/)__, es una herramienta que dispara unas acciones al momento de hacer commit y hacer push.
-
-__commit:__ Los commit son semánticos, esto quiere decir que deben cumplir un standar al momento de escribirlos ejemplo: ` feat(adapter): new adapter myqsl ` puede ver más info sobre esto __[aquí](https://github.com/conventional-changelog/commitlint/#what-is-commitlint)__
-
-__push:__ Cada push ejecutar `yarn run test` el cual realiza los test internos que tienen que cumplir con __95% de cobertura__.
+![](https://i.imgur.com/dC6lEwy.png)
 
 
-> Documento en constante actualización....
+### 🤔 Preguntas frecuentes
+- ¿Como puedo hacer aportaciones de código en el proyecto?: [Ver Video](https://youtu.be/Lxt8Acob6aU)
+- ¿Como ejecutar el entorno de pruebas?: [Ver Video](https://youtu.be/Mf9V-dloBfk)
+- ¿Como crear un nuevo proveedor?: [Ver Video](https://youtu.be/cahK9zH3SI8)
+- ¿Que son los GithubActions?: [Ver Video](https://youtu.be/nYBEBFKLiqw)
+
+
+> __NOTA:__ Documento en constante actualización....
 
 ------
 -   [Discord](https://link.codigoencasa.com/DISCORD)

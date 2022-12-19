@@ -12,7 +12,7 @@ const bannerDone = () => {
             [
                 `[Agradecimientos]: Este es un proyecto OpenSource, si tienes intenciones de colaborar puedes hacerlo:`,
                 `[😉] Comprando un cafe https://www.buymeacoffee.com/leifermendez`,
-                `[⭐] Dar estrella  https://github.com/leifermendez/bot-whatsapp`,
+                `[⭐] Dar estrella  https://github.com/codigoencasa/bot-whatsapp`,
                 `[🚀] Realizando mejoras en el codigo`,
             ].join('\n')
         )
@@ -85,7 +85,7 @@ const startInteractive = async () => {
             const indexOfPath = possiblesPath.find((a) => existsSync(a))
             await copyBaseApp(indexOfPath, join(process.cwd(), templateName))
             console.log(``)
-            console.log(bgMagenta(`⚡⚡⚡INSTRUCCIONES⚡⚡⚡`))
+            console.log(bgMagenta(`⚡⚡⚡ INSTRUCCIONES ⚡⚡⚡`))
             console.log(yellow(`cd ${templateName}`))
             console.log(yellow(`npm install`))
             console.log(yellow(`npm start`))

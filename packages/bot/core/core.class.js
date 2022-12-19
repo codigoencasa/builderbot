@@ -58,13 +58,13 @@ class CoreClass {
     ]
 
     /**
-     *
-     * @param {*} messageInComming
+     * GLOSSARY.md
+     * @param {*} messageCtxInComming
      * @returns
      */
-    handleMsg = async (messageInComming) => {
-        logger.log(`[handleMsg]: `, messageInComming)
-        const { body, from } = messageInComming
+    handleMsg = async (messageCtxInComming) => {
+        logger.log(`[handleMsg]: `, messageCtxInComming)
+        const { body, from } = messageCtxInComming
         let msgToSend = []
         let fallBackFlag = false
 
@@ -92,12 +92,26 @@ class CoreClass {
             return refToContinue
         }
 
+        // 📄 Se encarga de revisar si el contexto del mensaje tiene callback y ejecutarlo
+        const cbEveryCtx = (inRef) => {
+            const indexFlow = this.flowClass.findIndexByRef(inRef)
+            this.flowClass.allCallbacks[indexFlow].callback(
+                messageCtxInComming,
+                {
+                    fallBack,
+                }
+            )
+        }
+
         // 📄 [options: callback]: Si se tiene un callback se ejecuta
-        if (!fallBackFlag && refToContinue && prevMsg?.options?.callback) {
-            const indexFlow = this.flowClass.findIndexByRef(refToContinue?.ref)
-            this.flowClass.allCallbacks[indexFlow].callback(messageInComming, {
-                fallBack,
-            })
+        if (!fallBackFlag) {
+            if (refToContinue && prevMsg?.options?.callback) {
+                cbEveryCtx(refToContinue?.ref)
+            } else {
+                for (const ite of this.flowClass.find(body)) {
+                    cbEveryCtx(ite?.ref)
+                }
+            }
         }
 
         // 📄🤘(tiene return) [options: nested(array)]: Si se tiene flujos hijos los implementa
