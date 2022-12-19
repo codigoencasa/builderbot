@@ -1,4 +1,7 @@
-const { writeFile } = require('fs')
+const { writeFile, createWriteStream } = require('fs')
+const { tmpdir } = require('os')
+const http = require('http')
+const https = require('https')
 const combineImage = require('combine-image')
 
 const venomCleanNumber = (number, full = false) => {
@@ -35,9 +38,43 @@ const venomGenerateImage = async (base) => {
     cleanImage.write(PATH_QR)
 }
 
+/**
+ * Incompleta
+ * Descargar archivo multimedia para enviar
+ * @param {*} url
+ * @returns
+ */
+const venomDownloadMedia = (url) => {
+    return new Promise((resolve, reject) => {
+        const ext = url.split('.').pop()
+        const checkProtocol = url.includes('https:')
+        const handleHttp = checkProtocol ? https : http
+        const name = `tmp-${Date.now()}.${ext}`
+        const fullPath = `${tmpdir()}/${name}`
+        const file = createWriteStream(fullPath)
+        handleHttp.get(url, function (response) {
+            response.pipe(file)
+            file.on('finish', function () {
+                file.close()
+                resolve(fullPath)
+            })
+            file.on('error', function () {
+                console.log('errro')
+                file.close()
+                reject(null)
+            })
+        })
+    })
+}
+
 const venomisValidNumber = (rawNumber) => {
     const regexGroup = /\@g.us\b/gm
     const exist = rawNumber.match(regexGroup)
     return !exist
 }
-module.exports = { venomCleanNumber, venomGenerateImage, venomisValidNumber }
+module.exports = {
+    venomCleanNumber,
+    venomGenerateImage,
+    venomisValidNumber,
+    venomDownloadMedia,
+}
