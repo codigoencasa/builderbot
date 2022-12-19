@@ -963,6 +963,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@bot-whatsapp/contexts@workspace:packages/contexts":
+  version: 0.0.0-use.local
+  resolution: "@bot-whatsapp/contexts@workspace:packages/contexts"
+  dependencies:
+    "@bot-whatsapp/bot": "*"
+  languageName: unknown
+  linkType: soft
+
 "@bot-whatsapp/database@npm:*":
   version: 0.1.2
   resolution: "@bot-whatsapp/database@npm:0.1.2"
