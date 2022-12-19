@@ -1,7 +1,9 @@
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const pino = require('pino')
 const mime = require('mime-types')
-const fs = require('fs')
+const { existsSync, createWriteStream } = require('fs')
+const { Console } = require('console')
+
 const {
     default: makeWASocket,
     useMultiFileAuthState,
@@ -11,6 +13,10 @@ const {
     baileyCleanNumber,
     baileyIsValidNumber,
 } = require('./utils')
+
+const logger = new Console({
+    stdout: createWriteStream(`${process.cwd()}/baileys.log`),
+})
 
 /**
  * ⚙️ BaileysProvider: Es una clase tipo adaptor
@@ -49,7 +55,14 @@ class BaileysProvider extends ProviderClass {
                 }
             )
         } catch (e) {
-            this.emit('error', e)
+            logger.log(e)
+            this.emit('auth_failure', [
+                `Algo inesperado ha ocurrido NO entres en pánico`,
+                `Reinicia el BOT`,
+                `Tambien puedes mirar un log que se ha creado baileys.log`,
+                `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
+                `(Puedes abrir un ISSUE) https://github.com/codigoencasa/bot-whatsapp/issues/new/choose`,
+            ])
         }
     }
 
@@ -177,7 +190,7 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendFile = async (number, filePath) => {
-        if (fs.existsSync(filePath)) {
+        if (existsSync(filePath)) {
             const mimeType = mime.lookup(filePath)
             const numberClean = number.replace('+', '')
             const fileName = filePath.split('/').pop()

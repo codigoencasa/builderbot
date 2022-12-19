@@ -1,10 +1,17 @@
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const venom = require('venom-bot')
+const { createWriteStream } = require('fs')
+const { Console } = require('console')
+
 const {
     venomCleanNumber,
     venomGenerateImage,
     venomisValidNumber,
 } = require('./utils')
+
+const logger = new Console({
+    stdout: createWriteStream(`${process.cwd()}/venom.log`),
+})
 
 /**
  * ⚙️ VenomProvider: Es una clase tipo adaptor
@@ -34,13 +41,13 @@ class VenomProvider extends ProviderClass {
             )
             this.vendor = client
         } catch (e) {
+            logger.log(e)
             this.emit('auth_failure', {
                 instructions: [
                     `Ocurrio un error con la inicializacion de venom`,
-                    `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
-                    `(Puedes abrir un ISSUE) https://github.com/leifermendez/bot-whatsapp/issues/new/choose`,
-                    ``,
-                    `${e?.message}`,
+                    `Reinicia el BOT`,
+                    `Tambien puedes mirar un log que se ha creado venom.log`,
+                    `(Puedes abrir un ISSUE) https://github.com/codigoencasa/bot-whatsapp/issues/new/choose`,
                 ],
             })
         }
