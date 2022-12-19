@@ -7,6 +7,7 @@ const {
     venomCleanNumber,
     venomGenerateImage,
     venomisValidNumber,
+    venomDownloadMedia,
 } = require('./utils')
 
 const logger = new Console({
@@ -105,6 +106,19 @@ class VenomProvider extends ProviderClass {
     }
 
     /**
+     * Enviar imagen o multimedia
+     * @param {*} number
+     * @param {*} mediaInput
+     * @param {*} message
+     * @returns
+     */
+    sendMedia = async (number, mediaInput, message) => {
+        if (!mediaInput) throw new Error(`NO_SE_ENCONTRO: ${mediaInput}`)
+        const fileDownloaded = await venomDownloadMedia(mediaInput)
+        return this.vendor.sendImage(number, fileDownloaded, '.', message)
+    }
+
+    /**
      * Enviar mensaje al usuario
      * @param {*} userId
      * @param {*} message
@@ -115,7 +129,8 @@ class VenomProvider extends ProviderClass {
         const number = venomCleanNumber(userId)
         if (options?.buttons?.length)
             return this.sendButtons(number, message, options.buttons)
-        if (options?.media) return this.sendMedia(number, options.media)
+        if (options?.media)
+            return this.sendMedia(number, options.media, message)
         return this.vendor.sendText(number, message)
     }
 }

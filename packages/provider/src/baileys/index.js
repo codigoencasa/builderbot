@@ -33,7 +33,7 @@ class BaileysProvider extends ProviderClass {
     /**
      * Iniciar todo Bailey
      */
-    async initBailey() {
+    initBailey = async () => {
         const { state, saveCreds } = await useMultiFileAuthState('sessions')
 
         try {
@@ -135,9 +135,10 @@ class BaileysProvider extends ProviderClass {
      * @example await sendMessage('+XXXXXXXXXXX', 'https://dominio.com/imagen.jpg' | 'img/imagen.jpg')
      */
 
-    sendMedia = async (number, imageUrl) => {
+    sendMedia = async (number, imageUrl, text) => {
         await this.vendor.sendMessage(number, {
             image: { url: imageUrl },
+            text,
         })
     }
 
@@ -165,21 +166,6 @@ class BaileysProvider extends ProviderClass {
      */
     sendText = async (number, message) => {
         return this.vendor.sendMessage(number, { text: message })
-    }
-    /**
-     * TODO: Necesita terminar de implementar el sendMedia y sendButton guiarse:
-     * https://github.com/leifermendez/bot-whatsapp/blob/4e0fcbd8347f8a430adb43351b5415098a5d10df/packages/provider/src/web-whatsapp/index.js#L165
-     * @param {string} number
-     * @param {string} message
-     * @example await sendMessage('+XXXXXXXXXXX', 'Hello World')
-     */
-    sendMessage = async (numberIn, message, { options }) => {
-        const number = baileyCleanNumber(numberIn)
-
-        // if (options?.buttons?.length)
-        //     return this.sendButtons(number, message, options.buttons)
-        if (options?.media) return this.sendMedia(number, options.media)
-        return this.sendText(number, message)
     }
 
     /**
@@ -223,6 +209,23 @@ class BaileysProvider extends ProviderClass {
         }
 
         await this.vendor.sendMessage(`${numberClean}@c.us`, buttonMessage)
+    }
+
+    /**
+     * TODO: Necesita terminar de implementar el sendMedia y sendButton guiarse:
+     * https://github.com/leifermendez/bot-whatsapp/blob/4e0fcbd8347f8a430adb43351b5415098a5d10df/packages/provider/src/web-whatsapp/index.js#L165
+     * @param {string} number
+     * @param {string} message
+     * @example await sendMessage('+XXXXXXXXXXX', 'Hello World')
+     */
+    sendMessage = async (numberIn, message, { options }) => {
+        const number = baileyCleanNumber(numberIn)
+
+        // if (options?.buttons?.length)
+        //     return this.sendButtons(number, message, options.buttons)
+        if (options?.media)
+            return this.sendMedia(number, options.media, message)
+        return this.sendText(number, message)
     }
 }
 
