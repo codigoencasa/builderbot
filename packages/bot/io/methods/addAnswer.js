@@ -31,10 +31,7 @@ const addAnswer =
             nested: Array.isArray(nested) ? nested : [],
         })
 
-        const callback =
-            typeof cb === 'function'
-                ? cb
-                : () => console.log('Callback no definida')
+        const callback = typeof cb === 'function' ? cb : () => null
 
         const lastCtx = inCtx.hasOwnProperty('ctx') ? inCtx.ctx : inCtx
 
