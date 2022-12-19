@@ -95,9 +95,12 @@ class CoreClass {
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback y ejecutarlo
         const cbEveryCtx = (inRef) => {
             const indexFlow = this.flowClass.findIndexByRef(inRef)
-            this.flowClass.allCallbacks[indexFlow].callback(messageInComming, {
-                fallBack,
-            })
+            this.flowClass.allCallbacks[indexFlow].callback(
+                messageCtxInComming,
+                {
+                    fallBack,
+                }
+            )
         }
 
         // 📄 [options: callback]: Si se tiene un callback se ejecuta
