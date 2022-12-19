@@ -34,20 +34,45 @@ Se ejecuta el CLI (Command Line Interface) para ayudarte a crear un app-bot de e
 yarn run cli
 ```
 
-__Seguir instrucciones__
-En la consola encontraras los pasos a seguir
+Selecionas (mediante las flechas arriba y abajo) el proveedor que quieras usar y cuando estes sobre el presiona la barra de espacio, igualmente selecciona la base de datos que quieras usar.
 
-![](https://i.imgur.com/dC6lEwy.png)
+Se creó un subdirecorio con el nombre del proveedor y base de datos que seleccionaste, ejemplo: `base-bailey-mysql`
 
-__Observaciones__
-Se debe tener en cuenta que si queremos utilizar una base de datos de MySQL, como muestra el ejemplo, será necesario actualizar las credenciales o crear previamente un usuario y una BBDD para que la conexión se realice correctamente.
-Las credenciales que usará la aplicación por defecto se encuentran en el fichero app.js y serán las siguientes:
+Dentro de ese directorio necesitas editar el archivo package.json y borrar las siguientes lineas:
 ```
+        "@bot-whatsapp/bot": "latest",
+        "@bot-whatsapp/cli": "latest",
+        "@bot-whatsapp/database": "latest",
+        "@bot-whatsapp/provider": "latest",
+```
+
+Cambiate al directorio creado ejemplo: `base-bailey-mysql`
+```
+cd base-baileys-mysql
+```
+Ejecuta los comandos:
+```
+npm install
+npm run pre-copy
+npm start
+```
+En el caso de MySql y Mongo es necesario especificar en app.js los datos de la conexión, ejemplo de MySql:
+```
+const BaileysProvider = require('@bot-whatsapp/provider/baileys')
+const MySQLAdapter = require('@bot-whatsapp/database/mysql')
+
+/**
+ * Declaramos las conexiones de MySQL
+ */
 const MYSQL_DB_HOST = 'localhost'
-const MYSQL_DB_USER = 'user'
+const MYSQL_DB_USER = 'usr'
 const MYSQL_DB_PASSWORD = 'pass'
 const MYSQL_DB_NAME = 'bot'
 ```
+<!-- __Seguir instrucciones__
+En la consola encontraras los pasos a seguir -->
+
+![](https://i.imgur.com/dC6lEwy.png)
 
 ### 🤔 Preguntas frecuentes
 - ¿Como puedo hacer aportaciones de código en el proyecto?: [Ver Video](https://youtu.be/Lxt8Acob6aU)

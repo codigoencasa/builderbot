@@ -1,7 +1,9 @@
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const pino = require('pino')
 const mime = require('mime-types')
-const fs = require('fs')
+const { existsSync, createWriteStream } = require('fs')
+const { Console } = require('console')
+
 const {
     default: makeWASocket,
     useMultiFileAuthState,
@@ -11,6 +13,10 @@ const {
     baileyCleanNumber,
     baileyIsValidNumber,
 } = require('./utils')
+
+const logger = new Console({
+    stdout: createWriteStream(`${process.cwd()}/baileys.log`),
+})
 
 /**
  * ⚙️ BaileysProvider: Es una clase tipo adaptor
@@ -27,7 +33,7 @@ class BaileysProvider extends ProviderClass {
     /**
      * Iniciar todo Bailey
      */
-    async initBailey() {
+    initBailey = async () => {
         const { state, saveCreds } = await useMultiFileAuthState('sessions')
 
         try {
@@ -49,7 +55,14 @@ class BaileysProvider extends ProviderClass {
                 }
             )
         } catch (e) {
-            this.emit('error', e)
+            logger.log(e)
+            this.emit('auth_failure', [
+                `Algo inesperado ha ocurrido NO entres en pánico`,
+                `Reinicia el BOT`,
+                `Tambien puedes mirar un log que se ha creado baileys.log`,
+                `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
+                `(Puedes abrir un ISSUE) https://github.com/codigoencasa/bot-whatsapp/issues/new/choose`,
+            ])
         }
     }
 
@@ -87,7 +100,8 @@ class BaileysProvider extends ProviderClass {
         },
         {
             event: 'messages.upsert',
-            func: ({ messages }) => {
+            func: ({ messages, type }) => {
+                if (type !== 'notify') return
                 const [messageCtx] = messages
                 let payload = {
                     ...messageCtx,
@@ -122,9 +136,10 @@ class BaileysProvider extends ProviderClass {
      * @example await sendMessage('+XXXXXXXXXXX', 'https://dominio.com/imagen.jpg' | 'img/imagen.jpg')
      */
 
-    sendMedia = async (number, imageUrl) => {
+    sendMedia = async (number, imageUrl, text) => {
         await this.vendor.sendMessage(number, {
             image: { url: imageUrl },
+            text,
         })
     }
 
@@ -153,21 +168,6 @@ class BaileysProvider extends ProviderClass {
     sendText = async (number, message) => {
         return this.vendor.sendMessage(number, { text: message })
     }
-    /**
-     * TODO: Necesita terminar de implementar el sendMedia y sendButton guiarse:
-     * https://github.com/leifermendez/bot-whatsapp/blob/4e0fcbd8347f8a430adb43351b5415098a5d10df/packages/provider/src/web-whatsapp/index.js#L165
-     * @param {string} number
-     * @param {string} message
-     * @example await sendMessage('+XXXXXXXXXXX', 'Hello World')
-     */
-    sendMessage = async (numberIn, message, { options }) => {
-        const number = baileyCleanNumber(numberIn)
-
-        // if (options?.buttons?.length)
-        //     return this.sendButtons(number, message, options.buttons)
-        if (options?.media) return this.sendMedia(number, options.media)
-        return this.sendText(number, message)
-    }
 
     /**
      *
@@ -177,7 +177,7 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendFile = async (number, filePath) => {
-        if (fs.existsSync(filePath)) {
+        if (existsSync(filePath)) {
             const mimeType = mime.lookup(filePath)
             const numberClean = number.replace('+', '')
             const fileName = filePath.split('/').pop()
@@ -210,6 +210,23 @@ class BaileysProvider extends ProviderClass {
         }
 
         await this.vendor.sendMessage(`${numberClean}@c.us`, buttonMessage)
+    }
+
+    /**
+     * TODO: Necesita terminar de implementar el sendMedia y sendButton guiarse:
+     * https://github.com/leifermendez/bot-whatsapp/blob/4e0fcbd8347f8a430adb43351b5415098a5d10df/packages/provider/src/web-whatsapp/index.js#L165
+     * @param {string} number
+     * @param {string} message
+     * @example await sendMessage('+XXXXXXXXXXX', 'Hello World')
+     */
+    sendMessage = async (numberIn, message, { options }) => {
+        const number = baileyCleanNumber(numberIn)
+
+        // if (options?.buttons?.length)
+        //     return this.sendButtons(number, message, options.buttons)
+        if (options?.media)
+            return this.sendMedia(number, options.media, message)
+        return this.sendText(number, message)
     }
 }
 

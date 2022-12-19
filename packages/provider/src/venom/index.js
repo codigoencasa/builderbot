@@ -1,10 +1,18 @@
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const venom = require('venom-bot')
+const { createWriteStream } = require('fs')
+const { Console } = require('console')
+
 const {
     venomCleanNumber,
     venomGenerateImage,
     venomisValidNumber,
+    venomDownloadMedia,
 } = require('./utils')
+
+const logger = new Console({
+    stdout: createWriteStream(`${process.cwd()}/venom.log`),
+})
 
 /**
  * ⚙️ VenomProvider: Es una clase tipo adaptor
@@ -34,13 +42,13 @@ class VenomProvider extends ProviderClass {
             )
             this.vendor = client
         } catch (e) {
+            logger.log(e)
             this.emit('auth_failure', {
                 instructions: [
                     `Ocurrio un error con la inicializacion de venom`,
-                    `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
-                    `(Puedes abrir un ISSUE) https://github.com/leifermendez/bot-whatsapp/issues/new/choose`,
-                    ``,
-                    `${e?.message}`,
+                    `Reinicia el BOT`,
+                    `Tambien puedes mirar un log que se ha creado venom.log`,
+                    `(Puedes abrir un ISSUE) https://github.com/codigoencasa/bot-whatsapp/issues/new/choose`,
                 ],
             })
         }
@@ -98,6 +106,19 @@ class VenomProvider extends ProviderClass {
     }
 
     /**
+     * Enviar imagen o multimedia
+     * @param {*} number
+     * @param {*} mediaInput
+     * @param {*} message
+     * @returns
+     */
+    sendMedia = async (number, mediaInput, message) => {
+        if (!mediaInput) throw new Error(`NO_SE_ENCONTRO: ${mediaInput}`)
+        const fileDownloaded = await venomDownloadMedia(mediaInput)
+        return this.vendor.sendImage(number, fileDownloaded, '.', message)
+    }
+
+    /**
      * Enviar mensaje al usuario
      * @param {*} userId
      * @param {*} message
@@ -108,7 +129,8 @@ class VenomProvider extends ProviderClass {
         const number = venomCleanNumber(userId)
         if (options?.buttons?.length)
             return this.sendButtons(number, message, options.buttons)
-        if (options?.media) return this.sendMedia(number, options.media)
+        if (options?.media)
+            return this.sendMedia(number, options.media, message)
         return this.vendor.sendText(number, message)
     }
 }

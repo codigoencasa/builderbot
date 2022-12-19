@@ -10,6 +10,7 @@
         "create-bot:rollup": "rollup --config ./packages/create-bot-whatsapp/rollup-create.config.js ",
         "bot:rollup": "rollup --config ./packages/bot/rollup-bot.config.js",
         "provider:rollup": "rollup --config ./packages/provider/rollup-provider.config.js ",
+        "contexts:rollup": "rollup --config ./packages/contexts/rollup-contexts.config.js",
         "database:rollup": "rollup --config ./packages/database/rollup-database.config.js",
         "create-bot-whatsapp:rollup": "rollup --config ./packages/create-bot-whatsapp/rollup-create.config.js",
         "format:check": "prettier --check ./packages",
@@ -17,7 +18,7 @@
         "fmt.staged": "pretty-quick --staged",
         "lint:check": "eslint ./packages",
         "lint:fix": "eslint --fix ./packages",
-        "build": "yarn run cli:rollup && yarn run bot:rollup && yarn run provider:rollup && yarn run database:rollup && yarn run create-bot-whatsapp:rollup",
+        "build": "yarn run cli:rollup && yarn run bot:rollup && yarn run provider:rollup && yarn run database:rollup && yarn run contexts:rollup && yarn run create-bot-whatsapp:rollup",
         "copy.lib": "node ./scripts/move.js",
         "test.unit": "node ./node_modules/uvu/bin.js packages test",
         "test.coverage": "node ./node_modules/c8/bin/c8.js npm run test.unit",
@@ -37,6 +38,7 @@
         "packages/cli",
         "packages/database",
         "packages/provider",
+        "packages/contexts",
         "packages/docs"
     ],
     "keywords": [
