@@ -58,13 +58,13 @@ class CoreClass {
     ]
 
     /**
-     *
-     * @param {*} messageInComming
+     * GLOSSARY.md
+     * @param {*} messageCtxInComming
      * @returns
      */
-    handleMsg = async (messageInComming) => {
-        logger.log(`[handleMsg]: `, messageInComming)
-        const { body, from } = messageInComming
+    handleMsg = async (messageCtxInComming) => {
+        logger.log(`[handleMsg]: `, messageCtxInComming)
+        const { body, from } = messageCtxInComming
         let msgToSend = []
         let fallBackFlag = false
 

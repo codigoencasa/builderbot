@@ -100,7 +100,8 @@ class BaileysProvider extends ProviderClass {
         },
         {
             event: 'messages.upsert',
-            func: ({ messages }) => {
+            func: ({ messages, type }) => {
+                if (type !== 'notify') return
                 const [messageCtx] = messages
                 let payload = {
                     ...messageCtx,

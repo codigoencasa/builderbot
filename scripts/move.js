@@ -15,4 +15,5 @@ Promise.all([
     copyLibPkg('bot', appDir),
     copyLibPkg('database', appDir),
     copyLibPkg('provider', appDir),
+    copyLibPkg('contexts', appDir),
 ]).then(() => console.log('Todas las librerías copiadas'))
