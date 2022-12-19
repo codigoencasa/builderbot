@@ -7,6 +7,7 @@ const { Console } = require('console')
 const {
     default: makeWASocket,
     useMultiFileAuthState,
+    DisconnectReason,
 } = require('@adiwajshing/baileys')
 const {
     baileyGenerateImage,
@@ -25,6 +26,7 @@ const logger = new Console({
  */
 class BaileysProvider extends ProviderClass {
     vendor
+    saveCredsGlobal = null
     constructor() {
         super()
         this.initBailey().then(() => this.initBusEvents())
@@ -35,25 +37,13 @@ class BaileysProvider extends ProviderClass {
      */
     initBailey = async () => {
         const { state, saveCreds } = await useMultiFileAuthState('sessions')
-
+        this.saveCredsGlobal = saveCreds
         try {
             this.vendor = makeWASocket({
                 printQRInTerminal: false,
                 auth: state,
                 logger: pino({ level: 'error' }),
             })
-
-            this.vendor.ev.on(
-                'connection.update',
-                async ({ qr, connection, lastDisconnect }) => {
-                    if (qr) baileyGenerateImage(qr)
-                    if (connection === 'open') this.emit('ready', true)
-                    if (lastDisconnect?.error) {
-                        saveCreds()
-                        this.initBailey()
-                    }
-                }
-            )
         } catch (e) {
             logger.log(e)
             this.emit('auth_failure', [
@@ -75,6 +65,11 @@ class BaileysProvider extends ProviderClass {
         {
             event: 'connection.update',
             func: async ({ qr, connection, lastDisconnect }) => {
+                const statusCode = lastDisconnect?.error?.output?.statusCode
+
+                if (statusCode && statusCode !== DisconnectReason.loggedOut)
+                    this.initBailey()
+
                 if (qr) {
                     this.emit('require_action', {
                         instructions: [
@@ -84,15 +79,6 @@ class BaileysProvider extends ProviderClass {
                         ],
                     })
                     await baileyGenerateImage(qr)
-                }
-
-                if (lastDisconnect?.error) {
-                    this.emit('require_action', {
-                        instructions: [
-                            `Algo sucedio reinicia el bot o revisa tu whatsapp`,
-                            `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
-                        ],
-                    })
                 }
 
                 if (connection === 'open') this.emit('ready', true)
