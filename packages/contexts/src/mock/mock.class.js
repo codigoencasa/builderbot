@@ -16,8 +16,8 @@ class MockContext extends CoreClass {
      * @param {*} messageCtxInComming
      * @returns
      */
-    handleMsg = async ({ from, body }) => {
-        console.log('DEBUG:', messageCtxInComming)
+    handleMsg = async () => {
+        console.log('DEBUG:')
     }
 }
 
