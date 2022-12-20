@@ -5,12 +5,12 @@ const { urlencoded } = require('body-parser')
 class MetaWebHookServer extends EventEmitter {
     metaServer
     metaPort
-    verifyToken
-    constructor(_verifyToken, _metaPort) {
+    token
+    constructor(_token, _metaPort) {
         super()
         this.metaServer = this.buildHTTPServer()
         this.metaPort = _metaPort
-        this.verifyToken = _verifyToken
+        this.token = _token
     }
 
     /**
@@ -33,13 +33,53 @@ class MetaWebHookServer extends EventEmitter {
     }
 
     /**
+     * Valida el token
+     * @alpha
+     * @param {string} mode
+     * @param {string} token
+     * @example  tokenIsValid('subscribe', 'MYTOKEN')
+     */
+    tokenIsValid(mode, token) {
+        return mode === 'subscribe' && this.token === token
+    }
+
+    /**
+     * Verificación del token
+     * @param {*} req
+     * @param {*} res
+     */
+    verifyToken = (req, res) => {
+        const { query } = req
+        const mode = query['hub.mode']
+        const token = query['hub.verify_token']
+        const challenge = query['hub.challenge']
+
+        if (!mode || !token) {
+            return res.sendStatus(403)
+        }
+
+        if (this.tokenIsValid(mode, token)) {
+            console.log('Webhook verified--->😎😎😎😎')
+            res.status(200).send(challenge)
+        }
+
+        if (!this.tokenIsValid(mode, token)) {
+            res.sendStatus(403)
+        }
+    }
+
+    /**
      * Contruir HTTP Server
      * @returns
      */
     buildHTTPServer = () => {
+        polka()
+            .use(urlencoded({ extended: true }))
+            .get('/webhook', this.verifyToken)
+
         return polka()
             .use(urlencoded({ extended: true }))
-            .post('/meta-hook', this.incomingMsg)
+            .post('/webhook', this.incomingMsg)
     }
 
     /**
