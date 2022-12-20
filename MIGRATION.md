@@ -1,8 +1,13 @@
-## MIGRANDO DE LA VERSIÓN 1 A LAS VERSIÓN 2
+# Migración 
 
-Pasar los flujos del bot de la versión 1 a la 2 es muy fácil, supongamos que en tu initial.json y response.json tienes un flujo como el siguiente:
+#### Versión (legacy)
 
-```js
+En la  ***versión (legacy)***  se implementas los flujos de esta manera, en dos archivos independientes.
+
+> __`initial.json`__ para establecer las palabras claves y el flujo a responder, por otro lado tambien se necesitaba implementar.
+> __`response.json`__ donde se escriben los mensajes a responder.
+
+```json
 //initial.json
 [
     {
@@ -14,14 +19,20 @@ Pasar los flujos del bot de la versión 1 a la 2 es muy fácil, supongamos que e
         "key": "hola"
     },
     {
+        "keywords": ["productos", "info"],
+        "key": "productos"
+    },
+    {
         "keywords": ["adios", "bye"],
         "key": "adios"
+    },
+    {
+        "keywords": ["imagen", "foto"],
+        "key": "catalogo"
     }
 ]
 ```
-y
-
-```js
+```json
 //response.json
 {
     "hola":{
@@ -35,34 +46,77 @@ y
         "replyMessage":[
             "Que te vaya bien!!"
         ],
-        "media":null
-    }
+    },
+    "productos":{
+        "replyMessage":[
+            "Más productos aquí"
+        ],
+        "trigger":null,
+        "actions":{
+            "title":"¿Que te interesa ver?",
+            "message":"Abajo unos botons",
+            "footer":"",
+            "buttons":[
+                {"body":"Telefonos"},
+                {"body":"Computadoras"},
+                {"body":"Otros"}
+            ]
+        }
+    },
+    "catalogo":{
+        "replyMessage":[
+            "Te envio una imagen"
+        ],
+        "media":"https://media2.giphy.com/media/VQJu0IeULuAmCwf5SL/giphy.gif",
+        "trigger":null,
+    },
+    
 }
+
 ```
-En la versión 2, no es necesario tener esos 2 archivos, los flujos se ponen directamente en app.js de la siguiente manera:
+
+#### Versión 2 (0.2.X)
+
+En esta versión es mucho más sencillo abajo encontraras un ejemplo del mismo flujo anteriormente mostrado.
 
 ```js
 //app.js
+const {
+    createBot,
+    createProvider,
+    createFlow,
+    addKeyword,
+    addChild,
+} = require('@bot-whatsapp/bot')
+
+const BaileysProvider = require('@bot-whatsapp/provider/baileys')
+const MockAdapter = require('@bot-whatsapp/database/mock')
 /**
  * Declarando flujos principales.
  */
-const flowHola = addKeyword(['hola', 'ola', 'alo']) //Aqui van los "keywords" de initial.json
-    .addAnswer('Gracias a ti!') // Aquí va la respuesta del response.json, no es necesario especificar nuevamente los "keywords"
-    .addAnswer('Siempre un placer!!!') // Y se pueden agregar varias respuestas encadenadas ... TANTAS com sean necesarias.
+const flowHola = addKeyword(['hola', 'ola', 'alo'])
+    .addAnswer('Bienvenido a tu tienda online!')
 
-const flowAdios = addKeyword(['adios', 'bye']) //Aqui van los "keywords" de initial.json
-    .addAnswer('Que te vaya bien!!') // Aquí va la respuesta del response.json, no es necesario especificar nuevamente los "keywords"
-    .addAnswer('Hasta luego!', // Y se pueden agregar varias respuestas encadenadas ... TANTAS com sean necesarias.
-    null, null,[...addChild(flowHijo1)] // Y se pueden agregar flujos HIJOS (Sub Menus). Los flujos hijos se tienen que definir ANTES que los principales.
-    )
+const flowAdios = addKeyword(['adios', 'bye'])
+    .addAnswer('Que te vaya bien!!')
+    .addAnswer('Hasta luego!')
 
+const flowProductos = addKeyword(['productos', 'info'])
+    .addAnswer('Te envio una imagen', {
+        buttons:[
+            {body:"Telefonos"},
+            {body:"Computadoras"},
+            {body:"Otros"}
+        ]
+    })
 
-##FALTAN EJEMPLOS DE ENVIOS DE IMAGENES!
+const flowCatalogo = addKeyword(['imagen', 'foto'])
+    .addAnswer('Te envio una imagen', {media:'https://media2.giphy.com/media/VQJu0IeULuAmCwf5SL/giphy.gif'})
 
 
     const main = async () => {
     const adapterDB = new MockAdapter()
-    const adapterFlow = createFlow([flowHola, flowAdios]) // Aqui se crean los flujos.
+    const adapterFlow = createFlow([flowHola, flowAdios, flowProductos, flowCatalogo])
     const adapterProvider = createProvider(BaileysProvider)
     createBot({
         flow: adapterFlow,
@@ -70,4 +124,11 @@ const flowAdios = addKeyword(['adios', 'bye']) //Aqui van los "keywords" de init
         database: adapterDB,
     })
 }
-    ```
+```
+
+> Forma parte de este proyecto.
+
+-   [Discord](https://link.codigoencasa.com/DISCORD)
+-   [Twitter](https://twitter.com/leifermendez)
+-   [Youtube](https://www.youtube.com/watch?v=5lEMCeWEJ8o&list=PL_WGMLcL4jzWPhdhcUyhbFU6bC0oJd2BR)
+-   [Telegram](https://t.me/leifermendez)
