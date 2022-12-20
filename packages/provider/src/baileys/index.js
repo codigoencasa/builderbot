@@ -1,4 +1,5 @@
 const { ProviderClass } = require('@bot-whatsapp/bot')
+const { Sticker } = require('wa-sticker-formatter')
 const pino = require('pino')
 const mime = require('mime-types')
 const { existsSync, createWriteStream } = require('fs')
@@ -213,6 +214,97 @@ class BaileysProvider extends ProviderClass {
         if (options?.media)
             return this.sendMedia(number, options.media, message)
         return this.sendText(number, message)
+    }
+
+    /**
+     * @param {string} remoteJid
+     * @param {string} latitude
+     * @param {string} longitude
+     * @param {any} messages
+     * @example await sendLocation("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "xx.xxxx", "xx.xxxx", messages)
+     */
+
+    sendLocation = async (remoteJid, latitude, longitude, messages = null) => {
+        await this.vendor.sendMessage(
+            remoteJid,
+            {
+                location: {
+                    degreesLatitude: latitude,
+                    degreesLongitude: longitude,
+                },
+            },
+            { quoted: messages }
+        )
+
+        return { status: 'success' }
+    }
+
+    /**
+     * @param {string} remoteJid
+     * @param {string} contactNumber
+     * @param {string} displayName
+     * @param {any} messages - optional
+     * @example await sendContact("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "+xxxxxxxxxxx", "Robin Smith", messages)
+     */
+
+    sendContact = async (
+        remoteJid,
+        contactNumber,
+        displayName,
+        messages = null
+    ) => {
+        const cleanContactNumber = contactNumber.replaceAll(' ', '')
+        const waid = cleanContactNumber.replace('+', '')
+
+        const vcard =
+            'BEGIN:VCARD\n' +
+            'VERSION:3.0\n' +
+            `FN:${displayName}\n` +
+            'ORG:Ashoka Uni;\n' +
+            `TEL;type=CELL;type=VOICE;waid=${waid}:${cleanContactNumber}\n` +
+            'END:VCARD'
+
+        await this.client.sendMessage(
+            remoteJid,
+            {
+                contacts: {
+                    displayName: 'XD',
+                    contacts: [{ vcard }],
+                },
+            },
+            { quoted: messages }
+        )
+
+        return { status: 'success' }
+    }
+
+    /**
+     * @param {string} remoteJid
+     * @param {string} WAPresence
+     * @example await sendPresenceUpdate("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "recording")
+     */
+    sendPresenceUpdate = async (remoteJid, WAPresence) => {
+        await this.client.sendPresenceUpdate(WAPresence, remoteJid)
+    }
+
+    /**
+     * @param {string} remoteJid
+     * @param {string} url
+     * @param {object} stickerOptions
+     * @param {any} messages - optional
+     * @example await sendSticker("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "https://dn/image.png" || "https://dn/image.gif" || "https://dn/image.mp4", {pack: 'User', author: 'Me'} messages)
+     */
+
+    sendSticker = async (remoteJid, url, stickerOptions, messages = null) => {
+        const sticker = new Sticker(url, {
+            ...stickerOptions,
+            quality: 50,
+            type: 'crop',
+        })
+
+        const buffer = await sticker.toMessage()
+
+        await this.client.sendMessage(remoteJid, buffer, { quoted: messages })
     }
 }
 
