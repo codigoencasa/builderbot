@@ -1,6 +1,24 @@
 # CONTRIBUTING
 
+### 📄 Bienvenido/a
+Si deseas colaborar con el proyecto existen varias maneras, la primera de ellas es aportando conocimiento y mejorando el repositorio (actualizando documentación, mejorando código, revisando __[issues](https://github.com/codigoencasa/bot-whatsapp/issues)__, etc). 
+
+ También es bien recibido los aportes económicos que se utilizaran para diferentes fines __[ver más](https://opencollective.com/bot-whatsapp)__
+
+El lenguaje principal que se utilizó para desarrollar este proyecto fue __JavaScript__ con el fin de qué personas que están iniciando en el mundo de la programación puedan entender fácilmente.
+
+
+### 🤔 Preguntas frecuentes
+- ¿Como puedo hacer aportaciones de código en el proyecto?: [Ver Video](https://youtu.be/Lxt8Acob6aU)
+- ¿Como ejecutar el entorno de pruebas?: [Ver Video](https://youtu.be/Mf9V-dloBfk)
+- ¿Como crear un nuevo proveedor?: [Ver Video](https://youtu.be/cahK9zH3SI8)
+- ¿Que son los GithubActions?: [Ver Video](https://youtu.be/nYBEBFKLiqw)
+- ¿Canales de comunicación?: [Discord](https://link.codigoencasa.com/DISCORD)
+
+-----
+
 ![](https://i.giphy.com/media/ntMt6TvalpstTIx7Ak/giphy.webp)
+
 
 __Requerimientos:__
 - Node v16 o superior __[descargar node](https://nodejs.org/es/download/)__
@@ -74,14 +92,9 @@ En la consola encontraras los pasos a seguir -->
 
 ![](https://i.imgur.com/dC6lEwy.png)
 
-### 🤔 Preguntas frecuentes
-- ¿Como puedo hacer aportaciones de código en el proyecto?: [Ver Video](https://youtu.be/Lxt8Acob6aU)
-- ¿Como ejecutar el entorno de pruebas?: [Ver Video](https://youtu.be/Mf9V-dloBfk)
-- ¿Como crear un nuevo proveedor?: [Ver Video](https://youtu.be/cahK9zH3SI8)
-- ¿Que son los GithubActions?: [Ver Video](https://youtu.be/nYBEBFKLiqw)
 
-
-> __NOTA:__ Documento en constante actualización....
+> __NOTA:__ [Eres libre de aportar informacion a este documento o arreglar ortografia 🤣](
+https://github.com/codigoencasa/bot-whatsapp/edit/dev/CONTRIBUTING.md)
 
 ------
 -   [Discord](https://link.codigoencasa.com/DISCORD)
