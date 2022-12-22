@@ -20,7 +20,7 @@ export default component$(() => {
 })
 
 export const head: DocumentHead = {
-    title: 'Qwind — Free template for starts a website using Qwik + Tailwind CSS',
+    title: 'Chatbot Whatsapp — Free template for starts a website using Qwik + Tailwind CSS',
     meta: [
         {
             name: 'description',

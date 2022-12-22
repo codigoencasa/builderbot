@@ -17,47 +17,46 @@ export default component$(() => {
                     <div class="pb-12 md:pb-0 md:py-0 max-w-5xl mx-auto md:pr-16 flex items-center basis-[56%]">
                         <div>
                             <h1 class="text-5xl md:text-[3.48rem] font-bold leading-tighter tracking-tighter mb-4 font-heading px-4 md:px-0">
-                                Free template for <br class="hidden lg:block" />{' '}
-                                <span class="hidden lg:inline">
-                                    create a website using{' '}
-                                </span>{' '}
-                                <span class="text-[#039de1]">Qwik</span> +{' '}
                                 <span class="sm:whitespace-nowrap text-[#039de1]">
-                                    Tailwind CSS
+                                    Chatbot +
+                                </span>{' '}
+                                WhatsApp
+                                <br class="hidden lg:block" />{' '}
+                                <span class="hidden lg:inline">
+                                    prueba nuestro servicio{' '}
+                                    <span class="text-[#039de1]">gratis</span>{' '}
                                 </span>
                             </h1>
                             <div class="max-w-3xl mx-auto">
                                 <p class="text-xl text-gray-600 mb-8 dark:text-slate-400">
                                     <span class="font-semibold underline decoration-wavy decoration-1 decoration-secondary-600 underline-offset-2">
-                                        Qwind
-                                    </span>{' '}
-                                    is a production ready template to start your
-                                    new website using <em>Qwik</em> +{' '}
-                                    <em>Tailwind CSS</em>. It has been designed
-                                    following Best Practices, SEO,
-                                    Accessibility,{' '}
-                                    <span class="inline md:hidden">...</span>
-                                    <span class="hidden md:inline">
-                                        Dark Mode, Great Page Speed, image
-                                        optimization, sitemap generation and
-                                        more.
+                                        Con nuestro{' '}
                                     </span>
+                                    <span class="font-semibold underline decoration-wavy decoration-1 decoration-secondary-600 underline-offset-2">
+                                        Chatbot , puede configurar respuestas
+                                        automatizadas para preguntas frecuentes
+                                    </span>{' '}
+                                    , recibir y responder mensajes de manera
+                                    automatizada, y hacer un seguimiento de las
+                                    interacciones con los clientes. Además,
+                                    nuestro Chatbot se integra fácilmente con
+                                    otros sistemas y herramientas que ya esté
+                                    utilizando en su negocio.
                                 </p>
-                                <div class="max-w-xs sm:max-w-md flex flex-nowrap flex-col sm:flex-row gap-4 m-auto md:m-0 justify-center md:justify-start">
+
+                                <div class="max-w-xs sm:max-w-md flex flex-nowrap flex-col sm:flex-col gap-4 m-auto md:m-0 justify-center md:justify-start">
                                     <div class="flex w-full sm:w-auto">
-                                        <a
-                                            class="btn btn-primary sm:mb-0 w-full"
-                                            href="https://github.com/onwidget/qwind"
-                                            target="_blank"
-                                            rel="noopener"
-                                        >
-                                            Get template
-                                        </a>
+                                        <code class="btn btn-primary  sm:mb-0 w-full">
+                                            npm create bot-whatsapp@latest
+                                        </code>
                                     </div>
                                     <div class="flex w-full sm:w-auto">
-                                        <button class="btn w-full bg-gray-50 dark:bg-transparent">
-                                            Learn more
-                                        </button>
+                                        <a
+                                            href="/docs"
+                                            class="btn  bg-gray-50 dark:bg-transparent"
+                                        >
+                                            Más información
+                                        </a>
                                     </div>
                                 </div>
                             </div>
