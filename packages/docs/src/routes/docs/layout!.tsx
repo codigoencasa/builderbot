@@ -16,6 +16,7 @@ export default component$(() => {
                     { name: 'Instalación', link: '/docs/install' },
                     { name: 'Configuración', link: '/docs/settings' },
                     { name: 'Migración', link: '/docs/migration' },
+                    { name: 'Contribuidores', link: '/docs/contribuiting' },
                 ],
             },
         ],
