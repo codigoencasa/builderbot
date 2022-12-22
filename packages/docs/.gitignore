@@ -5,7 +5,7 @@
 /server
 
 # Development
-node_modules
+node_modules/
 
 # Cache
 .cache
@@ -36,6 +36,8 @@ lerna-debug.log*
 # Yarn
 .yarn/*
 !.yarn/releases
+
+package-lock.json
 
 # Cloudflare
 functions/**/*.js
