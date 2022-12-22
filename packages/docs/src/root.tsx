@@ -8,6 +8,7 @@ import {
 import { RouterHead } from '~/components/core/RouterHead'
 import { DarkThemeLauncher } from '~/components/core/DarkThemeLauncher'
 
+import fontStyles from '~/assets/styles/fonts.css?inline'
 import globalStyles from '~/assets/styles/global.css?inline'
 
 export default component$(() => {
@@ -18,6 +19,7 @@ export default component$(() => {
      * Dont remove the `<head>` and `<body>` elements.
      */
 
+    useStyles$(fontStyles)
     useStyles$(globalStyles)
 
     return (
@@ -29,10 +31,7 @@ export default component$(() => {
                     content="width=device-width, initial-scale=1"
                 />
                 <link rel="manifest" href="/manifest.json" />
-                <link
-                    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
-                    rel="stylesheet"
-                />
+
                 <RouterHead />
                 <DarkThemeLauncher />
             </head>

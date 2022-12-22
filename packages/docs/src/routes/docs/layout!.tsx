@@ -8,16 +8,15 @@ import ExtraBar from '~/components/widgets/ExtraBar'
 export default component$(() => {
     const store = useStore({
         options: [
-            { name: 'Primeros pasos', link: '/docs' },
-            { name: 'Instalación', link: '/docs/install' },
-            { name: 'Configuración', link: '/docs/settings' },
-            { name: 'Migración', link: '/docs/migration' },
-        ],
-        extraOptions: [
-            { name: 'Primeros pasos', link: '/docs', class: 'font-semibold' },
-            { name: 'Instalación', link: '/docs' },
-            { name: 'Configuración', link: '/docs' },
-            { name: 'Forma de pensar', link: '/docs' },
+            {
+                title: 'Primeros pasos',
+                list: [
+                    { name: 'Vista rápida', link: '/docs' },
+                    { name: 'Instalación', link: '/docs/install' },
+                    { name: 'Configuración', link: '/docs/settings' },
+                    { name: 'Migración', link: '/docs/migration' },
+                ],
+            },
         ],
     })
 
@@ -33,7 +32,7 @@ export default component$(() => {
                         <Slot />
                     </div>
                     <div class={'px-3 col-span-1  '}>
-                        <ExtraBar options={store.extraOptions} />
+                        {/* <ExtraBar options={store.extraOptions} /> */}
                     </div>
                 </div>
             </main>
