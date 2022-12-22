@@ -2,7 +2,6 @@
   "name": "qwind",
   "description": "A template to make your website using Qwik + Tailwind CSS.",
   "version": "0.1.1",
-  "private": true,
   "scripts": {
     "build": "qwik build && npm run subfont",
     "build.client": "vite build",

@@ -10518,8 +10518,8 @@ __metadata:
   linkType: hard
 
 "rollup@npm:^3.2.3":
-  version: 3.7.5
-  resolution: "rollup@npm:3.7.5"
+  version: 3.8.0
+  resolution: "rollup@npm:3.8.0"
   dependencies:
     fsevents: ~2.3.2
   dependenciesMeta:
@@ -10527,7 +10527,7 @@ __metadata:
       optional: true
   bin:
     rollup: dist/bin/rollup
-  checksum: 772f85e9f12c83091cbe8ef31dc563198566cfe536dc8099dd6d4e372daa370f9d455cc42c7993d22b02521e25d53733df7e98d2a993e5a22bf11b2591de4e2d
+  checksum: ee67ec1e27ae7c5938326cae30645cd41b04495880ea3b1b0de2af67e012ccce00814d385ba65f9a6c9488aa6d70a8eb4b5733a2d478f35bc3c6325efa41e5e7
   languageName: node
   linkType: hard
 
@@ -11540,9 +11540,9 @@ __metadata:
   linkType: hard
 
 "tinycolor2@npm:^1.1.2":
-  version: 1.4.2
-  resolution: "tinycolor2@npm:1.4.2"
-  checksum: 57ed262e08815a4ab0ed933edafdbc6555a17081781766149813b44a080ecbe58b3ee281e81c0e75b42e4d41679f138cfa98eabf043f829e0683c04adb12c031
+  version: 1.5.1
+  resolution: "tinycolor2@npm:1.5.1"
+  checksum: 0fffbe217217f819e0ef79524fda8813c20dac89b647bfc0f1bc0c7d5a80884dad0d74a414b865d2ce867d76d2303f251f7527eaebfe2838251e195fc4b0287c
   languageName: node
   linkType: hard
 
