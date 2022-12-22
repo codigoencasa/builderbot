@@ -3,13 +3,14 @@ import type { DocumentHead } from '@builder.io/qwik-city'
 import Footer from '~/components/widgets/Footer'
 import Header from '~/components/widgets/Header'
 import NavBar from '~/components/widgets/NavBar'
-import ExtraBar from '~/components/widgets/ExtraBar'
+// import ExtraBar from '~/components/widgets/ExtraBar'
 
 export default component$(() => {
     const store = useStore({
         options: [
             {
                 title: 'Primeros pasos',
+                link: '',
                 list: [
                     { name: 'Vista rápida', link: '/docs' },
                     { name: 'Instalación', link: '/docs/install' },
@@ -32,7 +33,7 @@ export default component$(() => {
                         <Slot />
                     </div>
                     <div class={'px-3 col-span-1  '}>
-                        {/* <ExtraBar options={store.extraOptions} /> */}
+                        <NavBar options={store.options} />
                     </div>
                 </div>
             </main>
