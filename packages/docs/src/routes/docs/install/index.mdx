@@ -8,3 +8,76 @@ contributors:
 ---
 
 # Instalación
+
+Instalar el bot muy sencillo, solo deberas ejecutar el siguiente comando 🚀
+
+```shell
+npm create bot-whatsapp@latest
+```
+
+Te va a preguntar que si quieres crear un bot, contesta con "Y" y la tecla `Enter`
+
+```shell
+🚀 Revisando tu Node.js
+Node.js compatible v18.12.0
+
+🙂 Revisando tu sistema operativo
+
+? Quieres crear un bot? (Y/n) »
+```
+
+A continuación te va pedir que selecciones el proveedor que quieres usar, puedes seleccionarlo moviendote sobre las opciones con las flechas arriba y abajo, y cuando estes sobre el que quieres, presiona la tecla de `Espacio` y después la tecla `Enter`.
+
+```shell
+? ¿Cuál proveedor de whatsapp quieres utilizar? » Espacio para seleccionar ↑/↓
+( )   whatsapp-web.js (gratis)
+( )   Venom (gratis)
+(x)   Baileys (gratis)
+( )   Twilio
+( )   API Oficial (Meta)
+```
+
+Continuamos con la selección de la base de datos que vamos a usar para guardar las conversaciones, de igual manera, usamos las flechas y barra de espacio para la selección:
+
+```shell
+? ¿Cuál base de datos quieres utilizar? » Espacio para seleccionar ↑/↓
+(x)   Memory
+( )   Mongo
+( )   MySQL
+( )   Json
+```
+
+Terminamos con la selección de preveedor y base de datos, y continuamos con la instalación:
+
+Hay que cambiarnos de directorio al que se acaba de crear, dependiendo de lo que seleccionamos previamente, en este caso es `base-baileys-memory`.
+Una vez que nos cambiamos de directorio ejecutamos el comando `npm install`.
+Y cuando termine la instalación ejecutamos `npm start`.
+
+```shell
+√ ¿Cuál base de datos quieres utilizar? » Memory
+success!
+
+⚡⚡⚡ INSTRUCCIONES ⚡⚡⚡
+cd base-bailey-memory
+npm install
+npm start
+```
+
+En el directorio del bot (**base-baileys-memory**) se va a crear un archivo `qr.png`, este archivo contiene un código QR, hay que escanear ese código desde la aplicación de Whatsapp en el telefono que queremos ligar al bot.
+
+```shell
+⚡⚡ ACCIÓN REQUERIDA ⚡⚡
+Debes escanear el QR Code para iniciar session reivsa qr.svg
+Recuerda que el QR se actualiza cada minuto
+Necesitas ayuda: https://link.codigoencasa.com/DISCORD
+```
+
+Una vez que escanemos el código nos va a aparecer el mensaje, y el bot está listo para recibir mensajes.
+
+```shell
+Proveedor conectado y listo
+```
+
+Desde **otro** celular, manda un mensaje al numero que acabas de ligar con el texto "hola", y debes de recibir un mensaje de "Bienvenido a mi tienda".
+
+**Listo.**
