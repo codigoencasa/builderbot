@@ -1,0 +1,7 @@
+[build]
+  publish = "dist"
+  command = "npm run build"
+[[headers]]
+  for = "/build/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

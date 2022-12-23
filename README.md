@@ -83,7 +83,15 @@ Video como hacer PR: https://youtu.be/Lxt8Acob6aU
             <br />
             <sub><b>Yonathan Suarez</b></sub>
         </a>
-    </td></tr>
+    </td>
+    <td align="center">
+        <a href="https://github.com/jlferrete">
+            <img src="https://avatars.githubusercontent.com/u/36698913?v=4" width="50;" alt="jlferrete"/>
+            <br />
+            <sub><b>José Luis Ferrete</b></sub>
+        </a>
+    </td>
+</tr>
 </table>
 <!-- readme: collaborators,contributors -end -->
 

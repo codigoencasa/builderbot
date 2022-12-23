@@ -10,16 +10,16 @@ const URL = `https://graph.facebook.com/v15.0`
  *
  *
  * Necesitas las siguientes tokens y valores
- * { token, numberId, vendorNumber, verify_token }
+ * { jwtToken, numberId, vendorNumber, verifyToken }
  */
 
 class MetaProvider extends ProviderClass {
     metHook
-    token
+    jwtToken
     numberId
-    constructor({ token, numberId, verifyToken }, _port = 3000) {
+    constructor({ jwtToken, numberId, verifyToken }, _port = 3000) {
         super()
-        this.token = token
+        this.jwtToken = jwtToken
         this.numberId = numberId
         this.metHook = new MetaWebHookServer(verifyToken, _port)
         this.metHook.start()
@@ -60,7 +60,7 @@ class MetaProvider extends ProviderClass {
                 body,
                 {
                     headers: {
-                        Authorization: `Bearer ${this.token}`,
+                        Authorization: `Bearer ${this.jwtToken}`,
                     },
                 }
             )

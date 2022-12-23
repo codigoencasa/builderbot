@@ -1,4 +1,5 @@
 const { ProviderClass } = require('@bot-whatsapp/bot')
+const { Sticker } = require('wa-sticker-formatter')
 const pino = require('pino')
 const mime = require('mime-types')
 const { existsSync, createWriteStream } = require('fs')
@@ -7,6 +8,7 @@ const { Console } = require('console')
 const {
     default: makeWASocket,
     useMultiFileAuthState,
+    DisconnectReason,
 } = require('@adiwajshing/baileys')
 const {
     baileyGenerateImage,
@@ -25,6 +27,7 @@ const logger = new Console({
  */
 class BaileysProvider extends ProviderClass {
     vendor
+    saveCredsGlobal = null
     constructor() {
         super()
         this.initBailey().then(() => this.initBusEvents())
@@ -35,25 +38,13 @@ class BaileysProvider extends ProviderClass {
      */
     initBailey = async () => {
         const { state, saveCreds } = await useMultiFileAuthState('sessions')
-
+        this.saveCredsGlobal = saveCreds
         try {
             this.vendor = makeWASocket({
                 printQRInTerminal: false,
                 auth: state,
                 logger: pino({ level: 'error' }),
             })
-
-            this.vendor.ev.on(
-                'connection.update',
-                async ({ qr, connection, lastDisconnect }) => {
-                    if (qr) baileyGenerateImage(qr)
-                    if (connection === 'open') this.emit('ready', true)
-                    if (lastDisconnect?.error) {
-                        saveCreds()
-                        this.initBailey()
-                    }
-                }
-            )
         } catch (e) {
             logger.log(e)
             this.emit('auth_failure', [
@@ -75,6 +66,11 @@ class BaileysProvider extends ProviderClass {
         {
             event: 'connection.update',
             func: async ({ qr, connection, lastDisconnect }) => {
+                const statusCode = lastDisconnect?.error?.output?.statusCode
+
+                if (statusCode && statusCode !== DisconnectReason.loggedOut)
+                    this.initBailey()
+
                 if (qr) {
                     this.emit('require_action', {
                         instructions: [
@@ -84,15 +80,6 @@ class BaileysProvider extends ProviderClass {
                         ],
                     })
                     await baileyGenerateImage(qr)
-                }
-
-                if (lastDisconnect?.error) {
-                    this.emit('require_action', {
-                        instructions: [
-                            `Algo sucedio reinicia el bot o revisa tu whatsapp`,
-                            `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
-                        ],
-                    })
                 }
 
                 if (connection === 'open') this.emit('ready', true)
@@ -227,6 +214,97 @@ class BaileysProvider extends ProviderClass {
         if (options?.media)
             return this.sendMedia(number, options.media, message)
         return this.sendText(number, message)
+    }
+
+    /**
+     * @param {string} remoteJid
+     * @param {string} latitude
+     * @param {string} longitude
+     * @param {any} messages
+     * @example await sendLocation("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "xx.xxxx", "xx.xxxx", messages)
+     */
+
+    sendLocation = async (remoteJid, latitude, longitude, messages = null) => {
+        await this.vendor.sendMessage(
+            remoteJid,
+            {
+                location: {
+                    degreesLatitude: latitude,
+                    degreesLongitude: longitude,
+                },
+            },
+            { quoted: messages }
+        )
+
+        return { status: 'success' }
+    }
+
+    /**
+     * @param {string} remoteJid
+     * @param {string} contactNumber
+     * @param {string} displayName
+     * @param {any} messages - optional
+     * @example await sendContact("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "+xxxxxxxxxxx", "Robin Smith", messages)
+     */
+
+    sendContact = async (
+        remoteJid,
+        contactNumber,
+        displayName,
+        messages = null
+    ) => {
+        const cleanContactNumber = contactNumber.replaceAll(' ', '')
+        const waid = cleanContactNumber.replace('+', '')
+
+        const vcard =
+            'BEGIN:VCARD\n' +
+            'VERSION:3.0\n' +
+            `FN:${displayName}\n` +
+            'ORG:Ashoka Uni;\n' +
+            `TEL;type=CELL;type=VOICE;waid=${waid}:${cleanContactNumber}\n` +
+            'END:VCARD'
+
+        await this.client.sendMessage(
+            remoteJid,
+            {
+                contacts: {
+                    displayName: 'XD',
+                    contacts: [{ vcard }],
+                },
+            },
+            { quoted: messages }
+        )
+
+        return { status: 'success' }
+    }
+
+    /**
+     * @param {string} remoteJid
+     * @param {string} WAPresence
+     * @example await sendPresenceUpdate("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "recording")
+     */
+    sendPresenceUpdate = async (remoteJid, WAPresence) => {
+        await this.client.sendPresenceUpdate(WAPresence, remoteJid)
+    }
+
+    /**
+     * @param {string} remoteJid
+     * @param {string} url
+     * @param {object} stickerOptions
+     * @param {any} messages - optional
+     * @example await sendSticker("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "https://dn/image.png" || "https://dn/image.gif" || "https://dn/image.mp4", {pack: 'User', author: 'Me'} messages)
+     */
+
+    sendSticker = async (remoteJid, url, stickerOptions, messages = null) => {
+        const sticker = new Sticker(url, {
+            ...stickerOptions,
+            quality: 50,
+            type: 'crop',
+        })
+
+        const buffer = await sticker.toMessage()
+
+        await this.client.sendMessage(remoteJid, buffer, { quoted: messages })
     }
 }
 
