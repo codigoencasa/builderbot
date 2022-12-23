@@ -139,6 +139,17 @@ A continuación se muestra un ejemplo de flujos hijos, estos nos sirven para cre
 El __submenu 1__ solo se va a disparar cuando el flujo anterior sea el __principal__, e igualmente el __submenu 1.1__, solo cuando el flujo anterior sea el __submenu 1__, ejemplo:
 
 ```js
+/**
+ * Aqui declaramos los flujos hijos, los flujos se declaran de atras para adelante, es decir que si tienes un flujo de este tipo:
+ *
+ *          Menu Principal
+ *           - SubMenu 1
+ *             - Submenu 1.1
+ *           - Submenu 2
+ *             - Submenu 2.1
+ *
+ * Primero declaras los submenus 1.1 y 2.1, luego el 1 y 2 y al final el principal.
+ */
 const flowBolsos2 = addKeyword(['bolsos2', '2'])
     .addAnswer('🤯 *MUCHOS* bolsos ...')
     .addAnswer('y mas bolsos... bla bla')
