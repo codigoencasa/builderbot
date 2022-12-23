@@ -1,11 +1,11 @@
 import { component$ } from '@builder.io/qwik'
 
 // @ts-ignore
-import srcsetAvif from '~/assets/images/hero.jpg?w=400;900&avif&srcset'
+import srcsetAvif from '~/assets/images/chatbot-whatsapp.png?w=400;900&avif&srcset'
 // @ts-ignore
-import srcsetWebp from '~/assets/images/hero.jpg?w=400;900&webp&srcset'
+import srcsetWebp from '~/assets/images/chatbot-whatsapp.png?w=400;900&webp&srcset'
 // @ts-ignore
-import { src as placeholder } from '~/assets/images/hero.jpg?width=400&metadata'
+import { src as placeholder } from '~/assets/images/chatbot-whatsapp.png?width=400&metadata'
 
 export default component$(() => {
     return (
@@ -17,14 +17,14 @@ export default component$(() => {
                     <div class="pb-12 md:pb-0 md:py-0 max-w-5xl mx-auto md:pr-16 flex items-center basis-[56%]">
                         <div>
                             <h1 class="text-5xl md:text-[3.48rem] font-bold leading-tighter tracking-tighter mb-4 font-heading px-4 md:px-0">
-                                <span class="sm:whitespace-nowrap text-[#039de1]">
+                                <span class="sm:whitespace-nowrap text-[#25b637]">
                                     Chatbot +
                                 </span>{' '}
                                 WhatsApp
                                 <br class="hidden lg:block" />{' '}
                                 <span class="hidden lg:inline">
                                     prueba nuestro servicio{' '}
-                                    <span class="text-[#039de1]">gratis</span>{' '}
+                                    <span class="text-[#25b637]">gratis</span>{' '}
                                 </span>
                             </h1>
                             <div class="max-w-3xl mx-auto">
@@ -64,6 +64,24 @@ export default component$(() => {
                     </div>
                     <div class="block md:flex items-center flex-1">
                         <div class="relative m-auto max-w-4xl">
+                            {/* <video
+                                width="600"
+                                height="100%"
+                                autoPlay
+                                muted
+                                playsInline
+                            >
+                                <source
+                                    src="https://s19.aconvert.com/convert/p3r68-cdx67/5if2i-k2pvs.webm"
+                                    type='video/mp4; codecs="hvc1"'
+                                />
+
+                                <source
+                                    src="https://s19.aconvert.com/convert/p3r68-cdx67/5if2i-k2pvs.webm"
+                                    type="video/webm"
+                                />
+                            </video> */}
+
                             <picture>
                                 <source srcSet={srcsetAvif} type="image/avif" />
                                 <source srcSet={srcsetWebp} type="image/webp" />
@@ -71,7 +89,7 @@ export default component$(() => {
                                     src={placeholder}
                                     width={1000}
                                     height={1250}
-                                    class="mx-auto w-full rounded-md md:h-full drop-shadow-2xl bg-gray-400 dark:bg-slate-700"
+                                    class="mx-auto w-full rounded-md md:h-full drop-shadow-2xl"
                                     alt="Qwind Hero Image (Cool dog)"
                                     loading="eager"
                                     decoding="async"
