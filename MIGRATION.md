@@ -128,15 +128,15 @@ const flowCatalogo = addKeyword(['imagen', 'foto'])
 
 #### Flujos hijos
 
-A continuación se muestra un ejemplo de flujos hijos, estos nos sirven para crear flujos que solo se disparan cuando el flujo anterior es el espacificado, ejemplo:
+A continuación se muestra un ejemplo de flujos hijos, estos nos sirven para crear flujos que solo se disparan cuando el flujo anterior es el especificado, ejemplo:
 
  >          Menu Principal (Escoge zapatos o bolsos)
- >           - SubMenu 1 (bolsos, ahora escoge piel o tela)
+ >           - SubMenu 1 (Elegiste bolsos, ahora escoge piel o tela)
  >             - Submenu 1.1 (piel)
- >           - Submenu 2 (zapatos, ahora escoge piel o tela)
+ >           - Submenu 2 (Elegiste zapatos, ahora escoge piel o tela)
  >             - Submenu 2.1 (piel)
 
-El __submenu 1__ solo se va a disparar cuando el flujo anterior sea el __principal__, e igualmente el submenu 1.1__, solo se dispara cuando el flujo anterior sea el __submenu 1__, ejemplo:
+El __submenu 1__ solo se va a disparar cuando el flujo anterior sea el __principal__, e igualmente el __submenu 1.1__, solo cuando el flujo anterior sea el __submenu 1__, ejemplo:
 
 ```js
 const flowBolsos2 = addKeyword(['bolsos2', '2'])
