@@ -1,5 +1,6 @@
 import { component$, Slot, useStore } from '@builder.io/qwik'
 import type { DocumentHead } from '@builder.io/qwik-city'
+import Collaborators from '~/components/widgets/Collaborators'
 import Footer from '~/components/widgets/Footer'
 import Header from '~/components/widgets/Header'
 import NavBar from '~/components/widgets/NavBar'
@@ -13,11 +14,12 @@ export default component$(() => {
                 list: [
                     { name: 'Vista rápida', link: '/docs' },
                     { name: 'Instalación', link: '/docs/install' },
+                    { name: 'Configuración', link: '/docs/install' },
                     { name: 'Ejemplos', link: '/docs/install' },
                 ],
             },
             {
-                title: 'Configuración',
+                title: 'Conceptos',
                 list: [
                     { name: 'Flows', link: '/docs' },
                     { name: 'Proveedores', link: '/docs/install' },
@@ -26,6 +28,13 @@ export default component$(() => {
             },
             {
                 title: 'Avanzado',
+                list: [
+                    { name: 'Migración', link: '/docs/migration' },
+                    { name: 'Extender', link: '/docs/migration' },
+                ],
+            },
+            {
+                title: 'Comunidad',
                 list: [{ name: 'Migración', link: '/docs/migration' }],
             },
         ],
@@ -36,11 +45,13 @@ export default component$(() => {
             <Header />
             <main class="container mx-auto px-12 ">
                 <div class={'grid grid-cols-5 gap-1 min-h-min'}>
-                    <div class={'px-3 col-span-1  '}>
+                    <div class={'col-span-1'}>
                         <NavBar options={store.options} />
                     </div>
-                    <div class={'col-span-3 slot pb-5'}>
+                    <div class={'px-3  col-span-3 slot pb-5'}>
                         <Slot />
+
+                        <Collaborators />
                     </div>
                     <div class={'px-3 col-span-1  '}>
                         <NavBar options={store.options} />
