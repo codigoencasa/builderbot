@@ -13,12 +13,20 @@ export default component$(() => {
                 list: [
                     { name: 'Vista rápida', link: '/docs' },
                     { name: 'Instalación', link: '/docs/install' },
-                    { name: 'Configuración', link: '/docs/settings' },
-                    { name: 'Migración', link: '/docs/migration' },
-                    { name: 'Botones y Listas', link: '/docs/buttons_lists' },
-                    { name: 'Avanzado', link: '/docs/advanced' },
-                    { name: 'Contribuidores', link: '/docs/contribuiting' },
+                    { name: 'Ejemplos', link: '/docs/install' },
                 ],
+            },
+            {
+                title: 'Configuración',
+                list: [
+                    { name: 'Flows', link: '/docs' },
+                    { name: 'Proveedores', link: '/docs/install' },
+                    { name: 'Base de datos', link: '/docss' },
+                ],
+            },
+            {
+                title: 'Avanzado',
+                list: [{ name: 'Migración', link: '/docs/migration' }],
             },
         ],
     })
