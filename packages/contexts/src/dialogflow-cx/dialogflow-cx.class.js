@@ -92,29 +92,22 @@ class DialogFlowCXContext extends CoreClass {
             null,
         ]
 
-        const { queryResult } = single
-
-        const msgPayload = queryResult?.fulfillmentMessages?.find(
-            (a) => a.message === 'payload'
-        )
-
-        if (msgPayload && msgPayload?.payload) {
-            const { fields } = msgPayload.payload
-            const mapButtons = fields?.buttons?.listValue?.values.map((m) => {
-                return m?.structValue?.fields?.body?.stringValue
-            })
-            customPayload = {
-                media: fields?.media?.stringValue,
-                buttons: mapButtons,
+        const listMessages = single.queryResult.responseMessages.map((res) => {
+            if (res.message == 'text') {
+                return { answer: res.text.text[0] }
             }
-        }
 
-        const ctxFromDX = {
-            ...customPayload,
-            answer: queryResult?.fulfillmentText,
-        }
+            if (res.message == 'payload') {
+                const { values } = res.payload.fields.buttons.listValue
+                const buttonsArray = values.map((values) => {
+                    const { stringValue } = values.structValue.fields.body
+                    return { body: stringValue }
+                })
+                return { buttons: buttonsArray }
+            }
+        })
 
-        this.sendFlow([ctxFromDX], from)
+        this.sendFlow(listMessages, from)
     }
 }
 
