@@ -51,7 +51,7 @@ export default component$(() => {
                             FAQs
                         </p>
                         <h2 class="max-w-lg mb-4 text-3xl font-bold leading-none tracking-tight sm:text-4xl md:mx-auto font-heading">
-                            Frequently Asked Questions
+                            Preguntas Frecuentes
                         </h2>
                     </div>
                 </div>

@@ -1,45 +1,43 @@
 import { component$ } from '@builder.io/qwik'
 import { IconStar } from '~/components/icons/IconStar'
+import { IconDiscord } from '../icons/IconDiscord'
 
 export default component$(() => {
     const items = [
         [
             {
-                title: 'Qwik + Tailwind CSS Integration',
+                title: 'Atención al cliente rápida y eficiente',
                 description:
-                    'A seamless integration between two great frameworks that offer high productivity, performance and versatility.',
-                icon: 'tabler:brand-tailwind',
+                    'El chatbot puede ayudar a tus clientes a obtener respuestas a sus preguntas o solucionar problemas de manera rápida y sencilla, sin tener que esperar horas o incluso días por una respuesta.',
             },
             {
-                title: 'Ready-to-use Components',
+                title: 'Automatización de tareas repetitiva',
                 description:
-                    'Widgets made with Tailwind CSS ready to be used in Marketing Websites, SaaS, Blogs, Personal Profiles, Small Business...',
-                icon: 'tabler:components',
+                    'Se pueden automatizar tareas repetitivas y ahorrar tiempo y esfuerzo en tareas administrativas, como enviar recordatorios a tus clientes sobre pagos pendientes o para confirmar citas o reservas.',
             },
             {
-                title: 'Best Practices',
+                title: 'Experiencia personalizada para tus clientes',
                 description:
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sagittis, quam nec venenatis lobortis, mi risus tempus nulla.',
-                icon: 'tabler:list-check',
+                    'Podrás enviar mensajes automatizados con ofertas especiales o recomendaciones de productos basadas en el historial de compras de tus clientes, lo que significa que tus clientes pueden recibir una experiencia más personalizada.',
             },
         ],
         [
             {
-                title: 'Excellent Page Speed',
+                title: 'Análisis de datos y toma de decisiones informadas',
                 description:
-                    'Having a good page speed impacts organic search ranking, improves user experience (UI/UX) and increase conversion rates.',
+                    'Te permite recopilar y analizar datos sobre tus clientes para ayudarte a entender mejor sus necesidades y preferencias, y ofrecerles un servicio aún más destacado.',
                 icon: 'tabler:rocket',
             },
             {
-                title: 'Search Engine Optimization (SEO)',
+                title: 'Mejora de la eficiencia',
                 description:
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sagittis, quam nec venenatis lobortis, mi risus tempus nulla.',
+                    'Te brinda la facilidad de manejar varias conversaciones al mismo tiempo, lo que significa que tus clientes no tendrán que esperar en una larga cola de mensajes para obtener atención. Esto puede ayudar a mejorar la eficiencia y la productividad en tu negocio.',
                 icon: 'tabler:arrows-right-left',
             },
             {
-                title: 'Open to new ideas and contributions',
+                title: 'Personalización y adaptación',
                 description:
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sagittis, quam nec venenatis lobortis, mi risus tempus nulla.',
+                    'Como proyecto open source, el chatbot de WhatsApp es totalmente personalizable y puede ser adaptado a las necesidades específicas de tu negocio o proyecto. Esto significa que puedes modificar el código fuente y adaptar el chatbot a tus necesidades exactas.',
                 icon: 'tabler:bulb',
             },
         ],
@@ -50,16 +48,16 @@ export default component$(() => {
             <div class="px-4 py-16 mx-auto max-w-6xl lg:px-8 lg:py-20">
                 <div class="mb-10 md:mx-auto sm:text-center md:mb-12 max-w-3xl">
                     <p class="text-base text-primary-600 dark:text-purple-200 font-semibold tracking-wide uppercase">
-                        Features
+                        Caracteristicas
                     </p>
                     <h2 class="text-4xl md:text-5xl font-bold leading-tighter tracking-tighter mb-4 font-heading">
-                        What you get with{' '}
-                        <span class="whitespace-nowrap">Qwind</span>
+                        Nuestras principales{' '}
+                        <span class="whitespace-nowrap">funciones</span>
                     </h2>
                     <p class="max-w-3xl mx-auto sm:text-center text-xl text-gray-600 dark:text-slate-400">
-                        Sed ut perspiciatis unde omnis iste natus error sit
-                        voluptatem accusantium doloremque rem aperiam, eaque
-                        ipsa quae.
+                        El secreto es mantener los procesos repetitivos en
+                        procesos automatizados simples, por eso te mostramos en
+                        que destacamos.
                     </p>
                 </div>
                 <div class="grid mx-auto space-y-6 md:grid-cols-2 md:space-y-0">
@@ -68,7 +66,7 @@ export default component$(() => {
                             {subitems.map(({ title, description }) => (
                                 <div class="flex flex-row max-w-md">
                                     <div class="mb-4 mr-4">
-                                        <div class="text-white flex items-center justify-center w-12 h-12 rounded-full bg-secondary-500 dark:bg-secondary-700">
+                                        <div class="text-white flex items-center justify-center w-12 h-12 rounded-full bg-primary-500 dark:bg-primary-500">
                                             <IconStar />
                                         </div>
                                     </div>

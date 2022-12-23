@@ -3,6 +3,7 @@ import Logo from '~/components/atoms/Logo'
 import { IconGithub } from '~/components/icons/IconGithub'
 import ToggleTheme from '~/components/core/ToggleTheme'
 import ToggleMenu from '~/components/core/ToggleMenu'
+import { IconDiscord } from '../icons/IconDiscord'
 
 export default component$(() => {
     const store = useStore({
@@ -103,6 +104,14 @@ export default component$(() => {
                     <div class="md:self-center flex items-center mb-4 md:mb-0 ml-2">
                         <div class="hidden items-center md:flex">
                             <ToggleTheme />
+                            <a
+                                target={'_blank'}
+                                href="https://link.codigoencasa.com/DISCORD"
+                                class="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5"
+                                aria-label="Qwind Github"
+                            >
+                                <IconDiscord />
+                            </a>
                             <a
                                 target={'_blank'}
                                 href="https://github.com/codigoencasa/bot-whatsapp"
