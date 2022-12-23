@@ -10,7 +10,7 @@ export default component$(
     }: {
         options: {
             title: string
-            link: string
+            link?: string
             list: { link: string; name: string }[]
         }[]
     }) => {
@@ -25,19 +25,13 @@ export default component$(
 )
 
 export const UlCompoent = component$(
-    (porps: {
-        title: string
-        link: string
-        list: { link: string; name: string }[]
-    }) => {
+    (porps: { title: string; list: { link: string; name: string }[] }) => {
         return (
             <ul>
                 <li class="mt-2 lg:mt-2">
-                    <a href={porps.link}>
-                        <h5 class="mb-8 lg:mb-3 font-semibold text-slate-900 dark:text-slate-200">
-                            {porps.title}
-                        </h5>
-                    </a>
+                    <h5 class="mb-8 lg:mb-3 font-semibold text-slate-900 dark:text-slate-200">
+                        {porps.title}
+                    </h5>
                     <LiComponent list={porps.list} />
                 </li>
             </ul>

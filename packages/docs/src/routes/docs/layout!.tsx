@@ -10,12 +10,13 @@ export default component$(() => {
         options: [
             {
                 title: 'Primeros pasos',
-                link: '',
                 list: [
                     { name: 'Vista rápida', link: '/docs' },
                     { name: 'Instalación', link: '/docs/install' },
                     { name: 'Configuración', link: '/docs/settings' },
                     { name: 'Migración', link: '/docs/migration' },
+                    { name: 'Botones y Listas', link: '/docs/buttons_lists' },
+                    { name: 'Avanzado', link: '/docs/advanced' },
                     { name: 'Contribuidores', link: '/docs/contribuiting' },
                 ],
             },
