@@ -42,8 +42,8 @@ Video como hacer PR: https://youtu.be/Lxt8Acob6aU
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/Gonzalito87">
-            <img src="https://avatars.githubusercontent.com/u/100331586?v=4" width="50;" alt="Gonzalito87"/>
+        <a href="https://github.com/HKong31">
+            <img src="https://avatars.githubusercontent.com/u/113340082?v=4" width="50;" alt="HKong31"/>
             <br />
             <sub><b>Null</b></sub>
         </a>
@@ -56,6 +56,13 @@ Video como hacer PR: https://youtu.be/Lxt8Acob6aU
         </a>
     </td></tr>
 <tr>
+    <td align="center">
+        <a href="https://github.com/Gonzalito87">
+            <img src="https://avatars.githubusercontent.com/u/100331586?v=4" width="50;" alt="Gonzalito87"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
+    </td>
     <td align="center">
         <a href="https://github.com/tonyvazgar">
             <img src="https://avatars.githubusercontent.com/u/21047090?v=4" width="50;" alt="tonyvazgar"/>
@@ -83,15 +90,7 @@ Video como hacer PR: https://youtu.be/Lxt8Acob6aU
             <br />
             <sub><b>Yonathan Suarez</b></sub>
         </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/jlferrete">
-            <img src="https://avatars.githubusercontent.com/u/36698913?v=4" width="50;" alt="jlferrete"/>
-            <br />
-            <sub><b>José Luis Ferrete</b></sub>
-        </a>
-    </td>
-</tr>
+    </td></tr>
 </table>
 <!-- readme: collaborators,contributors -end -->
 
