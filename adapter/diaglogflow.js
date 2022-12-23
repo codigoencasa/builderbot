@@ -1,5 +1,6 @@
 const dialogflow = require('@google-cloud/dialogflow');
 const fs = require('fs')
+const {struct} = require('pb-util');
 
 /**
  * Debes de tener tu archivo con el nombre "chatbot-account.json" en la raíz del proyecto
@@ -32,6 +33,7 @@ const checkFileCredentials = () => {
 // Detect intent method
 const detectIntent = async (queryText, waPhoneNumber) => {
     let media = null;
+    let actions = null;
     const sessionId = KEEP_DIALOG_FLOW ? 1 : waPhoneNumber;
     const sessionPath = sessionClient.projectAgentSessionPath(PROJECID, sessionId);
     const languageCode = process.env.LANGUAGE
@@ -54,6 +56,7 @@ const detectIntent = async (queryText, waPhoneNumber) => {
     // console.log(singleResponse)
     if (parsePayload && parsePayload.payload) {
         const { fields } = parsePayload.payload
+        actions = struct.decode(fields.actions.structValue) || null;
         media = fields.media.stringValue || null
     }
     const customPayload = parsePayload ? parsePayload['payload'] : null
@@ -61,6 +64,7 @@ const detectIntent = async (queryText, waPhoneNumber) => {
     const parseData = {
         replyMessage: queryResult.fulfillmentText,
         media,
+        actions,
         trigger: null
     }
     return parseData

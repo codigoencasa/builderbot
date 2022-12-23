@@ -16,7 +16,7 @@ const { saveMessage } = require('../adapter')
  */
 
 const sendMedia = (client, number = null, fileName = null) => {
-    if(!client) return cosnole.error("El objeto cliente no está definido.");
+    if(!client) return console.error("El objeto cliente no está definido.");
     try {
         number = cleanNumber(number || 0)
         const file = `${DIR_MEDIA}/${fileName}`;
@@ -36,7 +36,7 @@ const sendMedia = (client, number = null, fileName = null) => {
  */
 
  const sendMediaVoiceNote = (client, number = null, fileName = null) => {
-     if(!client) return cosnole.error("El objeto cliente no está definido.");
+     if(!client) return console.error("El objeto cliente no está definido.");
      try { 
         number = cleanNumber(number || 0)
         const file = `${DIR_MEDIA}/${fileName}`;
@@ -69,12 +69,14 @@ const sendMessage = async (client, number = null, text = null, trigger = null) =
  * @param {*} number 
  */
 const sendMessageButton = async (client, number = null, text = null, actionButtons) => {
+    setTimeout(async () => {
     number = cleanNumber(number)
     const { title = null, message = null, footer = null, buttons = [] } = actionButtons;
     let button = new Buttons(message,[...buttons], title, footer);
     client.sendMessage(number, button);
-
+    await readChat(number, message, actionButtons)
     console.log(`⚡⚡⚡ Enviando mensajes....`);
+    }, DELAY_TIME)
 }
 
 
