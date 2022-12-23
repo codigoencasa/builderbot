@@ -9,75 +9,112 @@ contributors:
 
 # Instalación
 
-Instalar el bot muy sencillo, solo deberas ejecutar el siguiente comando 🚀
+### 📄 Bienvenido/a
 
-```shell
-npm create bot-whatsapp@latest
+Si deseas colaborar con el proyecto existen varias maneras, la primera de ellas es aportando conocimiento y mejorando el repositorio (actualizando documentación, mejorando código, revisando **[issues](https://github.com/codigoencasa/bot-whatsapp/issues)**, etc).
+
+También es bien recibido los aportes económicos que se utilizaran para diferentes fines **[ver más](https://opencollective.com/bot-whatsapp)**
+
+El lenguaje principal que se utilizó para desarrollar este proyecto fue **JavaScript** con el fin de qué personas que están iniciando en el mundo de la programación puedan entender fácilmente.
+
+### 🤔 Preguntas frecuentes
+
+-   ¿Como puedo hacer aportaciones de código en el proyecto?: [Ver Video](https://youtu.be/Lxt8Acob6aU)
+-   ¿Como ejecutar el entorno de pruebas?: [Ver Video](https://youtu.be/Mf9V-dloBfk)
+-   ¿Como crear un nuevo proveedor?: [Ver Video](https://youtu.be/cahK9zH3SI8)
+-   ¿Que son los GithubActions?: [Ver Video](https://youtu.be/nYBEBFKLiqw)
+-   ¿Canales de comunicación?: [Discord](https://link.codigoencasa.com/DISCORD)
+
+---
+
+![](https://i.giphy.com/media/ntMt6TvalpstTIx7Ak/giphy.webp)
+
+**Requerimientos:**
+
+-   Node v16 o superior **[descargar node](https://nodejs.org/es/download/)**
+-   **[Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable)** como gestor de paquetes. En el link conseguirás las intrucciones para instalar yarn.
+-   **[VSCode](https://code.visualstudio.com/download)** (recomendado): Editor de código con plugins.
+-   **[Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits&ssr=false#overview)** (plugin-vscode) este plugin te ayudará a crear commit semántico.
+-   Se usará la rama **dev** _(https://github.com/leifermendez/bot-whatsapp/tree/dev)_ como rama principal hasta que se haga oficialmente el lanzamiento de la V2.
+
+### 🚀 Iniciando
+
+**Clonar repo rama dev**
+
+```
+git clone --branch dev https://github.com/codigoencasa/bot-whatsapp
 ```
 
-Te va a preguntar que si quieres crear un bot, contesta con "Y" y la tecla `Enter`
+**Instalar dependencias**
 
-```shell
-🚀 Revisando tu Node.js
-Node.js compatible v18.12.0
-
-🙂 Revisando tu sistema operativo
-
-? Quieres crear un bot? (Y/n) »
+```
+cd bot-whatsapp
+yarn install
 ```
 
-A continuación te va pedir que selecciones el proveedor que quieres usar, puedes seleccionarlo moviendote sobre las opciones con las flechas arriba y abajo, y cuando estes sobre el que quieres, presiona la tecla de `Espacio` y después la tecla `Enter`.
+**Compilar (build)**
+Para compilar la aplicación es necesario ejecutar este comando, el cual genera un directorio `lib` dentro de los paquetes del monorepo.
 
-```shell
-? ¿Cuál proveedor de whatsapp quieres utilizar? » Espacio para seleccionar ↑/↓
-( )   whatsapp-web.js (gratis)
-( )   Venom (gratis)
-(x)   Baileys (gratis)
-( )   Twilio
-( )   API Oficial (Meta)
+```
+yarn build
 ```
 
-Continuamos con la selección de la base de datos que vamos a usar para guardar las conversaciones, de igual manera, usamos las flechas y barra de espacio para la selección:
+**Example-app**
+Se ejecuta el CLI (Command Line Interface) para ayudarte a crear un app-bot de ejemplo.
 
-```shell
-? ¿Cuál base de datos quieres utilizar? » Espacio para seleccionar ↑/↓
-(x)   Memory
-( )   Mongo
-( )   MySQL
-( )   Json
+```
+yarn run cli
 ```
 
-Terminamos con la selección de preveedor y base de datos, y continuamos con la instalación:
+Selecionas (mediante las flechas arriba y abajo) el proveedor que quieras usar y cuando estes sobre el presiona la barra de espacio, igualmente selecciona la base de datos que quieras usar.
 
-Hay que cambiarnos de directorio al que se acaba de crear, dependiendo de lo que seleccionamos previamente, en este caso es `base-baileys-memory`.
-Una vez que nos cambiamos de directorio ejecutamos el comando `npm install`.
-Y cuando termine la instalación ejecutamos `npm start`.
+Se creó un subdirecorio con el nombre del proveedor y base de datos que seleccionaste, ejemplo: `base-bailey-mysql`
 
-```shell
-√ ¿Cuál base de datos quieres utilizar? » Memory
-success!
+Dentro de ese directorio necesitas editar el archivo package.json y borrar las siguientes lineas:
 
-⚡⚡⚡ INSTRUCCIONES ⚡⚡⚡
-cd base-bailey-memory
+```
+        "@bot-whatsapp/bot": "latest",
+        "@bot-whatsapp/cli": "latest",
+        "@bot-whatsapp/database": "latest",
+        "@bot-whatsapp/provider": "latest",
+```
+
+Cambiate al directorio creado ejemplo: `base-bailey-mysql`
+
+```
+cd base-baileys-mysql
+```
+
+Ejecuta los comandos:
+
+```
 npm install
+npm run pre-copy
 npm start
 ```
 
-En el directorio del bot (**base-baileys-memory**) se va a crear un archivo `qr.png`, este archivo contiene un código QR, hay que escanear ese código desde la aplicación de Whatsapp en el telefono que queremos ligar al bot.
+En el caso de MySql y Mongo es necesario especificar en app.js los datos de la conexión, ejemplo de MySql:
 
-```shell
-⚡⚡ ACCIÓN REQUERIDA ⚡⚡
-Debes escanear el QR Code para iniciar session reivsa qr.svg
-Recuerda que el QR se actualiza cada minuto
-Necesitas ayuda: https://link.codigoencasa.com/DISCORD
+```
+const BaileysProvider = require('@bot-whatsapp/provider/baileys')
+const MySQLAdapter = require('@bot-whatsapp/database/mysql')
+
+/**
+ * Declaramos las conexiones de MySQL
+ */
+const MYSQL_DB_HOST = 'localhost'
+const MYSQL_DB_USER = 'usr'
+const MYSQL_DB_PASSWORD = 'pass'
+const MYSQL_DB_NAME = 'bot'
 ```
 
-Una vez que escanemos el código nos va a aparecer el mensaje, y el bot está listo para recibir mensajes.
+![](https://i.imgur.com/dC6lEwy.png)
 
-```shell
-Proveedor conectado y listo
-```
+> **NOTA:** [Eres libre de aportar informacion a este documento o arreglar ortografia 🤣](https://github.com/codigoencasa/bot-whatsapp/edit/dev/CONTRIBUTING.md)
 
-Desde **otro** celular, manda un mensaje al numero que acabas de ligar con el texto "hola", y debes de recibir un mensaje de "Bienvenido a mi tienda".
+---
 
-**Listo.**
+-   [Discord](https://link.codigoencasa.com/DISCORD)
+-   [Twitter](https://twitter.com/leifermendez)
+-   [Youtube](https://www.youtube.com/watch?v=5lEMCeWEJ8o&list=PL_WGMLcL4jzWPhdhcUyhbFU6bC0oJd2BR)
+-   [Telegram](https://t.me/leifermendez)

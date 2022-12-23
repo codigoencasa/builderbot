@@ -9,6 +9,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('./fonts.css');
 
 @layer components {
     .btn {
@@ -24,19 +25,19 @@
     }
 
     .slot h1 {
-        @apply mb-2 font-semibold text-2xl;
+        @apply my-2 font-semibold text-2xl;
     }
 
     .slot h2 {
-        @apply mb-2 font-semibold text-lg;
+        @apply my-2 font-semibold text-lg;
     }
 
     .slot h3 {
-        @apply mb-2 font-semibold text-base;
+        @apply my-2 font-semibold text-base;
     }
 
     .slot code {
-        @apply bg-slate-100 dark:bg-slate-800 p-1 px-2 rounded w-full;
+        @apply bg-slate-100 dark:bg-slate-800 p-1 px-2 rounded w-full text-sm;
     }
 
     .slot pre {
@@ -49,6 +50,10 @@
 
     .slot hr {
         @apply my-5;
+    }
+
+    .slot img {
+        @apply rounded drop-shadow-2xl;
     }
 
     [data-aw-toggle-menu] path {

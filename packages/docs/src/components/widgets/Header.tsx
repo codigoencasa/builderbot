@@ -3,6 +3,7 @@ import Logo from '~/components/atoms/Logo'
 import { IconGithub } from '~/components/icons/IconGithub'
 import ToggleTheme from '~/components/core/ToggleTheme'
 import ToggleMenu from '~/components/core/ToggleMenu'
+import { IconDiscord } from '../icons/IconDiscord'
 
 export default component$(() => {
     const store = useStore({
@@ -40,7 +41,7 @@ export default component$(() => {
                     aria-label="Main navigation"
                 >
                     <ul class="flex flex-col pt-8 md:pt-0 md:flex-row md:self-center w-full md:w-auto text-xl md:text-base">
-                        <li class="dropdown">
+                        {/* <li class="dropdown">
                             <button class="font-medium hover:text-gray-900 dark:hover:text-white px-4 py-3 flex items-center transition duration-150 ease-in-out">
                                 Pages
                             </button>
@@ -70,7 +71,7 @@ export default component$(() => {
                                     </a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> */}
                         <li>
                             <a
                                 class="font-medium hover:text-gray-900 dark:hover:text-white px-4 py-3 flex items-center transition duration-150 ease-in-out"
@@ -104,6 +105,15 @@ export default component$(() => {
                         <div class="hidden items-center md:flex">
                             <ToggleTheme />
                             <a
+                                target={'_blank'}
+                                href="https://link.codigoencasa.com/DISCORD"
+                                class="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5"
+                                aria-label="Qwind Github"
+                            >
+                                <IconDiscord />
+                            </a>
+                            <a
+                                target={'_blank'}
                                 href="https://github.com/codigoencasa/bot-whatsapp"
                                 class="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5"
                                 aria-label="Qwind Github"

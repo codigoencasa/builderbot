@@ -3,23 +3,23 @@ import type { DocumentHead } from '@builder.io/qwik-city'
 import Footer from '~/components/widgets/Footer'
 import Header from '~/components/widgets/Header'
 import NavBar from '~/components/widgets/NavBar'
-import ExtraBar from '~/components/widgets/ExtraBar'
+// import ExtraBar from '~/components/widgets/ExtraBar'
 
 export default component$(() => {
     const store = useStore({
         options: [
-            { name: 'Primeros pasos', link: '/docs' },
-            { name: 'Instalación', link: '/docs/install' },
-            { name: 'Configuración', link: '/docs/settings' },
-            { name: 'Botones y Listas', link: '/docs/buttons_lists' },
-            { name: 'Migración', link: '/docs/migration' },
-            { name: 'Avanzado', link: '/docs/advanced' },
-        ],
-        extraOptions: [
-            { name: 'Primeros pasos', link: '/docs', class: 'font-semibold' },
-            { name: 'Instalación', link: '/docs' },
-            { name: 'Configuración', link: '/docs' },
-            { name: 'Forma de pensar', link: '/docs' },
+            {
+                title: 'Primeros pasos',
+                list: [
+                    { name: 'Vista rápida', link: '/docs' },
+                    { name: 'Instalación', link: '/docs/install' },
+                    { name: 'Configuración', link: '/docs/settings' },
+                    { name: 'Migración', link: '/docs/migration' },
+                    { name: 'Botones y Listas', link: '/docs/buttons_lists' },
+                    { name: 'Avanzado', link: '/docs/advanced' },
+                    { name: 'Contribuidores', link: '/docs/contribuiting' },
+                ],
+            },
         ],
     })
 
@@ -35,7 +35,7 @@ export default component$(() => {
                         <Slot />
                     </div>
                     <div class={'px-3 col-span-1  '}>
-                        <ExtraBar options={store.extraOptions} />
+                        <NavBar options={store.options} />
                     </div>
                 </div>
             </main>

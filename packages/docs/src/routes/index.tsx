@@ -5,22 +5,22 @@ import Hero from '~/components/widgets/Hero'
 import Features from '~/components/widgets/Features'
 import FAQs from '~/components/widgets/FAQs'
 import Stats from '~/components/widgets/Stats'
-import CallToAction from '~/components/widgets/CallToAction'
+// import CallToAction from '~/components/widgets/CallToAction'
 
 export default component$(() => {
     return (
         <>
             <Hero />
             <Features />
+            {/* <CallToAction /> */}
             <FAQs />
             <Stats />
-            <CallToAction />
         </>
     )
 })
 
 export const head: DocumentHead = {
-    title: 'Qwind — Free template for starts a website using Qwik + Tailwind CSS',
+    title: 'Chatbot Whatsapp — Servicio de chatbot para whatspp gratis proyecto OpenSource',
     meta: [
         {
             name: 'description',
