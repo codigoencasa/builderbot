@@ -25,15 +25,15 @@
     }
 
     .slot h1 {
-        @apply my-2 font-semibold text-2xl;
+        @apply my-2 font-semibold text-3xl;
     }
 
     .slot h2 {
-        @apply my-2 font-semibold text-lg;
+        @apply my-2 font-semibold text-xl;
     }
 
     .slot h3 {
-        @apply my-2 font-semibold text-base;
+        @apply my-2 font-semibold text-lg;
     }
 
     .slot code {
