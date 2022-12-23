@@ -11,7 +11,9 @@ export default component$(() => {
             { name: 'Primeros pasos', link: '/docs' },
             { name: 'Instalación', link: '/docs/install' },
             { name: 'Configuración', link: '/docs/settings' },
+            { name: 'Botones y Listas', link: '/docs/buttons_lists' },
             { name: 'Migración', link: '/docs/migration' },
+            { name: 'Avanzado', link: '/docs/advanced' },
         ],
         extraOptions: [
             { name: 'Primeros pasos', link: '/docs', class: 'font-semibold' },
