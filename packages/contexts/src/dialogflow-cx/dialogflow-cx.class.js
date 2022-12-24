@@ -63,8 +63,6 @@ class DialogFlowCXContext extends CoreClass {
         const languageCode = this.optionsDX.language
         const { from, body } = messageCtxInComming
 
-        let customPayload = {}
-
         /**
          * 📄 Creamos session de contexto basado en el numero de la persona
          * para evitar este problema.
