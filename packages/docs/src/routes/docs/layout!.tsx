@@ -1,9 +1,10 @@
 import { component$, Slot, useStore } from '@builder.io/qwik'
 import type { DocumentHead } from '@builder.io/qwik-city'
-import Collaborators from '~/components/widgets/Collaborators'
 import Footer from '~/components/widgets/Footer'
 import Header from '~/components/widgets/Header'
 import NavBar from '~/components/widgets/NavBar'
+// import Navigation from '~/components/widgets/Navigation'
+// import Collaborators from '~/components/widgets/Collaborators'
 // import ExtraBar from '~/components/widgets/ExtraBar'
 
 export default component$(() => {
@@ -14,14 +15,13 @@ export default component$(() => {
                 list: [
                     { name: 'Vista rápida', link: '/docs' },
                     { name: 'Instalación', link: '/docs/install' },
-                    { name: 'Configuración', link: '/docs/install' },
-                    { name: 'Ejemplos', link: '/docs/install' },
+                    { name: 'Ejemplo', link: '/docs/example' },
                 ],
             },
             {
                 title: 'Conceptos',
                 list: [
-                    { name: 'Flows', link: '/docs' },
+                    { name: 'Resumen', link: '/docs/concepts' },
                     { name: 'Proveedores', link: '/docs/install' },
                     { name: 'Base de datos', link: '/docss' },
                 ],
@@ -50,8 +50,7 @@ export default component$(() => {
                     </div>
                     <div class={'px-3  col-span-3 slot pb-5'}>
                         <Slot />
-
-                        <Collaborators />
+                        {/* <Navigation pages={[null,store.options[0][1]]} /> */}
                     </div>
                     <div class={'px-3 col-span-1  '}>
                         <NavBar options={store.options} />
@@ -65,7 +64,7 @@ export default component$(() => {
 })
 
 export const head: DocumentHead = {
-    title: 'Qwind — Free template for starts a website using Qwik + Tailwind CSS',
+    title: 'Chatbot Whatsapp — Servicio de chatbot para whatspp gratis proyecto OpenSource',
     meta: [
         {
             name: 'description',
