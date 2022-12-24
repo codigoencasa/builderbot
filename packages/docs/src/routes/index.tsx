@@ -4,17 +4,17 @@ import type { DocumentHead } from '@builder.io/qwik-city'
 import Hero from '~/components/widgets/Hero'
 import Features from '~/components/widgets/Features'
 import FAQs from '~/components/widgets/FAQs'
-import Stats from '~/components/widgets/Stats'
-// import CallToAction from '~/components/widgets/CallToAction'
+// import Stats from '~/components/widgets/Stats'
+import CallToAction from '~/components/widgets/CallToAction'
 
 export default component$(() => {
     return (
         <>
             <Hero />
             <Features />
-            {/* <CallToAction /> */}
+            <CallToAction />
             <FAQs />
-            <Stats />
+            {/* <Stats /> */}
         </>
     )
 })

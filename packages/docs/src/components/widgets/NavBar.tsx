@@ -16,8 +16,8 @@ export default component$(
     }) => {
         return (
             <div>
-                {options.map((item) => (
-                    <UlCompoent title={item.title} list={item.list} />
+                {options.map((item, i) => (
+                    <UlCompoent key={i} title={item.title} list={item.list} />
                 ))}
             </div>
         )

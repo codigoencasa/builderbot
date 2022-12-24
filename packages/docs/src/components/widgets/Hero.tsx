@@ -64,24 +64,6 @@ export default component$(() => {
                     </div>
                     <div class="block md:flex items-center flex-1">
                         <div class="relative m-auto max-w-4xl">
-                            {/* <video
-                                width="600"
-                                height="100%"
-                                autoPlay
-                                muted
-                                playsInline
-                            >
-                                <source
-                                    src="https://s19.aconvert.com/convert/p3r68-cdx67/5if2i-k2pvs.webm"
-                                    type='video/mp4; codecs="hvc1"'
-                                />
-
-                                <source
-                                    src="https://s19.aconvert.com/convert/p3r68-cdx67/5if2i-k2pvs.webm"
-                                    type="video/webm"
-                                />
-                            </video> */}
-
                             <picture>
                                 <source srcSet={srcsetAvif} type="image/avif" />
                                 <source srcSet={srcsetWebp} type="image/webp" />

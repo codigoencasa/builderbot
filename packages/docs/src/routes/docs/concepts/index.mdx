@@ -1,0 +1,58 @@
+# Conceptos
+
+Durante el desarrollo de este sistema se elaboraron tres (3) conceptos principales que conformar el funcionamiento
+
+## Flow (Flujos)
+
+Los flujos hace referencia al hecho de construir un flujo de conversion. Esto es un flow podemos observar que estan presente dos metodos importantes **addKeyword** y el **addAnswer**.
+
+Tan sencillo como decir **palabra/s clave** y **mensaje a responder**
+
+Ambos metodos **[addKeyword](https://github.com/codigoencasa/bot-whatsapp/blob/dev/packages/bot/io/methods/addKeyword.js)** y el **[addAnswer](https://github.com/codigoencasa/bot-whatsapp/blob/dev/packages/bot/io/methods/addAnswer.js)** tienen una serie opciones disponibles
+
+```js
+const {
+    createBot,
+    createProvider,
+    createFlow,
+    addKeyword,
+} = require('@bot-whatsapp/bot')
+
+const flowPrincipal = addKeyword(['hola', 'alo'])
+    .addAnswer(['Hola, bienvenido a mi tienda', '¿Como puedo ayudarte?'])
+    .addAnswer(['Tengo:', 'Zapatos', 'Bolsos', 'etc ...'])
+```
+
+## Provider (Proveedor)
+
+Es la pieza que conectara tu flujo con Whatsapp. En este chatbot tenemos varios proveedores disponibles la mayoria gratis pero tambien tenemos integracion la api oficial de whatsapp o twilio
+
+```js
+const WhatsappProvider = require('@bot-whatsapp/provider/web-whatsapp')
+....
+const adapterProvider = createProvider(WhatsappProvider)
+```
+
+Los proveedores disponibles hasta el momento son los siguientes:
+
+### [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js)
+
+**require('@bot-whatsapp/provider/web-whatsapp')**
+
+### [Venom](https://github.com/orkestral/venom)
+
+**require('@bot-whatsapp/provider/venom')**
+
+### [Baileys](https://github.com/adiwajshing/Baileys)
+
+**require('@bot-whatsapp/provider/baileys')**
+
+### [Meta Official](https://developers.facebook.com/docs/whatsapp/cloud-api/reference/messages)
+
+**require('@bot-whatsapp/provider/meta')**
+
+### [Twilio Official](https://www.twilio.com/es-mx/messaging/whatsapp)
+
+**require('@bot-whatsapp/provider/twilio')**
+
+## DataBase (Base de datos)
