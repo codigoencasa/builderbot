@@ -1,4 +1,4 @@
-import { component$, Slot, useContext, useStore } from '@builder.io/qwik'
+import { component$, Slot, useContext } from '@builder.io/qwik'
 import type { DocumentHead } from '@builder.io/qwik-city'
 import Footer from '~/components/widgets/Footer'
 import Header from '~/components/widgets/Header'
