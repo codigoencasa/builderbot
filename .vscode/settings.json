@@ -8,6 +8,7 @@
         "adapter",
         "ci",
         "starters",
-        "conflict"
+        "conflict",
+        "contexts"
     ]
 }
