@@ -20,12 +20,12 @@ export default component$(() => {
 })
 
 export const head: DocumentHead = {
-    title: 'Chatbot Whatsapp — Servicio de chatbot para whatspp gratis proyecto OpenSource',
+    title: 'Crear chatbot WhatsApp en minutos — Servicio de chatbot para whatspp gratis proyecto OpenSource',
     meta: [
         {
             name: 'description',
             content:
-                'Qwind is a free and ready to start template to make your website using Qwik and Tailwind CSS.',
+                'Crear chatbot WhatsApp en minutos — Servicio de chatbot para whatspp gratis proyecto OpenSource',
         },
     ],
 }

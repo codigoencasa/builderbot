@@ -1,75 +1,58 @@
-import { component$, Slot, useStore } from '@builder.io/qwik'
+import { component$, Slot, useContext, useStore } from '@builder.io/qwik'
 import type { DocumentHead } from '@builder.io/qwik-city'
 import Footer from '~/components/widgets/Footer'
 import Header from '~/components/widgets/Header'
 import NavBar from '~/components/widgets/NavBar'
+import { GlobalStore } from '~/contexts'
 // import Navigation from '~/components/widgets/Navigation'
 // import Collaborators from '~/components/widgets/Collaborators'
 // import ExtraBar from '~/components/widgets/ExtraBar'
 
 export default component$(() => {
-    const store = useStore({
-        options: [
-            {
-                title: 'Primeros pasos',
-                list: [
-                    { name: 'Vista rápida', link: '/docs' },
-                    { name: 'Instalación', link: '/docs/install' },
-                    { name: 'Ejemplo', link: '/docs/example' },
-                ],
-            },
-            {
-                title: 'Conceptos',
-                list: [
-                    { name: 'Resumen', link: '/docs/concepts' },
-                    { name: 'Proveedores', link: '/docs/install' },
-                    { name: 'Base de datos', link: '/docss' },
-                ],
-            },
-            {
-                title: 'Avanzado',
-                list: [
-                    { name: 'Migración', link: '/docs/migration' },
-                    { name: 'Extender', link: '/docs/migration' },
-                ],
-            },
-            {
-                title: 'Comunidad',
-                list: [{ name: 'Migración', link: '/docs/migration' }],
-            },
-        ],
-    })
+    const store = useContext(GlobalStore)
 
     return (
         <>
             <Header />
-            <main class="container mx-auto px-12 ">
-                <div class={'grid grid-cols-5 gap-1 min-h-min'}>
-                    <div class={'col-span-1'}>
-                        <NavBar options={store.options} />
+            <main class={'overflow-hidden'}>
+                <div class={'max-w-8xl'}>
+                    <div
+                        class={
+                            'hidden lg:block fixed z-20 inset-0 top-[4rem] left-[max(0px,calc(50%-48rem))] right-auto w-[14.5rem] py-5 px-8 overflow-y-auto'
+                        }
+                    >
+                        <NavBar options={store} />
                     </div>
-                    <div class={'px-3  col-span-3 slot pb-5'}>
-                        <Slot />
-                        {/* <Navigation pages={[null,store.options[0][1]]} /> */}
+                    <div class={'lg:pl-[14.5rem] lg:pr-[14.5rem]'}>
+                        <div
+                            class={
+                                'slot max-w-3xl mx-auto relative z-20 p-5 xl:max-w-none'
+                            }
+                        >
+                            <Slot />
+                        </div>
                     </div>
-                    <div class={'px-3 col-span-1  '}>
-                        <NavBar options={store.options} />
+                    <div
+                        class={
+                            'hidden lg:block fixed z-20 inset-0 top-[4rem] right-[max(0px,calc(50%-48rem))] left-auto w-[14.5rem] py-5 px-8 overflow-y-auto'
+                        }
+                    >
+                        <NavBar options={store} />
                     </div>
                 </div>
             </main>
-
             <Footer />
         </>
     )
 })
 
 export const head: DocumentHead = {
-    title: 'Chatbot Whatsapp — Servicio de chatbot para whatspp gratis proyecto OpenSource',
+    title: 'Crear chatbot WhatsApp en minutos — Servicio de chatbot para whatspp gratis proyecto OpenSource',
     meta: [
         {
             name: 'description',
             content:
-                'Qwind is a free and ready to start template to make your website using Qwik and Tailwind CSS.',
+                'Crear chatbot WhatsApp en minutos — Servicio de chatbot para whatspp gratis proyecto OpenSource',
         },
     ],
 }
