@@ -41,7 +41,7 @@
     }
 
     .slot pre {
-        @apply bg-gray-800 dark:bg-slate-800 p-3 rounded w-full text-gray-100 w-full flex my-2;
+        @apply bg-gray-800 dark:bg-slate-800 p-3 rounded w-full max-w-lg text-gray-100  flex my-2;
     }
 
     .slot a {
@@ -49,7 +49,7 @@
     }
 
     .slot hr {
-        @apply my-5;
+        @apply my-5  border-t-slate-100 dark:border-t-slate-800;
     }
 
     .slot img {

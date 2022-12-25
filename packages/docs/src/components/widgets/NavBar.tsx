@@ -1,19 +1,12 @@
 import { component$ } from '@builder.io/qwik'
-import { useLocation } from '@builder.io/qwik-city'
+import { Link, useLocation } from '@builder.io/qwik-city'
+import { DocumentationCtx } from '~/contexts'
 
 /**
  * options = [] array con la lista de opciones de la documentacion
  */
 export default component$(
-    ({
-        options = [],
-    }: {
-        options: {
-            title: string
-            link?: string
-            list: { link: string; name: string }[]
-        }[]
-    }) => {
+    ({ options = [] }: { options: DocumentationCtx[] }) => {
         return (
             <div>
                 {options.map((item, i) => (
@@ -47,7 +40,7 @@ export const LiComponent = component$(
             <ul class="space-y-6 lg:space-y-2 border-l border-slate-100 dark:border-slate-800">
                 {porps.list.map((opt) => (
                     <li>
-                        <a
+                        <Link
                             class={[
                                 currentPage === `${opt.link}/`
                                     ? 'font-semibold'
@@ -57,7 +50,7 @@ export const LiComponent = component$(
                             href={opt.link}
                         >
                             {opt.name}
-                        </a>
+                        </Link>
                     </li>
                 ))}
             </ul>

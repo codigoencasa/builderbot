@@ -1,4 +1,9 @@
-import { component$, useStyles$ } from '@builder.io/qwik'
+import {
+    component$,
+    useContextProvider,
+    useStore,
+    useStyles$,
+} from '@builder.io/qwik'
 import {
     QwikCityProvider,
     RouterOutlet,
@@ -10,6 +15,7 @@ import { DarkThemeLauncher } from '~/components/core/DarkThemeLauncher'
 
 import fontStyles from '~/assets/styles/fonts.css?inline'
 import globalStyles from '~/assets/styles/global.css?inline'
+import { DocumentationCtx, GlobalStore } from './contexts'
 
 export default component$(() => {
     /**
@@ -21,6 +27,42 @@ export default component$(() => {
 
     useStyles$(fontStyles)
     useStyles$(globalStyles)
+
+    const store = useStore<DocumentationCtx[]>([
+        {
+            title: 'Primeros pasos',
+            list: [
+                { name: 'Vista rápida', link: '/docs' },
+                { name: 'Instalación', link: '/docs/install' },
+                { name: 'Ejemplo', link: '/docs/example' },
+            ],
+        },
+        {
+            title: 'Esenciales',
+            list: [
+                { name: 'Resumen', link: '/docs/essential' },
+                { name: 'Proveedores', link: '/docs/install' },
+                { name: 'Base de datos', link: '/docss' },
+            ],
+        },
+        {
+            title: 'Avanzado',
+            list: [
+                { name: 'Migración', link: '/docs/migration' },
+                { name: 'Extender funcionalidades', link: '/' },
+            ],
+        },
+        {
+            title: 'Comunidad',
+            list: [
+                { name: 'Unirme al proyecto', link: '/' },
+                { name: 'Sponsors', link: '/' },
+                { name: 'Roadmap', link: '/' },
+            ],
+        },
+    ])
+
+    useContextProvider(GlobalStore, store)
 
     return (
         <QwikCityProvider>
