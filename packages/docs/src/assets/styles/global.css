@@ -5,7 +5,7 @@
  * the styles in here will be applied to the Document, without any sort of CSS scoping.
  *
  */
-
+@import 'prism.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -36,15 +36,15 @@
     }
 
     .slot p code {
-        @apply text-xs font-mono bg-stone-100 dark:bg-slate-600 dark:text-white text-red-500 p-1 rounded-sm;
+        @apply text-xs font-mono bg-stone-100 dark:bg-slate-600 dark:text-white text-red-500 p-1 rounded;
     }
 
     .slot pre {
-        @apply w-full  flex my-2;
+        @apply w-full flex my-2;
     }
 
     .slot pre code {
-        @apply p-3 rounded-sm min-w-[32rem]   w-fit bg-gray-800 dark:bg-slate-800  text-gray-100 text-xs;
+        @apply p-3 rounded md:w-full max-w-screen-md overflow-x-auto w-fit bg-gray-800 dark:bg-slate-800 ease-in duration-75 text-gray-100 text-xs shadow-xl;
     }
 
     .slot a {
@@ -56,7 +56,7 @@
     }
 
     .slot img {
-        @apply rounded-sm drop-shadow-2xl;
+        @apply rounded drop-shadow-2xl;
     }
 
     .slot ul {
