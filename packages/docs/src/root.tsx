@@ -34,30 +34,30 @@ export default component$(() => {
             list: [
                 { name: 'Vista rápida', link: '/docs' },
                 { name: 'Instalación', link: '/docs/install' },
-                { name: 'Ejemplo', link: '/docs/example' },
+                { name: 'Pruebalo', link: '/docs/example' },
             ],
         },
         {
             title: 'Esenciales',
             list: [
-                { name: 'Resumen', link: '/docs/essential' },
-                { name: 'Proveedores', link: '/docs/install' },
-                { name: 'Base de datos', link: '/docss' },
+                { name: 'Conceptos', link: '/docs/essential' },
+                { name: 'Conversaciones', link: '/docs/flows' },
+                { name: 'Proveedores', link: '/docs/providers' },
+                { name: 'Base de datos', link: '/docs/database' },
             ],
         },
         {
             title: 'Avanzado',
             list: [
                 { name: 'Migración', link: '/docs/migration' },
-                { name: 'Extender funcionalidades', link: '/' },
+                { name: 'Extender funcionalidades', link: '/docs/custom' },
             ],
         },
         {
             title: 'Comunidad',
             list: [
-                { name: 'Unirme al proyecto', link: '/' },
-                { name: 'Sponsors', link: '/' },
-                { name: 'Roadmap', link: '/' },
+                { name: 'Unirme al proyecto', link: '/docs/join' },
+                { name: 'Sponsors', link: '/docs/sponsors' },
             ],
         },
     ])
