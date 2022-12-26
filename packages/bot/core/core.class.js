@@ -84,12 +84,33 @@ class CoreClass {
             this.databaseClass.save(ctxByNumber)
         }
 
-        // 📄 [options: fallback]: esta funcion se encarga de repetir el ultimo mensaje
+        // 📄 [options: fallBack]: esta funcion se encarga de repetir el ultimo mensaje
         const fallBack = () => {
             fallBackFlag = true
             msgToSend = this.flowClass.find(refToContinue?.keyword, true) || []
             this.sendFlow(msgToSend, from)
             return refToContinue
+        }
+
+        // 📄 [options: flowDynamic]: esta funcion se encarga de responder un array de respuesta esta limitado a 5 mensajes
+        // para evitar bloque de whatsapp
+        const flowDynamic = (listMsg = [], optListMsg = { limit: 3 }) => {
+            if (!Array.isArray(listMsg))
+                throw new Error('Esto debe ser un ARRAY')
+
+            const parseListMsg = listMsg
+                .map(({ body }, index) =>
+                    toCtx({
+                        body,
+                        from,
+                        keyword: null,
+                        index,
+                    })
+                )
+                .slice(0, optListMsg.limit)
+            msgToSend = parseListMsg
+            this.sendFlow(msgToSend, from)
+            return
         }
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback y ejecutarlo
@@ -99,6 +120,7 @@ class CoreClass {
                 messageCtxInComming,
                 {
                     fallBack,
+                    flowDynamic,
                 }
             )
         }
