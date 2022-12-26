@@ -56,6 +56,7 @@ export default component$(() => {
         {
             title: 'Comunidad',
             list: [
+                { name: 'MasterClass', link: '/docs/masterclass' },
                 { name: 'Unirme al proyecto', link: '/docs/join' },
                 { name: 'Sponsors', link: '/docs/sponsors' },
             ],
