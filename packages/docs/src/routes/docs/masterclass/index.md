@@ -1,3 +1,4 @@
+[![hackmd-github-sync-badge](https://hackmd.io/79xQyVSgRD6RsTpqtMPPdw/badge)](https://hackmd.io/79xQyVSgRD6RsTpqtMPPdw)
 ### Preguntas Frecuentes para Master Class BOT v2
 > Anota aqui las preguntas o dudas que tengas
 > Pronto estare publicando fecha y hora para la masterclass
