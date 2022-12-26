@@ -8,3 +8,5 @@ export interface DocumentationCtx {
 
 export const GlobalStore =
     createContext<DocumentationCtx[]>('documentation-site')
+
+export const AppSetting = createContext<{ repo: string }>('app-settings')

@@ -1,8 +1,10 @@
 import { component$, Slot, useContext } from '@builder.io/qwik'
 import type { DocumentHead } from '@builder.io/qwik-city'
+import ExtraBar from '~/components/widgets/ExtraBar'
 import Footer from '~/components/widgets/Footer'
 import Header from '~/components/widgets/Header'
 import NavBar from '~/components/widgets/NavBar'
+import SponsorBar from '~/components/widgets/SponsorBar'
 import { GlobalStore } from '~/contexts'
 // import Navigation from '~/components/widgets/Navigation'
 // import Collaborators from '~/components/widgets/Collaborators'
@@ -37,7 +39,8 @@ export default component$(() => {
                             'hidden lg:block fixed z-20 inset-0 top-[4rem] right-[max(0px,calc(50%-48rem))] left-auto w-[14.5rem] py-5 px-8 overflow-y-auto'
                         }
                     >
-                        <NavBar options={store} />
+                        <ExtraBar />
+                        <SponsorBar />
                     </div>
                 </div>
             </main>

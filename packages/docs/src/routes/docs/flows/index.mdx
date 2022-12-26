@@ -1,0 +1,20 @@
+# Flow (Flujos)
+
+Los flujos hace referencia al hecho de construir un flujo de conversion. Esto es un flow podemos observar que estan presente dos metodos importantes **addKeyword** y el **addAnswer**.
+
+Tan sencillo como decir **palabra/s clave** y **mensaje a responder**
+
+Ambos metodos **[addKeyword](https://github.com/codigoencasa/bot-whatsapp/blob/dev/packages/bot/io/methods/addKeyword.js)** y el **[addAnswer](https://github.com/codigoencasa/bot-whatsapp/blob/dev/packages/bot/io/methods/addAnswer.js)** tienen una serie opciones disponibles
+
+```js
+const {
+    createBot,
+    createProvider,
+    createFlow,
+    addKeyword,
+} = require('@bot-whatsapp/bot')
+
+const flowPrincipal = addKeyword(['hola', 'alo'])
+    .addAnswer(['Hola, bienvenido a mi tienda', '¿Como puedo ayudarte?'])
+    .addAnswer(['Tengo:', 'Zapatos', 'Bolsos', 'etc ...'])
+```
