@@ -1,46 +1,64 @@
-import { component$ } from '@builder.io/qwik'
+import { component$, Resource, useResource$ } from '@builder.io/qwik'
+import Collaborator from './Collaborator'
+
+export const apiGetCollaborators = async () => {
+    const data = fetch(
+        `https://api.github.com/repos/codigoencasa/bot-whatsapp/contributors`,
+        {
+            method: 'GET',
+            headers: {
+                Accept: 'application/vnd.github+json',
+                'X-GitHub-Api-Version': '2022-11-28',
+                Authorization:
+                    'Bearer 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',
+            },
+        }
+    )
+
+    return (await data).json()
+}
+
+export const TaleUsers = component$((props: { users: any[] }) => {
+    return (
+        <>
+            {props.users.map((user) => (
+                <div class="col-span-2 ">
+                    {' '}
+                    <Collaborator user={user} />
+                </div>
+            ))}
+        </>
+    )
+})
 
 export default component$(() => {
+    const collaboratorsResource = useResource$(
+        async () => await apiGetCollaborators()
+    )
+
     return (
-        <div class={'pt-4'}>
-            <div class="flex items-center space-x-2 text-base">
-                <h4 class="font-semibold text-slate-900">Contributors</h4>
-                <span class="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">
-                    204
-                </span>
+        <section class="relative ">
+            <div class={'px-4 py-16 mx-auto max-w-6xl lg:py-20'}>
+                <div class="mb-10 md:mx-auto sm:text-center md:mb-12 max-w-3xl">
+                    <p class="text-base text-primary-600 dark:text-purple-200 font-semibold tracking-wide uppercase">
+                        Colaboradores
+                    </p>
+                    <h2 class="text-4xl md:text-5xl font-bold leading-tighter tracking-tighter mb-4 font-heading">
+                        Super estrellas
+                    </h2>
+                    <p class="max-w-3xl mx-auto sm:text-center text-xl text-gray-600 dark:text-slate-400">
+                        Todo es posible gracias a el mayor recursos de todos, el
+                        recurso humano. Tu tambien puedes formar parte
+                    </p>
+                </div>
+
+                <div class="grid lg:grid-cols-12 grid-cols-1 gap-4 ">
+                    <Resource
+                        value={collaboratorsResource}
+                        onResolved={(data) => <TaleUsers users={data} />}
+                    ></Resource>
+                </div>
             </div>
-            <div class="mt-3 flex -space-x-2 overflow-hidden">
-                <img
-                    class="inline-block h-12 w-12 rounded-full ring-2 ring-white"
-                    src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt=""
-                />
-                <img
-                    class="inline-block h-12 w-12 rounded-full ring-2 ring-white"
-                    src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt=""
-                />
-                <img
-                    class="inline-block h-12 w-12 rounded-full ring-2 ring-white"
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80"
-                    alt=""
-                />
-                <img
-                    class="inline-block h-12 w-12 rounded-full ring-2 ring-white"
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt=""
-                />
-                <img
-                    class="inline-block h-12 w-12 rounded-full ring-2 ring-white"
-                    src="https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt=""
-                />
-            </div>
-            <div class="mt-3 text-sm font-medium">
-                <a href="#" class="text-blue-500">
-                    + 198 others
-                </a>
-            </div>
-        </div>
+        </section>
     )
 })

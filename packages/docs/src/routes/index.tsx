@@ -6,6 +6,7 @@ import Features from '~/components/widgets/Features'
 import FAQs from '~/components/widgets/FAQs'
 // import Stats from '~/components/widgets/Stats'
 import CallToAction from '~/components/widgets/CallToAction'
+import Collaborators from '~/components/widgets/Collaborators'
 
 export default component$(() => {
     return (
@@ -13,6 +14,7 @@ export default component$(() => {
             <Hero />
             <Features />
             <CallToAction />
+            <Collaborators />
             <FAQs />
             {/* <Stats /> */}
         </>
