@@ -1,19 +1,22 @@
 import { component$, Resource, useResource$ } from '@builder.io/qwik'
 import Collaborator from './Collaborator'
-import { Octokit } from '@octokit/core'
 
-export const octokit = new Octokit({
-    auth: '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',
-})
-
-export const apiGetCollaborators = () =>
-    octokit.request(
-        'GET /repos/codigoencasa/bot-whatsapp/contributors{?anon,per_page,page}',
+export const apiGetCollaborators = async () => {
+    const data = fetch(
+        `https://api.github.com/repos/codigoencasa/bot-whatsapp/contributors`,
         {
-            owner: 'OWNER',
-            repo: 'REPO',
+            method: 'GET',
+            headers: {
+                Accept: 'application/vnd.github+json',
+                'X-GitHub-Api-Version': '2022-11-28',
+                Authorization:
+                    'Bearer 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',
+            },
         }
     )
+
+    return (await data).json()
+}
 
 export const TaleUsers = component$((props: { users: any[] }) => {
     return (
@@ -30,7 +33,7 @@ export const TaleUsers = component$((props: { users: any[] }) => {
 
 export default component$(() => {
     const collaboratorsResource = useResource$(
-        async () => await (await apiGetCollaborators()).data
+        async () => await apiGetCollaborators()
     )
 
     return (

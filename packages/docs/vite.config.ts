@@ -13,11 +13,6 @@ export default defineConfig(() => {
             qwikCity({
                 basePathname: SITE.basePathname,
                 trailingSlash: SITE.trailingSlash,
-                mdxPlugins: {
-                    rehypeSyntaxHighlight: true,
-                    rehypeAutolinkHeadings: false,
-                    remarkGfm: true,
-                },
             }),
             qwikVite(),
             tsconfigPaths(),
