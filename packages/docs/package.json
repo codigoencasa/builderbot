@@ -20,10 +20,11 @@
     "qwik": "qwik"
   },
   "devDependencies": {
-    "@builder.io/qwik": "0.15.0",
+    "@builder.io/qwik": "0.16.1",
     "@builder.io/qwik-city": "0.0.128",
     "@fontsource/inter": "^4.5.14",
     "@iconify-json/tabler": "^1.1.49",
+    "@octokit/core": "^4.1.0",
     "@tailwindcss/aspect-ratio": "^0.4.0",
     "@tailwindcss/forms": "^0.5.3",
     "@tailwindcss/line-clamp": "^0.3.1",
