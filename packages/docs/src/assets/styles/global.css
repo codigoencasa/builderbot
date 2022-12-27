@@ -5,7 +5,7 @@
  * the styles in here will be applied to the Document, without any sort of CSS scoping.
  *
  */
-
+@import 'prism.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -24,31 +24,43 @@
     }
 
     .slot h1 {
-        @apply mb-2 font-semibold text-2xl;
+        @apply my-2 font-semibold text-3xl;
     }
 
     .slot h2 {
-        @apply mb-2 font-semibold text-lg;
+        @apply mt-4 font-semibold text-xl;
     }
 
     .slot h3 {
-        @apply mb-2 font-semibold text-base;
+        @apply mt-4 font-semibold text-lg;
     }
 
-    .slot code {
-        @apply bg-slate-100 dark:bg-slate-800 p-1 px-2 rounded w-full;
+    .slot p code {
+        @apply text-xs font-mono bg-stone-100 dark:bg-slate-600 dark:text-white text-red-500 p-1 rounded;
     }
 
     .slot pre {
         @apply w-full flex my-2;
     }
 
+    .slot pre code {
+        @apply p-3 rounded md:w-full max-w-screen-md overflow-x-auto w-fit bg-gray-800 dark:bg-slate-800 ease-in duration-75 text-gray-100 text-xs shadow-xl;
+    }
+
     .slot a {
-        @apply text-sky-900 font-medium dark:text-sky-400;
+        @apply text-sky-900 font-medium dark:text-sky-400 dark:hover:text-white;
     }
 
     .slot hr {
-        @apply my-5;
+        @apply my-5  border-t-slate-100 dark:border-t-slate-800;
+    }
+
+    .slot img {
+        @apply rounded drop-shadow-2xl;
+    }
+
+    .slot ul {
+        @apply list-disc pl-5;
     }
 
     [data-aw-toggle-menu] path {
@@ -61,6 +73,10 @@
     p,
     li {
         @apply mt-2 text-sm text-slate-700 dark:text-slate-400;
+    }
+
+    .coding p {
+        @apply m-0;
     }
 
     [data-aw-toggle-menu].expanded g > path:last-child {

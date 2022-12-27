@@ -1,4 +1,9 @@
-import { component$, useStyles$ } from '@builder.io/qwik'
+import {
+    component$,
+    useContextProvider,
+    useStore,
+    useStyles$,
+} from '@builder.io/qwik'
 import {
     QwikCityProvider,
     RouterOutlet,
@@ -8,7 +13,9 @@ import {
 import { RouterHead } from '~/components/core/RouterHead'
 import { DarkThemeLauncher } from '~/components/core/DarkThemeLauncher'
 
+import fontStyles from '~/assets/styles/fonts.css?inline'
 import globalStyles from '~/assets/styles/global.css?inline'
+import { DocumentationCtx, GlobalStore } from './contexts'
 
 export default component$(() => {
     /**
@@ -18,7 +25,45 @@ export default component$(() => {
      * Dont remove the `<head>` and `<body>` elements.
      */
 
+    useStyles$(fontStyles)
     useStyles$(globalStyles)
+
+    const store = useStore<DocumentationCtx[]>([
+        {
+            title: 'Primeros pasos',
+            list: [
+                { name: 'Vista rápida', link: '/docs' },
+                { name: 'Instalación', link: '/docs/install' },
+                { name: 'Pruebalo', link: '/docs/example' },
+            ],
+        },
+        {
+            title: 'Esenciales',
+            list: [
+                { name: 'Conceptos', link: '/docs/essential' },
+                { name: 'Conversaciones', link: '/docs/flows' },
+                { name: 'Proveedores', link: '/docs/providers' },
+                { name: 'Base de datos', link: '/docs/database' },
+            ],
+        },
+        {
+            title: 'Avanzado',
+            list: [
+                { name: 'Migración', link: '/docs/migration' },
+                { name: 'Extender funcionalidades', link: '/docs/custom' },
+            ],
+        },
+        {
+            title: 'Comunidad',
+            list: [
+                { name: 'MasterClass', link: '/docs/masterclass' },
+                { name: 'Unirme al proyecto', link: '/docs/join' },
+                { name: 'Sponsors', link: '/docs/sponsors' },
+            ],
+        },
+    ])
+
+    useContextProvider(GlobalStore, store)
 
     return (
         <QwikCityProvider>
@@ -29,10 +74,7 @@ export default component$(() => {
                     content="width=device-width, initial-scale=1"
                 />
                 <link rel="manifest" href="/manifest.json" />
-                <link
-                    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
-                    rel="stylesheet"
-                />
+
                 <RouterHead />
                 <DarkThemeLauncher />
             </head>

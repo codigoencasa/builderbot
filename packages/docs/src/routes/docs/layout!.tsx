@@ -1,55 +1,61 @@
-import { component$, Slot, useStore } from '@builder.io/qwik'
+import { component$, Slot, useContext } from '@builder.io/qwik'
 import type { DocumentHead } from '@builder.io/qwik-city'
+import ExtraBar from '~/components/widgets/ExtraBar'
 import Footer from '~/components/widgets/Footer'
 import Header from '~/components/widgets/Header'
 import NavBar from '~/components/widgets/NavBar'
-import ExtraBar from '~/components/widgets/ExtraBar'
+import SponsorBar from '~/components/widgets/SponsorBar'
+import { GlobalStore } from '~/contexts'
+// import Navigation from '~/components/widgets/Navigation'
+// import Collaborators from '~/components/widgets/Collaborators'
+// import ExtraBar from '~/components/widgets/ExtraBar'
 
 export default component$(() => {
-    const store = useStore({
-        options: [
-            { name: 'Primeros pasos', link: '/docs' },
-            { name: 'Instalación', link: '/docs/install' },
-            { name: 'Configuración', link: '/docs/settings' },
-            { name: 'Migración', link: '/docs/migration' },
-        ],
-        extraOptions: [
-            { name: 'Primeros pasos', link: '/docs', class: 'font-semibold' },
-            { name: 'Instalación', link: '/docs' },
-            { name: 'Configuración', link: '/docs' },
-            { name: 'Forma de pensar', link: '/docs' },
-        ],
-    })
+    const store = useContext(GlobalStore)
 
     return (
         <>
             <Header />
-            <main class="container mx-auto px-12 ">
-                <div class={'grid grid-cols-5 gap-1 min-h-min'}>
-                    <div class={'px-3 col-span-1  '}>
-                        <NavBar options={store.options} />
+            <main class={'overflow-hidden'}>
+                <div class={'max-w-8xl'}>
+                    <div
+                        class={
+                            'hidden lg:block fixed z-20 inset-0 top-[4rem] left-[max(0px,calc(50%-48rem))] right-auto w-[14.5rem] py-5 px-8 overflow-y-auto'
+                        }
+                    >
+                        <NavBar options={store} />
                     </div>
-                    <div class={'col-span-3 slot pb-5'}>
-                        <Slot />
+                    <div class={'lg:pl-[14.5rem] lg:pr-[14.5rem]'}>
+                        <div
+                            class={
+                                'slot max-w-3xl mx-auto relative z-20 p-5 xl:max-w-none'
+                            }
+                        >
+                            <Slot />
+                        </div>
                     </div>
-                    <div class={'px-3 col-span-1  '}>
-                        <ExtraBar options={store.extraOptions} />
+                    <div
+                        class={
+                            'hidden lg:block fixed z-20 inset-0 top-[4rem] right-[max(0px,calc(50%-48rem))] left-auto w-[14.5rem] py-5 px-8 overflow-y-auto'
+                        }
+                    >
+                        <ExtraBar />
+                        <SponsorBar />
                     </div>
                 </div>
             </main>
-
             <Footer />
         </>
     )
 })
 
 export const head: DocumentHead = {
-    title: 'Qwind — Free template for starts a website using Qwik + Tailwind CSS',
+    title: 'Crear chatbot WhatsApp en minutos — Servicio de chatbot para whatspp gratis proyecto OpenSource',
     meta: [
         {
             name: 'description',
             content:
-                'Qwind is a free and ready to start template to make your website using Qwik and Tailwind CSS.',
+                'Crear chatbot WhatsApp en minutos — Servicio de chatbot para whatspp gratis proyecto OpenSource',
         },
     ],
 }

@@ -1,8 +1,8 @@
 const prompts = require('prompts')
-const { yellow, red, cyan, bgMagenta } = require('kleur')
-const { copyBaseApp } = require('../create-app')
 const { join } = require('path')
+const { yellow, red, cyan, bgMagenta } = require('kleur')
 const { existsSync } = require('fs')
+const { copyBaseApp } = require('../create-app')
 const { checkNodeVersion, checkOs } = require('../check')
 
 const bannerDone = () => {
@@ -48,9 +48,9 @@ const startInteractive = async () => {
             message: '¿Cuál base de datos quieres utilizar?',
             choices: [
                 { title: 'Memory', value: 'memory' },
+                { title: 'Json', value: 'json' },
                 { title: 'Mongo', value: 'mongo' },
                 { title: 'MySQL', value: 'mysql' },
-                { title: 'Json', value: 'json', disabled: true },
             ],
             max: 1,
             hint: 'Espacio para seleccionar',

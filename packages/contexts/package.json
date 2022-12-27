@@ -8,7 +8,8 @@
     ],
     "exports": {
         "./mock": "./lib/mock/index.cjs",
-        "./dialogflow": "./lib/dialogflow/index.cjs"
+        "./dialogflow": "./lib/dialogflow/index.cjs",
+        "./dialogflowcx": "./lib/dialogflow-cx/index.cjs"
     },
     "dependencies": {
         "@bot-whatsapp/bot": "*"
