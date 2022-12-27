@@ -106,6 +106,29 @@ class VenomProvider extends ProviderClass {
     }
 
     /**
+     * Enviar botones
+     * @private
+     * @param {*} number
+     * @param {*} message
+     * @param {*} buttons []
+     * @returns
+     */
+    sendButtons = async (number, message, buttons = []) => {
+        const NOTE_VENOM_BUTTON = [
+            `Actualmente VENOM tiene problemas con la API`,
+            `para el envio de Botones`,
+        ].join('\n')
+
+        console.log(`[NOTA]: ${NOTE_VENOM_BUTTON}`)
+
+        const buttonToStr = [message]
+            .concat(buttons.map((btn) => `${btn.body}`))
+            .join(`\n`)
+        return this.vendor.sendText(number, buttonToStr)
+        // return this.vendor.sendButtons(number, "Title", buttons1, "Description");
+    }
+
+    /**
      * Enviar imagen o multimedia
      * @param {*} number
      * @param {*} mediaInput

@@ -14,6 +14,7 @@ const {
     baileyGenerateImage,
     baileyCleanNumber,
     baileyIsValidNumber,
+    baileyDownloadMedia,
 } = require('./utils')
 
 const logger = new Console({
@@ -39,12 +40,43 @@ class BaileysProvider extends ProviderClass {
     initBailey = async () => {
         const { state, saveCreds } = await useMultiFileAuthState('sessions')
         this.saveCredsGlobal = saveCreds
+
         try {
-            this.vendor = makeWASocket({
+            const sock = makeWASocket({
                 printQRInTerminal: false,
                 auth: state,
                 logger: pino({ level: 'error' }),
             })
+
+            sock.ev.on('connection.update', async (update) => {
+                const { connection, lastDisconnect, qr } = update
+
+                if (connection === 'close') {
+                    const shouldReconnect =
+                        lastDisconnect?.error?.output?.statusCode !==
+                        DisconnectReason.loggedOut
+
+                    if (shouldReconnect) {
+                        await saveCreds()
+                        this.initBailey()
+                    }
+                }
+
+                if (qr) {
+                    this.emit('require_action', {
+                        instructions: [
+                            `Debes escanear el QR Code para iniciar session reivsa qr.png`,
+                            `Recuerda que el QR se actualiza cada minuto `,
+                            `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
+                        ],
+                    })
+                    await baileyGenerateImage(qr)
+                }
+
+                if (connection === 'open') this.emit('ready', true)
+            })
+
+            this.vendor = sock
         } catch (e) {
             logger.log(e)
             this.emit('auth_failure', [
@@ -64,25 +96,9 @@ class BaileysProvider extends ProviderClass {
      */
     busEvents = () => [
         {
-            event: 'connection.update',
-            func: async ({ qr, connection, lastDisconnect }) => {
-                const statusCode = lastDisconnect?.error?.output?.statusCode
-
-                if (statusCode && statusCode !== DisconnectReason.loggedOut)
-                    this.initBailey()
-
-                if (qr) {
-                    this.emit('require_action', {
-                        instructions: [
-                            `Debes escanear el QR Code para iniciar session reivsa qr.png`,
-                            `Recuerda que el QR se actualiza cada minuto `,
-                            `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
-                        ],
-                    })
-                    await baileyGenerateImage(qr)
-                }
-
-                if (connection === 'open') this.emit('ready', true)
+            event: 'creds.update',
+            func: async () => {
+                await this.saveCredsGlobal()
             },
         },
         {
@@ -95,13 +111,20 @@ class BaileysProvider extends ProviderClass {
                     body: messageCtx?.message?.conversation,
                     from: messageCtx?.key?.remoteJid,
                 }
-                if (payload.from === 'status@broadcast') {
-                    return
-                }
+                if (payload.from === 'status@broadcast') return
+
+                if (payload?.key?.fromMe) return
 
                 if (!baileyIsValidNumber(payload.from)) {
                     return
                 }
+
+                const btnCtx =
+                    payload?.message?.templateButtonReplyMessage
+                        ?.selectedDisplayText
+
+                if (btnCtx) payload.body = btnCtx
+
                 payload.from = baileyCleanNumber(payload.from, true)
                 this.emit('message', payload)
             },
@@ -124,8 +147,9 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendMedia = async (number, imageUrl, text) => {
-        await this.vendor.sendMessage(number, {
-            image: { url: imageUrl },
+        const fileDownloaded = await baileyDownloadMedia(imageUrl)
+        return this.vendor.sendMessage(number, {
+            image: { url: fileDownloaded },
             text,
         })
     }
@@ -186,17 +210,21 @@ class BaileysProvider extends ProviderClass {
      * @example await sendMessage("+XXXXXXXXXXX", "Your Text", "Your Footer", [{"buttonId": "id", "buttonText": {"displayText": "Button"}, "type": 1}])
      */
 
-    sendButtons = async (number, text, footer, buttons) => {
+    sendButtons = async (number, text, buttons) => {
         const numberClean = number.replace('+', '')
+        const templateButtons = buttons.map((btn, i) => ({
+            index: `${i}`,
+            quickReplyButton: {
+                displayText: btn.body,
+                id: `id-btn-${i}`,
+            },
+        }))
 
-        const buttonMessage = {
-            text: text,
-            footer: footer,
-            buttons: buttons,
-            headerType: 1,
-        }
-
-        await this.vendor.sendMessage(`${numberClean}@c.us`, buttonMessage)
+        return this.vendor.sendMessage(`${numberClean}@c.us`, {
+            text,
+            footer: '',
+            templateButtons: templateButtons,
+        })
     }
 
     /**
@@ -209,8 +237,8 @@ class BaileysProvider extends ProviderClass {
     sendMessage = async (numberIn, message, { options }) => {
         const number = baileyCleanNumber(numberIn)
 
-        // if (options?.buttons?.length)
-        //     return this.sendButtons(number, message, options.buttons)
+        if (options?.buttons?.length)
+            return this.sendButtons(number, message, options.buttons)
         if (options?.media)
             return this.sendMedia(number, options.media, message)
         return this.sendText(number, message)
