@@ -4,7 +4,6 @@ import { User } from '~/contexts'
 import Collaborator from './Collaborator'
 
 export const TaleUsers = component$((props: { users: User[] }) => {
-    console.log(props)
     return (
         <>
             {props.users.map((user) => (
