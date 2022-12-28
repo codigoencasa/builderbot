@@ -30,9 +30,9 @@ export const onRequest: RequestHandlerCloudflarePages = async ({
     platform,
 }) => {
     console.log(`[🚩 platform]: `, platform)
-    console.log(`[🚩 platform .env]: `, platform.env)
+    console.log(`[🚩 platform .env]: `, (platform as any)?.GITHUB_TOKEN)
     const CHECK_GITHUB_TOKEN =
-        (platform.env as any)?.['GITHUB_TOKEN'] ?? GITHUB_TOKEN
+        (platform as any)?.['GITHUB_TOKEN'] ?? GITHUB_TOKEN
     return apiGetCollaborators(CHECK_GITHUB_TOKEN)
 }
 
