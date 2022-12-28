@@ -12,6 +12,7 @@ import FAQs from '~/components/widgets/FAQs'
 import CallToAction from '~/components/widgets/CallToAction'
 import Collaborators from '~/components/widgets/Collaborators'
 import { GITHUB_TOKEN } from './docs/constant'
+import { RequestHandlerCloudflarePages } from '@builder.io/qwik-city/middleware/cloudflare-pages'
 
 export const apiGetCollaborators = async (token: string) => {
     const data = await fetch(
@@ -29,9 +30,12 @@ export const apiGetCollaborators = async (token: string) => {
     return listUsers
 }
 
-export const onRequest: RequestHandler = async ({ platform }) => {
+export const onRequest: RequestHandlerCloudflarePages = async ({
+    platform,
+}) => {
     console.log(`[🚩 platform]: `, platform)
-    const CHECK_GITHUB_TOKEN = (platform as any)['GITHUB_TOKEN'] ?? GITHUB_TOKEN
+    console.log(`[🚩 platform .env]: `, platform.env)
+    const CHECK_GITHUB_TOKEN = platform.env['GITHUB_TOKEN'] ?? GITHUB_TOKEN
     return apiGetCollaborators(CHECK_GITHUB_TOKEN)
 }
 
