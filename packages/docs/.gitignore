@@ -41,3 +41,6 @@ package-lock.json
 
 # Cloudflare
 functions/**/*.js
+
+# Netlify
+.netlify

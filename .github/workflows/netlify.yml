@@ -1,0 +1,27 @@
+# .github/workflows/netlify.yml
+name: Build and Deploy to Documentation Netlify
+on:
+    pull_request:
+        branches:
+            - dev
+            - main
+        types: [closed]
+jobs:
+    build:
+        runs-on: ubuntu-18.04
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: Deploy to Netlify
+              uses: nwtgck/actions-netlify@v1.2
+              with:
+                  publish-dir: './packages/docs/dist'
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  deploy-message: 'Deploy from GitHub Actions'
+                  enable-pull-request-comment: false
+                  enable-commit-comment: true
+                  overwrites-pull-request-comment: true
+              env:
+                  NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+                  NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+              timeout-minutes: 1
