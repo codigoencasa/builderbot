@@ -1,7 +1,11 @@
 import { component$ } from '@builder.io/qwik'
-
+import { RequestHandlerCloudflarePages } from '@builder.io/qwik-city/middleware/cloudflare-pages'
 import { User } from '~/contexts'
 import Collaborator from './Collaborator'
+
+export const onRequest: RequestHandlerCloudflarePages = async () => {
+    console.log('??heree')
+}
 
 export const TaleUsers = component$((props: { users: User[] }) => {
     return (
@@ -16,7 +20,7 @@ export const TaleUsers = component$((props: { users: User[] }) => {
     )
 })
 
-export default component$((props: { users: any }) => {
+export default component$((props: { users: User[] }) => {
     return (
         <section class="relative ">
             <div class={'px-4 py-16 mx-auto max-w-6xl lg:py-20'}>

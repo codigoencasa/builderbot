@@ -36,3 +36,5 @@ qr.svg
 package-lock.json
 yarn-error.log
 .npmrc
+# Local Netlify folder
+.netlify
