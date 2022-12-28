@@ -30,7 +30,7 @@ export const apiGetCollaborators = async (token: string) => {
 }
 
 export const onRequest: RequestHandler = async ({ platform }) => {
-    console.log(platform)
+    console.log(`[🚩 platform]: `, platform)
     const CHECK_GITHUB_TOKEN = (platform as any)['GITHUB_TOKEN'] ?? GITHUB_TOKEN
     return apiGetCollaborators(CHECK_GITHUB_TOKEN)
 }
