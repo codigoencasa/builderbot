@@ -1,5 +1,9 @@
-import { component$ } from '@builder.io/qwik'
-import type { DocumentHead } from '@builder.io/qwik-city'
+import { component$, Resource } from '@builder.io/qwik'
+import {
+    DocumentHead,
+    RequestHandler,
+    useEndpoint,
+} from '@builder.io/qwik-city'
 
 import Hero from '~/components/widgets/Hero'
 import Features from '~/components/widgets/Features'
@@ -7,14 +11,41 @@ import FAQs from '~/components/widgets/FAQs'
 // import Stats from '~/components/widgets/Stats'
 import CallToAction from '~/components/widgets/CallToAction'
 import Collaborators from '~/components/widgets/Collaborators'
+import { GITHUB_TOKEN } from './docs/constant'
+
+export const apiGetCollaborators = async (token: string) => {
+    const data = await fetch(
+        `https://api.github.com/repos/codigoencasa/bot-whatsapp/contributors`,
+        {
+            method: 'GET',
+            headers: {
+                Accept: 'application/vnd.github+json',
+                'X-GitHub-Api-Version': '2022-11-28',
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    )
+    const listUsers = data.json()
+    return listUsers
+}
+
+export const onRequest: RequestHandler = async ({ platform }) => {
+    console.log(platform)
+    const CHECK_GITHUB_TOKEN = (platform as any)['GITHUB_TOKEN'] ?? GITHUB_TOKEN
+    return apiGetCollaborators(CHECK_GITHUB_TOKEN)
+}
 
 export default component$(() => {
+    const dataUser = useEndpoint()
     return (
         <>
             <Hero />
             <Features />
             <CallToAction />
-            <Collaborators />
+            <Resource
+                value={dataUser}
+                onResolved={(users) => <Collaborators users={users} />}
+            ></Resource>
             <FAQs />
             {/* <Stats /> */}
         </>
