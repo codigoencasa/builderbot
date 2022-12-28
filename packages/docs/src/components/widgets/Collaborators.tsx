@@ -1,24 +1,10 @@
-import { component$, Resource, useResource$ } from '@builder.io/qwik'
+import { component$ } from '@builder.io/qwik'
+
+import { User } from '~/contexts'
 import Collaborator from './Collaborator'
 
-export const apiGetCollaborators = async () => {
-    const data = fetch(
-        `https://api.github.com/repos/codigoencasa/bot-whatsapp/contributors`,
-        {
-            method: 'GET',
-            headers: {
-                Accept: 'application/vnd.github+json',
-                'X-GitHub-Api-Version': '2022-11-28',
-                Authorization:
-                    'Bearer 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',
-            },
-        }
-    )
-
-    return (await data).json()
-}
-
-export const TaleUsers = component$((props: { users: any[] }) => {
+export const TaleUsers = component$((props: { users: User[] }) => {
+    console.log(props)
     return (
         <>
             {props.users.map((user) => (
@@ -31,11 +17,7 @@ export const TaleUsers = component$((props: { users: any[] }) => {
     )
 })
 
-export default component$(() => {
-    const collaboratorsResource = useResource$(
-        async () => await apiGetCollaborators()
-    )
-
+export default component$((props: { users: any }) => {
     return (
         <section class="relative ">
             <div class={'px-4 py-16 mx-auto max-w-6xl lg:py-20'}>
@@ -53,10 +35,7 @@ export default component$(() => {
                 </div>
 
                 <div class="grid lg:grid-cols-12 grid-cols-1 gap-4 ">
-                    <Resource
-                        value={collaboratorsResource}
-                        onResolved={(data) => <TaleUsers users={data} />}
-                    ></Resource>
+                    <TaleUsers users={props.users} />
                 </div>
             </div>
         </section>
