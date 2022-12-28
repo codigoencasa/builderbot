@@ -1,9 +1,5 @@
 import { component$, Resource } from '@builder.io/qwik'
-import {
-    DocumentHead,
-    RequestHandler,
-    useEndpoint,
-} from '@builder.io/qwik-city'
+import { DocumentHead, useEndpoint } from '@builder.io/qwik-city'
 
 import Hero from '~/components/widgets/Hero'
 import Features from '~/components/widgets/Features'
@@ -35,7 +31,8 @@ export const onRequest: RequestHandlerCloudflarePages = async ({
 }) => {
     console.log(`[🚩 platform]: `, platform)
     console.log(`[🚩 platform .env]: `, platform.env)
-    const CHECK_GITHUB_TOKEN = platform.env['GITHUB_TOKEN'] ?? GITHUB_TOKEN
+    const CHECK_GITHUB_TOKEN =
+        (platform.env as any)?.['GITHUB_TOKEN'] ?? GITHUB_TOKEN
     return apiGetCollaborators(CHECK_GITHUB_TOKEN)
 }
 
