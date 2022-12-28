@@ -1,18 +1,16 @@
-# .github/workflows/netlify.yml
-name: Build and Deploy to Documentation Netlify
+name: BotWhatsapp Documentation Site
+
 on:
     pull_request:
         branches:
             - dev
-            - main
-        types: [closed]
+
 jobs:
-    ############ BUILD PACKAGE ############
-    build-package:
+    ############ DOCUMENTATION BUILD ############
+    build-documentation:
         name: Build Package
         runs-on: ubuntu-latest
-        needs:
-            - test-unit
+
         steps:
             - name: Checkout
               uses: actions/checkout@v3
@@ -29,15 +27,29 @@ jobs:
             - name: Install NPM Dependencies
               run: yarn install --immutable --network-timeout 300000
 
-            - name: Build Package
-              run: cd ./packages/docs/ && npm run build
+            - name: Build Documentation
+              run: cd packages/docs && yarn run build
 
+            - name: Temporarily save Dist
+              uses: actions/upload-artifact@v3
+              with:
+                  name: documentation-dist
+                  path: packages/docs/dist
+
+    build:
+        runs-on: ubuntu-18.04
+        steps:
             - uses: actions/checkout@v2
+
+            - uses: actions/download-artifact@v3
+              with:
+                  name: documentation-dist
+                  path: packages/docs/dist
 
             - name: Deploy to Netlify
               uses: nwtgck/actions-netlify@v1.2
               with:
-                  publish-dir: './packages/docs/dist'
+                  publish-dir: 'packages/docs/dist'
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   deploy-message: 'Deploy from GitHub Actions'
                   enable-pull-request-comment: false
@@ -46,4 +58,4 @@ jobs:
               env:
                   NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
                   NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-              timeout-minutes: 1
+                  timeout-minutes: 1
