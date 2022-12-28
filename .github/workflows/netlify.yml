@@ -34,7 +34,7 @@ jobs:
               uses: actions/upload-artifact@v3
               with:
                   name: documentation-dist
-                  path: packages/docs/dist
+                  path: packages/docs
 
     build:
         runs-on: ubuntu-18.04
@@ -46,7 +46,7 @@ jobs:
             - uses: actions/download-artifact@v3
               with:
                   name: documentation-dist
-                  path: packages/docs/dist
+                  path: packages/docs
 
             - name: Deploy to Netlify
               uses: nwtgck/actions-netlify@v1.2
