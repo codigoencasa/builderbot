@@ -7,9 +7,31 @@ on:
             - main
         types: [closed]
 jobs:
-    build:
-        runs-on: ubuntu-18.04
+    ############ BUILD PACKAGE ############
+    build-package:
+        name: Build Package
+        runs-on: ubuntu-latest
+        needs:
+            - test-unit
         steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Setup Node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16.x
+                  cache: 'yarn'
+                  registry-url: https://registry.npmjs.org/
+
+            - run: corepack enable
+
+            - name: Install NPM Dependencies
+              run: yarn install --immutable --network-timeout 300000
+
+            - name: Build Package
+              run: cd ./packages/docs/ && npm run build
+
             - uses: actions/checkout@v2
 
             - name: Deploy to Netlify
