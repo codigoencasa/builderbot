@@ -5,6 +5,10 @@ on:
         branches:
             - 'feat/docs-**'
             - 'fix/docs-**'
+    push:
+        branches:
+            - 'feat/docs-**'
+            - 'fix/docs-**'
 
 jobs:
     ############ DOCUMENTATION BUILD ############
