@@ -1,9 +1,14 @@
-name: 📄 (PROD) Desplegando documentacion
+name: 📄 Desplegando documentacion
 
 on:
+    pull_request:
+        branches:
+            - 'feat/docs-**'
+            - 'fix/docs-**'
     push:
         branches:
-            - next-release
+            - 'feat/docs-**'
+            - 'fix/docs-**'
 
 jobs:
     ############ DOCUMENTATION BUILD ############
@@ -38,4 +43,4 @@ jobs:
             - name: Build and Deploy
               run: |
                   cd packages/docs
-                  netlify deploy --prod --build --site ${{ secrets.NETLIFY_SITE_ID }} --auth ${{ secrets.NETLIFY_AUTH_TOKEN }}
+                  netlify deploy --build --site ${{ secrets.NETLIFY_SITE_ID }} --auth ${{ secrets.NETLIFY_AUTH_TOKEN }}
