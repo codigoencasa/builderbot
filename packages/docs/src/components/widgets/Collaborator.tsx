@@ -14,7 +14,7 @@ export default component$(
                 <a href={props.user.html_url} target="_blank">
                     <img
                         class="w-16 h-16 rounded-full mx-auto object-cover"
-                        src={props.user.avatar_url + '?w=80;80&webp&srcset'}
+                        src={props.user.avatar_url + '&s=80'}
                         alt={props.user.login}
                         width="80"
                         height="80"

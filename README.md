@@ -1,10 +1,10 @@
 [![Test / Coverage](https://github.com/leifermendez/bot-whatsapp/actions/workflows/ci.yml/badge.svg)](https://github.com/leifermendez/bot-whatsapp/actions/workflows/ci.yml)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 --------
-🐤 Tablero de tareas : [https://github.com/users/leifermendez/projects/4/views/1](https://github.com/users/leifermendez/projects/4/views/1)
+## Documentacion
+[https://bot-whatsapp.netlify.app/](https://bot-whatsapp.netlify.app/)
 
-🦊 Documentación: [https://bot-whatsapp-codigoencasa.pages.dev/](https://bot-whatsapp-codigoencasa.pages.dev/)
-Video como hacer PR: https://youtu.be/Lxt8Acob6aU
+🐤 Tablero de tareas : [https://github.com/users/leifermendez/projects/4/views/1](https://github.com/users/leifermendez/projects/4/views/1)
 
 🚀 __Roadmap:__ [https://github.com/users/leifermendez/projects/4/views/1](https://github.com/users/leifermendez/projects/4/views/1)
 
