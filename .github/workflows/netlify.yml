@@ -59,14 +59,10 @@ jobs:
                       packages/docs/.netlify/
                       packages/docs/netlify.toml
 
-            - name: Deploy to Netlify
-              uses: nwtgck/actions-netlify@v1.2
-              with:
-                  publish-dir: 'packages/docs/dist'
-                  github-token: ${{ secrets.GITHUB_TOKEN }}
-                  deploy-message: 'Deploy from GitHub Actions'
-                  netlify-config-path: 'packages/docs/netlify.toml'
+            - name: Deploy to netlify
+              uses: netlify/actions/cli@master
               env:
                   NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-                  NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-                  timeout-minutes: 1
+                  NETLIFY_SITE_ID: ${{ secrets.DEV_NETLIFY_SITE_ID }}
+              with:
+                  args: deploy --dir=packages/docs/dist/  --context packages/docs/netlify.toml
