@@ -3,7 +3,8 @@ name: 📄 Desplegando documentacion
 on:
     pull_request:
         branches:
-            - dev
+            - 'feat/docs-**'
+            - 'fix/docs-**'
 
 jobs:
     ############ DOCUMENTATION BUILD ############
@@ -35,7 +36,7 @@ jobs:
               with:
                   name: documentation-dist
                   path: |
-                      packages/docs/dist
+                      packages/docs/dist/
                       packages/docs/netlify.toml
                       packages/docs/.netlify
     ############ DEPLOY  ############
@@ -50,7 +51,7 @@ jobs:
               with:
                   name: documentation-dist
                   path: |
-                      packages/docs/dist
+                      packages/docs/dist/
                       packages/docs/netlify.toml
                       packages/docs/.netlify
 
