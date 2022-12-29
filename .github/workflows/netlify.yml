@@ -35,8 +35,12 @@ jobs:
             - name: Add netlify
               run: yarn add netlify-cli -D
 
+            - name: Create .env build file
+              run: |
+                  touch packages/docs/.env
+                  echo VITE_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN_COLLABORATORS }} >> packages/docs/.env
+
             - name: Build and Deploy
               run: |
-                  VITE_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
                   cd packages/docs
                   netlify deploy --build --site ${{ secrets.NETLIFY_SITE_ID }} --auth ${{ secrets.NETLIFY_AUTH_TOKEN }}
