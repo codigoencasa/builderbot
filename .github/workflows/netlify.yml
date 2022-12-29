@@ -41,8 +41,8 @@ jobs:
                   name: documentation-dist
                   path: |
                       packages/docs/dist/
+                      packages/docs/.netlify/
                       packages/docs/netlify.toml
-                      packages/docs/.netlify
     ############ DEPLOY  ############
     deploy:
         runs-on: ubuntu-18.04
@@ -56,8 +56,8 @@ jobs:
                   name: documentation-dist
                   path: |
                       packages/docs/dist/
+                      packages/docs/.netlify/
                       packages/docs/netlify.toml
-                      packages/docs/.netlify
 
             - name: Deploy to Netlify
               uses: nwtgck/actions-netlify@v1.2
