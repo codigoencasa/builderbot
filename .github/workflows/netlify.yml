@@ -38,7 +38,7 @@ jobs:
             - name: Create .env build file
               run: |
                   touch packages/docs/.env
-                  echo VITE_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN_COLLABORATORS }} >> packages/docs/.env
+                  echo VITE_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} >> packages/docs/.env
 
             - name: Build and Deploy
               run: |
