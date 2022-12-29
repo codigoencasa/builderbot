@@ -6,7 +6,12 @@ export interface DocumentationCtx {
     list: { link: string; name: string }[]
 }
 
+export interface User {
+    id: number
+    login: string
+    html_url: string
+    avatar_url: string
+}
+
 export const GlobalStore =
     createContext<DocumentationCtx[]>('documentation-site')
-
-export const AppSetting = createContext<{ repo: string }>('app-settings')

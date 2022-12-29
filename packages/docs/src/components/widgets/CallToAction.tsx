@@ -1,17 +1,23 @@
-import { component$ } from '@builder.io/qwik'
+import { $, component$, QwikMouseEvent } from '@builder.io/qwik'
+
+export const handleVideo = $((ev: QwikMouseEvent<HTMLVideoElement>) => {
+    const targetVideo = ev.target as HTMLVideoElement
+    targetVideo.play()
+})
 
 export default component$(() => {
     return (
-        <section class="relative">
-            <div class="max-w-6xl mx-auto px-4 sm:px-6">
-                <div class="py-12 md:py-20">
+        <section class="relative border-t border-gray-200 dark:border-slate-800">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 ">
+                <div class="py-0 md:py-5">
                     <video
+                        class={'cursor-pointer'}
+                        onClick$={handleVideo}
                         style={'height:600px'}
                         width="100%"
                         height="400"
                         autoPlay
                         muted
-                        loop
                         playsInline
                     >
                         <source
