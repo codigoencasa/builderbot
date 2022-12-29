@@ -32,37 +32,10 @@ jobs:
             - name: Install NPM Dependencies
               run: yarn install --immutable --network-timeout 300000
 
-            - name: Build Documentation
-              run: cd packages/docs && yarn run build
+            - name: Add netlify
+              run: yarn add netlify-cli -D
 
-            - name: Temporarily save Dist
-              uses: actions/upload-artifact@v3
-              with:
-                  name: documentation-dist
-                  path: |
-                      packages/docs/dist/
-                      packages/docs/.netlify/
-                      packages/docs/netlify.toml
-    ############ DEPLOY  ############
-    deploy:
-        runs-on: ubuntu-18.04
-        needs:
-            - build-documentation
-        steps:
-            - uses: actions/checkout@v2
-
-            - uses: actions/download-artifact@v3
-              with:
-                  name: documentation-dist
-                  path: |
-                      packages/docs/dist/
-                      packages/docs/.netlify/
-                      packages/docs/netlify.toml
-
-            - name: Deploy to netlify
-              uses: netlify/actions/cli@master
-              env:
-                  NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-                  NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-              with:
-                  args: deploy --context packages/docs/netlify.toml --build --site ${{ secrets.NETLIFY_SITE_ID }}
+            - name: Build and Deploy
+              run: |
+                  cd packages/docs
+                  netlify deploy --build --site ${{ secrets.NETLIFY_SITE_ID }} --auth ${{ secrets.NETLIFY_AUTH_TOKEN }}
