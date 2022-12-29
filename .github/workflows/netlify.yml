@@ -1,4 +1,4 @@
-name: BotWhatsapp Documentation Site
+name: 📄 Desplegando documentacion
 
 on:
     pull_request:
@@ -34,9 +34,12 @@ jobs:
               uses: actions/upload-artifact@v3
               with:
                   name: documentation-dist
-                  path: packages/docs
-
-    build:
+                  path: |
+                      packages/docs/dist
+                      packages/docs/netlify.toml
+                      packages/docs/.netlify
+    ############ DEPLOY  ############
+    deploy:
         runs-on: ubuntu-18.04
         needs:
             - build-documentation
@@ -46,7 +49,10 @@ jobs:
             - uses: actions/download-artifact@v3
               with:
                   name: documentation-dist
-                  path: packages/docs
+                  path: |
+                      packages/docs/dist
+                      packages/docs/netlify.toml
+                      packages/docs/.netlify
 
             - name: Deploy to Netlify
               uses: nwtgck/actions-netlify@v1.2
@@ -54,9 +60,7 @@ jobs:
                   publish-dir: 'packages/docs/dist'
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   deploy-message: 'Deploy from GitHub Actions'
-                  enable-pull-request-comment: false
-                  enable-commit-comment: true
-                  overwrites-pull-request-comment: true
+                  netlify-config-path: 'packages/docs/netlify.toml'
               env:
                   NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
                   NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
