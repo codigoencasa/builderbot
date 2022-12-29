@@ -1,4 +1,4 @@
-name: Add contributors
+name: 🙌 Revisando Colaboradores
 on:
     pull_request:
         branches:
