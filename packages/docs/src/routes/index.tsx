@@ -10,9 +10,9 @@ import { RequestHandlerNetlify } from '@builder.io/qwik-city/middleware/netlify-
 import { GITHUB_TOKEN } from './docs/constant'
 
 export const onGet: RequestHandlerNetlify = async ({ platform }) => {
-    console.log(`[🚩 platform]: `, platform)
     const CHECK_GITHUB_TOKEN =
         (platform as any)?.['GITHUB_TOKEN'] ?? GITHUB_TOKEN
+    console.log(`[🚩 platform]: `, GITHUB_TOKEN)
     const data = await fetchGithub(CHECK_GITHUB_TOKEN)
     return data
 }
