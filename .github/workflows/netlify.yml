@@ -65,4 +65,4 @@ jobs:
                   NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
                   NETLIFY_SITE_ID: ${{ secrets.DEV_NETLIFY_SITE_ID }}
               with:
-                  args: deploy --dir=packages/docs/dist/  --context packages/docs/netlify.toml
+                  args: deploy --context packages/docs/netlify.toml --build
