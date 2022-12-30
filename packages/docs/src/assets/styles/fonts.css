@@ -5,6 +5,7 @@
     font-style: normal;
     font-named-instance: 'Regular';
     src: url('../fonts/Inter-roman-latin.var.woff2') format('woff2');
+    font-display: swap;
 }
 
 @font-face {
@@ -14,6 +15,7 @@
     font-style: italic;
     font-named-instance: 'Italic';
     src: url('../fonts/Inter-italic-latin.var.woff2') format('woff2');
+    font-display: swap;
 }
 
 @font-face {
@@ -22,6 +24,7 @@
     font-style: normal;
     src: url('../fonts/FiraCode-VF.woff2') format('woff2-variations'),
         url('../fonts/FiraCode-VF.woff') format('woff-variations');
+    font-display: swap;
 }
 
 .font-mono {
@@ -34,6 +37,7 @@
     font-weight: 400;
     font-display: swap;
     src: url('../fonts/SourceSansPro-Regular.otf') format('opentype');
+    font-display: swap;
 }
 
 @font-face {
@@ -41,4 +45,5 @@
     font-weight: 700;
     font-style: normal;
     src: url('../fonts/Ubuntu-Mono-bold.woff2') format('woff2');
+    font-display: swap;
 }

@@ -11,7 +11,7 @@ const {
 } = require('../index')
 
 class MockFlow {
-    allCallbacks = [{ callback: () => console.log('') }]
+    allCallbacks = { ref: () => 1 }
     flowSerialize = []
     flowRaw = []
     find = (arg) => {

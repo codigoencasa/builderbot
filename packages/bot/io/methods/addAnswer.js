@@ -1,4 +1,6 @@
+const { flatObject } = require('../../utils/flattener')
 const { generateRef } = require('../../utils/hash')
+const { addChild } = require('./addChild')
 const { toJson } = require('./toJson')
 /**
  *
@@ -27,9 +29,28 @@ const addAnswer =
             delay: typeof options?.delay === 'number' ? options?.delay : 0,
         })
 
-        const getNested = () => ({
-            nested: Array.isArray(nested) ? nested : [],
-        })
+        const getNested = () => {
+            let flatNested = []
+            if (Array.isArray(nested)) {
+                for (const iterator of nested) {
+                    flatNested = [...flatNested, ...addChild(iterator)]
+                }
+
+                return {
+                    nested: flatNested,
+                }
+            }
+            return {
+                nested: addChild(nested),
+            }
+        }
+
+        /**
+         * Esta funcion aplana y busca los callback anidados de los hijos
+         * @returns
+         */
+        const getCbFromNested = () =>
+            flatObject(Array.isArray(nested) ? nested : [nested])
 
         const callback = typeof cb === 'function' ? cb : () => null
 
@@ -59,12 +80,12 @@ const addAnswer =
                 },
             ])
 
-            const callbacks = [].concat(inCtx.callbacks).concat([
-                {
-                    ref: lastCtx.ref,
-                    callback,
-                },
-            ])
+            getCbFromNested()
+            const callbacks = {
+                ...inCtx.callbacks,
+                ...getCbFromNested(),
+                [ref]: callback,
+            }
 
             return {
                 ...lastCtx,
