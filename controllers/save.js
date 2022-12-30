@@ -1,5 +1,8 @@
-const mimeDb = require('mime-db')
-const fs = require('fs')
+const mimeDb = require('mime-db');
+const { uploadSingleFile } = require('../adapter/gdrive');
+const fs = require('fs');
+
+var fileName;
 
 /**
  * Guardamos archivos multimedia que nuestro cliente nos envie!
@@ -16,9 +19,20 @@ const saveMedia = (media) => {
     } else {
         ext = extensionProcess.extensions[0];
     }
-    fs.writeFile(`./media/${Date.now()}.${ext}`, media.data, { encoding: 'base64' }, function (err) {
-        console.log('** Archivo Media Guardado **');
+    fileName = `${Date.now()}.${ext}`;
+    fs.writeFile(`./media/${fileName}`, media.data, { encoding: 'base64' }, function (err) {
+        console.log(`** Archivo Media ${fileName} Guardado **`);
     });
+    return fileName
 }
 
-module.exports = {saveMedia}
+const saveMediaToGoogleDrive = async (media) => {
+
+     fileName = saveMedia(media);
+     filePath = `${__dirname}/../media/${fileName}`
+
+    const googleDriveUrl = await uploadSingleFile(fileName, filePath);
+    return googleDriveUrl
+}
+
+module.exports = { saveMedia, saveMediaToGoogleDrive }

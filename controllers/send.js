@@ -16,7 +16,7 @@ const { saveMessage } = require('../adapter')
  */
 
 const sendMedia = (client, number = null, fileName = null) => {
-    if(!client) return cosnole.error("El objeto cliente no está definido.");
+    if(!client) return console.error("El objeto cliente no está definido.");
     try {
         number = cleanNumber(number || 0)
         const file = `${DIR_MEDIA}/${fileName}`;
@@ -36,7 +36,7 @@ const sendMedia = (client, number = null, fileName = null) => {
  */
 
  const sendMediaVoiceNote = (client, number = null, fileName = null) => {
-     if(!client) return cosnole.error("El objeto cliente no está definido.");
+     if(!client) return console.error("El objeto cliente no está definido.");
      try { 
         number = cleanNumber(number || 0)
         const file = `${DIR_MEDIA}/${fileName}`;
