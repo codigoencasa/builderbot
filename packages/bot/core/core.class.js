@@ -115,24 +115,16 @@ class CoreClass {
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback y ejecutarlo
         const cbEveryCtx = (inRef) => {
-            const indexFlow = this.flowClass.findIndexByRef(inRef)
-            this.flowClass.allCallbacks[indexFlow].callback(
-                messageCtxInComming,
-                {
-                    fallBack,
-                    flowDynamic,
-                }
-            )
+            this.flowClass.allCallbacks[inRef](messageCtxInComming, {
+                fallBack,
+                flowDynamic,
+            })
         }
 
         // 📄 [options: callback]: Si se tiene un callback se ejecuta
         if (!fallBackFlag) {
-            if (refToContinue && prevMsg?.options?.callback) {
-                cbEveryCtx(refToContinue?.ref)
-            } else {
-                for (const ite of this.flowClass.find(body)) {
-                    cbEveryCtx(ite?.ref)
-                }
+            for (const ite of this.flowClass.find(body)) {
+                cbEveryCtx(ite?.ref)
             }
         }
 
