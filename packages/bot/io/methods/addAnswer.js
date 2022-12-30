@@ -49,7 +49,8 @@ const addAnswer =
          * Esta funcion aplana y busca los callback anidados de los hijos
          * @returns
          */
-        const getCbFromNested = () => flatObject(nested)
+        const getCbFromNested = () =>
+            flatObject(Array.isArray(nested) ? nested : [nested])
 
         const callback = typeof cb === 'function' ? cb : () => null
 
