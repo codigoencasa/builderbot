@@ -8,7 +8,7 @@ class FlowClass {
         if (!Array.isArray(_flow)) throw new Error('Esto debe ser un ARRAY')
         this.flowRaw = _flow
 
-        this.getAllCb(this.flowRaw)
+        this.allCallbacks = this.parseCallBacks(this.flowRaw)
 
         const mergeToJsonSerialize = Object.keys(_flow)
             .map((indexObjectFlow) => _flow[indexObjectFlow].toJson())
@@ -21,12 +21,11 @@ class FlowClass {
      * Buscar y aplanar todos los callbacks
      * @param {*} inFlow
      */
-    getAllCb = (inFlow) => {
-        this.allCallbacks = inFlow
+    parseCallBacks = (inFlow) =>
+        inFlow
             .map((cbIn) => cbIn.ctx.callbacks)
             .flat(2)
             .map((c, i) => ({ callback: c?.callback, index: i }))
-    }
 
     find = (keyOrWord, symbol = false, overFlow = null) => {
         keyOrWord = `${keyOrWord}`

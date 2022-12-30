@@ -31,6 +31,29 @@ const addAnswer =
             nested: Array.isArray(nested) ? nested : [],
         })
 
+        /**
+         * Esta funcion aplana y busca los callback anidados de los hijos
+         * @returns
+         */
+        const getCbFromNested = () => {
+            const cbNestedList = Array.isArray(nested) ? nested : []
+            const cbNestedObj = cbNestedList.map(({ ctx }) => ctx?.callbacks)
+            const queueCb = cbNestedObj.reduce((acc, current) => {
+                const getKeys = Object.keys(current)
+                const parse = getKeys.map((icb, i) => ({
+                    [icb]: Object.values(current)[i],
+                }))
+                return [...acc, ...parse]
+            }, [])
+
+            const flatObj = {}
+            for (const iteration of queueCb) {
+                const [keyCb] = Object.keys(iteration)
+                flatObj[keyCb] = iteration[keyCb]
+            }
+            return flatObj
+        }
+
         const callback = typeof cb === 'function' ? cb : () => null
 
         const lastCtx = inCtx.hasOwnProperty('ctx') ? inCtx.ctx : inCtx
@@ -59,12 +82,12 @@ const addAnswer =
                 },
             ])
 
-            const callbacks = [].concat(inCtx.callbacks).concat([
-                {
-                    ref: lastCtx.ref,
-                    callback,
-                },
-            ])
+            getCbFromNested()
+            const callbacks = {
+                ...inCtx.callbacks,
+                ...getCbFromNested(),
+                [ref]: callback,
+            }
 
             return {
                 ...lastCtx,
