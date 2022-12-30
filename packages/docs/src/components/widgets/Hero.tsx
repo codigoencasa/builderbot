@@ -26,10 +26,10 @@ export default component$(() => {
                             </h1>
                             <div class="max-w-3xl mx-auto">
                                 <p class="text-xl text-gray-600 mb-8 dark:text-slate-400">
-                                    <span class="font-semibold underline decoration-wavy decoration-1 decoration-secondary-600 underline-offset-2">
+                                    <span class="font-semibold  ">
                                         Con esta libreria,{' '}
                                     </span>
-                                    <span class="font-semibold underline decoration-wavy decoration-1 decoration-secondary-600 underline-offset-2">
+                                    <span class="font-semibold    ">
                                         puedes configurar respuestas
                                         automatizadas para preguntas frecuentes
                                     </span>{' '}
@@ -52,7 +52,7 @@ export default component$(() => {
                                             href="/docs"
                                             class="btn  bg-gray-50 dark:bg-transparent"
                                         >
-                                            Más información
+                                            Ver documentación
                                         </a>
                                     </div>
                                 </div>
