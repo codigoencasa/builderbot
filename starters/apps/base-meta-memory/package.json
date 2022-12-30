@@ -14,7 +14,8 @@
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",
-        "@bot-whatsapp/provider": "latest"
+        "@bot-whatsapp/provider": "latest",
+        "axios": "^1.2.1"
     },
     "author": "",
     "license": "ISC"
