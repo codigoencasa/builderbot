@@ -136,6 +136,11 @@ class CoreClass {
             }))
 
             msgToSend = this.flowClass.find(body, false, flowStandalone) || []
+
+            for (const ite of msgToSend) {
+                cbEveryCtx(ite?.ref)
+            }
+
             this.sendFlow(msgToSend, from)
             return
         }
