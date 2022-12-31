@@ -5,7 +5,7 @@
 
 
 
-<div style="width:100%;text-align:center"><img src="https://bot-whatsapp.netlify.app/build/q-76efce59.avif" width="300" /></div>
+<div style="width:100%;text-align:center"><img src="https://i.imgur.com/Oauef6t.png" width="300" /></div>
 
 
 **Con esta librería, puedes construir flujos automatizados de conversación de manera agnóstica al proveedor de WhatsApp,** configurar respuestas automatizadas para preguntas frecuentes, recibir y responder mensajes de manera automatizada, y hacer un seguimiento de las interacciones con los clientes.  Además, puedes configurar fácilmente disparadores que te ayudaran a expandir las funcionalidades sin límites.
@@ -32,3 +32,5 @@ Entiende más a fondo sus funcionalidades explicadas en nuestra documentación.
 ## Comunidad
 <!-- readme: collaborators,contributors -start -->
 <!-- readme: collaborators,contributors -end -->
+
+
