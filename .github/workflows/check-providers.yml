@@ -1,0 +1,50 @@
+name: Build and Test
+
+on:
+    push:
+        branches:
+            - dev
+    pull_request:
+        branches:
+            - dev
+
+jobs:
+    check-npm:
+        name: Install Dependencies
+        runs-on: ubuntu-latest
+        needs:
+            - test-unit
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Setup Node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16.x
+                  cache: 'yarn'
+                  registry-url: https://registry.npmjs.org/
+
+            - run: corepack enable
+
+            - name: Install NPM Dependencies
+              run: yarn install --immutable --network-timeout 300000
+
+            - name: Check Baileys
+              run: yarn node ./scripts/checker.js baileys
+
+            - name: Check Venom
+              run: yarn node ./scripts/checker.js venom
+
+            - name: Check web-whatsapp
+              run: yarn node ./scripts/checker.js web-whatsapp
+
+            - name: Check Meta
+              run: yarn node ./scripts/checker.js meta
+
+            - name: Check Twilio
+              run: yarn node ./scripts/checker.js twilio
+
+            - uses: stefanzweifel/git-auto-commit-action@v4
+              with:
+                commit_message: "ci(providers): updated versions providers"

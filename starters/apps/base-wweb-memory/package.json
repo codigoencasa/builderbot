@@ -9,11 +9,11 @@
     },
     "keywords": [],
     "dependencies": {
-        "whatsapp-web.js": "^1.18.4",
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",
-        "@bot-whatsapp/provider": "latest"
+        "@bot-whatsapp/provider": "latest",
+        "whatsapp-web.js": "1.18.4"
     },
     "author": "",
     "license": "ISC"
