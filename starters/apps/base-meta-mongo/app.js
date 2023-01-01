@@ -3,7 +3,6 @@ const {
     createProvider,
     createFlow,
     addKeyword,
-    addChild,
 } = require('@bot-whatsapp/bot')
 
 const MetaProvider = require('@bot-whatsapp/provider/meta')

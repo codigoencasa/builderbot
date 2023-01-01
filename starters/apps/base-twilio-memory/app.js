@@ -3,7 +3,6 @@ const {
     createProvider,
     createFlow,
     addKeyword,
-    addChild,
 } = require('@bot-whatsapp/bot')
 
 const TwilioProvider = require('@bot-whatsapp/provider/twilio')

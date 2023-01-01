@@ -3,7 +3,6 @@ const {
     createProvider,
     createFlow,
     addKeyword,
-    addChild,
 } = require('@bot-whatsapp/bot')
 
 const VenomProvider = require('@bot-whatsapp/provider/venom')
