@@ -1,6 +1,6 @@
 const { EventEmitter } = require('node:events')
 const polka = require('polka')
-const { urlencoded } = require('body-parser')
+const { urlencoded, json } = require('body-parser')
 
 class MetaWebHookServer extends EventEmitter {
     metaServer
@@ -8,9 +8,11 @@ class MetaWebHookServer extends EventEmitter {
     token
     constructor(_token, _metaPort) {
         super()
-        this.metaServer = this.buildHTTPServer()
+        this.metaServer = polka()
         this.metaPort = _metaPort
         this.token = _token
+
+        this.buildHTTPServer()
     }
 
     /**
@@ -21,12 +23,18 @@ class MetaWebHookServer extends EventEmitter {
      */
     incomingMsg = (req, res) => {
         const { body } = req
-        const message = body.entry[0].changes[0].value.messages[0]
+
+        const messages = body.entry[0].changes[0].value?.messages
+
+        if (!messages) return
+
+        const [message] = messages
         const to = body.entry[0].changes[0].value.metadata.display_phone_number
+
         this.emit('message', {
             from: message.from,
             to,
-            body: message.text.body,
+            body: message.text?.body,
         })
         const json = JSON.stringify({ body })
         res.end(json)
@@ -55,16 +63,16 @@ class MetaWebHookServer extends EventEmitter {
         const challenge = query['hub.challenge']
 
         if (!mode || !token) {
-            return res.sendStatus(403)
+            return (res.statusCode = 403), res.end('No token!')
         }
 
         if (this.tokenIsValid(mode, token)) {
             console.log('Webhook verified--->😎😎😎😎')
-            res.status(200).send(challenge)
+            return (res.statusCode = 200), res.end(challenge)
         }
 
         if (!this.tokenIsValid(mode, token)) {
-            res.sendStatus(403)
+            return (res.statusCode = 403), res.end('No token!')
         }
     }
 
@@ -73,12 +81,13 @@ class MetaWebHookServer extends EventEmitter {
      * @returns
      */
     buildHTTPServer = () => {
-        polka()
+        this.metaServer
             .use(urlencoded({ extended: true }))
             .get('/webhook', this.verifyToken)
 
-        return polka()
+        this.metaServer
             .use(urlencoded({ extended: true }))
+            .use(json())
             .post('/webhook', this.incomingMsg)
     }
 
@@ -91,7 +100,7 @@ class MetaWebHookServer extends EventEmitter {
             console.log(``)
             console.log(`[meta]: Agregar esta url "WHEN A MESSAGE COMES IN"`)
             console.log(
-                `[meta]: POST http://localhost:${this.metaPort}/meta-hook`
+                `[meta]: POST http://localhost:${this.metaPort}/webhook`
             )
             console.log(`[meta]: Más información en la documentacion`)
             console.log(``)
