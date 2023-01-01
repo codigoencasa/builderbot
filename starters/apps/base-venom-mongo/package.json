@@ -9,12 +9,12 @@
     },
     "keywords": [],
     "dependencies": {
-        "venom-bot": "^4.3.7",
+        "venom-bot": "4.3.7",
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",
         "@bot-whatsapp/provider": "latest",
-        "mime-types": "^2.1.35",
+        "mime-types": "2.1.35",
         "mongodb": "^4.12.1"
     },
     "author": "",

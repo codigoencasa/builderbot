@@ -9,12 +9,13 @@
     },
     "keywords": [],
     "dependencies": {
-        "venom-bot": "^4.3.7",
+        "venom-bot": "4.3.7",
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",
         "@bot-whatsapp/provider": "latest",
-        "mysql2": "^2.3.3"
+        "mysql2": "^2.3.3",
+        "mime-types": "2.1.35"
     },
     "author": "",
     "license": "ISC"
