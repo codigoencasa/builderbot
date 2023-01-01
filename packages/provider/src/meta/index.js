@@ -12,16 +12,17 @@ const URL = `https://graph.facebook.com/v15.0`
  * Necesitas las siguientes tokens y valores
  * { jwtToken, numberId, vendorNumber, verifyToken }
  */
+const PORT = process.env.PORT || 3000
 
 class MetaProvider extends ProviderClass {
     metHook
     jwtToken
     numberId
-    constructor({ jwtToken, numberId, verifyToken }, _port = 3000) {
+    constructor({ jwtToken, numberId, verifyToken, port = PORT }) {
         super()
         this.jwtToken = jwtToken
         this.numberId = numberId
-        this.metHook = new MetaWebHookServer(verifyToken, _port)
+        this.metHook = new MetaWebHookServer(verifyToken, port)
         this.metHook.start()
 
         const listEvents = this.busEvents()
