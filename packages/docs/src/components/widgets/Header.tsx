@@ -45,9 +45,12 @@ export default component$(() => {
                 >
                     <ul class="flex flex-col pt-8 md:pt-0 md:flex-row md:self-center w-full md:w-auto text-xl md:text-base">
                         <li class="dropdown">
-                            <button class="font-medium hover:text-gray-900 dark:hover:text-white px-4 py-3 flex items-center transition duration-150 ease-in-out">
+                            <a
+                                href="/docs"
+                                class="font-medium hover:text-gray-900 dark:hover:text-white px-4 py-3 flex items-center transition duration-150 ease-in-out"
+                            >
                                 Documentación
-                            </button>
+                            </a>
                             <ul class="dropdown-menu rounded md:absolute pl-4 md:pl-0 md:hidden font-medium md:bg-white md:min-w-[200px] dark:md:bg-slate-800 drop-shadow-xl">
                                 {store.map((ctx) => {
                                     return ctx.list.map((listCtx) => {

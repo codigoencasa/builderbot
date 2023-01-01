@@ -1,13 +1,16 @@
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const { Sticker } = require('wa-sticker-formatter')
 const pino = require('pino')
+const rimraf = require('rimraf')
 const mime = require('mime-types')
+const { join } = require('path')
 const { existsSync, createWriteStream } = require('fs')
 const { Console } = require('console')
 
 const {
     default: makeWASocket,
     useMultiFileAuthState,
+    Browsers,
     DisconnectReason,
 } = require('@adiwajshing/baileys')
 const {
@@ -20,6 +23,9 @@ const {
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/baileys.log`),
 })
+
+const NAME_DIR_SESSION = `sessions`
+const PATH_BASE = join(process.cwd(), NAME_DIR_SESSION)
 
 /**
  * ⚙️ BaileysProvider: Es una clase tipo adaptor
@@ -38,28 +44,35 @@ class BaileysProvider extends ProviderClass {
      * Iniciar todo Bailey
      */
     initBailey = async () => {
-        const { state, saveCreds } = await useMultiFileAuthState('sessions')
+        const { state, saveCreds } = await useMultiFileAuthState(
+            NAME_DIR_SESSION
+        )
         this.saveCredsGlobal = saveCreds
 
         try {
             const sock = makeWASocket({
                 printQRInTerminal: false,
                 auth: state,
+                browser: Browsers.macOS('Desktop'),
+                syncFullHistory: false,
                 logger: pino({ level: 'error' }),
             })
 
             sock.ev.on('connection.update', async (update) => {
                 const { connection, lastDisconnect, qr } = update
 
-                if (connection === 'close') {
-                    const shouldReconnect =
-                        lastDisconnect?.error?.output?.statusCode !==
-                        DisconnectReason.loggedOut
+                const statusCode = lastDisconnect?.error?.output?.statusCode
 
-                    if (shouldReconnect) {
-                        await saveCreds()
-                        this.initBailey()
-                    }
+                if (statusCode === DisconnectReason.loggedOut) {
+                    rimraf(PATH_BASE, (err) => {
+                        if (err) return
+                    })
+
+                    this.initBailey()
+                }
+
+                if (statusCode && statusCode !== DisconnectReason.loggedOut) {
+                    this.initBailey()
                 }
 
                 if (qr) {

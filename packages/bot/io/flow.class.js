@@ -10,7 +10,6 @@ class FlowClass {
         this.flowRaw = _flow
 
         this.allCallbacks = flatObject(_flow)
-        console.log('[🙌🙌🙌]', this.allCallbacks)
 
         const mergeToJsonSerialize = Object.keys(_flow)
             .map((indexObjectFlow) => _flow[indexObjectFlow].toJson())
