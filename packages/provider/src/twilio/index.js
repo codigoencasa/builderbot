@@ -13,14 +13,17 @@ const { parseNumber } = require('./utils')
  * Necesitas las siguientes tokens y valores
  * { accountSid, authToken, vendorNumber }
  */
+
+const PORT = process.env.PORT || 3000
+
 class TwilioProvider extends ProviderClass {
     twilioHook
     vendor
     vendorNumber
-    constructor({ accountSid, authToken, vendorNumber }, _port = 3000) {
+    constructor({ accountSid, authToken, vendorNumber, port = PORT }) {
         super()
         this.vendor = new twilio(accountSid, authToken)
-        this.twilioHook = new TwilioWebHookServer(_port)
+        this.twilioHook = new TwilioWebHookServer(port)
         this.vendorNumber = parseNumber(vendorNumber)
 
         this.twilioHook.start()
