@@ -11,7 +11,7 @@ const OS_ENVIROMENT_WIN = process.platform.includes('win32')
 const PATH_PACKAGES = join(__dirname, '..', `packages`)
 const PATH_STARTERS = join(__dirname, '..', `starters`, `apps`)
 const NPM_COMMAND = OS_ENVIROMENT_WIN ? 'npm.cmd' : 'npm'
-const [PKG_NAME] = process.argv.slice(2) || [null]
+const [PKG_NAME, PKG_STABLE] = process.argv.slice(2) || [null, null]
 
 /**
  * Revisar ultima version de una paquetes
@@ -30,11 +30,35 @@ const checkPkg = async (pkgName = '') => {
 }
 
 /**
+ * Revisar ultima version de una paquetes
+ * @param {*} pkgName
+ */
+const checkPkgStable = async (pkgName = '', version = '') => {
+    const { stdout } = await cmd(
+        NPM_COMMAND,
+        [
+            'show',
+            `${pkgName}@${version.split('.').shift()}.*`,
+            'version',
+            '--json',
+        ],
+        {
+            stdio: 'inherit',
+        }
+    )
+
+    const listVersions = JSON.parse(stdout).reverse()
+    console.log(`[${pkgName}]: `, listVersions)
+    return listVersions.at(0)
+}
+
+/**
  * Revisar todas las dependencias del provider
  * @param {*} provider
+ * @param {*} stable
  * @returns
  */
-const checkEveryProvider = async (provider = '') => {
+const checkEveryProvider = async (provider = '', stable = true) => {
     const pkgDependencies = readFileSync(
         join(PATH_PACKAGES, 'provider', 'src', provider, 'package.json')
     )
@@ -42,9 +66,12 @@ const checkEveryProvider = async (provider = '') => {
         const { dependencies } = JSON.parse(pkgDependencies)
         const devParse = Object.entries(dependencies)
         const newDevParse = {}
-        for (const [pkgName] of devParse) {
-            const lastVersion = await checkPkg(pkgName)
-            newDevParse[pkgName] = lastVersion
+        for (const [pkgName, pkgVersion] of devParse) {
+            if (!stable) newDevParse[pkgName] = await checkPkg(pkgName)
+            if (stable)
+                newDevParse[pkgName] = await checkPkgStable(pkgName, pkgVersion)
+
+            console.log(newDevParse)
         }
         return newDevParse
     } catch (e) {
@@ -122,9 +149,14 @@ const updateStarters = async (provider = '', updateDev = {}) => {
 
 const main = async () => {
     if (PKG_NAME) {
-        const list = await checkEveryProvider(PKG_NAME)
-        await updateDependencies(PKG_NAME, list)
-        await updateStarters(PKG_NAME, list)
+        const providerName = PKG_NAME ? PKG_NAME.split('=').at(1) : null
+        const providerStable = PKG_STABLE ? PKG_STABLE.split('=').at(1) : null
+        const list = await checkEveryProvider(
+            providerName,
+            providerStable === 'true'
+        )
+        await updateDependencies(providerName, list)
+        await updateStarters(providerName, list)
     }
 }
 
