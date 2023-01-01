@@ -40,7 +40,7 @@ const flowZapatos = addKeyword(['1', 'zapatos', 'ZAPATOS'])
             console.log('Puedes enviar un mail, hook, etc..')
             console.log(ctx)
         },
-        [...addChild(flowZapatos2)]
+        [flowZapatos2]
     )
 
 const flowBolsos = addKeyword(['2', 'bolsos', 'BOLSOS'])
@@ -54,7 +54,7 @@ const flowBolsos = addKeyword(['2', 'bolsos', 'BOLSOS'])
             console.log('Puedes enviar un mail, hook, etc..')
             console.log(ctx)
         },
-        [...addChild(flowBolsos2)]
+        [flowBolsos2]
     )
 
 /**
@@ -72,7 +72,7 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
             console.log('Puedes enviar un mail, hook, etc..')
             console.log(ctx)
         },
-        [...addChild(flowBolsos), ...addChild(flowZapatos)]
+        [flowBolsos, flowZapatos]
     )
 
 const main = async () => {
