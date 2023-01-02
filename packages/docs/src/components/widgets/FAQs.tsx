@@ -13,24 +13,21 @@ export default component$(() => {
                 answer: `Si. Es un proyecto Open Source que ofrece el código para que puedas aplicarlo de manera totalmente gratuita. Siempre destacando el valor aportado por toda la comunidad`,
             },
             {
-                question:
-                    "¿Funciona en Ubuntu/Windows?",
+                question: '¿Funciona en Ubuntu/Windows?',
                 answer: `El proyecto funciona perfectamente Linux/Windows/Mac. Cabe destacar que dependiendo del sistema operativo será necesario realizar algunos ajustes puntuales. En la documentación se explica más estos casos de usos`,
             },
         ],
         [
             {
-                question: "¿Existe un plan de pago?",
+                question: '¿Existe un plan de pago?',
                 answer: `Actualmente, no contamos con un plan de pago, las aportaciones económicas recibidas se destinan a gastos en comunes: servidores para pruebas, servicios de api externos, recursos de marketing y diseño, recintos para capacitaciones, entre otras cosas. `,
             },
             {
-                question:
-                    '¿Riesgos dé bloqueo?',
+                question: '¿Riesgos dé bloqueo?',
                 answer: `Depende. Esta librería es una capa superior agnóstica al proveedor que facilita el escribir flujos de conversación. Esto significa que la conexión con "Whatsapp" es delegada al proveedor de turno, el cual dependiendo de cuál elijas, puede tener limitaciones o riesgos. Ver más información`,
             },
             {
-                question:
-                    '¿Casos de usos?',
+                question: '¿Casos de usos?',
                 answer: `Basado en los relatos compartidos por la comunidad, hasta el momento hemos registrado más de 100 casos de usos. Los más populares suelen ser: asistencia técnica. (preguntas y respuestas), gestión de pedidos de restaurantes, chatbot con inteligencia artificial gracias a dialogflow`,
             },
         ],
