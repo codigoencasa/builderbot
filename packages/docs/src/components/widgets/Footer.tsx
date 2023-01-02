@@ -40,12 +40,10 @@ export default component$(() => {
 
     const social = [
         { label: 'Twitter', icon: IconTwitter, href: '#' },
-        { label: 'Instagram', icon: IconInstagram, href: '#' },
-        { label: 'Facebook', icon: IconFacebook, href: '#' },
         {
             label: 'Github',
             icon: IconGithub,
-            href: 'https://github.com/onwidget/qwind',
+            href: 'https://github.com/codigoencasa/bot-whatsapp',
         },
     ]
 
