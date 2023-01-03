@@ -32,7 +32,7 @@ class JsonFileAdapter {
     }
 
     saveData(data) {
-        writeFileSync(this.pathFile, JSON.stringify(data))
+        writeFileSync(this.pathFile, JSON.stringify(data, null, 2))
     }
 
     getPrevByNumber = async (from) => {
