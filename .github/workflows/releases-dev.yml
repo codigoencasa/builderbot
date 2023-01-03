@@ -49,8 +49,6 @@ jobs:
               run: yarn node ./scripts/release.js --name=provider --version=  --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Commit Versioning & Push changes
-              uses: actions-js/push@master
+              uses: stefanzweifel/git-auto-commit-action@v4
               with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  message: 'ci(version): :zap: automatic - "${date}" updated versions every packages'
-                  branch: 'dev'
+                  commit_message: 'ci(version): :zap: automatic - "${date}" updated versions every packages'
