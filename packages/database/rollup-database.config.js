@@ -35,6 +35,7 @@ module.exports = [
         output: {
             banner: banner['banner.output'].join(''),
             file: join(__dirname, 'lib', 'json', 'index.cjs'),
+            format: 'cjs',
         },
         plugins: [commonjs()],
     },
