@@ -93,8 +93,9 @@ class DialogFlowContext extends CoreClass {
         if (msgPayload && msgPayload?.payload) {
             const { fields } = msgPayload.payload
             const mapButtons = fields?.buttons?.listValue?.values.map((m) => {
-                return m?.structValue?.fields?.body?.stringValue
+                return { body: m?.structValue?.fields?.body?.stringValue }
             })
+
             customPayload = {
                 media: fields?.media?.stringValue,
                 buttons: mapButtons,

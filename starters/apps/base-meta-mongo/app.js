@@ -9,6 +9,13 @@ const MetaProvider = require('@bot-whatsapp/provider/meta')
 const MongoAdapter = require('@bot-whatsapp/database/mongo')
 
 /**
+ * Declaramos las conexiones de Mongo
+ */
+
+const MONGO_DB_URI = 'mongodb://0.0.0.0:27017'
+const MONGO_DB_NAME = 'db_bot'
+
+/**
  * Aqui declaramos los flujos hijos, los flujos se declaran de atras para adelante, es decir que si tienes un flujo de este tipo:
  *
  *          Menu Principal
