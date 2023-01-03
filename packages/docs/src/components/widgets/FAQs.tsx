@@ -20,7 +20,7 @@ export default component$(() => {
         [
             {
                 question: '¿Existe un plan de pago?',
-                answer: `Actualmente, no contamos con un plan de pago, las aportaciones económicas recibidas se destinan a gastos en comunes: servidores para pruebas, servicios de api externos, recursos de marketing y diseño, recintos para capacitaciones, entre otras cosas. `,
+                answer: `Actualmente, no contamos con un plan de pago, las aportaciones económicas recibidas se destinan a gastos en comunes: servidores para pruebas, servicios de api externos, recursos de marketing y diseño, recintos para capacitaciones, entre otras cosas.`,
             },
             {
                 question: '¿Riesgos dé bloqueo?',
