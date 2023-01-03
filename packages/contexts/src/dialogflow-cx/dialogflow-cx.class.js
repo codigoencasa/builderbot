@@ -96,12 +96,24 @@ class DialogFlowCXContext extends CoreClass {
             }
 
             if (res.message == 'payload') {
-                const { values } = res.payload.fields.buttons.listValue
-                const buttonsArray = values.map((values) => {
-                    const { stringValue } = values.structValue.fields.body
-                    return { body: stringValue }
-                })
-                return { buttons: buttonsArray }
+                const {
+                    media = null,
+                    buttons = [],
+                    answer = '',
+                } = res.payload.fields
+                const buttonsArray = buttons?.listValue?.values?.map(
+                    (btnValue) => {
+                        const { stringValue } = btnValue.structValue.fields.body
+                        return { body: stringValue }
+                    }
+                )
+                return {
+                    answer: answer?.stringValue,
+                    options: {
+                        media: media?.stringValue,
+                        buttons: buttonsArray,
+                    },
+                }
             }
         })
 
