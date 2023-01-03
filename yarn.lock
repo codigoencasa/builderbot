@@ -1057,6 +1057,7 @@ __metadata:
     "@bot-whatsapp/bot": "*"
     combine-image: ^1.0.3
     qr-image: ^3.2.0
+    rimraf: ^3.0.2
   languageName: unknown
   linkType: soft
 
