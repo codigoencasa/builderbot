@@ -51,4 +51,5 @@ jobs:
             - name: Commit Versioning & Push changes
               uses: stefanzweifel/git-auto-commit-action@v4
               with:
-                  commit_message: 'ci(version): :zap: automatic - "${date}" updated versions every packages'
+                  commit_message: 'release(version): 🚀 - "${{ steps.vars.outputs.tag }}" release'
+                  branch: dev
