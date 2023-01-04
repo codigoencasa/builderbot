@@ -37,7 +37,7 @@ class BaileysProvider extends ProviderClass {
     saveCredsGlobal = null
     constructor() {
         super()
-        this.initBailey().then(() => this.initBusEvents())
+        this.initBailey().then()
     }
 
     /**
@@ -63,18 +63,28 @@ class BaileysProvider extends ProviderClass {
 
                 const statusCode = lastDisconnect?.error?.output?.statusCode
 
-                if (statusCode === DisconnectReason.loggedOut) {
-                    rimraf(PATH_BASE, (err) => {
-                        if (err) return
-                    })
+                /** Conexion cerrada por diferentes motivos */
+                if (connection === 'close') {
+                    if (statusCode !== DisconnectReason.loggedOut) {
+                        this.initBailey()
+                    }
 
-                    this.initBailey()
+                    if (statusCode === DisconnectReason.loggedOut) {
+                        rimraf(PATH_BASE, (err) => {
+                            if (err) return
+                        })
+
+                        this.initBailey()
+                    }
                 }
 
-                if (statusCode && statusCode !== DisconnectReason.loggedOut) {
-                    this.initBailey()
+                /** Conexion abierta correctamente */
+                if (connection === 'open') {
+                    this.emit('ready', true)
+                    this.initBusEvents(sock)
                 }
 
+                /** QR Code */
                 if (qr) {
                     this.emit('require_action', {
                         instructions: [
@@ -85,11 +95,11 @@ class BaileysProvider extends ProviderClass {
                     })
                     await baileyGenerateImage(qr)
                 }
-
-                if (connection === 'open') this.emit('ready', true)
             })
 
-            this.vendor = sock
+            sock.ev.on('creds.update', async () => {
+                await saveCreds()
+            })
         } catch (e) {
             logger.log(e)
             this.emit('auth_failure', [
@@ -108,12 +118,6 @@ class BaileysProvider extends ProviderClass {
      * @returns
      */
     busEvents = () => [
-        {
-            event: 'creds.update',
-            func: async () => {
-                await this.saveCredsGlobal()
-            },
-        },
         {
             event: 'messages.upsert',
             func: ({ messages, type }) => {
@@ -144,7 +148,8 @@ class BaileysProvider extends ProviderClass {
         },
     ]
 
-    initBusEvents = () => {
+    initBusEvents = (_sock) => {
+        this.vendor = _sock
         const listEvents = this.busEvents()
 
         for (const { event, func } of listEvents) {
