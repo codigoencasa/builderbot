@@ -1,0 +1,21 @@
+{
+    "name": "bot-whatsapp-base-venom-json",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "pre-copy": "cd .. && yarn run copy.lib base-venom-json",
+        "start": "node app.js"
+    },
+    "keywords": [],
+    "dependencies": {
+        "venom-bot": "4.3.7",
+        "@bot-whatsapp/bot": "latest",
+        "@bot-whatsapp/cli": "latest",
+        "@bot-whatsapp/database": "latest",
+        "@bot-whatsapp/provider": "latest",
+        "mime-types": "2.1.35"
+    },
+    "author": "",
+    "license": "ISC"
+}
