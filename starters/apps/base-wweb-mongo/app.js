@@ -28,15 +28,15 @@ const MONGO_DB_NAME = 'db_bot'
  */
 
 const flowBolsos2 = addKeyword(['bolsos2', '2'])
-    .addAnswer('� *MUCHOS* bolsos ...')
+    .addAnswer('🤯 *MUCHOS* bolsos ...')
     .addAnswer('y mas bolsos... bla bla')
 
 const flowZapatos2 = addKeyword(['zapatos2', '2'])
-    .addAnswer('� repito que tengo *MUCHOS* zapatos.')
+    .addAnswer('🤯 repito que tengo *MUCHOS* zapatos.')
     .addAnswer('y algunas otras cosas.')
 
 const flowZapatos = addKeyword(['1', 'zapatos', 'ZAPATOS'])
-    .addAnswer('� Veo que elegiste zapatos')
+    .addAnswer('🤯 Veo que elegiste zapatos')
     .addAnswer('Tengo muchos zapatos...bla bla')
     .addAnswer(
         ['Manda:', '*(2) Zapatos2*', 'para mas información'],
@@ -50,7 +50,7 @@ const flowZapatos = addKeyword(['1', 'zapatos', 'ZAPATOS'])
     )
 
 const flowBolsos = addKeyword(['2', 'bolsos', 'BOLSOS'])
-    .addAnswer('� Veo que elegiste bolsos')
+    .addAnswer('🙌 Veo que elegiste bolsos')
     .addAnswer('Tengo muchos bolsos...bla bla')
     .addAnswer(
         ['Manda:', '*(2) Bolsos2*', 'para mas información.'],
