@@ -1,0 +1,79 @@
+name: 🐬 Caso de uso
+description: Reporta tu caso de uso y cuales fueron tus resultados
+labels: [usecase]
+title: '[🐬]'
+body:
+    - type: markdown
+      attributes:
+          value: |
+              Gracias por tomarte el tiempo de detallar este caso de uso, sera de gran utilidad para mantener un software de calidad  puedes comenzar
+              ⚡ `npm create bot-whatsapp@dev`
+
+    - type: dropdown
+      id: version
+      attributes:
+          label: ¿Cual proveedor usaste?
+          description: 'Actualmente tenemos varios proveedores que sirven como punto de entrada y salida con Whatsapp'
+          options:
+              - whatsapp-web.js
+              - venom
+              - bailey
+              - twilio
+              - meta
+      validations:
+          required: true
+
+    - type: dropdown
+      id: component
+      attributes:
+          label: ¿Cual base de datos usaste?
+          options:
+              - memory
+              - mongo
+              - mysql
+              - json
+      validations:
+          required: true
+
+    - type: dropdown
+      id: result
+      attributes:
+          label: Conclusion de la prueba
+          options:
+              - muy buena
+              - buena
+              - tiene errores
+      validations:
+          required: true
+
+    - type: textarea
+      id: description
+      attributes:
+          description: 'Trata de ser lo más claro posible, de esa manera podemos entender el contexto del caso de uso'
+          label: Describe tu caso
+          placeholder: Yo tengo un caso....
+      validations:
+          required: true
+
+    - type: textarea
+      id: logs
+      attributes:
+          label: ¿Logs Importantes?
+          description: Si tienes algunos logs importantes a tener en cuenta o que muetren algun error en concreto.
+          render: shell
+
+    - type: textarea
+      id: additional_information
+      attributes:
+          label: Información Adicional
+      validations:
+          required: false
+
+    - type: input
+      id: usernames
+      attributes:
+          label: ¿Quieres que te mencionemos?
+          description: Siempre buscamos fomentar la comunidad por lo cual si quieres que te mencionemos publicamente en nuestras redes sociales puedes dejar tu username
+          placeholder: twitter o github o instagram o alguna url
+      validations:
+          required: false
