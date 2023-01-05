@@ -1,0 +1,58 @@
+name: 🐛 Reporte Bug
+description: Algo no va bien?. Hazlo saber
+labels: [bug, triage]
+title: '[🐛]'
+body:
+    - type: markdown
+      attributes:
+          value: |
+              Gracias por tomarte el tiempo de reportar este problema
+
+    - type: dropdown
+      id: version
+      attributes:
+          label: ¿Que versión estas usando?
+          description: '__INFO:__ Recuerda que puedes consultar dudas directamente en [discord](https://link.codigoencasa.com/DISCORD)'
+          options:
+              - v2
+              - v1
+      validations:
+          required: true
+
+    - type: dropdown
+      id: component
+      attributes:
+          label: ¿Sobre que afecta?
+          options:
+              - Flujo de palabras (Flow)
+              - DialogFlow
+              - Base de datos
+              - Otro
+      validations:
+          required: true
+
+    - type: textarea
+      id: description
+      attributes:
+          description: 'Trata de ser lo más claro posible, de esa manera podemos entender el contexto de tu problema y darte una mejor solución'
+          label: Describe tu problema
+          placeholder: Yo tengo un problema....
+
+      validations:
+          required: true
+
+    - type: input
+      id: reproduction
+      attributes:
+          label: Reproducir error
+          description: __(Recomendación)__ trata de grabar un video puedes usar algunas de las siguientes herramientas [https://www.vidyard.com/](https://www.vidyard.com/) [https://www.loom.com/](https://www.loom.com/) y en lo posbile apoyate en [https://stackblitz.com/](https://stackblitz.com/) para compartir el código de ser necesario
+          placeholder: URL video o stackblitz
+      validations:
+          required: false
+
+    - type: textarea
+      id: additional_information
+      attributes:
+          label: Información Adicional
+      validations:
+          required: false

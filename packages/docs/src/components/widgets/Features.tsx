@@ -15,14 +15,14 @@ export default component$(() => {
                     'Se pueden automatizar tareas repetitivas y ahorrar tiempo y esfuerzo en tareas administrativas, como enviar recordatorios a tus clientes sobre pagos pendientes o para confirmar citas o reservas.',
             },
             {
-                title: 'Experiencia personalizada para tus clientes',
+                title: 'Experiencia personalizada',
                 description:
                     'Podrás enviar mensajes automatizados con ofertas especiales o recomendaciones de productos basadas en el historial de compras de tus clientes, lo que significa que tus clientes pueden recibir una experiencia más personalizada.',
             },
         ],
         [
             {
-                title: 'Análisis de datos y toma de decisiones informadas',
+                title: 'Análisis de datos',
                 description:
                     'Te permite recopilar y analizar datos sobre tus clientes para ayudarte a entender mejor sus necesidades y preferencias, y ofrecerles un servicio aún más destacado.',
                 icon: 'tabler:rocket',

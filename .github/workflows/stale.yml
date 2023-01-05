@@ -1,0 +1,27 @@
+# This workflow warns and then closes issues and PRs that have had no activity for a specified amount of time.
+#
+# You can adjust the behavior by modifying this file.
+# For more information, see:
+# https://github.com/actions/stale
+name: Revisar ISSUES abandonadas
+
+on:
+    schedule:
+        - cron: '55 22 * * *'
+
+jobs:
+    stale:
+        runs-on: ubuntu-latest
+        permissions:
+            issues: write
+            pull-requests: write
+
+        steps:
+            - uses: actions/stale@v5
+              with:
+                  repo-token: ${{ secrets.GITHUB_TOKEN }}
+                  stale-issue-message: '¿Alguna novedad sobre esta ISSUE?'
+                  stale-pr-message: '¿Alguna novedad sobre esta PULL REQUEST?'
+                  stale-issue-label: 'no-issue-activity'
+                  stale-pr-label: 'no-pr-activity'
+                  exempt-issue-assignees: 'leifermendez'

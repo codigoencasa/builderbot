@@ -1,7 +1,6 @@
 import { component$, Slot, useContext } from '@builder.io/qwik'
 import type { DocumentHead } from '@builder.io/qwik-city'
 import ExtraBar from '~/components/widgets/ExtraBar'
-import Footer from '~/components/widgets/Footer'
 import Header from '~/components/widgets/Header'
 import NavBar from '~/components/widgets/NavBar'
 import SponsorBar from '~/components/widgets/SponsorBar'
@@ -44,7 +43,6 @@ export default component$(() => {
                     </div>
                 </div>
             </main>
-            <Footer />
         </>
     )
 })

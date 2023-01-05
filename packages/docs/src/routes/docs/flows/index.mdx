@@ -1,3 +1,5 @@
+import Navigation from '../../../components/widgets/Navigation'
+
 # Flow (Flujos)
 
 Los flujos hace referencia al hecho de construir un flujo de conversion. Esto es un flow podemos observar que estan presente dos metodos importantes **addKeyword** y el **addAnswer**.
@@ -18,3 +20,12 @@ const flowPrincipal = addKeyword(['hola', 'alo'])
     .addAnswer(['Hola, bienvenido a mi tienda', '¿Como puedo ayudarte?'])
     .addAnswer(['Tengo:', 'Zapatos', 'Bolsos', 'etc ...'])
 ```
+
+---
+
+<Navigation
+    pages={[
+        { name: 'Conceptos', link: '/docs/essential' },
+        { name: 'Proveedores', link: '/docs/providers' },
+    ]}
+/>
