@@ -1,0 +1,70 @@
+import Alert from '../../../components/widgets/Alert'
+import Navigation from '../../../components/widgets/Navigation'
+
+# Instalación
+
+**Con esta librería, puedes construir flujos automatizados de conversación de manera agnóstica al proveedor de WhatsApp,** configurar respuestas automatizadas para preguntas frecuentes, recibir y responder mensajes de manera automatizada, y hacer un seguimiento de las interacciones con los clientes. Además, puedes configurar fácilmente disparadores que te ayudaran a expandir las funcionalidades sin límites.
+
+---
+
+### Comenzamos
+
+Crear un bot es tan sencillo como ejecutar el siguiente comando y seguir las instrucciones
+
+```shell
+npm create bot-whatsapp@latest
+```
+
+_Para seleccionar usa la tecla de **espacio** y para confirmar la tecla **enter**_
+
+El **CLI** te hace una revisión previa, de versión de Node y sistema operativo, con la finalidad de informarte si cumples los requisitos o mostrarte información de interés.
+
+<div class="my-4  ">
+    <video
+        class="rounded drop-shadow-xl w-full md:w-full max-w-screen-md"
+        height="100%"
+        autoplay
+        loop
+        muted
+        playsinline
+    >
+        <source
+            src="https://leifer-landing-page.s3.us-east-2.amazonaws.com/console.webm"
+            type="video/webm"
+        />
+    </video>
+</div>
+
+### Plantilla
+
+Luego de seleccionar las opciones de tu preferencia se creara una carpeta con una plantilla de un flujo de un bot listo para ejecutar y que puedes modificar a tu gusto.
+**[Ver más plantillas](https://github.com/codigoencasa/bot-whatsapp/tree/dev/starters/apps)**
+
+Cada plantilla tiene sus dependencias necesarias basadas en tu previa selección. **Ejemplo**, si seleccionas el proveedor de MySQL, la plantilla incorpora lo necesario para que tu conexión con la base de datos sea exitosa.
+
+```json
+    "dependencies": {
+        "@bot-whatsapp/bot": "latest",
+        "@bot-whatsapp/cli": "latest",
+        "@bot-whatsapp/database": "latest",
+        "@bot-whatsapp/provider": "latest",
+        "@adiwajshing/baileys": "4.4.0",
+        "mysql2": "^2.3.3", 👈
+    },
+```
+
+<Alert>
+    📄 Si deseas cambiar tu **proveedor o tu motor** de base de datos no es
+    necesario volver ejecutar el CLI (lo puedes hacer sin problema) aunque
+    tambien basta con solo modificar un par de lineas. [Ver
+    explicación](/docs/essential)
+</Alert>
+
+---
+
+<Navigation
+    pages={[
+        { name: 'Requerimientos', link: '/docs/requirements' },
+        { name: 'Pruebalo', link: '/docs/example' },
+    ]}
+/>

@@ -1,0 +1,25 @@
+version: '3.3'
+
+services:
+    mongo:
+        image: mongo
+        container_name: app_enviroment
+        restart: always
+        ports:
+            - '27019:27017'
+        environment:
+            MONGO_INITDB_DATABASE: bot
+        expose:
+            - 27019
+    mysql:
+        image: mysql
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: example
+            MYSQL_DATABASE: bot
+        container_name: app_mysql
+        ports:
+            - '3306:3306'
+        expose:
+            - 3306

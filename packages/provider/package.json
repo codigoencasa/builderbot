@@ -1,0 +1,26 @@
+{
+    "name": "@bot-whatsapp/provider",
+    "version": "0.0.43-alpha.0",
+    "description": "Esto es el conector a Twilio, Meta, etc...",
+    "main": "./lib/mock/index.cjs",
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "files": [
+        "./lib/"
+    ],
+    "dependencies": {
+        "@bot-whatsapp/bot": "*",
+        "combine-image": "^1.0.3",
+        "qr-image": "^3.2.0",
+        "rimraf": "^3.0.2"
+    },
+    "exports": {
+        "./mock": "./lib/mock/index.cjs",
+        "./twilio": "./lib/twilio/index.cjs",
+        "./web-whatsapp": "./lib/web-whatsapp/index.cjs",
+        "./venom": "./lib/venom/index.cjs",
+        "./baileys": "./lib/baileys/index.cjs",
+        "./meta": "./lib/meta/index.cjs"
+    }
+}

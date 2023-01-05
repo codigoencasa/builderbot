@@ -1,0 +1,23 @@
+{
+    "name": "@bot-whatsapp/database",
+    "version": "0.0.37-alpha.0",
+    "description": "Esto es el conector a  mysql, pg, mongo",
+    "main": "./lib/mock/index.cjs",
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "files": [
+        "./lib/"
+    ],
+    "dependencies": {
+        "dotenv": "^16.0.3",
+        "mongodb": "^4.11.0",
+        "mysql2": "^2.3.3"
+    },
+    "exports": {
+        "./mock": "./lib/mock/index.cjs",
+        "./mongo": "./lib/mongo/index.cjs",
+        "./json": "./lib/json/index.cjs",
+        "./mysql": "./lib/mysql/index.cjs"
+    }
+}

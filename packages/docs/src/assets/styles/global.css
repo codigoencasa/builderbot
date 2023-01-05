@@ -1,0 +1,96 @@
+/**
+ * WHAT IS THIS FILE?
+ *
+ * Globally applied styles. No matter which components are in the page or matching route,
+ * the styles in here will be applied to the Document, without any sort of CSS scoping.
+ *
+ */
+@import 'prism.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .btn {
+        @apply inline-flex items-center justify-center rounded-md shadow-md border-gray-400 border bg-transparent font-medium text-center text-base text-gray-700 leading-snug transition py-3 px-6 md:px-8 ease-in duration-200 focus:ring-blue-500 focus:ring-offset-blue-200 focus:ring-2 focus:ring-offset-2 hover:bg-gray-100 hover:border-gray-600 dark:text-slate-300 dark:border-slate-500 dark:hover:bg-slate-800 dark:hover:border-slate-800;
+    }
+
+    .btn-ghost {
+        @apply border-none shadow-none text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white;
+    }
+
+    .btn-primary {
+        @apply font-semibold bg-primary-600 text-white border-primary-600 hover:bg-primary-800 hover:border-primary-800 hover:text-white dark:text-white dark:bg-primary-700 dark:border-primary-700 dark:hover:border-primary-900 dark:hover:bg-primary-900;
+    }
+
+    .slot h1 {
+        @apply my-2 font-semibold text-3xl;
+    }
+
+    .slot h2 {
+        @apply mt-4 font-semibold text-xl;
+    }
+
+    .slot h3 {
+        @apply mt-4 font-semibold text-lg;
+    }
+
+    .slot p code {
+        @apply text-xs font-mono bg-stone-100 dark:bg-slate-600 dark:text-white text-red-500 p-1 rounded;
+    }
+
+    .slote video {
+        @apply rounded drop-shadow-xl w-full md:w-full max-w-screen-md;
+    }
+
+    .slot pre {
+        @apply w-full flex my-2;
+    }
+
+    .slot pre code {
+        @apply p-3 rounded md:w-full max-w-screen-md overflow-x-auto w-fit bg-gray-800 dark:bg-slate-800 ease-in duration-75 text-gray-100 text-xs shadow-xl;
+    }
+
+    .slot iframe {
+        @apply rounded   ease-in duration-75 text-gray-100 text-xs shadow-xl;
+    }
+    .slot a {
+        @apply text-sky-900 font-medium dark:text-sky-400 dark:hover:text-white;
+    }
+
+    .slot hr {
+        @apply my-5  border-t-slate-100 dark:border-t-slate-800;
+    }
+
+    .slot img {
+        @apply rounded drop-shadow-2xl;
+    }
+
+    .slot ul {
+        @apply list-disc pl-5;
+    }
+
+    [data-aw-toggle-menu] path {
+        @apply transition;
+    }
+    [data-aw-toggle-menu].expanded g > path:first-child {
+        @apply -rotate-45 translate-y-[15px] translate-x-[-3px];
+    }
+
+    p,
+    li {
+        @apply mt-2 text-sm text-slate-700 dark:text-slate-400;
+    }
+
+    .coding p {
+        @apply m-0;
+    }
+
+    [data-aw-toggle-menu].expanded g > path:last-child {
+        @apply rotate-45 translate-y-[-8px] translate-x-[14px];
+    }
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}

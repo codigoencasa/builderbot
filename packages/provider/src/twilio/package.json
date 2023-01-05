@@ -1,0 +1,5 @@
+{
+    "dependencies": {
+        "twilio": "3.84.0"
+    }
+}

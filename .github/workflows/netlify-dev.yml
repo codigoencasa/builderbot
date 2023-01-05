@@ -1,0 +1,46 @@
+name: 📄 Desplegando documentacion
+
+on:
+    pull_request:
+        branches:
+            - 'feat/docs-**'
+            - 'fix/docs-**'
+    push:
+        branches:
+            - 'feat/docs-**'
+            - 'fix/docs-**'
+
+jobs:
+    ############ DOCUMENTATION BUILD ############
+    build-documentation:
+        name: Build Package
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Setup Node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16.x
+                  cache: 'yarn'
+                  registry-url: https://registry.npmjs.org/
+
+            - run: corepack enable
+
+            - name: Install NPM Dependencies
+              run: yarn install --immutable --network-timeout 300000
+
+            - name: Add netlify
+              run: yarn add netlify-cli -D
+
+            - name: Create .env build file
+              run: |
+                  touch packages/docs/.env
+                  echo VITE_GITHUB_TOKEN=${{ secrets.COLLABORATORS_TOKEN }} >> packages/docs/.env
+
+            - name: Build and Deploy
+              run: |
+                  cd packages/docs
+                  netlify deploy --build --site ${{ secrets.NETLIFY_SITE_ID }} --auth ${{ secrets.NETLIFY_AUTH_TOKEN }}

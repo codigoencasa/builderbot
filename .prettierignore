@@ -1,0 +1,9 @@
+packages/**/lib
+packages/docs/*.json
+**/.git
+**/.svn
+**/.hg
+**/node_modules
+*.mjs
+*.cjs
+*.md

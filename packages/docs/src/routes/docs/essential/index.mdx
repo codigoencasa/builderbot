@@ -1,0 +1,109 @@
+import Alert from '../../../components/widgets/Alert'
+import Navigation from '../../../components/widgets/Navigation'
+
+# Conceptos
+
+El desarrollo de la librería se base en tres (3) piezas claves para su correcto funcionamiento:
+
+-   **Flow:** Encargado de construir todo el contexto de la conversación, finalmente su objetivo es brindar una capa amigable al desarrollador.
+-   **Provider:** Como si de un [conector](https://www.dignited.com/wp-content/uploads/2019/06/Plug-type-768x432.jpg) se tratara el objetivo es poder cambiar facilmente de proveedor de Whatsapp en minutos
+    sin el riesgo de dañar otras partes del bot
+-   **Database:** Siguiendo la linea de pensamiento de conectores, de igual manera que el provider nos brinda la capacidad de poder cambiar de capa de persistencia de datos (guardar datos) sin invertir tiempo en
+    reescribir nuestro flujo.
+
+---
+
+## Flow (Flujos)
+
+Los flujos hace referencia al hecho de construir un flujo de conversion. Esto es un flow podemos observar que estan presente dos metodos importantes **addKeyword** y el **addAnswer**.
+
+Tan sencillo como decir **palabra/s clave** y **mensaje a responder**
+
+Ambos metodos **[addKeyword](https://github.com/codigoencasa/bot-whatsapp/blob/dev/packages/bot/io/methods/addKeyword.js)** y el **[addAnswer](https://github.com/codigoencasa/bot-whatsapp/blob/dev/packages/bot/io/methods/addAnswer.js)** tienen una serie opciones disponibles
+
+```js
+const {
+    createBot,
+    createProvider,
+    createFlow,
+    addKeyword,
+} = require('@bot-whatsapp/bot')
+
+const flowPrincipal = addKeyword(['hola', 'alo'])
+    .addAnswer(['Hola, bienvenido a mi tienda', '¿Como puedo ayudarte?'])
+    .addAnswer(['Tengo:', 'Zapatos', 'Bolsos', 'etc ...'])
+```
+
+---
+
+## Provider (Proveedor)
+
+<Alert>
+    ⚡ Dependiendo del tipo de proveedor que utlices puede que necesites pasar
+    algunas configuracion adicional como **token, api, etc.** para esos casos te
+    recomendamos guiarte de los
+    **[starters](https://github.com/codigoencasa/bot-whatsapp/tree/dev/starters/apps)**
+    o si gustas puedes editar esta documentación para ir agregando más info
+</Alert>
+
+Es la pieza que conectara tu flujo con Whatsapp. En este chatbot tenemos varios proveedores disponibles la mayoria gratis pero tambien tenemos integracion la api oficial de whatsapp o twilio
+
+```js
+const WhatsappProvider = require('@bot-whatsapp/provider/web-whatsapp')
+....
+const adapterProvider = createProvider(WhatsappProvider)
+```
+
+Los proveedores disponibles hasta el momento son los siguientes:
+
+[whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) `require('@bot-whatsapp/provider/web-whatsapp')`
+
+[Venom](https://github.com/orkestral/venom) `require('@bot-whatsapp/provider/venom')`
+
+[Baileys](https://github.com/adiwajshing/Baileys) `require('@bot-whatsapp/provider/baileys')`
+
+[Meta Official](https://developers.facebook.com/docs/whatsapp/cloud-api/reference/messages) `require('@bot-whatsapp/provider/meta')`
+
+[Twilio Official](https://www.twilio.com/es-mx/messaging/whatsapp) `require('@bot-whatsapp/provider/twilio')`
+
+---
+
+## DataBase (Base de datos)
+
+<Alert>
+    ⚡ Dependiendo del tipo de conector que utlices puede que necesites pasar
+    algunas configuracion adicional como **user, host, password** para esos
+    casos te recomendamos guiarte de los
+    **[starters](https://github.com/codigoencasa/bot-whatsapp/tree/dev/starters/apps)**
+    o si gustas puedes editar esta documentación para ir agregando más info
+</Alert>
+
+Es la pieza encargada de mantener el **"estado"** de una conversación, para mayor facilidad la libreria te proporcia diferentes conectores que se de adapten mejor a tu desarrollo
+
+```js
+const MongoAdapter = require('@bot-whatsapp/database/mongo')
+....
+const adapterDB = new MongoAdapter({
+    dbUri: 'mongodb://0.0.0.0:27017',
+    dbName: 'db_bot',
+})
+```
+
+Los conectores disponibles hasta el momento son los siguientes:
+
+`require('@bot-whatsapp/database/mock')`
+
+`require('@bot-whatsapp/database/mongo')`
+
+`require('@bot-whatsapp/database/mysql')`
+
+`require('@bot-whatsapp/database/json')`
+
+---
+
+<Navigation
+    pages={[
+        { name: 'Pruebalo', link: '/docs/example' },
+        { name: 'Conversaciones', link: '/docs/flows' },
+    ]}
+/>

@@ -1,0 +1,14 @@
+{
+    "conventionalCommits.scopes": [
+        "hook",
+        "contributing",
+        "cli",
+        "bot",
+        "provider",
+        "adapter",
+        "ci",
+        "starters",
+        "conflict",
+        "contexts"
+    ]
+}

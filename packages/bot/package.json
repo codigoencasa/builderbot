@@ -1,0 +1,32 @@
+{
+    "name": "@bot-whatsapp/bot",
+    "version": "0.0.38-alpha.0",
+    "description": "",
+    "main": "./lib/bundle.bot.cjs",
+    "scripts": {
+        "bot:rollup": "node ../../node_modules/.bin/rollup index.js --config ./rollup-cli.config.js",
+        "format:check": "prettier --check .",
+        "format:write": "prettier --write .",
+        "lint:check": "eslint .",
+        "lint:fix": "eslint --fix .",
+        "test.unit": "cross-env NODE_ENV=test node ../../node_modules/uvu/bin.js tests"
+    },
+    "keywords": [],
+    "files": [
+        "./lib/bundle.bot.cjs",
+        "./provider/*",
+        "./core/*",
+        "./io/*"
+    ],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@bot-whatsapp/cli": "*",
+        "@bot-whatsapp/database": "*",
+        "@bot-whatsapp/provider": "*",
+        "kleur": "^4.1.5"
+    },
+    "dependencies": {
+        "dotenv": "^16.0.3"
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "name": "@bot-whatsapp/contexts",
+    "version": "0.0.1",
+    "description": "",
+    "main": "./lib/bundle.contexts.cjs",
+    "files": [
+        "./lib/"
+    ],
+    "exports": {
+        "./mock": "./lib/mock/index.cjs",
+        "./dialogflow": "./lib/dialogflow/index.cjs",
+        "./dialogflowcx": "./lib/dialogflow-cx/index.cjs"
+    },
+    "dependencies": {
+        "@bot-whatsapp/bot": "*"
+    }
+}

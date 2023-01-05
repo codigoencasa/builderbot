@@ -6,23 +6,22 @@
 name: Revisar ISSUES abandonadas
 
 on:
-  schedule:
-  - cron: '55 22 * * *'
+    schedule:
+        - cron: '55 22 * * *'
 
 jobs:
-  stale:
+    stale:
+        runs-on: ubuntu-latest
+        permissions:
+            issues: write
+            pull-requests: write
 
-    runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      pull-requests: write
-
-    steps:
-    - uses: actions/stale@v5
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        stale-issue-message: '¿Alguna novedad sobre esta ISSUE?'
-        stale-pr-message: '¿Alguna novedad sobre esta PULL REQUEST?'
-        stale-issue-label: 'no-issue-activity'
-        stale-pr-label: 'no-pr-activity'
-        exempt-issue-assignees: 'leifermendez'
+        steps:
+            - uses: actions/stale@v5
+              with:
+                  repo-token: ${{ secrets.GITHUB_TOKEN }}
+                  stale-issue-message: '¿Alguna novedad sobre esta ISSUE?'
+                  stale-pr-message: '¿Alguna novedad sobre esta PULL REQUEST?'
+                  stale-issue-label: 'no-issue-activity'
+                  stale-pr-label: 'no-pr-activity'
+                  exempt-issue-assignees: 'leifermendez'

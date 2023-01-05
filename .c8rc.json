@@ -1,0 +1,8 @@
+{
+    "src": "./src",
+    "exclude": ["**/bot/lib", "__mocks__", "**/mock"],
+    "reporter": ["html"],
+    "report-dir": "./coverage",
+    "check-coverage": true,
+    "lines": 90
+}
