@@ -39,6 +39,10 @@
         @apply text-xs font-mono bg-stone-100 dark:bg-slate-600 dark:text-white text-red-500 p-1 rounded;
     }
 
+    .slote video {
+        @apply rounded drop-shadow-xl w-full md:w-full max-w-screen-md;
+    }
+
     .slot pre {
         @apply w-full flex my-2;
     }

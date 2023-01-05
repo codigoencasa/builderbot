@@ -7,7 +7,7 @@ export const handleVideo = $((ev: QwikMouseEvent<HTMLVideoElement>) => {
 
 export default component$(() => {
     return (
-        <section class="relative border-t border-gray-200 dark:border-slate-800">
+        <section class="relative ">
             <div class="max-w-6xl mx-auto px-4 sm:px-6 ">
                 <div class="py-0 md:py-5">
                     <video

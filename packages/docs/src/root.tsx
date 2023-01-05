@@ -34,6 +34,7 @@ export default component$(() => {
             title: 'Primeros pasos',
             list: [
                 { name: 'Vista rápida', link: '/docs' },
+                { name: 'Requerimientos', link: '/docs/requirements' },
                 { name: 'Instalación', link: '/docs/install' },
                 { name: 'Pruebalo', link: '/docs/example' },
             ],
