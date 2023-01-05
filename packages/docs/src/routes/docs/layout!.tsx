@@ -4,6 +4,7 @@ import ExtraBar from '~/components/widgets/ExtraBar'
 import Footer from '~/components/widgets/Footer'
 import Header from '~/components/widgets/Header'
 import NavBar from '~/components/widgets/NavBar'
+import Navigation from '~/components/widgets/Navigation'
 import SponsorBar from '~/components/widgets/SponsorBar'
 import { GlobalStore } from '~/contexts'
 // import Navigation from '~/components/widgets/Navigation'
@@ -44,7 +45,6 @@ export default component$(() => {
                     </div>
                 </div>
             </main>
-            <Footer />
         </>
     )
 })

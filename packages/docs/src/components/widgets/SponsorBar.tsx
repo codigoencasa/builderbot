@@ -5,6 +5,8 @@ import { useLocation } from '@builder.io/qwik-city'
 import { src as qwik } from '~/assets/images/qwik.png?width=100&metadata'
 // @ts-ignore
 import { src as leanga } from '~/assets/images/leanga.png?width=40&metadata'
+// @ts-ignore
+import { src as netlify } from '~/assets/images/full-logo-light.png?width=100&metadata'
 
 /**
  * options = [] array con la lista de opciones de la documentacion
@@ -25,6 +27,19 @@ export default component$(() => {
                         <picture>
                             <img
                                 src={qwik}
+                                class="border border-slate-200 rounded my-2 p-1 bg-gray-50  dark:border-gray-600 dark:bg-gray-700"
+                                alt="Qwind Hero Image (Cool dog)"
+                                loading="eager"
+                                decoding="async"
+                            />
+                        </picture>
+                    </a>
+                </li>
+                <li>
+                    <a target={'_blank'} href="https://www.netlify.com">
+                        <picture>
+                            <img
+                                src={netlify}
                                 class="border border-slate-200 rounded my-2 p-1 bg-gray-50  dark:border-gray-600 dark:bg-gray-700"
                                 alt="Qwind Hero Image (Cool dog)"
                                 loading="eager"
