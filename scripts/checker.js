@@ -47,9 +47,15 @@ const checkPkgStable = async (pkgName = '', version = '') => {
         }
     )
 
-    const listVersions = JSON.parse(stdout).reverse()
-    console.log(`[${pkgName}]: `, listVersions)
-    return listVersions.at(0)
+    try {
+        const listVersions = JSON.parse(stdout).reverse()
+        console.log(`[${pkgName}]: `, listVersions)
+        return listVersions.at(0)
+    } catch (e) {
+        const listVersions = [stdout.trim().replace('\n').replaceAll('"', '')]
+        console.log(`[${pkgName}]: `, listVersions)
+        return listVersions.at(0)
+    }
 }
 
 /**

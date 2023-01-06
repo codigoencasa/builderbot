@@ -25,20 +25,22 @@ jobs:
               run: yarn install --immutable --network-timeout 300000
 
             - name: Check Baileys
-              run: yarn node ./scripts/checker.js --name=baileys --stable=false
+              run: yarn node ./scripts/checker.js --name=baileys --stable=true
 
             - name: Check Venom
-              run: yarn node ./scripts/checker.js --name=venom --stable=false
+              run: yarn node ./scripts/checker.js --name=venom --stable=true
 
             - name: Check web-whatsapp
-              run: yarn node ./scripts/checker.js --name=web-whatsapp --stable=false
+              run: yarn node ./scripts/checker.js --name=web-whatsapp --stable=true
 
             - name: Check Meta
-              run: yarn node ./scripts/checker.js --name=meta --stable=false
+              run: yarn node ./scripts/checker.js --name=meta --stable=true
 
             - name: Check Twilio
-              run: yarn node ./scripts/checker.js --name=twilio --stable=false
+              run: yarn node ./scripts/checker.js --name=twilio --stable=true
 
             - uses: stefanzweifel/git-auto-commit-action@v4
               with:
                   commit_message: 'ci(providers): 🚩 Check BREAKING CHANGE'
+                  create_branch: true
+                  branch: feature/breaking-change
