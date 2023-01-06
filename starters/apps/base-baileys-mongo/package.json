@@ -13,7 +13,7 @@
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",
         "@bot-whatsapp/provider": "latest",
-        "@adiwajshing/baileys": "4.4.0",
+        "@adiwajshing/baileys": "5.0.0",
         "mime-types": "2.1.35",
         "mongodb": "^4.12.1",
         "wa-sticker-formatter": "4.3.2"
