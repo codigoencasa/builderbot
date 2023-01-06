@@ -106,6 +106,7 @@ class CoreClass {
                         from,
                         keyword: null,
                         index,
+                        options: prevMsg?.options ?? {},
                     })
                 )
                 .slice(0, optListMsg.limit)
