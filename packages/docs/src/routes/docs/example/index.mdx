@@ -1,3 +1,5 @@
+import Navigation from '../../../components/widgets/Navigation'
+
 # Ejemplo
 
 Si copias y pegas este codigo y tu entorno de trabajo cumple con todos los requesitos te debe funcionar abajo explico muy por encima
@@ -66,3 +68,12 @@ const flowPrincipal = addKeyword(['hola', 'alo'])
     .addAnswer(['Hola, bienvenido a mi tienda', '¿Como puedo ayudarte?'])
     .addAnswer(['Tengo:', 'Zapatos', 'Bolsos', 'etc ...'])
 ```
+
+---
+
+<Navigation
+    pages={[
+        { name: 'Instalación', link: '/docs/install' },
+        { name: 'Conceptos', link: '/docs/essential' },
+    ]}
+/>

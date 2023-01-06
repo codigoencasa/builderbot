@@ -1,3 +1,5 @@
+import Navigation from '../../../components/widgets/Navigation'
+
 # Migración
 
 #### Versión (legacy)
@@ -199,9 +201,11 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
     )
 ```
 
-> Forma parte de este proyecto.
+---
 
--   [Discord](https://link.codigoencasa.com/DISCORD)
--   [Twitter](https://twitter.com/leifermendez)
--   [Youtube](https://www.youtube.com/watch?v=5lEMCeWEJ8o&list=PL_WGMLcL4jzWPhdhcUyhbFU6bC0oJd2BR)
--   [Telegram](https://t.me/leifermendez)
+<Navigation
+    pages={[
+        { name: 'Base de datos', link: '/docs/database' },
+        { name: 'Extender', link: '/docs/custom' },
+    ]}
+/>
