@@ -30,7 +30,7 @@
         "prepare": "npx husky install",
         "preinstall": "npx only-allow yarn",
         "postinstall": "npx prettier --write .",
-        "release": "standard-version -- --prerelease"
+        "release": "standard-version -- --prerelease --global"
     },
     "workspaces": [
         "packages/create-bot-whatsapp",
