@@ -48,6 +48,9 @@ jobs:
             - name: Release @bot-whatsapp/provider
               run: yarn node ./scripts/release.js --name=provider --version="${{ steps.vars.outputs.tag }}" --token="${{ secrets.NPM_TOKEN }}"
 
+            - name: Set CHANGELOG
+              run: yarn release
+
             - name: Commit Versioning & Push changes
               uses: stefanzweifel/git-auto-commit-action@v4
               with:
