@@ -97,13 +97,21 @@ class DialogFlowContext extends CoreClass {
             })
 
             customPayload = {
-                media: fields?.media?.stringValue,
-                buttons: mapButtons,
+                options: {
+                    media: fields?.media?.stringValue,
+                    buttons: mapButtons,
+                },
             }
+
+            const ctxFromDX = {
+                ...customPayload,
+                answer: fields?.answer?.stringValue,
+            }
+            this.sendFlow([ctxFromDX], from)
+            return
         }
 
         const ctxFromDX = {
-            ...customPayload,
             answer: queryResult?.fulfillmentText,
         }
 
