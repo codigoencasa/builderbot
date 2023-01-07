@@ -137,7 +137,7 @@ class BaileysProvider extends ProviderClass {
                 }
 
                 const btnCtx =
-                    payload?.message?.templateButtonReplyMessage
+                    payload?.message?.buttonsResponseMessage
                         ?.selectedDisplayText
 
                 if (btnCtx) payload.body = btnCtx
@@ -229,23 +229,22 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendButtons = async (number, text, buttons) => {
-        const numberClean = number.replace('+', '')
+        const numberClean = baileyCleanNumber(number)
+
         const templateButtons = buttons.map((btn, i) => ({
-            index: `${i}`,
-            quickReplyButton: {
-                displayText: btn.body,
-                id: `id-btn-${i}`,
-            },
+            buttonId: `id-btn-${i}`,
+            buttonText: { displayText: btn.body },
+            type: 1,
         }))
 
-
-        console.log(templateButtons)
-
-        return this.vendor.sendMessage(`${numberClean}@c.us`, {
+        const buttonMessage = {
             text,
             footer: '',
-            templateButtons: templateButtons,
-        })
+            buttons: templateButtons,
+            headerType: 1,
+        }
+
+        return this.vendor.sendMessage(numberClean, buttonMessage)
     }
 
     /**
