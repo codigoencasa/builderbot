@@ -4,7 +4,7 @@ const pino = require('pino')
 const rimraf = require('rimraf')
 const mime = require('mime-types')
 const { join } = require('path')
-const { existsSync, createWriteStream } = require('fs')
+const { existsSync, createWriteStream, readFileSync } = require('fs')
 const { Console } = require('console')
 
 const {
@@ -137,7 +137,7 @@ class BaileysProvider extends ProviderClass {
                 }
 
                 const btnCtx =
-                    payload?.message?.templateButtonReplyMessage
+                    payload?.message?.buttonsResponseMessage
                         ?.selectedDisplayText
 
                 if (btnCtx) payload.body = btnCtx
@@ -167,8 +167,8 @@ class BaileysProvider extends ProviderClass {
     sendMedia = async (number, imageUrl, text) => {
         const fileDownloaded = await baileyDownloadMedia(imageUrl)
         return this.vendor.sendMessage(number, {
-            image: { url: fileDownloaded },
-            text,
+            image: readFileSync(fileDownloaded),
+            caption: text,
         })
     }
 
@@ -229,20 +229,22 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendButtons = async (number, text, buttons) => {
-        const numberClean = number.replace('+', '')
+        const numberClean = baileyCleanNumber(number)
+
         const templateButtons = buttons.map((btn, i) => ({
-            index: `${i}`,
-            quickReplyButton: {
-                displayText: btn.body,
-                id: `id-btn-${i}`,
-            },
+            buttonId: `id-btn-${i}`,
+            buttonText: { displayText: btn.body },
+            type: 1,
         }))
 
-        return this.vendor.sendMessage(`${numberClean}@c.us`, {
+        const buttonMessage = {
             text,
             footer: '',
-            templateButtons: templateButtons,
-        })
+            buttons: templateButtons,
+            headerType: 1,
+        }
+
+        return this.vendor.sendMessage(numberClean, buttonMessage)
     }
 
     /**
