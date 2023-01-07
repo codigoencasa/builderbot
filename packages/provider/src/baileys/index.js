@@ -238,6 +238,9 @@ class BaileysProvider extends ProviderClass {
             },
         }))
 
+
+        console.log(templateButtons)
+
         return this.vendor.sendMessage(`${numberClean}@c.us`, {
             text,
             footer: '',
