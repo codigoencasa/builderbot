@@ -18,7 +18,6 @@ class CoreClass {
     flowClass
     databaseClass
     providerClass
-    listCallbacks = []
     constructor(_flow, _database, _provider) {
         this.flowClass = _flow
         this.databaseClass = _database
@@ -106,7 +105,6 @@ class CoreClass {
                         from,
                         keyword: null,
                         index,
-                        options: prevMsg?.options ?? {},
                     })
                 )
                 .slice(0, optListMsg.limit)
@@ -116,24 +114,18 @@ class CoreClass {
         }
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback y ejecutarlo
-        const cbEveryCtx =
-            (inRef, _injectMessageCtx, _injectfallBack, _injectflowDynamic) =>
-            () => {
-                this.flowClass.allCallbacks[inRef](_injectMessageCtx, {
-                    fallBack: _injectfallBack,
-                    flowDynamic: _injectflowDynamic,
-                })
-            }
+        const cbEveryCtx = (inRef) => {
+            this.flowClass.allCallbacks[inRef](messageCtxInComming, {
+                fallBack,
+                flowDynamic,
+            })
+        }
 
         // 📄 [options: callback]: Si se tiene un callback se ejecuta
-        const callAllCb = (_msgToList = []) => {
-            for (const ite of _msgToList) {
-                this.listCallbacks[ite?.ref] = cbEveryCtx(
-                    ite?.ref,
-                    messageCtxInComming,
-                    fallBack,
-                    flowDynamic
-                )
+        if (!fallBackFlag) {
+            if (prevMsg?.options?.capture) cbEveryCtx(prevMsg?.ref)
+            for (const ite of this.flowClass.find(body)) {
+                if (!ite?.options?.capture) cbEveryCtx(ite?.ref)
             }
         }
 
@@ -146,7 +138,10 @@ class CoreClass {
 
             msgToSend = this.flowClass.find(body, false, flowStandalone) || []
 
-            callAllCb(msgToSend)
+            for (const ite of msgToSend) {
+                cbEveryCtx(ite?.ref)
+            }
+
             this.sendFlow(msgToSend, from)
             return
         }
@@ -158,14 +153,12 @@ class CoreClass {
 
             if (['string', 'boolean'].includes(typeCapture) && valueCapture) {
                 msgToSend = this.flowClass.find(refToContinue?.ref, true) || []
-                callAllCb(msgToSend)
                 this.sendFlow(msgToSend, from)
                 return
             }
         }
 
         msgToSend = this.flowClass.find(body) || []
-        callAllCb(msgToSend)
         this.sendFlow(msgToSend, from)
     }
 
@@ -176,19 +169,10 @@ class CoreClass {
      * @returns
      */
     sendProviderAndSave = (numberOrId, ctxMessage) => {
-        const executeCb = (ref) => {
-            try {
-                return this.listCallbacks[ref]()
-            } catch (e) {
-                return Promise.resolve()
-            }
-        }
-
         const { answer } = ctxMessage
         return Promise.all([
             this.providerClass.sendMessage(numberOrId, answer, ctxMessage),
             this.databaseClass.save({ ...ctxMessage, from: numberOrId }),
-            executeCb(ctxMessage?.ref),
         ])
     }
 
