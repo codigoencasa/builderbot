@@ -4,7 +4,7 @@ const pino = require('pino')
 const rimraf = require('rimraf')
 const mime = require('mime-types')
 const { join } = require('path')
-const { existsSync, createWriteStream } = require('fs')
+const { existsSync, createWriteStream, readFileSync } = require('fs')
 const { Console } = require('console')
 
 const {
@@ -167,8 +167,8 @@ class BaileysProvider extends ProviderClass {
     sendMedia = async (number, imageUrl, text) => {
         const fileDownloaded = await baileyDownloadMedia(imageUrl)
         return this.vendor.sendMessage(number, {
-            image: { url: fileDownloaded },
-            text,
+            image: readFileSync(fileDownloaded),
+            caption: text,
         })
     }
 
