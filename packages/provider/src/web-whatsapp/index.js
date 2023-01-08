@@ -24,7 +24,14 @@ class WebWhatsappProvider extends ProviderClass {
         super()
         this.vendor = new Client({
             authStrategy: new LocalAuth(),
-            puppeteer: { headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--unhandled-rejections=strict'] }
+            puppeteer: {
+                headless: true,
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--unhandled-rejections=strict',
+                ],
+            },
         })
 
         const listEvents = this.busEvents()
