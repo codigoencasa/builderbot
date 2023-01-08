@@ -5,6 +5,8 @@ const {
     addKeyword,
 } = require('@bot-whatsapp/bot')
 
+require('./server.http')
+
 const BaileysProvider = require('@bot-whatsapp/provider/baileys')
 const MongoAdapter = require('@bot-whatsapp/database/mongo')
 

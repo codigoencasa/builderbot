@@ -5,6 +5,8 @@ const {
     addKeyword,
 } = require('@bot-whatsapp/bot')
 
+require('./server.http')
+
 const WebWhatsappProvider = require('@bot-whatsapp/provider/web-whatsapp')
 const JsonFileAdapter = require('@bot-whatsapp/database/json')
 
