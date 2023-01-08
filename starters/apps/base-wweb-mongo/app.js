@@ -8,6 +8,8 @@ const {
 const WebWhatsappProvider = require('@bot-whatsapp/provider/web-whatsapp')
 const MongoAdapter = require('@bot-whatsapp/database/mongo')
 
+require('./server.http')
+
 /**
  * Declaramos las conexiones de Mongo
  */

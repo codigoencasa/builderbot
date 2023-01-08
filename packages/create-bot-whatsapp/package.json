@@ -1,6 +1,6 @@
 {
     "name": "create-bot-whatsapp",
-    "version": "0.0.59-alpha.0",
+    "version": "0.0.63-alpha.0",
     "description": "",
     "main": "./lib/bundle.create-bot-whatsapp.cjs",
     "files": [

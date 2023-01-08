@@ -123,7 +123,7 @@ class CoreClass {
 
         // 📄 [options: callback]: Si se tiene un callback se ejecuta
         if (!fallBackFlag) {
-            if (refToContinue?.options?.capture) cbEveryCtx(refToContinue?.ref)
+            if (prevMsg?.options?.capture) cbEveryCtx(prevMsg?.ref)
             for (const ite of this.flowClass.find(body)) {
                 if (!ite?.options?.capture) cbEveryCtx(ite?.ref)
             }
