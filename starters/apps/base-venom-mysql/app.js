@@ -5,6 +5,8 @@ const {
     addKeyword,
 } = require('@bot-whatsapp/bot')
 
+require('./server.http')
+
 const VenomProvider = require('@bot-whatsapp/provider/venom')
 const MySQLAdapter = require('@bot-whatsapp/database/mysql')
 
