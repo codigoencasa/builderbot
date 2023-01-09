@@ -20,7 +20,7 @@ const logger = new Console({
  * https://github.com/orkestral/venom
  */
 class VenomProvider extends ProviderClass {
-    globalVendorArgs = { qrFile: 'qr.png' }
+    globalVendorArgs = { name: `bot` }
     vendor
     constructor(args) {
         super()
@@ -32,10 +32,11 @@ class VenomProvider extends ProviderClass {
      * Iniciamos el Proveedor Venom
      */
     init = async () => {
+        const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
         try {
             const client = await venom.create(
                 {
-                    session: 'session-base',
+                    session: NAME_DIR_SESSION,
                     multidevice: true,
                 },
                 (base) => this.generateQr(base),
@@ -68,7 +69,7 @@ class VenomProvider extends ProviderClass {
                 `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
             ],
         })
-        await venomGenerateImage(qr)
+        await venomGenerateImage(qr, `${this.globalVendorArgs.name}.png`)
     }
 
     /**
