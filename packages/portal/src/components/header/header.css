@@ -1,0 +1,36 @@
+header {
+    display: flex;
+    background: white;
+}
+
+header .logo a {
+    display: inline-block;
+    padding: 10px 10px 7px 20px;
+    text-decoration: none;
+}
+
+header ul {
+    margin: 0;
+    padding: 3px 10px 0 0;
+    list-style: none;
+    flex: 1;
+    text-align: right;
+}
+
+header li {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+header li a {
+    display: inline-block;
+    padding: 15px 10px;
+    text-decoration: none;
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+header li a:hover {
+    text-decoration: underline;
+}
