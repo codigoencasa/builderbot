@@ -27,7 +27,7 @@ jobs:
               run: yarn install --immutable --network-timeout 300000
 
             - name: Build Package
-              run: yarn build
+              run: yarn build:full
 
             - name: Release @bot-whatsapp/bot
               run: yarn node ./scripts/release.js --name=bot --version=  --token="${{ secrets.NPM_TOKEN }}"
@@ -43,6 +43,9 @@ jobs:
 
             - name: Release @bot-whatsapp/provider
               run: yarn node ./scripts/release.js --name=provider --version=  --token="${{ secrets.NPM_TOKEN }}"
+
+            - name: Release @bot-whatsapp/portal
+              run: yarn node ./scripts/release.js --name=portal --version=  --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Commit Versioning & Push changes
               uses: stefanzweifel/git-auto-commit-action@v4
