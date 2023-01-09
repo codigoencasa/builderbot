@@ -1,0 +1,12 @@
+div img {
+    display: block;
+    background-color: #f0f0f0;
+    width: 350px;
+    height: 350px;
+    object-fit: contain;
+    border-radius: 10px;
+}
+div {
+    display: flex;
+    justify-content: center;
+}

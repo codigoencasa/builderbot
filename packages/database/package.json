@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/database",
-    "version": "0.0.44-alpha.0",
+    "version": "0.0.45-alpha.0",
     "description": "Esto es el conector a  mysql, pg, mongo",
     "main": "./lib/mock/index.cjs",
     "keywords": [],
@@ -19,5 +19,9 @@
         "./mongo": "./lib/mongo/index.cjs",
         "./json": "./lib/json/index.cjs",
         "./mysql": "./lib/mysql/index.cjs"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/codigoencasa/bot-whatsapp/tree/main/packages/database"
     }
 }
