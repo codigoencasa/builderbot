@@ -20,9 +20,11 @@ const logger = new Console({
  * https://github.com/orkestral/venom
  */
 class VenomProvider extends ProviderClass {
+    globalVendorArgs = { qrFile: 'qr.png' }
     vendor
-    constructor() {
+    constructor(args) {
         super()
+        this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
         this.init().then(() => this.initBusEvents())
     }
 
