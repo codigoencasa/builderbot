@@ -33,10 +33,12 @@ const PATH_BASE = join(process.cwd(), NAME_DIR_SESSION)
  * https://github.com/adiwajshing/Baileys
  */
 class BaileysProvider extends ProviderClass {
+    globalVendorArgs = { qrFile: 'qr.png' }
     vendor
     saveCredsGlobal = null
-    constructor() {
+    constructor(args) {
         super()
+        this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
         this.initBailey().then()
     }
 
@@ -93,7 +95,7 @@ class BaileysProvider extends ProviderClass {
                             `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
                         ],
                     })
-                    await baileyGenerateImage(qr)
+                    await baileyGenerateImage(qr, this.globalVendorArgs.qrFile)
                 }
             })
 

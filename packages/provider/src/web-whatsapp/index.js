@@ -19,9 +19,11 @@ const logger = new Console({
  * https://github.com/pedroslopez/whatsapp-web.js
  */
 class WebWhatsappProvider extends ProviderClass {
+    globalVendorArgs = { qrFile: 'qr.png' }
     vendor
-    constructor() {
+    constructor(args) {
         super()
+        this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
         this.vendor = new Client({
             authStrategy: new LocalAuth(),
             puppeteer: {
