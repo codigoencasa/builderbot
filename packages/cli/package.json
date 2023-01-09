@@ -15,5 +15,9 @@
     ],
     "bin": {
         "bot": "./bin/cli.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/codigoencasa/bot-whatsapp/tree/main/packages/cli"
     }
 }
