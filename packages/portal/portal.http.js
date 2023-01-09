@@ -30,7 +30,7 @@ const start = (args) => {
 
     polka()
         .use(serve)
-        .get(qrFile, (_, res) => {
+        .get('qr.png', (_, res) => {
             const qrSource = [
                 join(process.cwd(), qrFile),
                 join(__dirname, '..', qrFile),
