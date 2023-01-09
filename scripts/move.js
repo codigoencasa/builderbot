@@ -10,10 +10,20 @@ const copyLibPkg = async (pkgName, to) => {
     await fs.copy(FROM, TO)
 }
 
-Promise.all([
-    copyLibPkg('create-bot-whatsapp', appDir),
-    copyLibPkg('bot', appDir),
-    copyLibPkg('database', appDir),
-    copyLibPkg('provider', appDir),
-    copyLibPkg('contexts', appDir),
-]).then(() => console.log('Todas las librerías copiadas'))
+const listLib = [
+    'create-bot-whatsapp',
+    'bot',
+    'database',
+    'provider',
+    'contexts',
+    'portal',
+]
+
+const main = async () => {
+    for (const iterator of listLib) {
+        await copyLibPkg(iterator, appDir)
+        console.log(`${iterator}: Copiado ✅`)
+    }
+}
+
+main()

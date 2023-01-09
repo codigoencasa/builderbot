@@ -1,0 +1,12 @@
+.logo {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    align-content: center;
+    color: #1a1a1a;
+}
+
+.logo h1 {
+    font-size: 1.5rem;
+    margin: 0;
+}
