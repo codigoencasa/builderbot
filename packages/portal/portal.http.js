@@ -4,7 +4,7 @@ const { bgYellow, cyan } = require('kleur')
 const polka = require('polka')
 
 const HTTP_PORT = process.env.PORT || 3000
-const QR_FILE = process.env.QR_FILE ?? 'qr.png'
+const QR_FILE = process.env.QR_FILE ?? 'bot'
 const PUBLIC_URL =
     process.env.PUBLIC_URL ??
     process.env.RAILWAY_STATIC_URL ??
@@ -23,18 +23,18 @@ const start = (args) => {
     const injectArgs = {
         port: HTTP_PORT,
         publicSite: PUBLIC_URL,
-        qrFile: QR_FILE,
+        name: QR_FILE,
         ...args,
     }
-    const { port, publicSite, qrFile } = injectArgs
+    const { port, publicSite, name } = injectArgs
 
     polka()
         .use(serve)
-        .get(qrFile, (_, res) => {
+        .get('qr.png', (_, res) => {
             const qrSource = [
-                join(process.cwd(), qrFile),
-                join(__dirname, '..', qrFile),
-                join(__dirname, qrFile),
+                join(process.cwd(), `${name}.png`),
+                join(__dirname, '..', `${name}.png`),
+                join(__dirname, `${name}.png`),
             ].find((i) => existsSync(i))
 
             const qrMark = [

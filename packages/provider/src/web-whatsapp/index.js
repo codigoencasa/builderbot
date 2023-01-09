@@ -19,13 +19,15 @@ const logger = new Console({
  * https://github.com/pedroslopez/whatsapp-web.js
  */
 class WebWhatsappProvider extends ProviderClass {
-    globalVendorArgs = { qrFile: 'qr.png' }
+    globalVendorArgs = { name: `bot` }
     vendor
     constructor(args) {
         super()
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
         this.vendor = new Client({
-            authStrategy: new LocalAuth(),
+            authStrategy: new LocalAuth({
+                clientId: `${this.globalVendorArgs.name}_sessions`,
+            }),
             puppeteer: {
                 headless: true,
                 args: [
@@ -75,7 +77,7 @@ class WebWhatsappProvider extends ProviderClass {
                         `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
                     ],
                 })
-                await wwebGenerateImage(qr)
+                await wwebGenerateImage(qr, `${this.globalVendorArgs.name}.png`)
             },
         },
         {
