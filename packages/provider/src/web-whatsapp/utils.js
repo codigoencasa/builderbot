@@ -11,8 +11,8 @@ const wwebCleanNumber = (number, full = false) => {
     return number
 }
 
-const wwebGenerateImage = async (base64) => {
-    const PATH_QR = `${process.cwd()}/qr.png`
+const wwebGenerateImage = async (base64, name = 'qr.png') => {
+    const PATH_QR = `${process.cwd()}/${name}`
     let qr_svg = qr.image(base64, { type: 'png', margin: 4 })
 
     const writeFilePromise = () =>

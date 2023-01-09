@@ -19,13 +19,15 @@ const serve = require('serve-static')(dir)
  * Iniciamos Portal WEB para escanear QR
  * @param {port:3000, publicSite:'http://mistio.com', qrFile:'qr.png', dir:__dirname}
  */
-const start = (
-    { port, publicSite, qrFile } = {
+const start = (args) => {
+    const injectArgs = {
         port: HTTP_PORT,
         publicSite: PUBLIC_URL,
         qrFile: QR_FILE,
+        ...args,
     }
-) => {
+    const { port, publicSite, qrFile } = injectArgs
+
     polka()
         .use(serve)
         .get(qrFile, (_, res) => {
