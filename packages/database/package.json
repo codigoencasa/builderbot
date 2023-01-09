@@ -19,5 +19,9 @@
         "./mongo": "./lib/mongo/index.cjs",
         "./json": "./lib/json/index.cjs",
         "./mysql": "./lib/mysql/index.cjs"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/codigoencasa/bot-whatsapp/tree/main/packages/database"
     }
 }

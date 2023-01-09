@@ -11,5 +11,9 @@
     "bin": "./bin/create.js",
     "dependencies": {
         "@bot-whatsapp/cli": "*"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/codigoencasa/bot-whatsapp/tree/main/packages/create-bot-whatsapp"
     }
 }

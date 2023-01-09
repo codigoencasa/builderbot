@@ -48,6 +48,9 @@ jobs:
             - name: Release @bot-whatsapp/provider
               run: yarn node ./scripts/release.js --name=provider --version="${{ steps.vars.outputs.tag }}" --token="${{ secrets.NPM_TOKEN }}"
 
+            - name: Release @bot-whatsapp/portal
+              run: yarn node ./scripts/release.js --name=portal --version="${{ steps.vars.outputs.tag }}" --token="${{ secrets.NPM_TOKEN }}"
+
             - name: Set CHANGELOG
               run: yarn release
 
