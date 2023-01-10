@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.4](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.5...v0.1.4) (2023-01-10)
+
+
+### Features
+
+* :zap: new portal web for qr scan ([cb2e869](https://github.com/leifermendez/bot-whatsapp/commit/cb2e8692a3f94c8b24993cd11dd564f094b0e4ef))
+* :zap: new portal web for qr scan ([9e93795](https://github.com/leifermendez/bot-whatsapp/commit/9e93795e6fce38890045389da95184fef1fbe0da))
+* :zap: new portal web for qr scan ([3c178ea](https://github.com/leifermendez/bot-whatsapp/commit/3c178ea113b140535a51f5dcd521dbb66251670e))
+* :zap: new portal web for qr scan ([1f1f564](https://github.com/leifermendez/bot-whatsapp/commit/1f1f564f4e2e3aa13b84de500fe215e0c45c2770))
+* :zap: new portal web for qr scan ([3de5f4b](https://github.com/leifermendez/bot-whatsapp/commit/3de5f4b77a10e30632ff7555f5af5d8e93cb2019))
+* :zap: qr code filename ([d794f60](https://github.com/leifermendez/bot-whatsapp/commit/d794f604ac8a835e523709dbf18c9b1609bbd00e))
+* :zap: qr portal ([246ecdc](https://github.com/leifermendez/bot-whatsapp/commit/246ecdc11a8c4e652867c842b612dc4ce73f9828))
+* :zap: qr portal ([af8b401](https://github.com/leifermendez/bot-whatsapp/commit/af8b401d075e1c35065589ede61476461ce86b4d))
+* agregamos  dockerfile y webserver a starters ([f9e3bbc](https://github.com/leifermendez/bot-whatsapp/commit/f9e3bbc6655060408e4fdbe1d7e920c2ed4fca53))
+
+
+### Bug Fixes
+
+* :zap: add Dockerfile, starter ([4e0d33c](https://github.com/leifermendez/bot-whatsapp/commit/4e0d33c6bb46ad259774f6d0c38c6c0b5f8ca4a9))
+* :zap: fix inject port args ([20f752e](https://github.com/leifermendez/bot-whatsapp/commit/20f752e6c1b1f7d11948fc4f2f8950f7834df7d9))
+* :zap: fix inject port args ([7a23eb0](https://github.com/leifermendez/bot-whatsapp/commit/7a23eb0cc6f93ec21c5ab34e46981ae7a93f42ff))
+* **provider:** :zap: fix send image baileys ([2ddea54](https://github.com/leifermendez/bot-whatsapp/commit/2ddea5468d235035478d4e91e63c821da19da179))
+* **provider:** :zap: fix send image baileys ([391e11c](https://github.com/leifermendez/bot-whatsapp/commit/391e11ce738cd64792b5237d69f3739b0263c198))
+* **provider:** :zap: fix send image baileys ([5d10cb9](https://github.com/leifermendez/bot-whatsapp/commit/5d10cb9026da60043e9a2f86117ebb04d0631a3f))
+* **provider:** fix error docker as root user ([5a033da](https://github.com/leifermendez/bot-whatsapp/commit/5a033da83aee1f614120bccf27c9f330500cc7b0))
+
 ### [0.1.3](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.2...v0.1.3) (2023-01-04)
 
 
