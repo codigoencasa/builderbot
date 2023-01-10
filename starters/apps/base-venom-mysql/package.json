@@ -1,5 +1,5 @@
 {
-    "name": "bot-whatsapp-base-venom-mysql",
+    "name": "base-venom-mysql",
     "version": "1.0.0",
     "description": "",
     "main": "app.js",

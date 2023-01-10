@@ -1,5 +1,5 @@
 {
-    "name": "bot-whatsapp-base-twilio-mysql",
+    "name": "base-twilio-mysql",
     "version": "1.0.0",
     "description": "",
     "main": "app.js",

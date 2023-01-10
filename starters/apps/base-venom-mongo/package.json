@@ -1,5 +1,5 @@
 {
-    "name": "bot-whatsapp-base-venom-mongo",
+    "name": "base-venom-mongo",
     "version": "1.0.0",
     "description": "",
     "main": "app.js",

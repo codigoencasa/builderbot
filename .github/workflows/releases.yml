@@ -1,8 +1,9 @@
 name: 🚀⚡ Liberando versiones
 
 on:
-    release:
-        types: [created]
+    push:
+        branches:
+            - production-release
 jobs:
     ############ RELEASE ############
     release:
