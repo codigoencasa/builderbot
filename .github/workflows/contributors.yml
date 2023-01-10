@@ -3,10 +3,6 @@ on:
     push:
         branches:
             - main
-    pull_request:
-        branches:
-            - dev
-        types: [closed]
 
 jobs:
     contrib-readme-job:
