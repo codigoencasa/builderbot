@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/portal",
-    "version": "0.0.3-alpha.0",
+    "version": "0.0.9-alpha.0",
     "description": "Portal WEB para escanear QR",
     "main": "./lib/portal.http.cjs",
     "scripts": {
