@@ -27,6 +27,12 @@ jobs:
 
             - run: corepack enable
 
+            - name: Set User
+              run: git config --global user.email "leifer.contacto@gmail.com" && git config --global user.name "Leifer Mendez"
+
+            - name: Set CHANGELOG
+              run: yarn release
+
             - name: Install NPM Dependencies
               run: yarn install --immutable --network-timeout 300000
 
@@ -50,12 +56,6 @@ jobs:
 
             - name: Release @bot-whatsapp/portal
               run: yarn node ./scripts/release.js --name=portal --version="${{ steps.vars.outputs.tag }}" --token="${{ secrets.NPM_TOKEN }}"
-
-            - name: Set User
-              run: git config --global user.email "leifer.contacto@gmail.com" && git config --global user.name "Leifer Mendez"
-
-            - name: Set CHANGELOG
-              run: yarn release
 
             - name: Commit Versioning & Push changes
               uses: stefanzweifel/git-auto-commit-action@v4
