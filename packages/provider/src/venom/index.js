@@ -38,10 +38,13 @@ class VenomProvider extends ProviderClass {
                 {
                     session: NAME_DIR_SESSION,
                     multidevice: true,
+                    disableSpins: true,
+                    disableWelcome: true,
+                    logger,
+                    logQR: false,
                 },
                 (base) => this.generateQr(base),
-                undefined,
-                { logQR: false }
+                undefined
             )
             this.vendor = client
         } catch (e) {
@@ -64,12 +67,12 @@ class VenomProvider extends ProviderClass {
         console.clear()
         this.emit('require_action', {
             instructions: [
-                `Debes escanear el QR Code para iniciar session reivsa qr.png`,
+                `Debes escanear el QR Code para iniciar ${this.globalVendorArgs.name}.qr.png`,
                 `Recuerda que el QR se actualiza cada minuto `,
                 `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
             ],
         })
-        await venomGenerateImage(qr, `${this.globalVendorArgs.name}.png`)
+        await venomGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)
     }
 
     /**
