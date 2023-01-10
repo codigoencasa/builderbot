@@ -3,7 +3,7 @@ name: 🚀⚡ Liberando versiones
 on:
     push:
         tags:
-            - 'v*.*.*'
+            - 'pre-v*.*.*'
 
 jobs:
     ############ RELEASE ############
