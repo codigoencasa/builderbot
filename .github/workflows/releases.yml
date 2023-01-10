@@ -28,11 +28,11 @@ jobs:
             - name: Set User
               run: git config --global user.email "leifer.contacto@gmail.com" && git config --global user.name "Leifer Mendez"
 
-            - name: Set CHANGELOG
-              run: yarn release
-
             - name: Install NPM Dependencies
               run: yarn install --immutable --network-timeout 300000
+
+            - name: Set CHANGELOG
+              run: yarn release
 
             - name: Build Package
               run: yarn build:full
