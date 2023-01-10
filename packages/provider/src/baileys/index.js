@@ -89,14 +89,14 @@ class BaileysProvider extends ProviderClass {
                 if (qr) {
                     this.emit('require_action', {
                         instructions: [
-                            `Debes escanear el QR Code para iniciar session reivsa qr.png`,
+                            `Debes escanear el QR Code para iniciar ${this.globalVendorArgs.name}.qr.png`,
                             `Recuerda que el QR se actualiza cada minuto `,
                             `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
                         ],
                     })
                     await baileyGenerateImage(
                         qr,
-                        `${this.globalVendorArgs.name}.png`
+                        `${this.globalVendorArgs.name}.qr.png`
                     )
                 }
             })
