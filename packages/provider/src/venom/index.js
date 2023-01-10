@@ -38,10 +38,13 @@ class VenomProvider extends ProviderClass {
                 {
                     session: NAME_DIR_SESSION,
                     multidevice: true,
+                    disableSpins: true,
+                    disableWelcome: true,
+                    logger,
+                    logQR: false,
                 },
                 (base) => this.generateQr(base),
-                undefined,
-                { logQR: false }
+                undefined
             )
             this.vendor = client
         } catch (e) {
@@ -69,7 +72,7 @@ class VenomProvider extends ProviderClass {
                 `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
             ],
         })
-        await venomGenerateImage(qr, `${this.globalVendorArgs.name}.png`)
+        await venomGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)
     }
 
     /**

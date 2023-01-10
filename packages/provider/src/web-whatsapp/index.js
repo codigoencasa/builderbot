@@ -77,7 +77,10 @@ class WebWhatsappProvider extends ProviderClass {
                         `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
                     ],
                 })
-                await wwebGenerateImage(qr, `${this.globalVendorArgs.name}.png`)
+                await wwebGenerateImage(
+                    qr,
+                    `${this.globalVendorArgs.name}.qr.png`
+                )
             },
         },
         {

@@ -96,7 +96,7 @@ class BaileysProvider extends ProviderClass {
                     })
                     await baileyGenerateImage(
                         qr,
-                        `${this.globalVendorArgs.name}.png`
+                        `${this.globalVendorArgs.name}.qr.png`
                     )
                 }
             })
