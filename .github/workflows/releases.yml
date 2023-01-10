@@ -1,10 +1,8 @@
 name: 🚀⚡ Liberando versiones
 
 on:
-    push:
-        tags:
-            - 'pre-v*.*.*'
-
+    release:
+        types: [created]
 jobs:
     ############ RELEASE ############
     release:
