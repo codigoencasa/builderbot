@@ -24,16 +24,13 @@ const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/baileys.log`),
 })
 
-const NAME_DIR_SESSION = `sessions`
-const PATH_BASE = join(process.cwd(), NAME_DIR_SESSION)
-
 /**
  * ⚙️ BaileysProvider: Es una clase tipo adaptor
  * que extiende clases de ProviderClass (la cual es como interfaz para sber que funciones rqueridas)
  * https://github.com/adiwajshing/Baileys
  */
 class BaileysProvider extends ProviderClass {
-    globalVendorArgs = { qrFile: 'qr.png' }
+    globalVendorArgs = { name: `bot` }
     vendor
     saveCredsGlobal = null
     constructor(args) {
@@ -46,6 +43,7 @@ class BaileysProvider extends ProviderClass {
      * Iniciar todo Bailey
      */
     initBailey = async () => {
+        const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
         const { state, saveCreds } = await useMultiFileAuthState(
             NAME_DIR_SESSION
         )
@@ -72,6 +70,7 @@ class BaileysProvider extends ProviderClass {
                     }
 
                     if (statusCode === DisconnectReason.loggedOut) {
+                        const PATH_BASE = join(process.cwd(), NAME_DIR_SESSION)
                         rimraf(PATH_BASE, (err) => {
                             if (err) return
                         })
@@ -90,12 +89,15 @@ class BaileysProvider extends ProviderClass {
                 if (qr) {
                     this.emit('require_action', {
                         instructions: [
-                            `Debes escanear el QR Code para iniciar session reivsa qr.png`,
+                            `Debes escanear el QR Code para iniciar ${this.globalVendorArgs.name}.qr.png`,
                             `Recuerda que el QR se actualiza cada minuto `,
                             `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
                         ],
                     })
-                    await baileyGenerateImage(qr, this.globalVendorArgs.qrFile)
+                    await baileyGenerateImage(
+                        qr,
+                        `${this.globalVendorArgs.name}.qr.png`
+                    )
                 }
             })
 
