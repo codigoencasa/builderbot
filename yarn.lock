@@ -1100,6 +1100,7 @@ __metadata:
   dependencies:
     "@commitlint/cli": ^17.3.0
     "@commitlint/config-conventional": ^17.3.0
+    "@octokit/core": ^4.1.0
     "@rollup/plugin-commonjs": ^23.0.2
     "@rollup/plugin-json": ^5.0.1
     "@rollup/plugin-node-resolve": ^15.0.1

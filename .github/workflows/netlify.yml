@@ -3,7 +3,6 @@ name: 📄 (PROD) Desplegando documentacion
 on:
     push:
         branches:
-            - main
             - next-release
 
 jobs:

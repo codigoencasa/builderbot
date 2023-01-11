@@ -1,5 +1,5 @@
 {
-    "name": "bot-whatsapp-base-bailey-memory",
+    "name": "base-bailey-memory",
     "version": "1.0.0",
     "description": "",
     "main": "app.js",
@@ -13,6 +13,7 @@
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",
         "@bot-whatsapp/provider": "latest",
+        "@bot-whatsapp/portal": "latest",
         "@adiwajshing/baileys": "4.4.0",
         "mime-types": "2.1.35",
         "wa-sticker-formatter": "4.3.2"
