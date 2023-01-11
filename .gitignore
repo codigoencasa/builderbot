@@ -42,3 +42,4 @@ yarn-error.log
 .npmrc
 # Local Netlify folder
 .netlify
+.secrets
