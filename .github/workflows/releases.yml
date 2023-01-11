@@ -60,8 +60,10 @@ jobs:
             - name: Release @bot-whatsapp/portal
               run: yarn node ./scripts/release.js --name=portal --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }} --gitToken="${{ secrets.OCTO_TOKEN }}"
 
-            - name: Commit and push changes
-              uses: devops-infra/action-commit-push@master
-              with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  commit_message: 'release(version): 🚀 - "${{ steps.package-version.outputs.current-version}}" release'
+            - name: GIT commit and push all changed files
+              if: github.event_name == 'push'
+              run: |
+                  git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+                  git config --global user.email "username@users.noreply.github.com"
+                  git commit -a -m 'release(version): 🚀 - "${{ steps.package-version.outputs.current-version}}" release'
+                  git push
