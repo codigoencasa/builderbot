@@ -5,7 +5,7 @@ const {
     addKeyword,
 } = require('@bot-whatsapp/bot')
 
-const QRPortal = require('@bot-whatsapp/portal')
+const QRPortalWeb = require('@bot-whatsapp/portal')
 const VenomProvider = require('@bot-whatsapp/provider/venom')
 const MySQLAdapter = require('@bot-whatsapp/database/mysql')
 
