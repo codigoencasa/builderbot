@@ -43,22 +43,22 @@ jobs:
               run: yarn build:full
 
             - name: Release @bot-whatsapp/bot
-              run: yarn node ./scripts/release.js --name=bot --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: yarn node ./scripts/release.js --name=bot --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }} --gitToken="${{ secrets.OCTO_TOKEN }}"
 
             - name: Release @bot-whatsapp/cli
-              run: yarn node ./scripts/release.js --name=cli --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: yarn node ./scripts/release.js --name=cli --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }} --gitToken="${{ secrets.OCTO_TOKEN }}"
 
             - name: Release @bot-whatsapp/create-bot-whatsapp
-              run: yarn node ./scripts/release.js --name=create-bot-whatsapp --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: yarn node ./scripts/release.js --name=create-bot-whatsapp --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }} --gitToken="${{ secrets.OCTO_TOKEN }}"
 
             - name: Release @bot-whatsapp/database
-              run: yarn node ./scripts/release.js --name=database --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: yarn node ./scripts/release.js --name=database --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }} --gitToken="${{ secrets.OCTO_TOKEN }}"
 
             - name: Release @bot-whatsapp/provider
-              run: yarn node ./scripts/release.js --name=provider --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: yarn node ./scripts/release.js --name=provider --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }} --gitToken="${{ secrets.OCTO_TOKEN }}"
 
             - name: Release @bot-whatsapp/portal
-              run: yarn node ./scripts/release.js --name=portal --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: yarn node ./scripts/release.js --name=portal --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }} --gitToken="${{ secrets.OCTO_TOKEN }}"
 
             - name: Commit and push changes
               uses: devops-infra/action-commit-push@master
