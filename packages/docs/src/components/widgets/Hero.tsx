@@ -47,12 +47,19 @@ export default component$(() => {
                                             npm create bot-whatsapp@latest
                                         </code>
                                     </div>
-                                    <div class="flex w-full sm:w-auto">
+                                    <div class="flex w-full sm:w-auto gap-3">
                                         <a
                                             href="/docs"
                                             class="btn  bg-gray-50 dark:bg-transparent"
                                         >
                                             Ver documentación
+                                        </a>
+                                        <a
+                                            target={'_blank'}
+                                            href="https://youtu.be/DEIyGyJNGa8"
+                                            class="btn  bg-gray-50 dark:bg-transparent"
+                                        >
+                                            Ver video
                                         </a>
                                     </div>
                                 </div>
