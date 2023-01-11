@@ -3,7 +3,7 @@ name: 🚀 (DEV) Liberando versiones
 on:
     push:
         branches:
-            - next-release
+            - release/next
 
 jobs:
     ############ RELEASE ############

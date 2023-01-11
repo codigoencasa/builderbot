@@ -3,7 +3,7 @@ name: 🚀⚡ Liberando versiones
 on:
     push:
         branches:
-            - production-release
+            - release/production
 jobs:
     ############ RELEASE ############
     release:
