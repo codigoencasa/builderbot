@@ -1,8 +1,8 @@
 name: Revisando Colaboradores
+
 on:
-    push:
-        branches:
-            - main
+    schedule:
+        - cron: '0 9 * * *'
 
 jobs:
     contrib-readme-job:

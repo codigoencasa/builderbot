@@ -7,7 +7,7 @@ on:
 
 jobs:
     ############ DOCUMENTATION BUILD ############
-    build-documentation:
+    build-documentation-prod:
         name: Build Package
         runs-on: ubuntu-latest
 
