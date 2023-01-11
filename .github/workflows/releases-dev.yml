@@ -50,10 +50,8 @@ jobs:
             - name: Release @bot-whatsapp/portal
               run: yarn node ./scripts/release.js --name=portal --version=  --token="${{ secrets.NPM_TOKEN }}"
 
-            - name: GIT commit and push all changed files
-              if: github.event_name == 'push'
-              run: |
-                  git config --global user.email "leifer.contacto@gmail.com"
-                  git config --global user.name "Leifer Mendez"
-                  git commit -a -m 'chore(version): dev release 🫡'
-                  git push origin dev
+            - name: Commit Versioning & Push changes
+              uses: stefanzweifel/git-auto-commit-action@v4
+              with:
+                  commit_message: 'ci(version): :zap: automatic - "${date}" updated versions every packages'
+                  branch: dev
