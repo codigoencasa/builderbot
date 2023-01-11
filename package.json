@@ -97,5 +97,8 @@
         "npm": "please-use-yarn",
         "yarn": ">=3"
     },
-    "author": "Leifer Mendez <leifer33@gmail.com>"
+    "author": "Leifer Mendez <leifer33@gmail.com>",
+    "dependencies": {
+        "@octokit/core": "^4.1.0"
+    }
 }

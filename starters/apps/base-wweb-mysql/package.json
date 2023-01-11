@@ -1,5 +1,5 @@
 {
-    "name": "bot-whatsapp-base-wweb-mysql",
+    "name": "base-wweb-mysql",
     "version": "1.0.0",
     "description": "",
     "main": "app.js",
