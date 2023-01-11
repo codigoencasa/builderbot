@@ -67,6 +67,7 @@
     "devDependencies": {
         "@commitlint/cli": "^17.3.0",
         "@commitlint/config-conventional": "^17.3.0",
+        "@octokit/core": "^4.1.0",
         "@rollup/plugin-commonjs": "^23.0.2",
         "@rollup/plugin-json": "^5.0.1",
         "@rollup/plugin-node-resolve": "^15.0.1",
@@ -89,8 +90,7 @@
         "rollup-plugin-copy": "^3.4.0",
         "semver": "^7.3.8",
         "standard-version": "^9.5.0",
-        "uvu": "^0.5.6",
-        "@octokit/core": "^4.1.0"
+        "uvu": "^0.5.6"
     },
     "packageManager": "yarn@3.3.0",
     "engines": {
