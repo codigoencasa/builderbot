@@ -6,7 +6,8 @@ on:
             - release/production
 jobs:
     ############ RELEASE ############
-    release:
+    release-prod:
+        if: ${{ !github.event.act }}
         name: Release
         runs-on: ubuntu-latest
         steps:
@@ -70,4 +71,4 @@ jobs:
               if: github.event_name == 'push'
               run: |
                   git commit -a -m 'chore(version): launch release 🚀 "${{ steps.package-version.outputs.current-version}}"'
-                  git push
+                  git push origin dev
