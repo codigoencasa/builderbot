@@ -89,7 +89,8 @@
         "rollup-plugin-copy": "^3.4.0",
         "semver": "^7.3.8",
         "standard-version": "^9.5.0",
-        "uvu": "^0.5.6"
+        "uvu": "^0.5.6",
+        "@octokit/core": "^4.1.0"
     },
     "packageManager": "yarn@3.3.0",
     "engines": {
@@ -97,8 +98,5 @@
         "npm": "please-use-yarn",
         "yarn": ">=3"
     },
-    "author": "Leifer Mendez <leifer33@gmail.com>",
-    "dependencies": {
-        "@octokit/core": "^4.1.0"
-    }
+    "author": "Leifer Mendez <leifer33@gmail.com>"
 }
