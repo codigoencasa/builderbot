@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.12](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.10...v0.1.12) (2023-01-11)
+
+### [0.1.9-pre](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.9...v0.1.9-pre) (2023-01-10)
+
+### [0.1.7-pre-1](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.7-alpha...v0.1.7-pre-1) (2023-01-10)
+
+### [0.1.7-alpha](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.7-pre...v0.1.7-alpha) (2023-01-10)
+
+### [0.1.11](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.10...v0.1.11) (2023-01-11)
+
+### [0.1.9-pre](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.9...v0.1.9-pre) (2023-01-10)
+
+### [0.1.7-pre-1](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.7-alpha...v0.1.7-pre-1) (2023-01-10)
+
+### [0.1.7-alpha](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.7-pre...v0.1.7-alpha) (2023-01-10)
+
 ### [0.1.10](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.8...v0.1.10) (2023-01-11)
 
 
