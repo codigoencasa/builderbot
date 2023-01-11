@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.13](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.12...v0.1.13) (2023-01-11)
+
 ### [0.1.12](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.10...v0.1.12) (2023-01-11)
 
 ### [0.1.9-pre](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.9...v0.1.9-pre) (2023-01-10)
