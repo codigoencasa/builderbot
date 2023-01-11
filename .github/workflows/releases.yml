@@ -26,6 +26,9 @@ jobs:
 
             - run: corepack enable
 
+            - name: Set User
+              run: git config --global user.email "leifer.contacto@gmail.com" && git config --global user.name "Leifer Mendez"
+
             - name: Install NPM Dependencies
               run: yarn install --immutable --network-timeout 300000
 
@@ -66,7 +69,5 @@ jobs:
             - name: GIT commit and push all changed files
               if: github.event_name == 'push'
               run: |
-                  git config --global user.name "Leifer"
-                  git config --global user.email "username@users.noreply.github.com"
-                  git commit -a -m 'release(version): 🚀 - "${{ steps.package-version.outputs.current-version}}" release'
+                  git commit -a -m 'chore(version): launch release 🚀 "${{ steps.package-version.outputs.current-version}}"'
                   git push
