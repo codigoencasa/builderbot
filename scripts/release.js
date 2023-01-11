@@ -196,7 +196,8 @@ const main = async () => {
         }
         await packRelease(pkgName)
         await publishRelease(pkgName, pkgNumber)
-        await githubGithubRelease(`v${pkgNumber}`, pkgNumber, githubToken)
+        if (pkgNumber)
+            await githubGithubRelease(`v${pkgNumber}`, pkgNumber, githubToken)
     }
 }
 
