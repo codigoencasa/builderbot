@@ -3,49 +3,15 @@ const { join } = require('path')
 const { execFile } = require('node:child_process')
 const process = require('node:process')
 const util = require('node:util')
-const { Octokit } = require('@octokit/core')
 
 const OS_ENVIROMENT_WIN = process.platform.includes('win32')
 const semver = require('semver')
 
 const NPM_COMMAND = OS_ENVIROMENT_WIN ? 'npm.cmd' : 'npm'
-const [PKG_ARG, PKG_ARG_VERSION, NPM_TOKEN, GITHUB_TOKEN] = process.argv.slice(
-    2
-) || [null]
+const [PKG_ARG, PKG_ARG_VERSION, NPM_TOKEN] = process.argv.slice(2) || [null]
 const PATH_PACKAGES = join(__dirname, '..', `packages`)
 
 const cmd = util.promisify(execFile)
-
-/**
- * Publicar Release en Github
- * @param {*} name
- * @param {*} tag_name
- * @param {*} auth
- * @param {*} owner
- * @param {*} repo
- */
-const githubGithubRelease = async (
-    name = '',
-    tag_name = '',
-    auth = '',
-    owner = 'codigoencasa',
-    repo = 'bot-whatsapp'
-) => {
-    const octokit = new Octokit({
-        auth,
-    })
-
-    await octokit.request(`POST /repos/${owner}/${repo}/releases`, {
-        owner,
-        repo,
-        tag_name,
-        name,
-        body: 'Description of the release',
-        draft: false,
-        prerelease: false,
-        generate_release_notes: true,
-    })
-}
 
 /**
  * Create Token
@@ -181,7 +147,6 @@ const publishRelease = async (packageName, latest = null) => {
 const main = async () => {
     if (PKG_ARG) {
         let EXIST_VERSION = true
-        const githubToken = GITHUB_TOKEN ? GITHUB_TOKEN.split('=').at(1) : null
         const tokenNpm = NPM_TOKEN ? NPM_TOKEN.split('=').at(1) : null
         const pkgName = PKG_ARG ? PKG_ARG.split('=').at(1) : null
         const pkgNumber = PKG_ARG_VERSION
@@ -196,8 +161,6 @@ const main = async () => {
         }
         await packRelease(pkgName)
         await publishRelease(pkgName, pkgNumber)
-        if (pkgNumber)
-            await githubGithubRelease(`v${pkgNumber}`, pkgNumber, githubToken)
     }
 }
 
