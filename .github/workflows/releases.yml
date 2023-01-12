@@ -68,7 +68,6 @@ jobs:
               run: yarn node ./scripts/github.js --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.OCTO_TOKEN }}"
 
             - name: 'Run if changes have been detected'
-              if: steps.auto-commit-action.outputs.changes_detected == 'true'
               run: |
                   git add .
                   git commit -m "chore(version): pre release"
@@ -78,4 +77,3 @@ jobs:
               uses: stefanzweifel/git-auto-commit-action@v4
               with:
                   commit_message: 'chore(version): launch release 🚀 "${{ steps.package-version.outputs.current-version}}"'
-                  branch: dev
