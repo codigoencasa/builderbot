@@ -10,7 +10,6 @@ const logger = new Console({
 })
 
 const QueuePrincipal = new Queue()
-const QueueDynamic = new Queue()
 
 /**
  * [ ] Escuchar eventos del provider asegurarte que los provider emitan eventos
@@ -92,12 +91,13 @@ class CoreClass {
         const sendFlow = async (messageToSend, numberOrId) => {
             const queue = []
             for (const ctxMessage of messageToSend) {
+                console.log('🙌 ', ctxMessage.answer)
                 const delayMs = ctxMessage?.options?.delay || 0
                 if (delayMs) await delay(delayMs)
                 QueuePrincipal.enqueue(() =>
                     Promise.all([
                         this.sendProviderAndSave(numberOrId, ctxMessage),
-                        cbEveryCtx(ctxMessage?.ref),
+                        resolveCbEveryCtx(ctxMessage),
                     ])
                 )
             }
@@ -105,19 +105,23 @@ class CoreClass {
         }
 
         // 📄 [options: fallBack]: esta funcion se encarga de repetir el ultimo mensaje
-        const fallBack = () => {
+        const fallBack = async () => {
             fallBackFlag = true
-            msgToSend = this.flowClass.find(refToContinue?.keyword, true) || []
-            sendFlow(msgToSend, from)
+            await this.sendProviderAndSave(from, refToContinue)
+            QueuePrincipal.queue = []
             return refToContinue
         }
 
         // 📄 [options: flowDynamic]: esta funcion se encarga de responder un array de respuesta esta limitado a 5 mensajes
         // para evitar bloque de whatsapp
-        const flowDynamic = async (listMsg = [], optListMsg = { limit: 3 }) => {
+        const flowDynamic = async (
+            listMsg = [],
+            optListMsg = { limit: 5, fallback: false }
+        ) => {
             if (!Array.isArray(listMsg))
                 throw new Error('Esto debe ser un ARRAY')
 
+            fallBackFlag = optListMsg.fallback
             const parseListMsg = listMsg
                 .map(({ body }, index) =>
                     toCtx({
@@ -134,6 +138,13 @@ class CoreClass {
             return
         }
 
+        // 📄 Se encarga de revisar si el contexto del mensaje tiene callback o fallback
+        const resolveCbEveryCtx = async (ctxMessage) => {
+            if (prevMsg?.options?.capture) return cbEveryCtx(prevMsg?.ref)
+            if (!ctxMessage?.options?.capture)
+                return await cbEveryCtx(ctxMessage?.ref)
+        }
+
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback y ejecutarlo
         const cbEveryCtx = async (inRef) => {
             if (!this.flowClass.allCallbacks[inRef]) return Promise.resolve()
@@ -142,6 +153,8 @@ class CoreClass {
                 flowDynamic,
             })
         }
+
+        if (prevMsg?.ref) resolveCbEveryCtx(prevMsg)
 
         // 📄 [options: callback]: Si se tiene un callback se ejecuta
         //TODO AQUI
