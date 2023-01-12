@@ -77,4 +77,3 @@ jobs:
               uses: stefanzweifel/git-auto-commit-action@v4
               with:
                   commit_message: 'chore(version): launch release 🚀 "${{ steps.package-version.outputs.current-version}}"'
-                  branch: dev
