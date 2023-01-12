@@ -91,7 +91,6 @@ class CoreClass {
         const sendFlow = async (messageToSend, numberOrId) => {
             const queue = []
             for (const ctxMessage of messageToSend) {
-                console.log('🙌 ', ctxMessage.answer)
                 const delayMs = ctxMessage?.options?.delay || 0
                 if (delayMs) await delay(delayMs)
                 QueuePrincipal.enqueue(() =>
