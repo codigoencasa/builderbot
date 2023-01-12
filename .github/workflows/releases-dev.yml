@@ -3,7 +3,7 @@ name: 🚀 (DEV) Liberando versiones
 on:
     push:
         branches:
-            - next-release
+            - release/next
 
 jobs:
     ############ RELEASE ############
@@ -43,6 +43,9 @@ jobs:
 
             - name: Release @bot-whatsapp/provider
               run: yarn node ./scripts/release.js --name=provider --version=  --token="${{ secrets.NPM_TOKEN }}"
+
+            - name: Release @bot-whatsapp/contexts
+              run: yarn node ./scripts/release.js --name=contexts --version=  --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/portal
               run: yarn node ./scripts/release.js --name=portal --version=  --token="${{ secrets.NPM_TOKEN }}"

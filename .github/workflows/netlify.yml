@@ -3,12 +3,11 @@ name: 📄 (PROD) Desplegando documentacion
 on:
     push:
         branches:
-            - main
-            - next-release
+            - release/next
 
 jobs:
     ############ DOCUMENTATION BUILD ############
-    build-documentation:
+    build-documentation-prod:
         name: Build Package
         runs-on: ubuntu-latest
 

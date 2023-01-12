@@ -1,11 +1,13 @@
 name: 🚀⚡ Liberando versiones
 
 on:
-    release:
-        types: [created]
+    push:
+        branches:
+            - release/production
 jobs:
     ############ RELEASE ############
-    release:
+    release-prod:
+        if: ${{ !github.event.act }}
         name: Release
         runs-on: ubuntu-latest
         steps:
@@ -56,11 +58,22 @@ jobs:
             - name: Release @bot-whatsapp/provider
               run: yarn node ./scripts/release.js --name=provider --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
 
+            - name: Release @bot-whatsapp/contexts
+              run: yarn node ./scripts/release.js --name=contexts --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+
             - name: Release @bot-whatsapp/portal
               run: yarn node ./scripts/release.js --name=portal --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
 
-            - name: Commit and push changes
-              uses: devops-infra/action-commit-push@master
+            - name: Release Github
+              run: yarn node ./scripts/github.js --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.OCTO_TOKEN }}"
+
+            - name: 'Run if changes have been detected'
+              run: |
+                  git add .
+                  git commit -m "chore(version): pre release"
+
+            - name: Commit Versioning & Push changes
+              if: github.event_name == 'push'
+              uses: stefanzweifel/git-auto-commit-action@v4
               with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  commit_message: 'release(version): 🚀 - "${{ steps.package-version.outputs.current-version}}" release'
+                  commit_message: 'chore(version): launch release 🚀 "${{ steps.package-version.outputs.current-version}}"'

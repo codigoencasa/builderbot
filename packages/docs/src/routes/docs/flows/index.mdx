@@ -1,6 +1,6 @@
 import Navigation from '../../../components/widgets/Navigation'
 
-# Flow (Flujos)
+# Flow
 
 Los flujos hace referencia al hecho de construir un flujo de conversion. Esto es un flow podemos observar que estan presente dos metodos importantes **addKeyword** y el **addAnswer**.
 
@@ -19,6 +19,142 @@ const {
 const flowPrincipal = addKeyword(['hola', 'alo'])
     .addAnswer(['Hola, bienvenido a mi tienda', '¿Como puedo ayudarte?'])
     .addAnswer(['Tengo:', 'Zapatos', 'Bolsos', 'etc ...'])
+```
+
+---
+
+## addKeyword()
+
+Esta funcion se utliza para iniciar un flujo de conversion. <br /> Recibe un `string` o un `array`
+de string `['hola','buenas']`.
+
+**Opciones**
+
+-   sensitive: Sensible a mayusculas y minusculas por defecto `false`
+
+```js
+const { addKeyword } = require('@bot-whatsapp/bot')
+
+const flowString = addKeyword('hola')
+
+const flowArray = addKeyword(['hola', 'alo'])
+
+const flowSensitive = addKeyword(['hola', 'alo'], {
+    sensitive: true,
+})
+```
+
+---
+
+## addAnswer()
+
+Esta funcion se utliza para responder un mensaje despues del `addKeyword()`
+
+**Opciones**
+
+-   delay: 0 (milisegundos)
+-   media: url de imagen
+-   buttons: array `[{body:'Boton1'}, {body:'Boton2'}, {body:'Boton3'}]`
+-   capture: false (para esperar respuesta)
+-   child: Objecto tipo flujo o arra de flujos hijos
+
+```js
+const { addKeyword } = require('@bot-whatsapp/bot')
+
+const flowString = addKeyword('hola').addAnswer(
+    'Este mensaje se enviara 1 segundo despues',
+    {
+        delay: 1000,
+    }
+)
+
+const flowString = addKeyword('hola').addAnswer(
+    'Este mensaje envia una imagen',
+    {
+        media: 'https://i.imgur.com/0HpzsEm.png',
+    }
+)
+
+const flowString = addKeyword('hola').addAnswer(
+    'Este mensaje envia tres botones',
+    {
+        buttons: [
+            { body: 'Boton 1' },
+            { body: 'Boton 2' },
+            { body: 'Boton 3' },
+        ],
+    }
+)
+
+const flowString = addKeyword('hola').addAnswer(
+    'Este mensaje espera una respueta del usuario',
+    {
+        capture: true,
+    }
+)
+```
+
+---
+
+## ctx
+
+Este argumento se utiliza para obtener el contexto de la conversación
+
+```js
+const { addKeyword } = require('@bot-whatsapp/bot')
+
+const flowString = addKeyword('hola').addAnswer(
+    'Indica cual es tu email',
+    null,
+    (ctx) => {
+        console.log('👉 Informacion del contexto: ', ctx)
+    }
+)
+```
+
+---
+
+## fallBack()
+
+Esta funcion se utliza para volver a enviar el ultimo mensaje abajo un ejemplo.
+En el ejemplo de abajo esperamos que el usuario ingrese un mensaje que contenga `@` sino contiene
+se repetira el mensaje `Indica cual es tu email`
+
+```js
+const { addKeyword } = require('@bot-whatsapp/bot')
+
+const flowString = addKeyword('hola').addAnswer(
+    'Indica cual es tu email',
+    null,
+    (ctx, { fallBack }) => {
+        if (!ctx.body.includes('@')) return fallBack()
+    }
+)
+```
+
+---
+
+## flowDynamic()
+
+Esta funcion se utliza para devolver mensajes dinamicos que pueden venir de una API o Base de datos.
+La funcion recibe un array que debe contener la siguiente estrucutura:
+
+`[{body:'Mensaje}, {body:'Mensaje2}]`
+
+```js
+const { addKeyword } = require('@bot-whatsapp/bot')
+
+const flowString = addKeyword('hola')
+    .addAnswer('Indica cual es tu email', null, async (ctx, {flowDynamic}) => {
+        const mensajesDB = () => {
+            const categories = db.find(...)
+            const mapDatos = categories.map((c) => ({body:c.name}))
+            return mapDatos
+        }
+        await flowDynamic(mensajesDB())
+    })
+
+
 ```
 
 ---
