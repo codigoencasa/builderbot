@@ -3,7 +3,7 @@ const { join } = require('path')
 const { yellow, red, cyan, bgMagenta } = require('kleur')
 const { existsSync } = require('fs')
 const { copyBaseApp } = require('../create-app')
-const { checkNodeVersion, checkOs } = require('../check')
+const { checkNodeVersion, checkOs, checkGit } = require('../check')
 
 const bannerDone = () => {
     console.log(``)
@@ -59,8 +59,9 @@ const startInteractive = async () => {
     ]
 
     console.clear()
-    checkNodeVersion()
     checkOs()
+    checkNodeVersion()
+    checkGit()
     const onCancel = () => {
         console.log('¡Proceso cancelado!')
         return true
