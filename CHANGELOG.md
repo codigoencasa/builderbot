@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.17](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.16...v0.1.17) (2023-01-13)
+
+
+### Features
+
+* mod de starters para habiltar portal ([eceb170](https://github.com/leifermendez/bot-whatsapp/commit/eceb170df03721dca4183b658c863b94fa04bc84))
+
+
+### Bug Fixes
+
+* **ci:** pre-release ([aaec075](https://github.com/leifermendez/bot-whatsapp/commit/aaec0751408ab49483d428810d94aaf7d46acb94))
+* correccion en starters app.js para portal QR ([f430380](https://github.com/leifermendez/bot-whatsapp/commit/f430380b4f23d41702395c96c628bf13bf443278))
+* **starters:** :zap: added dockerfile ([230981e](https://github.com/leifermendez/bot-whatsapp/commit/230981e2676361149cb2a99def7f705e75009260))
+
 ### [0.1.16](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.15...v0.1.16) (2023-01-11)
 
 ### [0.1.15](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.14...v0.1.15) (2023-01-11)
