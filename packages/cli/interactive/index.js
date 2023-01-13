@@ -1,6 +1,6 @@
 const prompts = require('prompts')
 const { join } = require('path')
-const { yellow, red, cyan, bgMagenta } = require('kleur')
+const { yellow, red, cyan, bgMagenta, bgRed } = require('kleur')
 const { existsSync } = require('fs')
 const { copyBaseApp } = require('../create-app')
 const { checkNodeVersion, checkOs, checkGit } = require('../check')
@@ -21,6 +21,22 @@ const bannerDone = () => {
 }
 
 const startInteractive = async () => {
+    try {
+        console.clear()
+        await checkNodeVersion()
+        checkOs()
+        await checkGit()
+        console.clear()
+        await nextSteps()
+    } catch (e) {
+        console.error(bgRed(`Ups! 🙄 algo no va bien.`))
+        console.error(
+            bgRed(`Revisa los requerimientos minimos en la documentacion`)
+        )
+    }
+}
+
+const nextSteps = async () => {
     const questions = [
         {
             type: 'text',
@@ -58,10 +74,6 @@ const startInteractive = async () => {
         },
     ]
 
-    console.clear()
-    checkOs()
-    checkNodeVersion()
-    checkGit()
     const onCancel = () => {
         console.log('¡Proceso cancelado!')
         return true
