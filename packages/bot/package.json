@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/bot",
-    "version": "0.0.61-alpha.0",
+    "version": "0.0.64-alpha.0",
     "description": "",
     "main": "./lib/bundle.bot.cjs",
     "scripts": {

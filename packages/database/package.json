@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/database",
-    "version": "0.0.59-alpha.0",
+    "version": "0.0.62-alpha.0",
     "description": "Esto es el conector a  mysql, pg, mongo",
     "main": "./lib/mock/index.cjs",
     "keywords": [],
