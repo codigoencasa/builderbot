@@ -13,6 +13,7 @@ on:
 jobs:
     ############ DOCUMENTATION BUILD ############
     build-documentation:
+        if: ${{ !github.event.act }}
         name: Build Package
         runs-on: ubuntu-latest
 

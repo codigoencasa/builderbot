@@ -6,7 +6,8 @@ on:
             - release/production
 jobs:
     ############ RELEASE ############
-    release:
+    release-prod:
+        if: ${{ !github.event.act }}
         name: Release
         runs-on: ubuntu-latest
         steps:
@@ -66,8 +67,13 @@ jobs:
             - name: Release Github
               run: yarn node ./scripts/github.js --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.OCTO_TOKEN }}"
 
-            - name: GIT commit and push all changed files
-              if: github.event_name == 'push'
+            - name: 'Run if changes have been detected'
               run: |
-                  git commit -a -m 'chore(version): launch release 🚀 "${{ steps.package-version.outputs.current-version}}"'
-                  git push
+                  git add .
+                  git commit -m "chore(version): pre release"
+
+            - name: Commit Versioning & Push changes
+              if: github.event_name == 'push'
+              uses: stefanzweifel/git-auto-commit-action@v4
+              with:
+                  commit_message: 'chore(version): launch release 🚀 "${{ steps.package-version.outputs.current-version}}"'
