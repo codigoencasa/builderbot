@@ -1,4 +1,5 @@
 const { red, yellow, green, bgCyan } = require('kleur')
+const { exec } = require('node:child_process')
 
 const checkNodeVersion = () => {
     console.log(bgCyan('🚀 Revisando tu Node.js'))
@@ -12,7 +13,7 @@ const checkNodeVersion = () => {
         )
         process.exit(1)
     }
-    console.log(green(`Node.js compatible ${version}`))
+    console.log(green(`Node.js: ${version} compatible ✅`))
     console.log(``)
 }
 
@@ -31,8 +32,20 @@ const checkOs = () => {
 
         console.log(yellow(messages.join(' \n')))
     }
-
+    console.log(green(`OS: compatible ✅`))
     console.log(``)
 }
 
-module.exports = { checkNodeVersion, checkOs }
+const checkGit = () => {
+    console.log(bgCyan('🤓 Revisando GIT'))
+    exec('git --version', (error) => {
+        if (error) {
+            console.error(red(`🔴 Se require instalar GIT`))
+            process.exit(1)
+        }
+    })
+    console.log(green(`Git: Compatible ✅`))
+    console.log(``)
+}
+
+module.exports = { checkNodeVersion, checkOs, checkGit }
