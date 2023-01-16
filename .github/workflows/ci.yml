@@ -108,8 +108,8 @@ jobs:
                   git add .
                   git commit -m "${{ steps.vars.outputs.commit }}"
 
-            - name: Push changes
-              uses: ad-m/github-push-action@master
+            - name: Commit Versioning & Push changes
+              uses: stefanzweifel/git-auto-commit-action@v4
               with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  commit_message: '${{ steps.vars.outputs.commit }}'
                   branch: feature/providers-major
