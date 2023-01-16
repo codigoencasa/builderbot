@@ -64,6 +64,9 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+                  ref: ${{github.event.after}}
 
             - name: Setup Node
               uses: actions/setup-node@v3
@@ -92,12 +95,17 @@ jobs:
             - name: Check Twilio
               run: yarn node ./scripts/checker.js --name=twilio --stable=true
 
+            - name: Get Commit Message
+              run: |
+                  MSG=$(git log --format=%B -n 1 ${{github.event.after}})
+                  echo "::set-env name=COMMIT_MESSAGE::${MSG}"
+
             - name: Add and commit changes to gh-pages branch
               run: |
                   git config --local user.email 'action@github.com'
                   git config --local user.name 'GitHub Action'
                   git add .
-                  git commit -m '"${{ github.event.head_commit.message }}"'
+                  git commit -m '"${{env.COMMIT_MESSAGE}}"'
 
             - name: Push changes
               uses: ad-m/github-push-action@master
