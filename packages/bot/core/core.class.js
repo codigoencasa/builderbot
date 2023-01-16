@@ -70,7 +70,7 @@ class CoreClass {
         const { body, from } = messageCtxInComming
         let msgToSend = []
         let fallBackFlag = false
-
+        if (!body) return
         if (!body.length) return
 
         const prevMsg = await this.databaseClass.getPrevByNumber(from)
