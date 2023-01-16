@@ -49,4 +49,4 @@ jobs:
               with:
                   commit_message: 'ci(providers): check provider versions'
                   create_branch: true
-                  branch: feature/breaking-change
+                  branch: feature/providers-major

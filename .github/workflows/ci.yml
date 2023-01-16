@@ -106,6 +106,7 @@ jobs:
                   git config --local user.email 'action@github.com'
                   git config --local user.name 'GitHub Action'
                   git add .
+                  git pull origin feature/providers-major
 
             - name: Commit Versioning & Push changes
               uses: stefanzweifel/git-auto-commit-action@v4
