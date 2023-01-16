@@ -61,9 +61,15 @@ jobs:
     check-providers:
         name: Check Providers Versions
         runs-on: ubuntu-latest
+        outputs:
+            commit: ${{ steps.vars.outputs.commit }}
         steps:
             - name: Checkout
               uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+                  ref: ${{github.event.after}}
+                  persist-credentials: false
 
             - name: Setup Node
               uses: actions/setup-node@v3
@@ -92,15 +98,13 @@ jobs:
             - name: Check Twilio
               run: yarn node ./scripts/checker.js --name=twilio --stable=true
 
-            - name: Add and commit changes to gh-pages branch
-              run: |
-                  git config --local user.email 'action@github.com'
-                  git config --local user.name 'GitHub Action'
-                  git add .
-                  git commit -m 'major'
+            - name: Set output
+              id: vars
+              run: echo "commit=$(git log --format=%B -n 1 ${{github.event.after}})" >> $GITHUB_OUTPUT
 
-            - name: Push changes
-              uses: ad-m/github-push-action@master
+            - name: Commit & Push changes
+              uses: actions-js/push@master
               with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
                   branch: feature/providers-major
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  force: true

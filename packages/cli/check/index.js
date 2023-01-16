@@ -24,7 +24,7 @@ const checkNodeVersion = () => {
 }
 
 const checkOs = () => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         console.log(bgCyan('🙂 Revisando tu sistema operativo'))
         const os = process.platform
         if (!os.includes('win32')) {
