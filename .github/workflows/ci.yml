@@ -106,7 +106,6 @@ jobs:
                   git config --local user.email 'action@github.com'
                   git config --local user.name 'GitHub Action'
                   git add .
-                  git commit -m "${{ steps.vars.outputs.commit }}"
 
             - name: Commit Versioning & Push changes
               uses: stefanzweifel/git-auto-commit-action@v4
