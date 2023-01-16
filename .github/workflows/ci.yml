@@ -69,6 +69,7 @@ jobs:
               with:
                   fetch-depth: 0
                   ref: ${{github.event.after}}
+                  persist-credentials: false
 
             - name: Setup Node
               uses: actions/setup-node@v3
@@ -101,16 +102,8 @@ jobs:
               id: vars
               run: echo "commit=$(git log --format=%B -n 1 ${{github.event.after}})" >> $GITHUB_OUTPUT
 
-            - name: Add and commit changes to gh-pages branch
-              run: |
-                  git config --global user.email 'action@github.com'
-                  git config --global user.name 'GitHub Action'
-                  git add packages/provider
-                  git add starters/apps
-
-            - name: Commit Versioning & Push changes
-              uses: stefanzweifel/git-auto-commit-action@v4
+            - name: Commit & Push changes
+              uses: actions-js/push@master
               with:
-                  commit_message: '${{ steps.vars.outputs.commit }}'
                   branch: feature/providers-major
-                  push_options: '--force'
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
