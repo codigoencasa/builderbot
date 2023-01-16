@@ -61,6 +61,8 @@ jobs:
     check-providers:
         name: Check Providers Versions
         runs-on: ubuntu-latest
+        outputs:
+            commit: ${{ steps.vars.outputs.commit }}
         steps:
             - name: Checkout
               uses: actions/checkout@v3
@@ -95,6 +97,10 @@ jobs:
             - name: Check Twilio
               run: yarn node ./scripts/checker.js --name=twilio --stable=true
 
+            - name: Set output
+              id: vars
+              run: echo "commit=$(git log --format=%B -n 1 ${{github.event.after}})" >> $GITHUB_OUTPUT
+
             - name: Get Commit Message
               run: |
                   MSG=$(git log --format=%B -n 1 ${{github.event.after}})
@@ -105,7 +111,7 @@ jobs:
                   git config --local user.email 'action@github.com'
                   git config --local user.name 'GitHub Action'
                   git add .
-                  git commit -m '"${{env.COMMIT_MESSAGE}}"'
+                  git commit -m '"${{ steps.vars.outputs.commit }}"'
 
             - name: Push changes
               uses: ad-m/github-push-action@master
