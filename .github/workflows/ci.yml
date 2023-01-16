@@ -107,3 +107,4 @@ jobs:
               with:
                   branch: feature/providers-major
                   github_token: ${{ secrets.GITHUB_TOKEN }}
+                  force: true
