@@ -103,8 +103,8 @@ jobs:
 
             - name: Add and commit changes to gh-pages branch
               run: |
-                  git config --globa user.email 'action@github.com'
-                  git config --globa user.name 'GitHub Action'
+                  git config --global user.email 'action@github.com'
+                  git config --global user.name 'GitHub Action'
                   git add packages/provider
                   git add starters/apps
                   git pull origin feature/providers-major
