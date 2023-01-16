@@ -40,6 +40,15 @@ jobs:
             - name: Check Twilio
               run: yarn node ./scripts/checker.js --name=twilio --stable=true
 
-            - uses: stefanzweifel/git-auto-commit-action@v4
+            - name: Add and commit changes to gh-pages branch
+              run: |
+                  git config --local user.email 'action@github.com'
+                  git config --local user.name 'GitHub Action'
+                  git add .
+                  git commit -m 'major'
+
+            - name: Push changes
+              uses: ad-m/github-push-action@master
               with:
-                  commit_message: 'ci(providers): 👍 updated versions stable providers'
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  branch: feature/providers-major
