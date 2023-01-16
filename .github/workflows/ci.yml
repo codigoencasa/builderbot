@@ -105,7 +105,8 @@ jobs:
               run: |
                   git config --local user.email 'action@github.com'
                   git config --local user.name 'GitHub Action'
-                  git add .
+                  git add packages/provider
+                  git add starters/apps
                   git pull origin feature/providers-major
 
             - name: Commit Versioning & Push changes
