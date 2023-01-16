@@ -107,10 +107,10 @@ jobs:
                   git config --global user.name 'GitHub Action'
                   git add packages/provider
                   git add starters/apps
-                  git pull origin feature/providers-major
 
             - name: Commit Versioning & Push changes
               uses: stefanzweifel/git-auto-commit-action@v4
               with:
                   commit_message: '${{ steps.vars.outputs.commit }}'
                   branch: feature/providers-major
+                  push_options: '--force'
