@@ -14,6 +14,9 @@ export const fetchGithub = async (token: string) => {
             },
         }
     )
-    const listUsers = data.json()
-    return listUsers
+    const listUsers = await data.json()
+    return listUsers.map((u: any) => ({
+        ...u,
+        avatar_url: `${u.avatar_url}&s=80`,
+    }))
 }

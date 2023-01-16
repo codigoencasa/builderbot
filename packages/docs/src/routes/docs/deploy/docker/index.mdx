@@ -1,0 +1,32 @@
+import Alert from '../../../../components/widgets/Alert'
+import Navigation from '../../../../components/widgets/Navigation'
+
+# Entorno Docker
+
+Previamente, necesitas tener instalado Docker en tu servidor dependiendo del sistema operativo, los procesos cambian,
+puedes encontrar toda la información oficial de docker en [este enlace.](https://docs.docker.com/get-docker/)
+
+---
+
+Dependiendo del proveedor que has elegido necesitaras una implementación de Docker específica, pero no te preocupes, ya que viene implementada automáticamente en un archivo llamado **Dockerfile**, también puedes ver los otros Dockerfile en el apartado de [plantillas.](https://github.com/codigoencasa/bot-whatsapp/tree/main/starters/apps)
+
+![](https://i.imgur.com/cDspa0R.png)
+
+---
+
+## Contruir imagen
+
+Solo es necesario construir la imagen del docker lo puedes hacer con el siguiente comando
+
+```shell
+docker build . -t botwhatsapp:latest
+```
+
+## Iniciar contenedor
+
+Para iniciar el contenedor con la imagen previamente construida puedes realizarlo ejecutando el siguiente comando.
+Se utiliza el puerto **3001** solo com un ejemplo puedes usar el puerto que tu quieras
+
+```shell
+docker run -e PORT=3001 -p 3001:3001 botwhatsapp:latest
+```
