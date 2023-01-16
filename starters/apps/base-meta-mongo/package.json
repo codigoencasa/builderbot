@@ -1,5 +1,5 @@
 {
-    "name": "bot-whatsapp-base-meta-mongo",
+    "name": "base-meta-mongo",
     "version": "1.0.0",
     "description": "",
     "main": "app.js",

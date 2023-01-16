@@ -4,7 +4,7 @@ const pino = require('pino')
 const rimraf = require('rimraf')
 const mime = require('mime-types')
 const { join } = require('path')
-const { existsSync, createWriteStream } = require('fs')
+const { existsSync, createWriteStream, readFileSync } = require('fs')
 const { Console } = require('console')
 
 const {
@@ -24,19 +24,18 @@ const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/baileys.log`),
 })
 
-const NAME_DIR_SESSION = `sessions`
-const PATH_BASE = join(process.cwd(), NAME_DIR_SESSION)
-
 /**
  * ⚙️ BaileysProvider: Es una clase tipo adaptor
  * que extiende clases de ProviderClass (la cual es como interfaz para sber que funciones rqueridas)
  * https://github.com/adiwajshing/Baileys
  */
 class BaileysProvider extends ProviderClass {
+    globalVendorArgs = { name: `bot` }
     vendor
     saveCredsGlobal = null
-    constructor() {
+    constructor(args) {
         super()
+        this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
         this.initBailey().then()
     }
 
@@ -44,6 +43,7 @@ class BaileysProvider extends ProviderClass {
      * Iniciar todo Bailey
      */
     initBailey = async () => {
+        const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
         const { state, saveCreds } = await useMultiFileAuthState(
             NAME_DIR_SESSION
         )
@@ -70,6 +70,7 @@ class BaileysProvider extends ProviderClass {
                     }
 
                     if (statusCode === DisconnectReason.loggedOut) {
+                        const PATH_BASE = join(process.cwd(), NAME_DIR_SESSION)
                         rimraf(PATH_BASE, (err) => {
                             if (err) return
                         })
@@ -88,12 +89,15 @@ class BaileysProvider extends ProviderClass {
                 if (qr) {
                     this.emit('require_action', {
                         instructions: [
-                            `Debes escanear el QR Code para iniciar session reivsa qr.png`,
+                            `Debes escanear el QR Code para iniciar ${this.globalVendorArgs.name}.qr.png`,
                             `Recuerda que el QR se actualiza cada minuto `,
                             `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
                         ],
                     })
-                    await baileyGenerateImage(qr)
+                    await baileyGenerateImage(
+                        qr,
+                        `${this.globalVendorArgs.name}.qr.png`
+                    )
                 }
             })
 
@@ -137,7 +141,7 @@ class BaileysProvider extends ProviderClass {
                 }
 
                 const btnCtx =
-                    payload?.message?.templateButtonReplyMessage
+                    payload?.message?.buttonsResponseMessage
                         ?.selectedDisplayText
 
                 if (btnCtx) payload.body = btnCtx
@@ -167,8 +171,8 @@ class BaileysProvider extends ProviderClass {
     sendMedia = async (number, imageUrl, text) => {
         const fileDownloaded = await baileyDownloadMedia(imageUrl)
         return this.vendor.sendMessage(number, {
-            image: { url: fileDownloaded },
-            text,
+            image: readFileSync(fileDownloaded),
+            caption: text,
         })
     }
 
@@ -229,20 +233,22 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendButtons = async (number, text, buttons) => {
-        const numberClean = number.replace('+', '')
+        const numberClean = baileyCleanNumber(number)
+
         const templateButtons = buttons.map((btn, i) => ({
-            index: `${i}`,
-            quickReplyButton: {
-                displayText: btn.body,
-                id: `id-btn-${i}`,
-            },
+            buttonId: `id-btn-${i}`,
+            buttonText: { displayText: btn.body },
+            type: 1,
         }))
 
-        return this.vendor.sendMessage(`${numberClean}@c.us`, {
+        const buttonMessage = {
             text,
             footer: '',
-            templateButtons: templateButtons,
-        })
+            buttons: templateButtons,
+            headerType: 1,
+        }
+
+        return this.vendor.sendMessage(numberClean, buttonMessage)
     }
 
     /**

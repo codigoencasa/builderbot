@@ -19,11 +19,23 @@ const logger = new Console({
  * https://github.com/pedroslopez/whatsapp-web.js
  */
 class WebWhatsappProvider extends ProviderClass {
+    globalVendorArgs = { name: `bot` }
     vendor
-    constructor() {
+    constructor(args) {
         super()
+        this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
         this.vendor = new Client({
-            authStrategy: new LocalAuth(),
+            authStrategy: new LocalAuth({
+                clientId: `${this.globalVendorArgs.name}_sessions`,
+            }),
+            puppeteer: {
+                headless: true,
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--unhandled-rejections=strict',
+                ],
+            },
         })
 
         const listEvents = this.busEvents()
@@ -60,12 +72,15 @@ class WebWhatsappProvider extends ProviderClass {
             func: async (qr) => {
                 this.emit('require_action', {
                     instructions: [
-                        `Debes escanear el QR Code para iniciar session reivsa qr.png`,
+                        `Debes escanear el QR Code para iniciar ${this.globalVendorArgs.name}.qr.png`,
                         `Recuerda que el QR se actualiza cada minuto `,
                         `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
                     ],
                 })
-                await wwebGenerateImage(qr)
+                await wwebGenerateImage(
+                    qr,
+                    `${this.globalVendorArgs.name}.qr.png`
+                )
             },
         },
         {

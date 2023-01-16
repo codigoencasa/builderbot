@@ -20,9 +20,11 @@ const logger = new Console({
  * https://github.com/orkestral/venom
  */
 class VenomProvider extends ProviderClass {
+    globalVendorArgs = { name: `bot` }
     vendor
-    constructor() {
+    constructor(args) {
         super()
+        this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
         this.init().then(() => this.initBusEvents())
     }
 
@@ -30,15 +32,19 @@ class VenomProvider extends ProviderClass {
      * Iniciamos el Proveedor Venom
      */
     init = async () => {
+        const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
         try {
             const client = await venom.create(
                 {
-                    session: 'session-base',
+                    session: NAME_DIR_SESSION,
                     multidevice: true,
+                    disableSpins: true,
+                    disableWelcome: true,
+                    logger,
+                    logQR: false,
                 },
                 (base) => this.generateQr(base),
-                undefined,
-                { logQR: false }
+                undefined
             )
             this.vendor = client
         } catch (e) {
@@ -61,12 +67,12 @@ class VenomProvider extends ProviderClass {
         console.clear()
         this.emit('require_action', {
             instructions: [
-                `Debes escanear el QR Code para iniciar session reivsa qr.png`,
+                `Debes escanear el QR Code para iniciar ${this.globalVendorArgs.name}.qr.png`,
                 `Recuerda que el QR se actualiza cada minuto `,
                 `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
             ],
         })
-        await venomGenerateImage(qr)
+        await venomGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)
     }
 
     /**

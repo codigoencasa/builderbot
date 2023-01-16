@@ -1,5 +1,5 @@
 {
-    "name": "bot-whatsapp-base-wweb-mongo",
+    "name": "base-wweb-mongo",
     "version": "1.0.0",
     "description": "",
     "main": "app.js",
@@ -14,6 +14,7 @@
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",
         "@bot-whatsapp/provider": "latest",
+        "@bot-whatsapp/portal": "latest",
         "mime-types": "^2.1.35",
         "mongodb": "^4.12.1"
     },

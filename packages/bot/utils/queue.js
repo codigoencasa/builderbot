@@ -1,8 +1,8 @@
 class Queue {
-    static queue = []
-    static pendingPromise = false
+    queue = []
+    pendingPromise = false
 
-    static enqueue(promise) {
+    enqueue(promise) {
         return new Promise((resolve, reject) => {
             this.queue.push({
                 promise,
@@ -13,7 +13,7 @@ class Queue {
         })
     }
 
-    static dequeue() {
+    dequeue() {
         if (this.workingOnPromise) {
             return false
         }
