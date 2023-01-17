@@ -52,16 +52,22 @@ export default component$(() => {
             title: 'Avanzado',
             list: [
                 { name: 'Migración', link: '/docs/migration' },
-                { name: 'Extender funcionalidades', link: '/docs/custom' },
+                { name: 'MasterClass', link: '/docs/masterclass' },
+            ],
+        },
+        {
+            title: 'Despliegue',
+            list: [
+                { name: 'Local', link: '/docs/deploy/local' },
+                { name: 'Docker', link: '/docs/deploy/docker' },
+                { name: 'Cloud', link: '/docs/deploy/cloud' },
             ],
         },
         {
             title: 'Comunidad',
             list: [
-                { name: 'MasterClass', link: '/docs/masterclass' },
                 { name: 'Colabores', link: '/docs/contributing' },
                 { name: 'Unirme al proyecto', link: '/docs/join' },
-                { name: 'Sponsors', link: '/docs/sponsors' },
             ],
         },
     ])
