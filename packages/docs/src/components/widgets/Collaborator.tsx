@@ -14,7 +14,7 @@ export default component$(
                 <a href={props.user.html_url} target="_blank">
                     <img
                         class="w-16 h-16 rounded-full mx-auto object-cover"
-                        src={props.user.avatar_url + '&s=80'}
+                        src={props.user.avatar_url}
                         alt={props.user.login}
                         width="80"
                         height="80"
@@ -23,7 +23,9 @@ export default component$(
 
                 <div class="pt-2 space-y-4 justify-center flex">
                     <figcaption class="text-sm">
-                        <div class={'font-semibold'}>{props.user.login}</div>
+                        <div class={'font-semibold truncate'}>
+                            {props.user.login}
+                        </div>
                     </figcaption>
                 </div>
             </figure>

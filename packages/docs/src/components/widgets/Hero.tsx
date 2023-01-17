@@ -56,7 +56,7 @@ export default component$(() => {
                                         </a>
                                         <a
                                             target={'_blank'}
-                                            href="https://youtu.be/DEIyGyJNGa8"
+                                            href="https://youtu.be/UgoS8PXxe-A"
                                             class="btn  bg-gray-50 dark:bg-transparent"
                                         >
                                             Ver video

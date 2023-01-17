@@ -5,7 +5,9 @@ import Features from '~/components/widgets/Features'
 import FAQs from '~/components/widgets/FAQs'
 import CallToAction from '~/components/widgets/CallToAction'
 import Collaborators from '~/components/widgets/Collaborators'
+import Members from '~/components/widgets/Members'
 import { fetchGithub } from '~/services/github'
+import { fetchOpenCollective } from '~/services/opencollective'
 import { RequestHandlerNetlify } from '@builder.io/qwik-city/middleware/netlify-edge'
 import { GITHUB_TOKEN } from './docs/constant'
 
@@ -13,8 +15,12 @@ export const onGet: RequestHandlerNetlify = async ({ platform }) => {
     const CHECK_GITHUB_TOKEN =
         (platform as any)?.['GITHUB_TOKEN'] ?? GITHUB_TOKEN
     console.log(`[🚩 platform]: `, GITHUB_TOKEN)
-    const data = await fetchGithub(CHECK_GITHUB_TOKEN)
-    return data
+    const dataGithub = await fetchGithub(CHECK_GITHUB_TOKEN)
+    const dataOpenCollective = await fetchOpenCollective()
+    return {
+        dataGithub,
+        dataOpenCollective,
+    }
 }
 
 export default component$(() => {
@@ -27,9 +33,16 @@ export default component$(() => {
             <CallToAction />
             <Resource
                 value={resource}
-                onResolved={(data: any) => <Collaborators users={data} />}
+                onResolved={(data: any) => {
+                    return (
+                        <>
+                            <Collaborators users={data.dataGithub} />
+                            <FAQs />
+                            <Members users={data.dataOpenCollective} />
+                        </>
+                    )
+                }}
             ></Resource>
-            <FAQs />
         </>
     )
 })
