@@ -67,13 +67,9 @@ jobs:
             - name: Release Github
               run: yarn node ./scripts/github.js --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.OCTO_TOKEN }}"
 
-            - name: 'Run if changes have been detected'
-              run: |
-                  git add .
-                  git commit -m "chore(version): pre release"
-
-            - name: Commit Versioning & Push changes
-              if: github.event_name == 'push'
-              uses: stefanzweifel/git-auto-commit-action@v4
+            - name: Commit & Push changes
+              uses: actions-js/push@master
               with:
-                  commit_message: 'chore(version): launch release 🚀 "${{ steps.package-version.outputs.current-version}}"'
+                  branch: release/production
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  force: true
