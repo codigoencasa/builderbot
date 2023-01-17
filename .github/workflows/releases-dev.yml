@@ -10,6 +10,8 @@ jobs:
     release:
         name: Release
         runs-on: ubuntu-latest
+        outputs:
+            commit: ${{ steps.vars.outputs.commit }}
         steps:
             - name: Checkout
               uses: actions/checkout@v3
