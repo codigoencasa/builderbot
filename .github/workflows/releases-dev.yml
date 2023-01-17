@@ -13,6 +13,10 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+                  ref: ${{github.event.after}}
+                  persist-credentials: false
 
             - name: Setup Node
               uses: actions/setup-node@v3
@@ -50,7 +54,13 @@ jobs:
             - name: Release @bot-whatsapp/portal
               run: yarn node ./scripts/release.js --name=portal --version=  --token="${{ secrets.NPM_TOKEN }}"
 
-            - name: Commit Versioning & Push changes
-              uses: stefanzweifel/git-auto-commit-action@v4
+            - name: Set output
+              id: vars
+              run: echo "commit=$(git log --format=%B -n 1 ${{github.event.after}})" >> $GITHUB_OUTPUT
+
+            - name: Commit & Push changes
+              uses: actions-js/push@master
               with:
-                  commit_message: 'ci(version): :zap: automatic - "${date}" updated versions every packages'
+                  branch: release/next
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  force: true
