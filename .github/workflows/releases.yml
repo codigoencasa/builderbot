@@ -70,5 +70,6 @@ jobs:
             - name: Commit & Push changes
               uses: actions-js/push@master
               with:
+                  branch: release/production
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   force: true
