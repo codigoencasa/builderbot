@@ -72,11 +72,12 @@ class CoreClass {
         const { body, from } = messageCtxInComming
         let msgToSend = []
         let fallBackFlag = false
+        let endFlowFlag = false
         if (this.generalArgs.blackList.includes(from)) return
         if (!body) return
         if (!body.length) return
 
-        const prevMsg = await this.databaseClass.getPrevByNumber(from)
+        let prevMsg = await this.databaseClass.getPrevByNumber(from)
         const refToContinue = this.flowClass.findBySerialize(
             prevMsg?.refSerialize
         )
@@ -90,13 +91,28 @@ class CoreClass {
             this.databaseClass.save(ctxByNumber)
         }
 
+        // 📄 Limpiar cola de procesos
+        const clearQueue = () => {
+            QueuePrincipal.pendingPromise = false
+            QueuePrincipal.queue = []
+        }
+
+        // 📄 Finalizar flujo
+        const endFlow = async () => {
+            prevMsg = null
+            endFlowFlag = true
+            clearQueue()
+            return
+        }
+
         // 📄 Esta funcion se encarga de enviar un array de mensajes dentro de este ctx
         const sendFlow = async (messageToSend, numberOrId) => {
             // [1 Paso] esto esta bien!
-            if (prevMsg?.options?.capture) await cbEveryCtx(prevMsg?.ref)
 
+            if (prevMsg?.options?.capture) await cbEveryCtx(prevMsg?.ref)
             const queue = []
             for (const ctxMessage of messageToSend) {
+                if (endFlowFlag) return
                 const delayMs = ctxMessage?.options?.delay || 0
                 if (delayMs) await delay(delayMs)
                 QueuePrincipal.enqueue(() =>
@@ -145,6 +161,7 @@ class CoreClass {
                 })
                 .slice(0, optListMsg.limit)
 
+            if (endFlowFlag) return
             for (const msg of parseListMsg) {
                 await this.sendProviderAndSave(from, msg)
             }
@@ -163,6 +180,7 @@ class CoreClass {
             return this.flowClass.allCallbacks[inRef](messageCtxInComming, {
                 fallBack,
                 flowDynamic,
+                endFlow,
             })
         }
 
