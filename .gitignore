@@ -1,4 +1,5 @@
 /node_modules
+/packages/repl
 /packages/*/starters
 /packages/*/node_modules
 /packages/*/dist
