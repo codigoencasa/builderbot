@@ -1,7 +1,6 @@
 const { test } = require('uvu')
 const assert = require('uvu/assert')
 const FlowClass = require('../io/flow.class')
-const MockProvider = require('../../../__mocks__/mock.provider')
 const { addKeyword } = require('../index')
 
 test(`[FlowClass] Probando instanciamiento de clase`, async () => {

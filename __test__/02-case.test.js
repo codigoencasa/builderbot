@@ -23,7 +23,7 @@ const fakeHTTP = async (fakeData = []) => {
     return Promise.resolve(data)
 }
 
-test(`[Caso - 02] Flow Más Complejo`, async () => {
+test(`[Caso - 02] Flow (flowDynamic)`, async () => {
     const MOCK_VALUES = [
         'Bienvenido te envio muchas marcas (5510)',
         'Seleccione marca del auto a cotizar, con el *número* correspondiente',
