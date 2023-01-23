@@ -8,8 +8,8 @@ const { addKeyword, addAnswer, addChild, toSerialize } = require('./io/methods')
  * @param {*} args
  * @returns
  */
-const createBot = async ({ flow, database, provider }) =>
-    new CoreClass(flow, database, provider)
+const createBot = async ({ flow, database, provider }, args = {}) =>
+    new CoreClass(flow, database, provider, args)
 
 /**
  * Crear instancia de clase Io (Flow)

@@ -21,10 +21,12 @@ class CoreClass {
     flowClass
     databaseClass
     providerClass
-    constructor(_flow, _database, _provider) {
+    generalArgs = { blackList: [] }
+    constructor(_flow, _database, _provider, _args) {
         this.flowClass = _flow
         this.databaseClass = _database
         this.providerClass = _provider
+        this.generalArgs = { ...this.generalArgs, ..._args }
 
         for (const { event, func } of this.listenerBusEvents()) {
             this.providerClass.on(event, func)
@@ -70,6 +72,7 @@ class CoreClass {
         const { body, from } = messageCtxInComming
         let msgToSend = []
         let fallBackFlag = false
+        if (this.generalArgs.blackList.includes(from)) return
         if (!body) return
         if (!body.length) return
 
