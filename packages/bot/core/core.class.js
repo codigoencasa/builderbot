@@ -212,5 +212,24 @@ class CoreClass {
             this.continue(null, responde.ref)
         }
     }
+
+    /**
+     * Funcion dedicada a enviar el mensaje sin pasar por el flow
+     * (dialogflow)
+     * @param {*} messageToSend
+     * @param {*} numberOrId
+     * @returns
+     */
+    sendFlowSimple = async (messageToSend, numberOrId) => {
+        const queue = []
+        for (const ctxMessage of messageToSend) {
+            const delayMs = ctxMessage?.options?.delay || 0
+            if (delayMs) await delay(delayMs)
+            QueuePrincipal.enqueue(() =>
+                this.sendProviderAndSave(numberOrId, ctxMessage)
+            )
+        }
+        return Promise.all(queue)
+    }
 }
 module.exports = CoreClass
