@@ -117,6 +117,7 @@ class CoreClass {
 
         // 📄 [options: flowDynamic]: esta funcion se encarga de responder un array de respuesta esta limitado a 5 mensajes
         // para evitar bloque de whatsapp
+
         const flowDynamic = async (
             listMsg = [],
             optListMsg = { limit: 5, fallback: false }
@@ -126,15 +127,21 @@ class CoreClass {
 
             fallBackFlag = optListMsg.fallback
             const parseListMsg = listMsg
-                .map(({ body }, index) =>
-                    toCtx({
+                .map((opt, index) => {
+                    const body = typeof opt === 'string' ? opt : opt.body
+                    const media = opt?.media ?? null
+                    const buttons = opt?.buttons ?? []
+
+                    return toCtx({
                         body,
                         from,
                         keyword: null,
                         index,
+                        options: { media, buttons },
                     })
-                )
+                })
                 .slice(0, optListMsg.limit)
+
             for (const msg of parseListMsg) {
                 await this.sendProviderAndSave(from, msg)
             }
@@ -211,6 +218,25 @@ class CoreClass {
             this.databaseClass.saveLog(responde.answer)
             this.continue(null, responde.ref)
         }
+    }
+
+    /**
+     * Funcion dedicada a enviar el mensaje sin pasar por el flow
+     * (dialogflow)
+     * @param {*} messageToSend
+     * @param {*} numberOrId
+     * @returns
+     */
+    sendFlowSimple = async (messageToSend, numberOrId) => {
+        const queue = []
+        for (const ctxMessage of messageToSend) {
+            const delayMs = ctxMessage?.options?.delay || 0
+            if (delayMs) await delay(delayMs)
+            QueuePrincipal.enqueue(() =>
+                this.sendProviderAndSave(numberOrId, ctxMessage)
+            )
+        }
+        return Promise.all(queue)
     }
 }
 module.exports = CoreClass
