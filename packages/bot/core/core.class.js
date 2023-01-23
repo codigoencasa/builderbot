@@ -89,14 +89,18 @@ class CoreClass {
 
         // 📄 Esta funcion se encarga de enviar un array de mensajes dentro de este ctx
         const sendFlow = async (messageToSend, numberOrId) => {
+            // [1 Paso] esto esta bien!
+            if (prevMsg?.options?.capture) await cbEveryCtx(prevMsg?.ref)
+
             const queue = []
             for (const ctxMessage of messageToSend) {
                 const delayMs = ctxMessage?.options?.delay || 0
                 if (delayMs) await delay(delayMs)
                 QueuePrincipal.enqueue(() =>
                     Promise.all([
-                        this.sendProviderAndSave(numberOrId, ctxMessage),
-                        resolveCbEveryCtx(ctxMessage),
+                        this.sendProviderAndSave(numberOrId, ctxMessage).then(
+                            () => resolveCbEveryCtx(ctxMessage)
+                        ),
                     ])
                 )
             }
@@ -139,7 +143,6 @@ class CoreClass {
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback o fallback
         const resolveCbEveryCtx = async (ctxMessage) => {
-            if (prevMsg?.options?.capture) return cbEveryCtx(prevMsg?.ref)
             if (!ctxMessage?.options?.capture)
                 return await cbEveryCtx(ctxMessage?.ref)
         }
@@ -153,17 +156,6 @@ class CoreClass {
             })
         }
 
-        if (prevMsg?.ref) resolveCbEveryCtx(prevMsg)
-
-        // 📄 [options: callback]: Si se tiene un callback se ejecuta
-        //TODO AQUI
-        // if (!fallBackFlag) {
-        //     if (prevMsg?.options?.capture) cbEveryCtx(prevMsg?.ref)
-        //     for (const ite of this.flowClass.find(body)) {
-        //         if (!ite?.options?.capture) cbEveryCtx(ite?.ref)
-        //     }
-        // }
-
         // 📄🤘(tiene return) [options: nested(array)]: Si se tiene flujos hijos los implementa
         if (!fallBackFlag && prevMsg?.options?.nested?.length) {
             const nestedRef = prevMsg.options.nested
@@ -172,11 +164,6 @@ class CoreClass {
             }))
 
             msgToSend = this.flowClass.find(body, false, flowStandalone) || []
-
-            // //TODO AQUI
-            // for (const ite of msgToSend) {
-            //     cbEveryCtx(ite?.ref)
-            // }
 
             sendFlow(msgToSend, from)
             return
@@ -224,6 +211,25 @@ class CoreClass {
             this.databaseClass.saveLog(responde.answer)
             this.continue(null, responde.ref)
         }
+    }
+
+    /**
+     * Funcion dedicada a enviar el mensaje sin pasar por el flow
+     * (dialogflow)
+     * @param {*} messageToSend
+     * @param {*} numberOrId
+     * @returns
+     */
+    sendFlowSimple = async (messageToSend, numberOrId) => {
+        const queue = []
+        for (const ctxMessage of messageToSend) {
+            const delayMs = ctxMessage?.options?.delay || 0
+            if (delayMs) await delay(delayMs)
+            QueuePrincipal.enqueue(() =>
+                this.sendProviderAndSave(numberOrId, ctxMessage)
+            )
+        }
+        return Promise.all(queue)
     }
 }
 module.exports = CoreClass
