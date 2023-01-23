@@ -7,7 +7,7 @@ const {
     createBot,
     createFlow,
     createProvider,
-} = require('../packages/bot/lib/bundle.bot.cjs')
+} = require('../packages/bot/index')
 
 /**
  * Falsear peticion async
