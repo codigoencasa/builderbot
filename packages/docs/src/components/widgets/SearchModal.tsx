@@ -1,10 +1,10 @@
-import { component$, useStore } from '@builder.io/qwik'
+import { component$ } from '@builder.io/qwik'
 
 export const SearchModal = component$(() => {
-    const state = useStore({
-        open: false,
-        src: '',
-    })
+    // const state = useStore({
+    //     open: false,
+    //     src: '',
+    // })
 
     return (
         <div class={'bg-gray-100/75  fixed w-[100vw] h-[100vh] z-50'}>

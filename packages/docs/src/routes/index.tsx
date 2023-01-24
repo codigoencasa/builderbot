@@ -10,7 +10,7 @@ import { fetchGithub } from '~/services/github'
 import { fetchOpenCollective } from '~/services/opencollective'
 import { RequestHandlerNetlify } from '@builder.io/qwik-city/middleware/netlify-edge'
 import { GITHUB_TOKEN } from './docs/constant'
-import { SearchModal } from '~/components/widgets/SearchModal'
+// import { SearchModal } from '~/components/widgets/SearchModal'
 
 export const onGet: RequestHandlerNetlify = async ({ platform }) => {
     const CHECK_GITHUB_TOKEN =
