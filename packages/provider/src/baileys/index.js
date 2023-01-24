@@ -13,6 +13,7 @@ const {
     Browsers,
     DisconnectReason,
 } = require('@adiwajshing/baileys')
+
 const {
     baileyGenerateImage,
     baileyCleanNumber,
@@ -179,15 +180,11 @@ class BaileysProvider extends ProviderClass {
         if (mimeType.includes('audio'))
             return this.sendAudio(number, fileDownloaded, text)
 
-        console.log(mimeType)
-        return this.vendor.sendMessage(number, {
-            image: readFileSync(fileDownloaded),
-            caption: text,
-        })
+        return this.sendFile()
     }
 
     /**
-     *
+     * Enviar imagen
      * @param {*} number
      * @param {*} imageUrl
      * @param {*} text
@@ -201,7 +198,7 @@ class BaileysProvider extends ProviderClass {
     }
 
     /**
-     *
+     * Enviar video
      * @param {*} number
      * @param {*} imageUrl
      * @param {*} text
@@ -216,6 +213,7 @@ class BaileysProvider extends ProviderClass {
     }
 
     /**
+     * Enviar audio
      * @alpha
      * @param {string} number
      * @param {string} message
@@ -224,7 +222,7 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendAudio = async (number, audioUrl, voiceNote = false) => {
-        await this.vendor.sendMessage(number, {
+        return this.vendor.sendMessage(number, {
             audio: { url: audioUrl },
             ptt: voiceNote,
         })
@@ -248,17 +246,13 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendFile = async (number, filePath) => {
-        if (existsSync(filePath)) {
-            const mimeType = mime.lookup(filePath)
-            const numberClean = number.replace('+', '')
-            const fileName = filePath.split('/').pop()
-
-            await this.vendor.sendMessage(`${numberClean}@c.us`, {
-                document: { url: filePath },
-                mimetype: mimeType,
-                fileName: fileName,
-            })
-        }
+        const mimeType = mime.lookup(filePath)
+        const fileName = filePath.split('/').pop()
+        return this.vendor.sendMessage(number, {
+            document: { url: filePath },
+            mimetype: mimeType,
+            fileName: fileName,
+        })
     }
 
     /**

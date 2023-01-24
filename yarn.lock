@@ -1115,7 +1115,6 @@ __metadata:
     got: 11.8.3
     husky: ^8.0.2
     mime-types: ^2.1.35
-    name2mime: ^1.0.1
     only-allow: ^1.1.1
     prettier: ^2.8.0
     pretty-quick: ^3.1.3
@@ -13882,13 +13881,6 @@ __metadata:
     object-assign: ^4.0.1
     thenify-all: ^1.0.0
   checksum: 8427de0ece99a07e9faed3c0c6778820d7543e3776f9a84d22cf0ec0a8eb65f6e9aee9c9d353ff9a105ff62d33a9463c6ca638974cc652ee8140cd1e35951c87
-  languageName: node
-  linkType: hard
-
-"name2mime@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "name2mime@npm:1.0.1"
-  checksum: 46630096d2a5c381231f5e5025d3aaef824b5db29677971b8a93f565e63979524d6f43457dd4b93591341c26af2abb44ef7aa87943c51d2eed60b94519815880
   languageName: node
   linkType: hard
 
