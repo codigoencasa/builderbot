@@ -4,7 +4,7 @@ const pino = require('pino')
 const rimraf = require('rimraf')
 const mime = require('mime-types')
 const { join } = require('path')
-const { existsSync, createWriteStream, readFileSync } = require('fs')
+const { createWriteStream, readFileSync } = require('fs')
 const { Console } = require('console')
 
 const {
@@ -18,8 +18,9 @@ const {
     baileyGenerateImage,
     baileyCleanNumber,
     baileyIsValidNumber,
-    baileyDownloadMedia,
 } = require('./utils')
+
+const { generalDownload } = require('../../common/download')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/baileys.log`),
@@ -170,7 +171,7 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendMedia = async (number, imageUrl, text) => {
-        const fileDownloaded = await baileyDownloadMedia(imageUrl)
+        const fileDownloaded = await generalDownload(imageUrl)
         const mimeType = mime.lookup(fileDownloaded)
 
         if (mimeType.includes('image'))
@@ -180,7 +181,7 @@ class BaileysProvider extends ProviderClass {
         if (mimeType.includes('audio'))
             return this.sendAudio(number, fileDownloaded, text)
 
-        return this.sendFile()
+        return this.sendFile(number, fileDownloaded)
     }
 
     /**
