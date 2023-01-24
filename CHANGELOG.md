@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.18](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.17...v0.1.18) (2023-01-24)
+
+
+### Features
+
+* **bot:** :zap: add blacklist ([7078dc4](https://github.com/leifermendez/bot-whatsapp/commit/7078dc4c93d01bf90ef08ecb34e89a1abbe16fd2))
+* **bot:** :zap: flowDynamic buttons, media ([3c4b1c0](https://github.com/leifermendez/bot-whatsapp/commit/3c4b1c0fc4b6d98d67c67806d918d3604bb2209b))
+
+
+### Bug Fixes
+
+* **bot:** :bug: body undefined ([bb6ed4a](https://github.com/leifermendez/bot-whatsapp/commit/bb6ed4a084ae98070dfdf0c4ba1eca574c4092cc))
+* **bot:** :bug: body undefined ([9234cf1](https://github.com/leifermendez/bot-whatsapp/commit/9234cf1c5d00abdd35e62a826b3c450ab056987a))
+* **bot:** :bug: body undefined ([a118bbb](https://github.com/leifermendez/bot-whatsapp/commit/a118bbbf7f0a7023cb7f33c23f37db72adad151f))
+* **bot:** :bug: body undefined ([f54dea5](https://github.com/leifermendez/bot-whatsapp/commit/f54dea52b01063acd6122eeba1fbbe324aa7805d))
+* **bot:** :bug: body undefined ([72e0a91](https://github.com/leifermendez/bot-whatsapp/commit/72e0a910503e9643db7dfbc6e09c41c96934e1f7))
+* **bot:** :bug: body undefined ([70dd4d7](https://github.com/leifermendez/bot-whatsapp/commit/70dd4d73e814fc5636d19a887f3621c483b837c1))
+* **bot:** :bug: body undefined ([ecf0eef](https://github.com/leifermendez/bot-whatsapp/commit/ecf0eef928917d76c59bd23886cb7a4108b421f1))
+* **bot:** :bug: flowDynamic stranger  behaviour ([877252b](https://github.com/leifermendez/bot-whatsapp/commit/877252bd4a8a7bbbbf083c3ceaeaeb952b0a1828))
+* **bot:** :bug: flowDynamic stranger  behaviour ([f5a7de3](https://github.com/leifermendez/bot-whatsapp/commit/f5a7de3a003c012e2164e51fff26892cfc3144be))
+* **bot:** :memo: more docs ([98793d0](https://github.com/leifermendez/bot-whatsapp/commit/98793d0cfc1674830beaa3707f933c5a791eec14))
+* **cli:** :zap: refactor ([a29b9d4](https://github.com/leifermendez/bot-whatsapp/commit/a29b9d4e1f85fc163cf1d633c0857f0c8b7f03e1))
+* **cli:** :zap: refactor ([18ef4e9](https://github.com/leifermendez/bot-whatsapp/commit/18ef4e9d726575ca390ca24354825860328d3347))
+* **cli:** :zap: refactor ([3648757](https://github.com/leifermendez/bot-whatsapp/commit/3648757fa083bdb88a16bf6c2e90c828c233bdb1))
+* **cli:** :zap: refactor ([32f6a70](https://github.com/leifermendez/bot-whatsapp/commit/32f6a70f8f6fb26d8ea2a0f1a4aec4827b9d6a93))
+* **cli:** :zap: refactor ([8c825e7](https://github.com/leifermendez/bot-whatsapp/commit/8c825e7f6b7133f7cc7f3041ce331b80a9fe60e0))
+* **cli:** :zap: refactor ([0c0f437](https://github.com/leifermendez/bot-whatsapp/commit/0c0f4375b84549bee809340a85f9ce038ee2739e))
+* **cli:** :zap: refactor ([039ce5d](https://github.com/leifermendez/bot-whatsapp/commit/039ce5dd7cac8115b335ad5de05f7bd871e24140))
+* **cli:** :zap: refactor ([5e87918](https://github.com/leifermendez/bot-whatsapp/commit/5e879188b8bf9d486399b308a9a9c2612607d465))
+* **cli:** :zap: refactor ([21a7270](https://github.com/leifermendez/bot-whatsapp/commit/21a72702817bc6b344223b34ca4513a7ff45fc93))
+* **cli:** :zap: refactor ([82a99b2](https://github.com/leifermendez/bot-whatsapp/commit/82a99b2c80e6738566042ea738bbab8208a17758))
+* **cli:** :zap: refactor ([cc19974](https://github.com/leifermendez/bot-whatsapp/commit/cc19974579379777b05cb69c38cec0fce6740471))
+* **cli:** :zap: refactor ([56fcb8f](https://github.com/leifermendez/bot-whatsapp/commit/56fcb8fb72169bc21fce7c4fcdceccf2acd39c73))
+* **cli:** :zap: refactor ([f36cff1](https://github.com/leifermendez/bot-whatsapp/commit/f36cff1eefdd96be4ab531e1cb2d3b630b1a81c3))
+* **cli:** :zap: refactor ([b393c11](https://github.com/leifermendez/bot-whatsapp/commit/b393c11af6c0ebccb0a690be8b90b9df8877dad1))
+* **cli:** :zap: refactor ([6683715](https://github.com/leifermendez/bot-whatsapp/commit/6683715ad617ea1075654a475a1c62ea607c733f))
+* **contexts:** :bug: fixed [#524](https://github.com/leifermendez/bot-whatsapp/issues/524) issue ([79cc31a](https://github.com/leifermendez/bot-whatsapp/commit/79cc31a96f6a9836447cc4e6bb1e1521c54183fe))
+* **contexts:** :bug: fixed [#524](https://github.com/leifermendez/bot-whatsapp/issues/524) issue ([7067b4a](https://github.com/leifermendez/bot-whatsapp/commit/7067b4a80b7938ccfaf1ed141a37d645a1a3a062))
+* **provider:** wwebjs upgrade ([345f256](https://github.com/leifermendez/bot-whatsapp/commit/345f256a1b4a238519dafc15c9a31bc5e6bad4fe))
+* se agrego @bot-whatsapp/portal a package.json ([46a9fa6](https://github.com/leifermendez/bot-whatsapp/commit/46a9fa6793e06600335de998d2bd9d0691b02ca4))
+
 ### [0.1.17](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.16...v0.1.17) (2023-01-13)
 
 

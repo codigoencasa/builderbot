@@ -1,5 +1,4 @@
 const staticPaths = new Set([
-    '/',
     '/favicon.svg',
     '/manifest.json',
     '/q-manifest.json',
