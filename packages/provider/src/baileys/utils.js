@@ -1,9 +1,11 @@
-const { createWriteStream } = require('fs')
+const { createWriteStream, rename } = require('fs')
 const combineImage = require('combine-image')
 const qr = require('qr-image')
 const { tmpdir } = require('os')
 const http = require('http')
 const https = require('https')
+
+const { fileTypeFromFile } = require('../../common/fileType')
 
 const baileyCleanNumber = (number, full = false) => {
     number = number.replace('@s.whatsapp.net', '')
@@ -47,27 +49,43 @@ const baileyIsValidNumber = (rawNumber) => {
  * @param {*} url
  * @returns
  */
-const baileyDownloadMedia = (url) => {
-    return new Promise((resolve, reject) => {
-        const ext = url.split('.').pop()
+const baileyDownloadMedia = async (url) => {
+    const handleDownload = () => {
         const checkProtocol = url.includes('https:')
         const handleHttp = checkProtocol ? https : http
-        const name = `tmp-${Date.now()}.${ext}`
+        const name = `tmp-${Date.now()}-dat`
         const fullPath = `${tmpdir()}/${name}`
         const file = createWriteStream(fullPath)
-        handleHttp.get(url, function (response) {
-            response.pipe(file)
-            file.on('finish', function () {
-                file.close()
-                resolve(fullPath)
-            })
-            file.on('error', function () {
-                console.log('errro')
-                file.close()
-                reject(null)
+
+        return new Promise((res, rej) => {
+            handleHttp.get(url, function (response) {
+                response.pipe(file)
+                file.on('finish', async function () {
+                    file.close()
+                    res({ response, fullPath })
+                })
+                file.on('error', function () {
+                    file.close()
+                    rej(null)
+                })
             })
         })
-    })
+    }
+
+    const handleFile = (pathInput, ext) =>
+        new Promise((resolve, reject) => {
+            const fullPath = `${pathInput}.${ext}`
+            rename(pathInput, fullPath, (err) => {
+                if (err) reject(null)
+                resolve(fullPath)
+            })
+        })
+
+    const httpResponse = await handleDownload()
+    const { ext } = await fileTypeFromFile(httpResponse.response)
+    const getPath = await handleFile(httpResponse.fullPath, ext)
+
+    return getPath
 }
 
 module.exports = {

@@ -170,9 +170,48 @@ class BaileysProvider extends ProviderClass {
 
     sendMedia = async (number, imageUrl, text) => {
         const fileDownloaded = await baileyDownloadMedia(imageUrl)
+        const mimeType = mime.lookup(fileDownloaded)
+
+        if (mimeType.includes('image'))
+            return this.sendImage(number, fileDownloaded, text)
+        if (mimeType.includes('video'))
+            return this.sendVideo(number, fileDownloaded, text)
+        if (mimeType.includes('audio'))
+            return this.sendAudio(number, fileDownloaded, text)
+
+        console.log(mimeType)
         return this.vendor.sendMessage(number, {
             image: readFileSync(fileDownloaded),
             caption: text,
+        })
+    }
+
+    /**
+     *
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+    sendImage = async (number, filePath, text) => {
+        return this.vendor.sendMessage(number, {
+            image: readFileSync(filePath),
+            caption: text,
+        })
+    }
+
+    /**
+     *
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+    sendVideo = async (number, filePath, text) => {
+        return this.vendor.sendMessage(number, {
+            video: readFileSync(filePath),
+            caption: text,
+            gifPlayback: true,
         })
     }
 
@@ -185,8 +224,7 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendAudio = async (number, audioUrl, voiceNote = false) => {
-        const numberClean = number.replace('+', '')
-        await this.vendor.sendMessage(`${numberClean}@c.us`, {
+        await this.vendor.sendMessage(number, {
             audio: { url: audioUrl },
             ptt: voiceNote,
         })
