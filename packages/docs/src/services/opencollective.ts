@@ -4,7 +4,7 @@
  */
 export const fetchOpenCollective = async () => {
     const data = await fetch(
-        `https://opencollective.com/bot-whatsapp/members/users.json?limit=10&offset=0`,
+        `https://opencollective.com/bot-whatsapp/members/users.json?limit=22&offset=0`,
         {
             method: 'GET',
         }
