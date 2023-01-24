@@ -23,6 +23,23 @@ const flowPrincipal = addKeyword(['hola', 'alo'])
 
 ---
 
+## blackList
+
+Éste argumento se utiliza para **evitar que el bot se active** cuando los números de la lista activen el bot.
+Es importante que el número **vaya acompañado de su prefijo**, en el caso de España "34".
+
+```js
+createBot({
+        flow: adapterFlow,
+        provider: adapterProvider,
+        database: adapterDB,
+    },{
+        blackList:['34XXXXXXXXX','34XXXXXXXXX','34XXXXXXXXX','34XXXXXXXXX']
+    })
+```
+
+---
+
 ## addKeyword()
 
 Esta funcion se utliza para iniciar un flujo de conversion. <br /> Recibe un `string` o un `array`
