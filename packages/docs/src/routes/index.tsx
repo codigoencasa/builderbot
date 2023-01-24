@@ -10,11 +10,11 @@ import { fetchGithub } from '~/services/github'
 import { fetchOpenCollective } from '~/services/opencollective'
 import { RequestHandlerNetlify } from '@builder.io/qwik-city/middleware/netlify-edge'
 import { GITHUB_TOKEN } from './docs/constant'
+// import { SearchModal } from '~/components/widgets/SearchModal'
 
 export const onGet: RequestHandlerNetlify = async ({ platform }) => {
     const CHECK_GITHUB_TOKEN =
         (platform as any)?.['GITHUB_TOKEN'] ?? GITHUB_TOKEN
-    console.log(`[🚩 platform]: `, GITHUB_TOKEN)
     const dataGithub = await fetchGithub(CHECK_GITHUB_TOKEN)
     const dataOpenCollective = await fetchOpenCollective()
     return {
