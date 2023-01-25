@@ -10,9 +10,10 @@ const PUBLIC_URL =
     process.env.RAILWAY_STATIC_URL ??
     'http://localhost'
 
-const dir = [join(__dirname, 'dist'), join(__dirname, '..', 'dist')].find((i) =>
+/* const dir = [join(__dirname, 'dist'), join(__dirname, '..', 'dist')].find((i) =>
     existsSync(i)
-)
+) */
+const dir = join(__dirname, 'dist')
 const serve = require('serve-static')(dir)
 
 /**
