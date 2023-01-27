@@ -163,7 +163,7 @@ class WebWhatsappProvider extends ProviderClass {
      * @param {*} text
      * @returns
      */
-    sendImage = async (number, filePath, text) => {
+    sendImage = async (number, filePath) => {
         const base64 = readFileSync(filePath, { encoding: 'base64' })
         const mimeType = mime.lookup(filePath)
         const media = new MessageMedia(mimeType, base64)
@@ -180,7 +180,7 @@ class WebWhatsappProvider extends ProviderClass {
      * @returns
      */
 
-    sendAudio = async (number, filePath, text) => {
+    sendAudio = async (number, filePath) => {
         const base64 = readFileSync(filePath, { encoding: 'base64' })
         const mimeType = mime.lookup(filePath)
         const media = new MessageMedia(mimeType, base64)
