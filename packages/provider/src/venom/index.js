@@ -145,7 +145,7 @@ class VenomProvider extends ProviderClass {
      * @example await sendMessage('+XXXXXXXXXXX', 'audio.mp3')
      */
 
-    sendAudio = async (number, audioPath, voiceNote = false) => {
+    sendAudio = async (number, audioPath) => {
         return this.vendor.sendVoice(number, audioPath)
     }
 

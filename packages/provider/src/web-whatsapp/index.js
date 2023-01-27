@@ -4,7 +4,6 @@ const { Console } = require('console')
 const { createWriteStream, readFileSync } = require('fs')
 const {
     wwebCleanNumber,
-    wwebDownloadMedia,
     wwebGenerateImage,
     wwebIsValidNumber,
 } = require('./utils')
@@ -168,7 +167,9 @@ class WebWhatsappProvider extends ProviderClass {
         const base64 = readFileSync(filePath, { encoding: 'base64' })
         const mimeType = mime.lookup(filePath)
         const media = new MessageMedia(mimeType, base64)
-        return this.vendor.sendMessage(number, media, text)
+        return this.vendor.sendMessage(number, media, {
+            caption: 'soy una imagen',
+        })
     }
 
     /**
@@ -178,31 +179,14 @@ class WebWhatsappProvider extends ProviderClass {
      * @param {*} text
      * @returns
      */
-    /**
-     * Enviar audio
-     * @param {*} number
-     * @param {*} imageUrl
-     * @param {*} text
-     * @returns
-     */
+
     sendAudio = async (number, filePath, text) => {
         const base64 = readFileSync(filePath, { encoding: 'base64' })
         const mimeType = mime.lookup(filePath)
         const media = new MessageMedia(mimeType, base64)
-        return this.vendor.sendMessage(number, media, text)
-    }
-    /**
-     * Enviar audio
-     * @param {*} number
-     * @param {*} imageUrl
-     * @param {*} text
-     * @returns
-     */
-    sendAudio = async (number, filePath, text) => {
-        const base64 = readFileSync(filePath, { encoding: 'base64' })
-        const mimeType = mime.lookup(filePath)
-        const media = new MessageMedia(mimeType, base64)
-        return this.vendor.sendMessage(number, media, text)
+        return this.vendor.sendMessage(number, media, {
+            caption: 'soy un audio',
+        })
     }
 
     /**
@@ -228,11 +212,11 @@ class WebWhatsappProvider extends ProviderClass {
      * @param {*} text
      * @returns
      */
-    sendFile = async (number, filePath, text) => {
+    sendFile = async (number, filePath) => {
         const base64 = readFileSync(filePath, { encoding: 'base64' })
         const mimeType = mime.lookup(filePath)
         const media = new MessageMedia(mimeType, base64)
-        return this.vendor.sendMessage(number, media, text)
+        return this.vendor.sendMessage(number, media)
     }
 
     /**
