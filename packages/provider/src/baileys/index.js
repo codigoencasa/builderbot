@@ -4,7 +4,7 @@ const pino = require('pino')
 const rimraf = require('rimraf')
 const mime = require('mime-types')
 const { join } = require('path')
-const { existsSync, createWriteStream, readFileSync } = require('fs')
+const { createWriteStream, readFileSync } = require('fs')
 const { Console } = require('console')
 
 const {
@@ -13,12 +13,14 @@ const {
     Browsers,
     DisconnectReason,
 } = require('@adiwajshing/baileys')
+
 const {
     baileyGenerateImage,
     baileyCleanNumber,
     baileyIsValidNumber,
-    baileyDownloadMedia,
 } = require('./utils')
+
+const { generalDownload } = require('../../common/download')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/baileys.log`),
@@ -169,14 +171,50 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendMedia = async (number, imageUrl, text) => {
-        const fileDownloaded = await baileyDownloadMedia(imageUrl)
+        const fileDownloaded = await generalDownload(imageUrl)
+        const mimeType = mime.lookup(fileDownloaded)
+
+        if (mimeType.includes('image'))
+            return this.sendImage(number, fileDownloaded, text)
+        if (mimeType.includes('video'))
+            return this.sendVideo(number, fileDownloaded, text)
+        if (mimeType.includes('audio'))
+            return this.sendAudio(number, fileDownloaded, text)
+
+        return this.sendFile(number, fileDownloaded)
+    }
+
+    /**
+     * Enviar imagen
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+    sendImage = async (number, filePath, text) => {
         return this.vendor.sendMessage(number, {
-            image: readFileSync(fileDownloaded),
+            image: readFileSync(filePath),
             caption: text,
         })
     }
 
     /**
+     * Enviar video
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+    sendVideo = async (number, filePath, text) => {
+        return this.vendor.sendMessage(number, {
+            video: readFileSync(filePath),
+            caption: text,
+            gifPlayback: true,
+        })
+    }
+
+    /**
+     * Enviar audio
      * @alpha
      * @param {string} number
      * @param {string} message
@@ -185,8 +223,7 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendAudio = async (number, audioUrl, voiceNote = false) => {
-        const numberClean = number.replace('+', '')
-        await this.vendor.sendMessage(`${numberClean}@c.us`, {
+        return this.vendor.sendMessage(number, {
             audio: { url: audioUrl },
             ptt: voiceNote,
         })
@@ -210,17 +247,13 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendFile = async (number, filePath) => {
-        if (existsSync(filePath)) {
-            const mimeType = mime.lookup(filePath)
-            const numberClean = number.replace('+', '')
-            const fileName = filePath.split('/').pop()
-
-            await this.vendor.sendMessage(`${numberClean}@c.us`, {
-                document: { url: filePath },
-                mimetype: mimeType,
-                fileName: fileName,
-            })
-        }
+        const mimeType = mime.lookup(filePath)
+        const fileName = filePath.split('/').pop()
+        return this.vendor.sendMessage(number, {
+            document: { url: filePath },
+            mimetype: mimeType,
+            fileName: fileName,
+        })
     }
 
     /**

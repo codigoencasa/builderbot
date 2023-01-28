@@ -1,10 +1,9 @@
 const { Client, LocalAuth, MessageMedia, Buttons } = require('whatsapp-web.js')
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const { Console } = require('console')
-const { createWriteStream } = require('fs')
+const { createWriteStream, readFileSync } = require('fs')
 const {
     wwebCleanNumber,
-    wwebDownloadMedia,
     wwebGenerateImage,
     wwebIsValidNumber,
 } = require('./utils')
@@ -12,6 +11,9 @@ const {
 const logger = new Console({
     stdout: createWriteStream('./log'),
 })
+
+const { generalDownload } = require('../../common/download')
+const mime = require('mime-types')
 
 /**
  * ⚙️ WebWhatsappProvider: Es una clase tipo adaptor
@@ -35,6 +37,7 @@ class WebWhatsappProvider extends ProviderClass {
                     '--disable-setuid-sandbox',
                     '--unhandled-rejections=strict',
                 ],
+                //executablePath: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
             },
         })
 
@@ -104,23 +107,6 @@ class WebWhatsappProvider extends ProviderClass {
     ]
 
     /**
-     * Enviar un archivo multimedia
-     * https://docs.wwebjs.dev/MessageMedia.html
-     * @private
-     * @param {*} number
-     * @param {*} mediaInput
-     * @returns
-     */
-    sendMedia = async (number, mediaInput = null) => {
-        if (!mediaInput) throw new Error(`NO_SE_ENCONTRO: ${mediaInput}`)
-        const fileDownloaded = await wwebDownloadMedia(mediaInput)
-        const media = MessageMedia.fromFilePath(fileDownloaded)
-        return this.vendor.sendMessage(number, media, {
-            sendAudioAsVoice: true,
-        })
-    }
-
-    /**
      * Enviar botones
      * https://docs.wwebjs.dev/Buttons.html
      * @private
@@ -168,6 +154,90 @@ class WebWhatsappProvider extends ProviderClass {
      */
     sendText = async (number, message) => {
         return this.vendor.sendMessage(number, message)
+    }
+
+    /**
+     * Enviar imagen
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+    sendImage = async (number, filePath) => {
+        const base64 = readFileSync(filePath, { encoding: 'base64' })
+        const mimeType = mime.lookup(filePath)
+        const media = new MessageMedia(mimeType, base64)
+        return this.vendor.sendMessage(number, media, {
+            caption: 'soy una imagen',
+        })
+    }
+
+    /**
+     * Enviar audio
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+
+    sendAudio = async (number, filePath) => {
+        const base64 = readFileSync(filePath, { encoding: 'base64' })
+        const mimeType = mime.lookup(filePath)
+        const media = new MessageMedia(mimeType, base64)
+        return this.vendor.sendMessage(number, media, {
+            caption: 'soy un audio',
+        })
+    }
+
+    /**
+     * Enviar video
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+    sendVideo = async (number, filePath) => {
+        const base64 = readFileSync(filePath, { encoding: 'base64' })
+        const mimeType = mime.lookup(filePath)
+        const media = new MessageMedia(mimeType, base64)
+        return this.vendor.sendMessage(number, media, {
+            sendMediaAsDocument: true,
+        })
+    }
+
+    /**
+     * Enviar Arhivos/pdf
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+    sendFile = async (number, filePath) => {
+        const base64 = readFileSync(filePath, { encoding: 'base64' })
+        const mimeType = mime.lookup(filePath)
+        const media = new MessageMedia(mimeType, base64)
+        return this.vendor.sendMessage(number, media)
+    }
+
+    /**
+     * Enviar imagen o multimedia
+     * @param {*} number
+     * @param {*} mediaInput
+     * @param {*} message
+     * @returns
+     */
+    sendMedia = async (number, mediaUrl, text) => {
+        const fileDownloaded = await generalDownload(mediaUrl)
+        const mimeType = mime.lookup(fileDownloaded)
+
+        if (mimeType.includes('image'))
+            return this.sendImage(number, fileDownloaded, text)
+        if (mimeType.includes('video'))
+            return this.sendVideo(number, fileDownloaded)
+        if (mimeType.includes('audio'))
+            return this.sendAudio(number, fileDownloaded)
+
+        return this.sendFile(number, fileDownloaded)
     }
 
     /**
