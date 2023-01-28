@@ -143,8 +143,8 @@ class CoreClass {
             QueuePrincipal.queue = []
             if (next) return continueFlow()
             return this.sendProviderAndSave(from, {
-                ...refToContinue,
-                answer: message ?? refToContinue.answer,
+                ...prevMsg,
+                answer: message ?? prevMsg.answer,
             })
         }
 
