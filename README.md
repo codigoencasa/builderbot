@@ -113,13 +113,27 @@ Entiende más a fondo sus funcionalidades explicadas en nuestra documentación.
         </a>
     </td>
     <td align="center">
+        <a href="https://github.com/devrlbusiness">
+            <img src="https://avatars.githubusercontent.com/u/66280283?v=4" width="50;" alt="devrlbusiness"/>
+            <br />
+            <sub><b>Developer RL Business</b></sub>
+        </a>
+    </td></tr>
+<tr>
+    <td align="center">
+        <a href="https://github.com/Gregoriotecnico">
+            <img src="https://avatars.githubusercontent.com/u/118696506?v=4" width="50;" alt="Gregoriotecnico"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
+    </td>
+    <td align="center">
         <a href="https://github.com/jlferrete">
             <img src="https://avatars.githubusercontent.com/u/36698913?v=4" width="50;" alt="jlferrete"/>
             <br />
             <sub><b>Jose Luis Ferrete Olarte</b></sub>
         </a>
-    </td></tr>
-<tr>
+    </td>
     <td align="center">
         <a href="https://github.com/6rak0">
             <img src="https://avatars.githubusercontent.com/u/12260031?v=4" width="50;" alt="6rak0"/>
@@ -135,12 +149,20 @@ Entiende más a fondo sus funcionalidades explicadas en nuestra documentación.
         </a>
     </td>
     <td align="center">
+        <a href="https://github.com/lisandroprada">
+            <img src="https://avatars.githubusercontent.com/u/7232326?v=4" width="50;" alt="lisandroprada"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
+    </td>
+    <td align="center">
         <a href="https://github.com/rrruuuyyy">
             <img src="https://avatars.githubusercontent.com/u/33061671?v=4" width="50;" alt="rrruuuyyy"/>
             <br />
             <sub><b>Rodrigo Mendoza Cabrera</b></sub>
         </a>
-    </td>
+    </td></tr>
+<tr>
     <td align="center">
         <a href="https://github.com/yond1994">
             <img src="https://avatars.githubusercontent.com/u/47557263?v=4" width="50;" alt="yond1994"/>
