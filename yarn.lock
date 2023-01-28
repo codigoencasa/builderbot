@@ -1113,6 +1113,7 @@ __metadata:
     fs-extra: ^11.1.0
     git-cz: ^4.9.0
     husky: ^8.0.2
+    mime-types: ^2.1.35
     only-allow: ^1.1.1
     prettier: ^2.8.0
     pretty-quick: ^3.1.3
@@ -13443,7 +13444,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-types@npm:^2.1.12, mime-types@npm:~2.1.19, mime-types@npm:~2.1.24, mime-types@npm:~2.1.34":
+"mime-types@npm:^2.1.12, mime-types@npm:^2.1.35, mime-types@npm:~2.1.19, mime-types@npm:~2.1.24, mime-types@npm:~2.1.34":
   version: 2.1.35
   resolution: "mime-types@npm:2.1.35"
   dependencies:
