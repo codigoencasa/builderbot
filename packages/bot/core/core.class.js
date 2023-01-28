@@ -98,10 +98,15 @@ class CoreClass {
         }
 
         // 📄 Finalizar flujo
-        const endFlow = async () => {
+        const endFlow = async (message = null) => {
             prevMsg = null
             endFlowFlag = true
             clearQueue()
+            if (message)
+                this.sendProviderAndSave(from, {
+                    ...prevMsg,
+                    answer: message ?? prevMsg.answer,
+                })
             return
         }
 
@@ -199,7 +204,7 @@ class CoreClass {
         }
 
         // 📄🤘(tiene return) [options: nested(array)]: Si se tiene flujos hijos los implementa
-        if (prevMsg?.options?.nested?.length) {
+        if (!endFlowFlag && prevMsg?.options?.nested?.length) {
             const nestedRef = prevMsg.options.nested
             const flowStandalone = nestedRef.map((f) => ({
                 ...nestedRef.find((r) => r.refSerialize === f.refSerialize),
@@ -212,7 +217,7 @@ class CoreClass {
         }
 
         // 📄🤘(tiene return) Si el mensaje previo implementa capture
-        if (!prevMsg?.options?.nested?.length) {
+        if (!endFlowFlag && !prevMsg?.options?.nested?.length) {
             const typeCapture = typeof prevMsg?.options?.capture
 
             if (typeCapture === 'boolean' && fallBackFlag) {
