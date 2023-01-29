@@ -122,13 +122,7 @@ class CoreClass {
             endFlowFlag = true
             if (message)
                 this.sendProviderAndSave(from, createCtxMessage(message))
-
             clearQueue()
-            if (message)
-                this.sendProviderAndSave(from, {
-                    ...prevMsg,
-                    answer: message ?? prevMsg.answer,
-                })
             return
         }
 
@@ -171,7 +165,14 @@ class CoreClass {
             if (next) return continueFlow()
             return this.sendProviderAndSave(from, {
                 ...prevMsg,
-                answer: message ?? prevMsg.answer,
+                answer:
+                    typeof message === 'string'
+                        ? message
+                        : message?.body ?? prevMsg.answer,
+                options: {
+                    ...prevMsg.options,
+                    buttons: message?.buttons ?? prevMsg.options?.buttons,
+                },
             })
         }
 
