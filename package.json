@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/root",
-    "version": "0.1.18",
+    "version": "0.1.19",
     "description": "Bot de wahtsapp open source para MVP o pequeños negocios",
     "main": "app.js",
     "private": true,
