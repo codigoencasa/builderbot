@@ -71,8 +71,8 @@ class CoreClass {
         logger.log(`[handleMsg]: `, messageCtxInComming)
         const { body, from } = messageCtxInComming
         let msgToSend = []
-        let fallBackFlag = false
         let endFlowFlag = false
+        let fallBackFlag = false
         if (this.generalArgs.blackList.includes(from)) return
         if (!body) return
         if (!body.length) return
@@ -91,6 +91,25 @@ class CoreClass {
             this.databaseClass.save(ctxByNumber)
         }
 
+        // 📄 Crar CTX de mensaje (uso private)
+        const createCtxMessage = (payload = {}, index = 0) => {
+            const body =
+                typeof payload === 'string'
+                    ? payload
+                    : payload?.body ?? payload?.answer
+            const media = payload?.media ?? null
+            const buttons = payload?.buttons ?? []
+            const capture = payload?.capture ?? false
+
+            return toCtx({
+                body,
+                from,
+                keyword: null,
+                index,
+                options: { media, buttons, capture },
+            })
+        }
+
         // 📄 Limpiar cola de procesos
         const clearQueue = () => {
             QueuePrincipal.pendingPromise = false
@@ -98,18 +117,32 @@ class CoreClass {
         }
 
         // 📄 Finalizar flujo
-        const endFlow = async () => {
+        const endFlow = async (message = null) => {
             prevMsg = null
             endFlowFlag = true
+            if (message)
+                this.sendProviderAndSave(from, createCtxMessage(message))
             clearQueue()
             return
         }
 
-        // 📄 Esta funcion se encarga de enviar un array de mensajes dentro de este ctx
-        const sendFlow = async (messageToSend, numberOrId) => {
-            // [1 Paso] esto esta bien!
+        // 📄 Continuar con el siguiente flujo
+        const continueFlow = async () => {
+            const cotinueMessage =
+                this.flowClass.find(refToContinue?.ref, true) || []
+            sendFlow(cotinueMessage, from, { continue: true })
+            return
+        }
 
-            if (prevMsg?.options?.capture) await cbEveryCtx(prevMsg?.ref)
+        // 📄 Esta funcion se encarga de enviar un array de mensajes dentro de este ctx
+        const sendFlow = async (
+            messageToSend,
+            numberOrId,
+            options = { continue: false }
+        ) => {
+            if (!options.continue && prevMsg?.options?.capture)
+                await cbEveryCtx(prevMsg?.ref)
+
             const queue = []
             for (const ctxMessage of messageToSend) {
                 if (endFlowFlag) return
@@ -127,45 +160,37 @@ class CoreClass {
         }
 
         // 📄 [options: fallBack]: esta funcion se encarga de repetir el ultimo mensaje
-        const fallBack = async () => {
-            fallBackFlag = true
-            await this.sendProviderAndSave(from, refToContinue)
+        const fallBack = async (next = false, message = null) => {
             QueuePrincipal.queue = []
-            return refToContinue
+            if (next) return continueFlow()
+            return this.sendProviderAndSave(from, {
+                ...prevMsg,
+                answer:
+                    typeof message === 'string'
+                        ? message
+                        : message?.body ?? prevMsg.answer,
+                options: {
+                    ...prevMsg.options,
+                    buttons: message?.buttons ?? prevMsg.options?.buttons,
+                },
+            })
         }
 
         // 📄 [options: flowDynamic]: esta funcion se encarga de responder un array de respuesta esta limitado a 5 mensajes
         // para evitar bloque de whatsapp
 
-        const flowDynamic = async (
-            listMsg = [],
-            optListMsg = { limit: 5, fallback: false }
-        ) => {
-            if (!Array.isArray(listMsg))
-                throw new Error('Esto debe ser un ARRAY')
+        const flowDynamic = async (listMsg = []) => {
+            if (!Array.isArray(listMsg)) listMsg = [listMsg]
 
-            fallBackFlag = optListMsg.fallback
-            const parseListMsg = listMsg
-                .map((opt, index) => {
-                    const body = typeof opt === 'string' ? opt : opt.body
-                    const media = opt?.media ?? null
-                    const buttons = opt?.buttons ?? []
-
-                    return toCtx({
-                        body,
-                        from,
-                        keyword: null,
-                        index,
-                        options: { media, buttons },
-                    })
-                })
-                .slice(0, optListMsg.limit)
+            const parseListMsg = listMsg.map((opt, index) =>
+                createCtxMessage(opt, index)
+            )
 
             if (endFlowFlag) return
             for (const msg of parseListMsg) {
                 await this.sendProviderAndSave(from, msg)
             }
-            return
+            return continueFlow()
         }
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback o fallback
@@ -181,11 +206,12 @@ class CoreClass {
                 fallBack,
                 flowDynamic,
                 endFlow,
+                continueFlow,
             })
         }
 
         // 📄🤘(tiene return) [options: nested(array)]: Si se tiene flujos hijos los implementa
-        if (!fallBackFlag && prevMsg?.options?.nested?.length) {
+        if (!endFlowFlag && prevMsg?.options?.nested?.length) {
             const nestedRef = prevMsg.options.nested
             const flowStandalone = nestedRef.map((f) => ({
                 ...nestedRef.find((r) => r.refSerialize === f.refSerialize),
@@ -197,12 +223,11 @@ class CoreClass {
             return
         }
 
-        // 📄🤘(tiene return) [options: capture (boolean)]: Si se tiene option boolean
-        if (!fallBackFlag && !prevMsg?.options?.nested?.length) {
+        // 📄🤘(tiene return) Si el mensaje previo implementa capture
+        if (!endFlowFlag && !prevMsg?.options?.nested?.length) {
             const typeCapture = typeof prevMsg?.options?.capture
-            const valueCapture = prevMsg?.options?.capture
 
-            if (['string', 'boolean'].includes(typeCapture) && valueCapture) {
+            if (typeCapture === 'boolean' && fallBackFlag) {
                 msgToSend = this.flowClass.find(refToContinue?.ref, true) || []
                 sendFlow(msgToSend, from)
                 return
@@ -228,6 +253,7 @@ class CoreClass {
     }
 
     /**
+     * @deprecated
      * @private
      * @param {*} message
      * @param {*} ref

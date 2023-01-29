@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.19](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.18...v0.1.19) (2023-01-29)
+
+
+### Features
+
+* :fire: bailey add media ([eab39e4](https://github.com/leifermendez/bot-whatsapp/commit/eab39e4ac06fd46f1a4671f8c15d1456b4400b97))
+* :zap: more feature ([e19c3a2](https://github.com/leifermendez/bot-whatsapp/commit/e19c3a25a40259c74b4add9635af4844907eed26))
+* **provider:** :rocket: fix issues in providers venom and wwebjs ([cbe438b](https://github.com/leifermendez/bot-whatsapp/commit/cbe438b77854e8df48b9dafaf7a837d21124ac5f))
+* **provider:** :rocket: fix provider ([0ad4c58](https://github.com/leifermendez/bot-whatsapp/commit/0ad4c58457b548dc41c0f9e8470d59c48de7b95a))
+* **provider:** :rocket: fix provider ([f8c7184](https://github.com/leifermendez/bot-whatsapp/commit/f8c7184487065443ab10f77aaf585e8bd63ca441))
+* **provider:** :rocket: fix provider ([b2afa45](https://github.com/leifermendez/bot-whatsapp/commit/b2afa45352a7ab1f5d9775f3c1fde475bd8ca204))
+* **provider:** :rocket: fix provider venom and wwebjs ([dcb0566](https://github.com/leifermendez/bot-whatsapp/commit/dcb0566d2bc3da40cd0c71554bb5ea0ec115d9ca))
+* **provider:** :rocket: implements all send media to venom provider ([9dd7c02](https://github.com/leifermendez/bot-whatsapp/commit/9dd7c02b6a5474aff063f7d6be0ca8519504b93c))
+* **provider:** :rocket: send file wwebjs ([6ff1a3a](https://github.com/leifermendez/bot-whatsapp/commit/6ff1a3a980196c01c66ed04ee07d0e7e57256504))
+* **provider:** :zap: bailey add send file video audio ([14d1a61](https://github.com/leifermendez/bot-whatsapp/commit/14d1a61fa259c09135c37c55bd79e97c9c8367e4))
+* **provider:** :zap: venom wweb ([fd2847a](https://github.com/leifermendez/bot-whatsapp/commit/fd2847aea0db17a0bdf33b5bca67a4cb8db2da16))
+* **provider:** :zap: venom wweb ([f95331d](https://github.com/leifermendez/bot-whatsapp/commit/f95331d3dc70e76a3dfbe4c8d24059f0e7a164ef))
+* **provider:** 🚀 implements all send media to venom provider ([bd7d150](https://github.com/leifermendez/bot-whatsapp/commit/bd7d150c047af41fdbb47f0a50a21e82cd79ee85))
+
+
+### Bug Fixes
+
+* **bot:** :fire: endFlow with ctx ([f6114af](https://github.com/leifermendez/bot-whatsapp/commit/f6114affadfbc324536a86167d1fdfe8da3c8de6))
+* **bot:** :fire: endFlow with ctx ([b655ae4](https://github.com/leifermendez/bot-whatsapp/commit/b655ae449e7958ea940d8cc3c678fd66f60b6385))
+* **bot:** :zap: endFlow butons ([87a4203](https://github.com/leifermendez/bot-whatsapp/commit/87a4203cd5b88f566387a76d586248e4265d6e4e))
+* **bot:** :zap: fix fallback refactor ([e22780d](https://github.com/leifermendez/bot-whatsapp/commit/e22780d3faba94f71a70f1f201a20690608fa5bf))
+* **cli:** :zap: endflow ([1c66f17](https://github.com/leifermendez/bot-whatsapp/commit/1c66f178a56d284bb8cb9df5ca17685c7e5d1ddd))
+* **cli:** :zap: refactor fallback in child flow ([b33e346](https://github.com/leifermendez/bot-whatsapp/commit/b33e34692d3abcb6874308a9be79f74be4a2c3a8))
+* **cli:** :zap: refactor fallback in child flow ([8da4b20](https://github.com/leifermendez/bot-whatsapp/commit/8da4b204b41125b5d0fa0aee4fa87c1f5faf5568))
+
 ### [0.1.18](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.17...v0.1.18) (2023-01-24)
 
 

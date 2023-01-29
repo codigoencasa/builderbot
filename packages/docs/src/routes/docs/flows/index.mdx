@@ -29,13 +29,16 @@ const flowPrincipal = addKeyword(['hola', 'alo'])
 Es importante que el número **vaya acompañado de su prefijo**, en el caso de España "34".
 
 ```js
-createBot({
+createBot(
+    {
         flow: adapterFlow,
         provider: adapterProvider,
         database: adapterDB,
-    },{
-        blackList:['34XXXXXXXXX','34XXXXXXXXX','34XXXXXXXXX','34XXXXXXXXX']
-    })
+    },
+    {
+        blackList: ['34XXXXXXXXX', '34XXXXXXXXX', '34XXXXXXXXX', '34XXXXXXXXX'],
+    }
+)
 ```
 
 ---
@@ -175,64 +178,74 @@ const flowString = addKeyword('hola')
 ```
 
 ---
+
 ## endFlow()
 
-Esta funcion se utliza para finalizar un flujo con dos o más addAnswer. Un ejemplo de uso sería registrar 3 datos de un usuario en 3 preguntas distinas y 
+Esta funcion se utliza para finalizar un flujo con dos o más addAnswer. Un ejemplo de uso sería registrar 3 datos de un usuario en 3 preguntas distinas y
 que el usuario pueda finalizar por él mismo el flujo.
 Como podrás comprobar en el ejemplo siguiente, se puede vincular flowDynamic y todas sus funciones; como por ejemplo botones.
 
-
-
 ```js
 const flowFormulario = addKeyword(['Hola'])
-
-.addAnswer(['Hola!','Escriba su *Nombre* para generar su solicitud'],
-{capture: true,buttons:[{body:'❌ Cancelar solicitud'}]},
-async (ctx,{flowDynamic, endFlow})=>{
-    if(ctx.body == '❌ Cancelar solicitud'){
-        await flowDynamic([{body: "❌ *Su solicitud de cita ha sido cancelada* ❌", buttons:[{body:'⬅️ Volver al Inicio'}]}])
-        return endFlow()
-     }
-    })
-    .addAnswer(['También necesito tus dos apellidos'],
-    {capture: true,buttons:[{body:'❌ Cancelar solicitud'}]},
-    async (ctx,{flowDynamic, endFlow})=>{
-        if(ctx.body == '❌ Cancelar solicitud'){
-            await flowDynamic([{body: "❌ *Su solicitud de cita ha sido cancelada* ❌", buttons:[{body:'⬅️ Volver al Inicio'}]}])
-            return endFlow()
-         }
-        })
-        .addAnswer(['Dejeme su número de teléfono y le llamaré lo antes posible.'],
-{capture: true,buttons:[{body:'❌ Cancelar solicitud'}]},
-async (ctx,{flowDynamic, endFlow})=>{
-    if(ctx.body == '❌ Cancelar solicitud'){
-        await flowDynamic([{body: "❌ *Su solicitud de cita ha sido cancelada* ❌", buttons:[{body:'⬅️ Volver al Inicio'}]}])
-        return endFlow()
-     }
-    })
-
-
-
+    .addAnswer(
+        ['Hola!', 'Escriba su *Nombre* para generar su solicitud'],
+        { capture: true, buttons: [{ body: '❌ Cancelar solicitud' }] },
+        async (ctx, { flowDynamic, endFlow }) => {
+            if (ctx.body == '❌ Cancelar solicitud') {
+                await flowDynamic([
+                    {
+                        body: '❌ *Su solicitud de cita ha sido cancelada* ❌',
+                        buttons: [{ body: '⬅️ Volver al Inicio' }],
+                    },
+                ])
+                return endFlow()
+            }
+        }
+    )
+    .addAnswer(
+        ['También necesito tus dos apellidos'],
+        { capture: true, buttons: [{ body: '❌ Cancelar solicitud' }] },
+        async (ctx, { flowDynamic, endFlow }) => {
+            if (ctx.body == '❌ Cancelar solicitud') {
+                await flowDynamic([
+                    {
+                        body: '❌ *Su solicitud de cita ha sido cancelada* ❌',
+                        buttons: [{ body: '⬅️ Volver al Inicio' }],
+                    },
+                ])
+                return endFlow()
+            }
+        }
+    )
+    .addAnswer(
+        ['Dejeme su número de teléfono y le llamaré lo antes posible.'],
+        { capture: true, buttons: [{ body: '❌ Cancelar solicitud' }] },
+        async (ctx, { flowDynamic, endFlow }) => {
+            if (ctx.body == '❌ Cancelar solicitud') {
+                await flowDynamic([
+                    {
+                        body: '❌ *Su solicitud de cita ha sido cancelada* ❌',
+                        buttons: [{ body: '⬅️ Volver al Inicio' }],
+                    },
+                ])
+                return endFlow()
+            }
+        }
+    )
 ```
 
 ---
-
-
-
-
 
 # QRPortalWeb
 
 Argumento para asignar nombre y puerto al BOT
 
 ```js
-QRPortalWeb({name:BOTNAME, port:3005 });
-
+const BOTNAME = 'bot'
+QRPortalWeb({ name: BOTNAME, port: 3005 })
 ```
 
 ---
-
-
 
 <Navigation
     pages={[
