@@ -91,6 +91,25 @@ class CoreClass {
             this.databaseClass.save(ctxByNumber)
         }
 
+        // 📄 Crar CTX de mensaje (uso private)
+        const createCtxMessage = (payload = {}, index = 0) => {
+            const body =
+                typeof payload === 'string'
+                    ? payload
+                    : payload?.body ?? payload?.answer
+            const media = payload?.media ?? null
+            const buttons = payload?.buttons ?? []
+            const capture = payload?.capture ?? false
+
+            return toCtx({
+                body,
+                from,
+                keyword: null,
+                index,
+                options: { media, buttons, capture },
+            })
+        }
+
         // 📄 Limpiar cola de procesos
         const clearQueue = () => {
             QueuePrincipal.pendingPromise = false
@@ -98,9 +117,12 @@ class CoreClass {
         }
 
         // 📄 Finalizar flujo
-        const endFlow = async () => {
+        const endFlow = async (message = null) => {
             prevMsg = null
             endFlowFlag = true
+            if (message)
+                this.sendProviderAndSave(from, createCtxMessage(message))
+
             clearQueue()
             return
         }
@@ -151,28 +173,12 @@ class CoreClass {
         // 📄 [options: flowDynamic]: esta funcion se encarga de responder un array de respuesta esta limitado a 5 mensajes
         // para evitar bloque de whatsapp
 
-        const flowDynamic = async (
-            listMsg = [],
-            optListMsg = { limit: 5, fallback: false }
-        ) => {
+        const flowDynamic = async (listMsg = []) => {
             if (!Array.isArray(listMsg)) listMsg = [listMsg]
 
-            fallBackFlag = optListMsg.fallback
-            const parseListMsg = listMsg
-                .map((opt, index) => {
-                    const body = typeof opt === 'string' ? opt : opt.body
-                    const media = opt?.media ?? null
-                    const buttons = opt?.buttons ?? []
-
-                    return toCtx({
-                        body,
-                        from,
-                        keyword: null,
-                        index,
-                        options: { media, buttons },
-                    })
-                })
-                .slice(0, optListMsg.limit)
+            const parseListMsg = listMsg.map((opt, index) =>
+                createCtxMessage(opt, index)
+            )
 
             if (endFlowFlag) return
             for (const msg of parseListMsg) {
