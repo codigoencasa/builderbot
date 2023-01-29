@@ -3,7 +3,7 @@ import type { DocumentHead } from '@builder.io/qwik-city'
 import ExtraBar from '~/components/widgets/ExtraBar'
 import Header from '~/components/widgets/Header'
 import NavBar from '~/components/widgets/NavBar'
-import { SearchModal } from '~/components/widgets/SearchModal'
+// import { SearchModal } from '~/components/widgets/SearchModal'
 import SponsorBar from '~/components/widgets/SponsorBar'
 import { GlobalStore } from '~/contexts'
 // import Navigation from '~/components/widgets/Navigation'
@@ -15,7 +15,7 @@ export default component$(() => {
 
     return (
         <>
-            <SearchModal />
+            {/* <SearchModal /> */}
             <Header />
             <main class={'overflow-hidden'}>
                 <div class={'max-w-8xl'}>
