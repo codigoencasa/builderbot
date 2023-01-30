@@ -2,7 +2,6 @@ const CoreClass = require('./core/core.class')
 const ProviderClass = require('./provider/provider.class')
 const FlowClass = require('./io/flow.class')
 const { addKeyword, addAnswer, addChild, toSerialize } = require('./io/methods')
-
 /**
  * Crear instancia de clase Bot
  * @param {*} args
