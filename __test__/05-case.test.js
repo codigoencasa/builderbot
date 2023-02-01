@@ -54,7 +54,7 @@ test(`[Caso - 05] Continuar Flujo (continueFlow)`, async () => {
             async (ctx, { flowDynamic, fallBack }) => {
                 if (ctx.body !== '18') {
                     await delay(50)
-                    return fallBack(false, 'Ups creo que no eres mayor de edad')
+                    return fallBack('Ups creo que no eres mayor de edad')
                 }
                 return flowDynamic('Bien tu edad es correcta!')
             }
