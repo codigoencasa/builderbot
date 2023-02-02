@@ -78,7 +78,8 @@ class MyslAdapter {
         refSerialize varchar(255) NOT NULL,
         phone varchar(255) NOT NULL,
         options longtext NOT NULL
-        )`
+        )
+        CHARACTER SET utf8mb4 COLLATE utf8mb4_bin`
 
             this.db.query(sql, (err) => {
                 if (err) throw err
