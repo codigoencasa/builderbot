@@ -82,8 +82,7 @@ test(`[Caso - 07] Retornar estado`, async () => {
     assert.is('Tu datos son:', getHistory[6])
     assert.is('Nombre: Leifer Edad: 90', getHistory[7])
     assert.is('🤖🤖 Gracias por tu participacion', getHistory[8])
-    assert.is('🤖🤖 Gracias por tu participacion', getHistory[9])
-    assert.is(undefined, getHistory[10])
+    assert.is(undefined, getHistory[9])
 })
 
 test.run()

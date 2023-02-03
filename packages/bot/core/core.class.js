@@ -172,10 +172,11 @@ class CoreClass {
             for (const msg of parseListMsg) {
                 await this.sendProviderAndSave(from, msg)
             }
-
             const nextFlow = await this.flowClass.find(refToContinue?.ref, true)
             const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
-            console.log(`🚩🚩🚩`, filterNextFlow?.answer)
+
+            if (filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)) return
+
             return sendFlow(filterNextFlow, from, { prev: undefined })
         }
 
