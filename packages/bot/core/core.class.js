@@ -175,7 +175,7 @@ class CoreClass {
 
             const nextFlow = await this.flowClass.find(refToContinue?.ref, true)
             const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
-
+            console.log(`🚩🚩🚩`, filterNextFlow?.answer)
             return sendFlow(filterNextFlow, from, { prev: undefined })
         }
 
