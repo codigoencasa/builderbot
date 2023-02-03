@@ -1,8 +1,7 @@
 # Chatbot Library
 ![](https://img.shields.io/npm/v/@bot-whatsapp/bot?color=%2300c200&label=%40bot-whatsapp)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
-[![BotWhatsapp Releases(Prod)](https://github.com/codigoencasa/bot-whatsapp/actions/workflows/releases.yml/badge.svg)](https://github.com/codigoencasa/bot-whatsapp/actions/workflows/releases.yml)
-
+[![](https://img.shields.io/discord/915193197645402142?logo=discord)](https://link.codigoencasa.com/DISCORD)
 
 <p align="center">
   <img width="300" src="https://i.imgur.com/Oauef6t.png">
