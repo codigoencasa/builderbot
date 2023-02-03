@@ -56,3 +56,55 @@ jobs:
 
             - name: Unit Tests
               run: yarn test
+
+    ############ UNIT TEST ############
+    check-providers:
+        name: Check Providers Versions
+        runs-on: ubuntu-latest
+        outputs:
+            commit: ${{ steps.vars.outputs.commit }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+                  ref: ${{github.event.after}}
+                  persist-credentials: false
+
+            - name: Setup Node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16.x
+                  cache: 'yarn'
+                  registry-url: https://registry.npmjs.org/
+
+            - run: corepack enable
+
+            - name: Install NPM Dependencies
+              run: yarn install --immutable --network-timeout 300000
+
+            - name: Check Baileys
+              run: yarn node ./scripts/checker.js --name=baileys --stable=true
+
+            - name: Check Venom
+              run: yarn node ./scripts/checker.js --name=venom --stable=true
+
+            - name: Check web-whatsapp
+              run: yarn node ./scripts/checker.js --name=web-whatsapp --stable=true
+
+            - name: Check Meta
+              run: yarn node ./scripts/checker.js --name=meta --stable=true
+
+            - name: Check Twilio
+              run: yarn node ./scripts/checker.js --name=twilio --stable=true
+
+            - name: Set output
+              id: vars
+              run: echo "commit=$(git log --format=%B -n 1 ${{github.event.after}})" >> $GITHUB_OUTPUT
+
+            - name: Commit & Push changes
+              uses: actions-js/push@master
+              with:
+                  branch: feature/providers-major
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  force: true

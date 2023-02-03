@@ -107,7 +107,7 @@ class DialogFlowContext extends CoreClass {
                 ...customPayload,
                 answer: fields?.answer?.stringValue,
             }
-            this.sendFlow([ctxFromDX], from)
+            this.sendFlowSimple([ctxFromDX], from)
             return
         }
 
@@ -115,7 +115,7 @@ class DialogFlowContext extends CoreClass {
             answer: queryResult?.fulfillmentText,
         }
 
-        this.sendFlow([ctxFromDX], from)
+        this.sendFlowSimple([ctxFromDX], from)
     }
 }
 

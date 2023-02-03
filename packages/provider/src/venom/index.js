@@ -2,17 +2,19 @@ const { ProviderClass } = require('@bot-whatsapp/bot')
 const venom = require('venom-bot')
 const { createWriteStream } = require('fs')
 const { Console } = require('console')
+const mime = require('mime-types')
 
 const {
     venomCleanNumber,
     venomGenerateImage,
     venomisValidNumber,
-    venomDownloadMedia,
 } = require('./utils')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/venom.log`),
 })
+
+const { generalDownload } = require('../../common/download')
 
 /**
  * ⚙️ VenomProvider: Es una clase tipo adaptor
@@ -135,16 +137,71 @@ class VenomProvider extends ProviderClass {
     }
 
     /**
+     * Enviar audio
+     * @alpha
+     * @param {string} number
+     * @param {string} message
+     * @param {boolean} voiceNote optional
+     * @example await sendMessage('+XXXXXXXXXXX', 'audio.mp3')
+     */
+
+    sendAudio = async (number, audioPath) => {
+        return this.vendor.sendVoice(number, audioPath)
+    }
+
+    /**
+     * Enviar imagen
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+    sendImage = async (number, filePath, text) => {
+        return this.vendor.sendImage(number, filePath, 'image-name', text)
+    }
+
+    /**
+     *
+     * @param {string} number
+     * @param {string} filePath
+     * @example await sendMessage('+XXXXXXXXXXX', './document/file.pdf')
+     */
+
+    sendFile = async (number, filePath, text) => {
+        const fileName = filePath.split('/').pop()
+        return this.vendor.sendFile(number, filePath, fileName, text)
+    }
+
+    /**
+     * Enviar video
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+    sendVideo = async (number, filePath, text) => {
+        return this.vendor.sendVideoAsGif(number, filePath, 'video.gif', text)
+    }
+
+    /**
      * Enviar imagen o multimedia
      * @param {*} number
      * @param {*} mediaInput
      * @param {*} message
      * @returns
      */
-    sendMedia = async (number, mediaInput, message) => {
-        if (!mediaInput) throw new Error(`NO_SE_ENCONTRO: ${mediaInput}`)
-        const fileDownloaded = await venomDownloadMedia(mediaInput)
-        return this.vendor.sendImage(number, fileDownloaded, '.', message)
+    sendMedia = async (number, mediaUrl, text) => {
+        const fileDownloaded = await generalDownload(mediaUrl)
+        const mimeType = mime.lookup(fileDownloaded)
+
+        if (mimeType.includes('image'))
+            return this.sendImage(number, fileDownloaded, text)
+        if (mimeType.includes('video'))
+            return this.sendVideo(number, fileDownloaded, text)
+        if (mimeType.includes('audio'))
+            return this.sendAudio(number, fileDownloaded)
+
+        return this.sendFile(number, fileDownloaded, text)
     }
 
     /**

@@ -1,0 +1,108 @@
+import Alert from '../../../../components/widgets/Alert'
+import Navigation from '../../../../components/widgets/Navigation'
+
+# Entorno Cloud
+
+Si deseas tener tu chatbot en ejecución en un servidor en la nueba esta, guía te ayudará.
+El servidor deberá cumplir con los requisitos mínimos, puedes ver en [este enlace.](/docs/requirements)
+
+---
+
+Dependiendo de tu proveedor de **servicio Cloud** debes crear una instancia (máquina virtual), este ejemplo iremos orientando en un entorno de AWS.
+En nuestro ejemplo creamos una maquina virtual con **Ubuntu 20.04**
+
+![](https://i.imgur.com/5zRCz9q.png)
+
+---
+
+Posterior al proceso de crear la máquina esperamos unos minutos hasta que ya está operativo y tomamos nota del usuario y la IP pública para proceder a conectarnos vía SSH
+
+## ![](https://i.imgur.com/ljyJPBm.png)
+
+## Conectarse via SSH
+
+Luego de obtener los datos necesarios para conectarnos a nuestra máquina, procedemos a hacerlo
+
+```shell
+ssh -i llaveBot.pem ubutnu@34.228.208.104
+```
+
+---
+
+Luego puede aparecer un mensaje como el siguiente donde solo debes de responder **yes**
+
+![](https://i.imgur.com/rUBASqR.png)
+
+---
+
+Una vez conectado ya estás dentro de la máquina virtual, te aconsejamos la primera vez hacer una actualización de dependencias de Ubuntu con los siguientes comandos
+
+```shell
+sudo apt-get update
+```
+
+```shell
+sudo apt-get upgrade
+```
+
+---
+
+## Recuerda instalar Node 16 o superior
+
+Puedes ver más a detalle los pasos de la instalacion en este [blog](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-20-04-es)
+
+```shell
+curl -sL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh
+```
+
+```shell
+sudo bash nodesource_setup.sh
+```
+
+```shell
+sudo apt-get install -y nodejs
+```
+
+---
+
+## Implementar el bot
+
+Si tienes el código de tu chatbot en un repositorio, solo falta que clones el repo en el servidor y ejecutes `npm start`
+
+Para escanear el **QR** puedes hacerlo vía WEB accediendo a la URL `http://[TU_IP_PUBLICA]:3000` en este ejemplo seria `http://34.228.208.10:3000`
+
+![](https://i.imgur.com/xcovczm.png)
+
+---
+
+## Firewall
+
+Si no te abre la pagina web asegurate de tener el puerto abierto en tu firewall.
+Ejemplo permitir el puerto **3000**
+
+![](https://i.imgur.com/0dAz0B1.png)
+
+---
+
+## Escanear QR
+
+![](https://i.imgur.com/2m3NbXC.png)
+
+---
+
+## Ejecutar en Producción
+
+Debes ubicarte en el directorio donde tienes el codigo fuente de tu chatbot.
+
+Independientemente de tu sistema operativo deberás ejecutar el chatbot con el comando atrevés de un sistema que mantenga el proceso en ejecución.
+Recomendamos [Pm2](https://pm2.keymetrics.io/)
+
+```shell
+pm2 start app.js --name=bot1
+```
+
+![](https://i.imgur.com/ilPS75H.png)
+
+La consola de devolver un mensaje con una lista de procesos, en el ejemplo puedes observar, que tenemos un proceso llamado `bot1`
+
+De esta manera ya puedes cerrar la terminal y tu bot seguirá en ejecución sin problema

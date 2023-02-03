@@ -117,7 +117,7 @@ class DialogFlowCXContext extends CoreClass {
             }
         })
 
-        this.sendFlow(listMessages, from)
+        this.sendFlowSimple(listMessages, from)
     }
 }
 
