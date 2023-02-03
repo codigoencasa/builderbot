@@ -168,16 +168,25 @@ class CoreClass {
             const parseListMsg = listMsg.map((opt, index) => createCtxMessage(opt, index))
             const currentPrev = await this.databaseClass.getPrevByNumber(from)
 
+            const skipContinueFlow = async () => {
+                const nextFlow = await this.flowClass.find(refToContinue?.ref, true)
+                const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
+                const isContinueFlow = filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)
+                return {
+                    continue: !isContinueFlow,
+                    contexts: filterNextFlow,
+                }
+            }
+
             if (endFlowFlag) return
             for (const msg of parseListMsg) {
                 await this.sendProviderAndSave(from, msg)
             }
-            const nextFlow = await this.flowClass.find(refToContinue?.ref, true)
-            const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
 
-            if (filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)) return
+            const continueFlowData = await skipContinueFlow()
 
-            return sendFlow(filterNextFlow, from, { prev: undefined })
+            if (continueFlowData.continue) return sendFlow(continueFlowData.contexts, from, { prev: undefined })
+            return
         }
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback o fallback
