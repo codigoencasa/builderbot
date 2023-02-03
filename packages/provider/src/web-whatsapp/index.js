@@ -163,13 +163,11 @@ class WebWhatsappProvider extends ProviderClass {
      * @param {*} text
      * @returns
      */
-    sendImage = async (number, filePath) => {
+    sendImage = async (number, filePath, caption) => {
         const base64 = readFileSync(filePath, { encoding: 'base64' })
         const mimeType = mime.lookup(filePath)
         const media = new MessageMedia(mimeType, base64)
-        return this.vendor.sendMessage(number, media, {
-            caption: 'soy una imagen',
-        })
+        return this.vendor.sendMessage(number, media, { caption })
     }
 
     /**
@@ -180,13 +178,11 @@ class WebWhatsappProvider extends ProviderClass {
      * @returns
      */
 
-    sendAudio = async (number, filePath) => {
+    sendAudio = async (number, filePath, caption) => {
         const base64 = readFileSync(filePath, { encoding: 'base64' })
         const mimeType = mime.lookup(filePath)
         const media = new MessageMedia(mimeType, base64)
-        return this.vendor.sendMessage(number, media, {
-            caption: 'soy un audio',
-        })
+        return this.vendor.sendMessage(number, media, { caption })
     }
 
     /**
@@ -235,7 +231,7 @@ class WebWhatsappProvider extends ProviderClass {
         if (mimeType.includes('video'))
             return this.sendVideo(number, fileDownloaded)
         if (mimeType.includes('audio'))
-            return this.sendAudio(number, fileDownloaded)
+            return this.sendAudio(number, fileDownloaded, text)
 
         return this.sendFile(number, fileDownloaded)
     }
