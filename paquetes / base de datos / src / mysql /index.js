@@ -70,15 +70,15 @@ class MyslAdapter {
         new Promise((resolve) => {
             const tableName = 'history'
 
-            const sql = `CREATE TABLE ${tableName} 
-        (id INT AUTO_INCREMENT PRIMARY KEY, 
-        ref varchar(255) NOT NULL,
-        keyword varchar(255) NOT NULL,
-        answer longtext NOT NULL,
-        refSerialize varchar(255) NOT NULL,
-        phone varchar(255) NOT NULL,
-        options longtext NOT NULL
-        )`
+         const sql = `CREATE TABLE ${tableName} 
+            (id INT AUTO_INCREMENT PRIMARY KEY, 
+            ref varchar(255) NOT NULL,
+            keyword varchar(255) NOT NULL,
+            answer longtext NOT NULL,
+            refSerialize varchar(255) NOT NULL,
+            phone varchar(255) NOT NULL,
+            options longtext NOT NULL) 
+            CHARACTER SET utf8mb4 COLLATE utf8mb4_General_ci`
 
             this.db.query(sql, (err) => {
                 if (err) throw err
