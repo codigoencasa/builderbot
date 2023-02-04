@@ -3,11 +3,7 @@
         "scope": "javascriptreact,typescriptreact",
         "prefix": "q:onGet",
         "description": "onGet function for a route index",
-        "body": [
-            "export const onGet: RequestHandler = (request) => {",
-            "  $0",
-            "};"
-        ]
+        "body": ["export const onGet: RequestHandler = (request) => {", "  $0", "};"]
     },
     "onGet (typed)": {
         "scope": "javascriptreact,typescriptreact",

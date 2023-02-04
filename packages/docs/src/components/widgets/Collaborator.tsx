@@ -23,9 +23,7 @@ export default component$(
 
                 <div class="pt-2 space-y-4 justify-center flex">
                     <figcaption class="text-sm">
-                        <div class={'font-semibold truncate'}>
-                            {props.user.login}
-                        </div>
+                        <div class={'font-semibold truncate'}>{props.user.login}</div>
                     </figcaption>
                 </div>
             </figure>

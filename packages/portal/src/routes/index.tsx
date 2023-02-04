@@ -15,19 +15,13 @@ export default component$(() => {
             <div class={'qr-section intructions'}>
                 <h1>Whatsapp QR</h1>
                 <p>
-                    Con esta libreria, puedes configurar respuestas
-                    automatizadas para preguntas frecuentes, recibir y responder
-                    mensajes de manera automatizada, y hacer un seguimiento de
-                    las interacciones con los clientes. <br /> Además, nuestro
-                    Chatbot se integra fácilmente con otros sistemas y
-                    herramientas que ya esté utilizando en su negocio.
+                    Con esta libreria, puedes configurar respuestas automatizadas para preguntas frecuentes, recibir y
+                    responder mensajes de manera automatizada, y hacer un seguimiento de las interacciones con los
+                    clientes. <br /> Además, nuestro Chatbot se integra fácilmente con otros sistemas y herramientas que
+                    ya esté utilizando en su negocio.
                 </p>
                 <div class={'qr-section links'}>
-                    <a
-                        class={'btn-link '}
-                        target="_blank"
-                        href="https://bot-whatsapp.netlify.app/"
-                    >
+                    <a class={'btn-link '} target="_blank" href="https://bot-whatsapp.netlify.app/">
                         Ver documentación
                     </a>
                     <a
@@ -37,11 +31,7 @@ export default component$(() => {
                     >
                         Ver videos
                     </a>
-                    <a
-                        class={'btn-link '}
-                        target="_blank"
-                        href="https://opencollective.com/bot-whatsapp"
-                    >
+                    <a class={'btn-link '} target="_blank" href="https://opencollective.com/bot-whatsapp">
                         Comprar café
                     </a>
                 </div>

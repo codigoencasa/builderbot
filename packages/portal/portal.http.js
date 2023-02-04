@@ -5,14 +5,9 @@ const polka = require('polka')
 
 const HTTP_PORT = process.env.PORT || 3000
 const QR_FILE = process.env.QR_FILE ?? 'bot'
-const PUBLIC_URL =
-    process.env.PUBLIC_URL ??
-    process.env.RAILWAY_STATIC_URL ??
-    'http://localhost'
+const PUBLIC_URL = process.env.PUBLIC_URL ?? process.env.RAILWAY_STATIC_URL ?? 'http://localhost'
 
-const dir = [join(__dirname, 'dist'), join(__dirname, '..', 'dist')].find((i) =>
-    existsSync(i)
-)
+const dir = [join(__dirname, 'dist'), join(__dirname, '..', 'dist')].find((i) => existsSync(i))
 const serve = require('serve-static')(dir)
 
 /**
@@ -32,14 +27,8 @@ const start = (args) => {
         console.log(``)
         console.log(bgYellow(`🚩 ESCANEAR QR 🚩`))
         console.log(cyan(`Existen varias maneras de escanear el QR code`))
-        console.log(
-            cyan(`- Tambien puedes visitar `),
-            yellow(`${publicSite}:${port}`)
-        )
-        console.log(
-            cyan(`- Se ha creado un archivo que finaliza `),
-            yellow('qr.png')
-        )
+        console.log(cyan(`- Tambien puedes visitar `), yellow(`${publicSite}:${port}`))
+        console.log(cyan(`- Se ha creado un archivo que finaliza `), yellow('qr.png'))
         console.log(``)
     }
 

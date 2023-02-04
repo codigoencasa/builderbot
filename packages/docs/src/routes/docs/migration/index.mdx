@@ -49,11 +49,7 @@ En la **_versión (legacy)_** se implementas los flujos de esta manera, en dos a
             "title": "¿Que te interesa ver?",
             "message": "Abajo unos botons",
             "footer": "",
-            "buttons": [
-                { "body": "Telefonos" },
-                { "body": "Computadoras" },
-                { "body": "Otros" }
-            ]
+            "buttons": [{ "body": "Telefonos" }, { "body": "Computadoras" }, { "body": "Otros" }]
         }
     },
     "catalogo": {
@@ -70,51 +66,28 @@ En esta versión es mucho más sencillo, abajo encontrarás un ejemplo del mismo
 
 ```js
 //app.js
-const {
-    createBot,
-    createProvider,
-    createFlow,
-    addKeyword,
-    addChild,
-} = require('@bot-whatsapp/bot')
+const { createBot, createProvider, createFlow, addKeyword, addChild } = require('@bot-whatsapp/bot')
 
 const BaileysProvider = require('@bot-whatsapp/provider/baileys') //Provider
 const MockAdapter = require('@bot-whatsapp/database/mock') //Base de datos
 /**
  * Declarando flujos principales.
  */
-const flowHola = addKeyword(['hola', 'ola', 'alo']).addAnswer(
-    'Bienvenido a tu tienda online!'
-)
+const flowHola = addKeyword(['hola', 'ola', 'alo']).addAnswer('Bienvenido a tu tienda online!')
 
-const flowAdios = addKeyword(['adios', 'bye'])
-    .addAnswer('Que te vaya bien!!')
-    .addAnswer('Hasta luego!')
+const flowAdios = addKeyword(['adios', 'bye']).addAnswer('Que te vaya bien!!').addAnswer('Hasta luego!')
 
-const flowProductos = addKeyword(['productos', 'info']).addAnswer(
-    'Te envio una imagen',
-    {
-        buttons: [
-            { body: 'Telefonos' },
-            { body: 'Computadoras' },
-            { body: 'Otros' },
-        ],
-    }
-)
+const flowProductos = addKeyword(['productos', 'info']).addAnswer('Te envio una imagen', {
+    buttons: [{ body: 'Telefonos' }, { body: 'Computadoras' }, { body: 'Otros' }],
+})
 
-const flowCatalogo = addKeyword(['imagen', 'foto']).addAnswer(
-    'Te envio una imagen',
-    { media: 'https://media2.giphy.com/media/VQJu0IeULuAmCwf5SL/giphy.gif' }
-)
+const flowCatalogo = addKeyword(['imagen', 'foto']).addAnswer('Te envio una imagen', {
+    media: 'https://media2.giphy.com/media/VQJu0IeULuAmCwf5SL/giphy.gif',
+})
 
 const main = async () => {
     const adapterDB = new MockAdapter()
-    const adapterFlow = createFlow([
-        flowHola,
-        flowAdios,
-        flowProductos,
-        flowCatalogo,
-    ]) //Se crean los flujos.
+    const adapterFlow = createFlow([flowHola, flowAdios, flowProductos, flowCatalogo]) //Se crean los flujos.
     const adapterProvider = createProvider(BaileysProvider)
     createBot({
         flow: adapterFlow,

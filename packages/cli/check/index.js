@@ -5,15 +5,9 @@ const checkNodeVersion = () => {
     return new Promise((resolve, reject) => {
         console.log(bgCyan('🚀 Revisando tu Node.js'))
         const version = process.version
-        const majorVersion = parseInt(
-            version.replace('v', '').split('.').shift()
-        )
+        const majorVersion = parseInt(version.replace('v', '').split('.').shift())
         if (majorVersion < 16) {
-            console.error(
-                red(
-                    `🔴 Se require Node.js 16 o superior. Actualmente esta ejecutando Node.js ${version}`
-                )
-            )
+            console.error(red(`🔴 Se require Node.js 16 o superior. Actualmente esta ejecutando Node.js ${version}`))
             console.log(``)
             reject('ERROR_NODE')
         }
