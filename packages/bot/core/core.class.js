@@ -196,8 +196,11 @@ class CoreClass {
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback y ejecutarlo
         const cbEveryCtx = async (inRef) => {
+            const provider = this.providerClass
+
             if (!this.flowClass.allCallbacks[inRef]) return Promise.resolve()
             return this.flowClass.allCallbacks[inRef](messageCtxInComming, {
+                provider,
                 fallBack,
                 flowDynamic,
                 endFlow,
