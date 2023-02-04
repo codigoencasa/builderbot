@@ -30,9 +30,7 @@ const startInteractive = async () => {
         await nextSteps()
     } catch (e) {
         console.error(bgRed(`Ups! 🙄 algo no va bien.`))
-        console.error(
-            bgRed(`Revisa los requerimientos minimos en la documentacion`)
-        )
+        console.error(bgRed(`Revisa los requerimientos minimos en la documentacion`))
     }
 }
 
@@ -82,8 +80,7 @@ const nextSteps = async () => {
     const { outDir = '', providerDb = [], providerWs = [] } = response
 
     const createApp = async (templateName = null) => {
-        if (!templateName)
-            throw new Error('TEMPLATE_NAME_INVALID: ', templateName)
+        if (!templateName) throw new Error('TEMPLATE_NAME_INVALID: ', templateName)
 
         const possiblesPath = [
             join(__dirname, '..', '..', 'starters', 'apps', templateName),
@@ -115,11 +112,7 @@ const nextSteps = async () => {
     const vendorProvider = async () => {
         const [answer] = providerWs
         if (!providerWs.length) {
-            console.log(
-                red(
-                    `Debes seleccionar un proveedor de whatsapp. Tecla [Space] para seleccionar`
-                )
-            )
+            console.log(red(`Debes seleccionar un proveedor de whatsapp. Tecla [Space] para seleccionar`))
             process.exit(1)
         }
         return answer
@@ -132,11 +125,7 @@ const nextSteps = async () => {
     const dbProvider = async () => {
         const [answer] = providerDb
         if (!providerDb.length) {
-            console.log(
-                red(
-                    `Debes seleccionar un proveedor de base de datos. Tecla [Space] para seleccionar`
-                )
-            )
+            console.log(red(`Debes seleccionar un proveedor de base de datos. Tecla [Space] para seleccionar`))
             process.exit(1)
         }
         return answer

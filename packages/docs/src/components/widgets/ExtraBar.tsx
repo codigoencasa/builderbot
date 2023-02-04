@@ -15,8 +15,8 @@ export default component$(() => {
                         📄 Editar esta pagina
                     </a>
                     <p class={'text-xs'}>
-                        Forma parte de esta comunidad mejorando la documentación
-                        siente libre de poder agregar o editar lo que quieras
+                        Forma parte de esta comunidad mejorando la documentación siente libre de poder agregar o editar
+                        lo que quieras
                     </p>
                 </li>
             </ul>

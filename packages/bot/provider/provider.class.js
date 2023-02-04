@@ -20,8 +20,7 @@ class ProviderClass extends EventEmitter {
      */
 
     sendMessage = async (userId, message) => {
-        if (NODE_ENV !== 'production')
-            console.log('[sendMessage]', { userId, message })
+        if (NODE_ENV !== 'production') console.log('[sendMessage]', { userId, message })
         return message
     }
 }

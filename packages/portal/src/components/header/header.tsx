@@ -8,28 +8,18 @@ export default component$(() => {
     return (
         <header>
             <div class="logo">
-                <a
-                    href="https://github.com/codigoencasa/bot-whatsapp"
-                    target="_blank"
-                    title="qwik"
-                >
+                <a href="https://github.com/codigoencasa/bot-whatsapp" target="_blank" title="qwik">
                     <BotLogo />
                 </a>
             </div>
             <ul>
                 <li>
-                    <a
-                        href="https://github.com/codigoencasa/bot-whatsapp"
-                        target="_blank"
-                    >
+                    <a href="https://github.com/codigoencasa/bot-whatsapp" target="_blank">
                         Docs
                     </a>
                 </li>
                 <li>
-                    <a
-                        href="https://github.com/codigoencasa/bot-whatsapp/tree/main/starters/apps"
-                        target="_blank"
-                    >
+                    <a href="https://github.com/codigoencasa/bot-whatsapp/tree/main/starters/apps" target="_blank">
                         Examples
                     </a>
                 </li>

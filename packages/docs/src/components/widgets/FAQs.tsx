@@ -56,13 +56,9 @@ export default component$(() => {
                                             <IconArrowDownRight class="w-7 h-7 text-primary-600  inline-block" />
                                             {question}
                                         </div>
-                                        {answer
-                                            .split('\n\n')
-                                            .map((paragraph) => (
-                                                <p class="text-gray-700 dark:text-gray-400 mb-2">
-                                                    {paragraph}
-                                                </p>
-                                            ))}
+                                        {answer.split('\n\n').map((paragraph) => (
+                                            <p class="text-gray-700 dark:text-gray-400 mb-2">{paragraph}</p>
+                                        ))}
                                     </div>
                                 ))}
                             </div>

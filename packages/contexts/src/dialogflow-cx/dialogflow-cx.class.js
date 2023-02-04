@@ -38,10 +38,8 @@ class DialogFlowCXContext extends CoreClass {
              *  */
         }
 
-        if (!this.optionsDX.location.length)
-            throw new Error('LOCATION_NO_ENCONTRADO')
-        if (!this.optionsDX.agentId.length)
-            throw new Error('AGENTID_NO_ENCONTRADO')
+        if (!this.optionsDX.location.length) throw new Error('LOCATION_NO_ENCONTRADO')
+        if (!this.optionsDX.agentId.length) throw new Error('AGENTID_NO_ENCONTRADO')
 
         const rawJson = readFileSync(GOOGLE_ACCOUNT_PATH, 'utf-8')
         const { project_id, private_key, client_email } = JSON.parse(rawJson)
@@ -86,9 +84,7 @@ class DialogFlowCXContext extends CoreClass {
             },
         }
 
-        const [single] = (await this.sessionClient.detectIntent(reqDialog)) || [
-            null,
-        ]
+        const [single] = (await this.sessionClient.detectIntent(reqDialog)) || [null]
 
         const listMessages = single.queryResult.responseMessages.map((res) => {
             if (res.message == 'text') {
@@ -96,17 +92,11 @@ class DialogFlowCXContext extends CoreClass {
             }
 
             if (res.message == 'payload') {
-                const {
-                    media = null,
-                    buttons = [],
-                    answer = '',
-                } = res.payload.fields
-                const buttonsArray = buttons?.listValue?.values?.map(
-                    (btnValue) => {
-                        const { stringValue } = btnValue.structValue.fields.body
-                        return { body: stringValue }
-                    }
-                )
+                const { media = null, buttons = [], answer = '' } = res.payload.fields
+                const buttonsArray = buttons?.listValue?.values?.map((btnValue) => {
+                    const { stringValue } = btnValue.structValue.fields.body
+                    return { body: stringValue }
+                })
                 return {
                     answer: answer?.stringValue,
                     options: {

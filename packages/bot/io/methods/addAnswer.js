@@ -17,15 +17,10 @@ const addAnswer =
          * @returns
          */
         const getAnswerOptions = () => ({
-            media:
-                typeof options?.media === 'string' ? `${options?.media}` : null,
+            media: typeof options?.media === 'string' ? `${options?.media}` : null,
             buttons: Array.isArray(options?.buttons) ? options.buttons : [],
-            capture:
-                typeof options?.capture === 'boolean'
-                    ? options?.capture
-                    : false,
-            child:
-                typeof options?.child === 'string' ? `${options?.child}` : null,
+            capture: typeof options?.capture === 'boolean' ? options?.capture : false,
+            child: typeof options?.child === 'string' ? `${options?.child}` : null,
             delay: typeof options?.delay === 'number' ? options?.delay : 0,
         })
 
@@ -49,8 +44,7 @@ const addAnswer =
          * Esta funcion aplana y busca los callback anidados de los hijos
          * @returns
          */
-        const getCbFromNested = () =>
-            flatObject(Array.isArray(nested) ? nested : [nested])
+        const getCbFromNested = () => flatObject(Array.isArray(nested) ? nested : [nested])
 
         const callback = typeof cb === 'function' ? cb : () => null
 

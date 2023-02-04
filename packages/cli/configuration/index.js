@@ -23,11 +23,7 @@ const JSON_TEMPLATE = {
 const PATH_CONFIG = join(process.cwd(), 'config.json')
 
 const jsonConfig = () => {
-    return writeFile(
-        PATH_CONFIG,
-        JSON.stringify(JSON_TEMPLATE, null, 2),
-        'utf-8'
-    )
+    return writeFile(PATH_CONFIG, JSON.stringify(JSON_TEMPLATE, null, 2), 'utf-8')
 }
 
 module.exports = { jsonConfig }

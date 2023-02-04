@@ -12,8 +12,7 @@
 
 .page .btn-link {
     background: white;
-    box-shadow: rgb(0 0 0 / 16%) 0px 10px 36px 0px,
-        rgb(0 0 0 / 6%) 0px 0px 0px 1px;
+    box-shadow: rgb(0 0 0 / 16%) 0px 10px 36px 0px, rgb(0 0 0 / 6%) 0px 0px 0px 1px;
     padding: 10px;
     border-radius: 5px;
     font-weight: 600;
