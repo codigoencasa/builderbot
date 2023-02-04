@@ -2,11 +2,7 @@ const { Client, LocalAuth, MessageMedia, Buttons } = require('whatsapp-web.js')
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const { Console } = require('console')
 const { createWriteStream, readFileSync } = require('fs')
-const {
-    wwebCleanNumber,
-    wwebGenerateImage,
-    wwebIsValidNumber,
-} = require('./utils')
+const { wwebCleanNumber, wwebGenerateImage, wwebIsValidNumber } = require('./utils')
 
 const logger = new Console({
     stdout: createWriteStream('./log'),
@@ -32,11 +28,7 @@ class WebWhatsappProvider extends ProviderClass {
             }),
             puppeteer: {
                 headless: true,
-                args: [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--unhandled-rejections=strict',
-                ],
+                args: ['--no-sandbox', '--disable-setuid-sandbox', '--unhandled-rejections=strict'],
                 //executablePath: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
             },
         })
@@ -80,10 +72,7 @@ class WebWhatsappProvider extends ProviderClass {
                         `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
                     ],
                 })
-                await wwebGenerateImage(
-                    qr,
-                    `${this.globalVendorArgs.name}.qr.png`
-                )
+                await wwebGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)
             },
         },
         {
@@ -116,6 +105,9 @@ class WebWhatsappProvider extends ProviderClass {
      * @returns
      */
     sendButtons = async (number, message, buttons = []) => {
+        console.log(`🚩 ¿No te funciona los botones? Intenta instalar`)
+        console.log(`npm i github:pedroslopez/whatsapp-web.js#fix-buttons-list`)
+
         const buttonMessage = new Buttons(message, buttons, '', '')
         return this.vendor.sendMessage(number, buttonMessage)
     }
@@ -226,12 +218,9 @@ class WebWhatsappProvider extends ProviderClass {
         const fileDownloaded = await generalDownload(mediaUrl)
         const mimeType = mime.lookup(fileDownloaded)
 
-        if (mimeType.includes('image'))
-            return this.sendImage(number, fileDownloaded, text)
-        if (mimeType.includes('video'))
-            return this.sendVideo(number, fileDownloaded)
-        if (mimeType.includes('audio'))
-            return this.sendAudio(number, fileDownloaded, text)
+        if (mimeType.includes('image')) return this.sendImage(number, fileDownloaded, text)
+        if (mimeType.includes('video')) return this.sendVideo(number, fileDownloaded)
+        if (mimeType.includes('audio')) return this.sendAudio(number, fileDownloaded)
 
         return this.sendFile(number, fileDownloaded)
     }
@@ -245,8 +234,7 @@ class WebWhatsappProvider extends ProviderClass {
      */
     sendMessage = async (userId, message, { options }) => {
         const number = wwebCleanNumber(userId)
-        if (options?.buttons?.length)
-            return this.sendButtons(number, message, options.buttons)
+        if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
         if (options?.media) return this.sendMedia(number, options.media)
         return this.sendText(number, message)
     }
