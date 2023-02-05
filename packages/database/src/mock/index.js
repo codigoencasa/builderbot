@@ -10,7 +10,10 @@ class MockDatabase {
     constructor() {}
 
     getPrevByNumber = (from) => {
-        const history = this.listHistory.slice().reverse()
+        const history = this.listHistory
+            .slice()
+            .reverse()
+            .filter((i) => !!i.keyword)
         return history.find((a) => a.from === from)
     }
 

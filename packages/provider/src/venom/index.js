@@ -4,11 +4,7 @@ const { createWriteStream } = require('fs')
 const { Console } = require('console')
 const mime = require('mime-types')
 
-const {
-    venomCleanNumber,
-    venomGenerateImage,
-    venomisValidNumber,
-} = require('./utils')
+const { venomCleanNumber, venomGenerateImage, venomisValidNumber } = require('./utils')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/venom.log`),
@@ -108,8 +104,7 @@ class VenomProvider extends ProviderClass {
         const listEvents = this.busEvents()
 
         for (const { event, func } of listEvents) {
-            if (this.vendor[event])
-                this.vendor[event]((payload) => func(payload))
+            if (this.vendor[event]) this.vendor[event]((payload) => func(payload))
         }
     }
 
@@ -122,16 +117,13 @@ class VenomProvider extends ProviderClass {
      * @returns
      */
     sendButtons = async (number, message, buttons = []) => {
-        const NOTE_VENOM_BUTTON = [
-            `Actualmente VENOM tiene problemas con la API`,
-            `para el envio de Botones`,
-        ].join('\n')
+        const NOTE_VENOM_BUTTON = [`Actualmente VENOM tiene problemas con la API`, `para el envio de Botones`].join(
+            '\n'
+        )
 
         console.log(`[NOTA]: ${NOTE_VENOM_BUTTON}`)
 
-        const buttonToStr = [message]
-            .concat(buttons.map((btn) => `${btn.body}`))
-            .join(`\n`)
+        const buttonToStr = [message].concat(buttons.map((btn) => `${btn.body}`)).join(`\n`)
         return this.vendor.sendText(number, buttonToStr)
         // return this.vendor.sendButtons(number, "Title", buttons1, "Description");
     }
@@ -194,12 +186,9 @@ class VenomProvider extends ProviderClass {
         const fileDownloaded = await generalDownload(mediaUrl)
         const mimeType = mime.lookup(fileDownloaded)
 
-        if (mimeType.includes('image'))
-            return this.sendImage(number, fileDownloaded, text)
-        if (mimeType.includes('video'))
-            return this.sendVideo(number, fileDownloaded, text)
-        if (mimeType.includes('audio'))
-            return this.sendAudio(number, fileDownloaded)
+        if (mimeType.includes('image')) return this.sendImage(number, fileDownloaded, text)
+        if (mimeType.includes('video')) return this.sendVideo(number, fileDownloaded, text)
+        if (mimeType.includes('audio')) return this.sendAudio(number, fileDownloaded)
 
         return this.sendFile(number, fileDownloaded, text)
     }
@@ -213,10 +202,8 @@ class VenomProvider extends ProviderClass {
      */
     sendMessage = async (userId, message, { options }) => {
         const number = venomCleanNumber(userId)
-        if (options?.buttons?.length)
-            return this.sendButtons(number, message, options.buttons)
-        if (options?.media)
-            return this.sendMedia(number, options.media, message)
+        if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
+        if (options?.media) return this.sendMedia(number, options.media, message)
         return this.vendor.sendText(number, message)
     }
 }

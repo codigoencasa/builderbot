@@ -56,15 +56,11 @@ class MetaProvider extends ProviderClass {
 
     sendMessageMeta = async (body) => {
         try {
-            const response = await axios.post(
-                `${URL}/${this.numberId}/messages`,
-                body,
-                {
-                    headers: {
-                        Authorization: `Bearer ${this.jwtToken}`,
-                    },
-                }
-            )
+            const response = await axios.post(`${URL}/${this.numberId}/messages`, body, {
+                headers: {
+                    Authorization: `Bearer ${this.jwtToken}`,
+                },
+            })
             return response.data
         } catch (error) {
             return Promise.resolve(error)
@@ -106,8 +102,7 @@ class MetaProvider extends ProviderClass {
      */
     sendMessage = async (number, message, { options }) => {
         if (options?.buttons?.length) return console.log('Envio de botones')
-        if (options?.media)
-            return this.sendMedia(number, message, options.media)
+        if (options?.media) return this.sendMedia(number, message, options.media)
 
         this.sendtext(number, message)
     }

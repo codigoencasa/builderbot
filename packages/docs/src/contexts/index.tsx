@@ -13,5 +13,4 @@ export interface User {
     avatar_url: string
 }
 
-export const GlobalStore =
-    createContext<DocumentationCtx[]>('documentation-site')
+export const GlobalStore = createContext<DocumentationCtx[]>('documentation-site')

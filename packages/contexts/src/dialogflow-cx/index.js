@@ -5,8 +5,7 @@ const DialogCXFlowClass = require('./dialogflow-cx.class')
  * @param {*} args
  * @returns
  */
-const createBotDialog = async ({ database, provider }, _options) =>
-    new DialogCXFlowClass(database, provider, _options)
+const createBotDialog = async ({ database, provider }, _options) => new DialogCXFlowClass(database, provider, _options)
 
 module.exports = {
     createBotDialog,

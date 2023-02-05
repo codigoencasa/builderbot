@@ -25,9 +25,17 @@ class FlowClass {
         let refSymbol = null
         overFlow = overFlow ?? this.flowSerialize
 
+        const customRegex = (str = null) => {
+            if (typeof str !== 'string') return
+            const instanceRegex = new RegExp(str)
+            return instanceRegex.test(str)
+        }
+
         /** Retornar expresion regular para buscar coincidencia */
-        const mapSensitive = (str, flag = false) => {
-            const regexSensitive = flag ? 'g' : 'i'
+        const mapSensitive = (str, mapOptions = { sensitive: false, regex: false }) => {
+            if (mapOptions.regex) return customRegex(str)
+
+            const regexSensitive = mapOptions.sensitive ? 'g' : 'i'
             if (Array.isArray(str)) {
                 return new RegExp(str.join('|'), regexSensitive)
             }
@@ -36,6 +44,7 @@ class FlowClass {
 
         const findIn = (keyOrWord, symbol = false, flow = overFlow) => {
             const sensitive = refSymbol?.options?.sensitive || false
+            const regex = refSymbol?.options?.regex || false
             capture = refSymbol?.options?.capture || false
 
             if (capture) return messages
@@ -46,7 +55,7 @@ class FlowClass {
                 if (refSymbol?.ref) findIn(refSymbol.ref, true)
             } else {
                 refSymbol = flow.find((c) => {
-                    return mapSensitive(c.keyword, sensitive).test(keyOrWord)
+                    return mapSensitive(c.keyword, { sensitive, regex }).test(keyOrWord)
                 })
                 if (refSymbol?.ref) findIn(refSymbol.ref, true)
                 return messages
@@ -56,8 +65,7 @@ class FlowClass {
         return messages
     }
 
-    findBySerialize = (refSerialize) =>
-        this.flowSerialize.find((r) => r.refSerialize === refSerialize)
+    findBySerialize = (refSerialize) => this.flowSerialize.find((r) => r.refSerialize === refSerialize)
 
     findIndexByRef = (ref) => this.flowSerialize.findIndex((r) => r.ref === ref)
 }

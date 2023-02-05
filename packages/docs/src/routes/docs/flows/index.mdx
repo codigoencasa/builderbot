@@ -9,12 +9,7 @@ Tan sencillo como decir **palabra/s clave** y **mensaje a responder**
 Ambos metodos **[addKeyword](https://github.com/codigoencasa/bot-whatsapp/blob/dev/packages/bot/io/methods/addKeyword.js)** y el **[addAnswer](https://github.com/codigoencasa/bot-whatsapp/blob/dev/packages/bot/io/methods/addAnswer.js)** tienen una serie opciones disponibles
 
 ```js
-const {
-    createBot,
-    createProvider,
-    createFlow,
-    addKeyword,
-} = require('@bot-whatsapp/bot')
+const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
 
 const flowPrincipal = addKeyword(['hola', 'alo'])
     .addAnswer(['Hola, bienvenido a mi tienda', '¿Como puedo ayudarte?'])
@@ -81,37 +76,21 @@ Esta funcion se utliza para responder un mensaje despues del `addKeyword()`
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
 
-const flowString = addKeyword('hola').addAnswer(
-    'Este mensaje se enviara 1 segundo despues',
-    {
-        delay: 1000,
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Este mensaje se enviara 1 segundo despues', {
+    delay: 1000,
+})
 
-const flowString = addKeyword('hola').addAnswer(
-    'Este mensaje envia una imagen',
-    {
-        media: 'https://i.imgur.com/0HpzsEm.png',
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Este mensaje envia una imagen', {
+    media: 'https://i.imgur.com/0HpzsEm.png',
+})
 
-const flowString = addKeyword('hola').addAnswer(
-    'Este mensaje envia tres botones',
-    {
-        buttons: [
-            { body: 'Boton 1' },
-            { body: 'Boton 2' },
-            { body: 'Boton 3' },
-        ],
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Este mensaje envia tres botones', {
+    buttons: [{ body: 'Boton 1' }, { body: 'Boton 2' }, { body: 'Boton 3' }],
+})
 
-const flowString = addKeyword('hola').addAnswer(
-    'Este mensaje espera una respueta del usuario',
-    {
-        capture: true,
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Este mensaje espera una respueta del usuario', {
+    capture: true,
+})
 ```
 
 ---
@@ -123,13 +102,9 @@ Este argumento se utiliza para obtener el contexto de la conversación
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
 
-const flowString = addKeyword('hola').addAnswer(
-    'Indica cual es tu email',
-    null,
-    (ctx) => {
-        console.log('👉 Informacion del contexto: ', ctx)
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Indica cual es tu email', null, (ctx) => {
+    console.log('👉 Informacion del contexto: ', ctx)
+})
 ```
 
 ---
@@ -143,13 +118,9 @@ se repetira el mensaje `Indica cual es tu email`
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
 
-const flowString = addKeyword('hola').addAnswer(
-    'Indica cual es tu email',
-    null,
-    (ctx, { fallBack }) => {
-        if (!ctx.body.includes('@')) return fallBack()
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Indica cual es tu email', null, (ctx, { fallBack }) => {
+    if (!ctx.body.includes('@')) return fallBack()
+})
 ```
 
 ---

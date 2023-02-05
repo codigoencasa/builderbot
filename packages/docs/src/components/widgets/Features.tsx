@@ -50,13 +50,11 @@ export default component$(() => {
                         Caracteristicas
                     </p>
                     <h2 class="text-4xl md:text-5xl font-bold leading-tighter tracking-tighter mb-4 font-heading">
-                        Nuestras principales{' '}
-                        <span class="whitespace-nowrap">funciones</span>
+                        Nuestras principales <span class="whitespace-nowrap">funciones</span>
                     </h2>
                     <p class="max-w-3xl mx-auto sm:text-center text-xl text-gray-600 dark:text-slate-400">
-                        El secreto es mantener los procesos repetitivos en
-                        procesos automatizados simples, por eso te mostramos en
-                        que destacamos.
+                        El secreto es mantener los procesos repetitivos en procesos automatizados simples, por eso te
+                        mostramos en que destacamos.
                     </p>
                 </div>
                 <div class="grid mx-auto space-y-6 md:grid-cols-2 md:space-y-0">
@@ -70,12 +68,8 @@ export default component$(() => {
                                         </div>
                                     </div>
                                     <div>
-                                        <h3 class="mb-3 text-xl font-bold">
-                                            {title}
-                                        </h3>
-                                        <p class="text-gray-600 dark:text-slate-400">
-                                            {description}
-                                        </p>
+                                        <h3 class="mb-3 text-xl font-bold">{title}</h3>
+                                        <p class="text-gray-600 dark:text-slate-400">{description}</p>
                                     </div>
                                 </div>
                             ))}

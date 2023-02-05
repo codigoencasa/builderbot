@@ -8,8 +8,7 @@ const { addKeyword, addAnswer, addChild, toSerialize } = require('./io/methods')
  * @param {*} args
  * @returns
  */
-const createBot = async ({ flow, database, provider }, args = {}) =>
-    new CoreClass(flow, database, provider, args)
+const createBot = async ({ flow, database, provider }, args = {}) => new CoreClass(flow, database, provider, args)
 
 /**
  * Crear instancia de clase Io (Flow)
@@ -29,8 +28,7 @@ const createFlow = (args) => {
  */
 const createProvider = (providerClass = class {}, args = null) => {
     const providerInstance = new providerClass(args)
-    if (!providerClass.prototype instanceof ProviderClass)
-        throw new Error('El provider no implementa ProviderClass')
+    if (!providerClass.prototype instanceof ProviderClass) throw new Error('El provider no implementa ProviderClass')
     return providerInstance
 }
 

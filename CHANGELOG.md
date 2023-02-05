@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.20](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.19...v0.1.20) (2023-02-05)
+
+
+### Features
+
+* **cli:** :fire: add regex expression in addKeyworkd ([e34560c](https://github.com/leifermendez/bot-whatsapp/commit/e34560c77d4852d2e90930f0858e51aa67d4eeab))
+* **provider:** :zap: possible get class provider ([76ba717](https://github.com/leifermendez/bot-whatsapp/commit/76ba717927a75b3d6299206aa0b8aee2bc25b726))
+
+
+### Bug Fixes
+
+* **cli:** :zap: working flowDynamic test ([c0113ca](https://github.com/leifermendez/bot-whatsapp/commit/c0113ca49295aff220d8defcb53f2ba7f2872d75))
+* **cli:** :zap: working flowDynamic test ([aef52d2](https://github.com/leifermendez/bot-whatsapp/commit/aef52d2694fa6616d614338643db198b4f7f1fe8))
+* **cli:** :zap: working flowDynamic test ([f769320](https://github.com/leifermendez/bot-whatsapp/commit/f76932021ce968d93241b55cfcdb8ae0e0e6c934))
+* **cli:** :zap: working flowDynamic test ([23e09ef](https://github.com/leifermendez/bot-whatsapp/commit/23e09efaeccaf51018c55da492edff45b625f0a9))
+* **database:** add support emoji in mysql ([9311aa0](https://github.com/leifermendez/bot-whatsapp/commit/9311aa0a65623a1bf40e96207a281625154dae90))
+* **database:** fix naming ([cd082f2](https://github.com/leifermendez/bot-whatsapp/commit/cd082f235012cd5f5844c6437f51711beee0c865))
+* **database:** fix naming ([1afc3ba](https://github.com/leifermendez/bot-whatsapp/commit/1afc3ba182070713b5bec40eaab0fa1f680830cd))
+* **database:** fix naming ([c9831d2](https://github.com/leifermendez/bot-whatsapp/commit/c9831d202ab2c85f15a0247cd2a2426bc435270c))
+* **provider:** :zap: baily wa.link ([96c2bff](https://github.com/leifermendez/bot-whatsapp/commit/96c2bffd093269be8e39474a84c156938504a6cb))
+
 ### [0.1.19](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.18...v0.1.19) (2023-01-29)
 
 

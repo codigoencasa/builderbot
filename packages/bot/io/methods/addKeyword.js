@@ -8,12 +8,14 @@ const { toJson } = require('./toJson')
  * @param {*} options {sensitive:boolean} default false
  */
 const addKeyword = (keyword, options) => {
+    if (typeof keyword !== 'string' && !Array.isArray(keyword)) {
+        throw new Error('DEBE_SER_STRING_ARRAY_REGEX')
+    }
+
     const parseOptions = () => {
         const defaultProperties = {
-            sensitive:
-                typeof options?.sensitive === 'boolean'
-                    ? options?.sensitive
-                    : false,
+            sensitive: typeof options?.sensitive === 'boolean' ? options?.sensitive : false,
+            regex: typeof options?.regex === 'boolean' ? options?.regex : false,
         }
 
         return defaultProperties

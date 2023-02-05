@@ -7,18 +7,9 @@ const { join } = require('path')
 const { createWriteStream, readFileSync } = require('fs')
 const { Console } = require('console')
 
-const {
-    default: makeWASocket,
-    useMultiFileAuthState,
-    Browsers,
-    DisconnectReason,
-} = require('@adiwajshing/baileys')
+const { default: makeWASocket, useMultiFileAuthState, Browsers, DisconnectReason } = require('@adiwajshing/baileys')
 
-const {
-    baileyGenerateImage,
-    baileyCleanNumber,
-    baileyIsValidNumber,
-} = require('./utils')
+const { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber } = require('./utils')
 
 const { generalDownload } = require('../../common/download')
 
@@ -46,9 +37,7 @@ class BaileysProvider extends ProviderClass {
      */
     initBailey = async () => {
         const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
-        const { state, saveCreds } = await useMultiFileAuthState(
-            NAME_DIR_SESSION
-        )
+        const { state, saveCreds } = await useMultiFileAuthState(NAME_DIR_SESSION)
         this.saveCredsGlobal = saveCreds
 
         try {
@@ -57,7 +46,7 @@ class BaileysProvider extends ProviderClass {
                 auth: state,
                 browser: Browsers.macOS('Desktop'),
                 syncFullHistory: false,
-                logger: pino({ level: 'error' }),
+                logger: pino({ level: 'fatal' }),
             })
 
             sock.ev.on('connection.update', async (update) => {
@@ -96,10 +85,7 @@ class BaileysProvider extends ProviderClass {
                             `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
                         ],
                     })
-                    await baileyGenerateImage(
-                        qr,
-                        `${this.globalVendorArgs.name}.qr.png`
-                    )
+                    await baileyGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)
                 }
             })
 
@@ -131,9 +117,10 @@ class BaileysProvider extends ProviderClass {
                 const [messageCtx] = messages
                 let payload = {
                     ...messageCtx,
-                    body: messageCtx?.message?.conversation,
+                    body: messageCtx?.message?.extendedTextMessage?.text ?? messageCtx?.message?.conversation,
                     from: messageCtx?.key?.remoteJid,
                 }
+
                 if (payload.from === 'status@broadcast') return
 
                 if (payload?.key?.fromMe) return
@@ -142,9 +129,7 @@ class BaileysProvider extends ProviderClass {
                     return
                 }
 
-                const btnCtx =
-                    payload?.message?.buttonsResponseMessage
-                        ?.selectedDisplayText
+                const btnCtx = payload?.message?.buttonsResponseMessage?.selectedDisplayText
 
                 if (btnCtx) payload.body = btnCtx
 
@@ -174,12 +159,9 @@ class BaileysProvider extends ProviderClass {
         const fileDownloaded = await generalDownload(imageUrl)
         const mimeType = mime.lookup(fileDownloaded)
 
-        if (mimeType.includes('image'))
-            return this.sendImage(number, fileDownloaded, text)
-        if (mimeType.includes('video'))
-            return this.sendVideo(number, fileDownloaded, text)
-        if (mimeType.includes('audio'))
-            return this.sendAudio(number, fileDownloaded, text)
+        if (mimeType.includes('image')) return this.sendImage(number, fileDownloaded, text)
+        if (mimeType.includes('video')) return this.sendVideo(number, fileDownloaded, text)
+        if (mimeType.includes('audio')) return this.sendAudio(number, fileDownloaded, text)
 
         return this.sendFile(number, fileDownloaded)
     }
@@ -294,10 +276,8 @@ class BaileysProvider extends ProviderClass {
     sendMessage = async (numberIn, message, { options }) => {
         const number = baileyCleanNumber(numberIn)
 
-        if (options?.buttons?.length)
-            return this.sendButtons(number, message, options.buttons)
-        if (options?.media)
-            return this.sendMedia(number, options.media, message)
+        if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
+        if (options?.media) return this.sendMedia(number, options.media, message)
         return this.sendText(number, message)
     }
 
@@ -332,12 +312,7 @@ class BaileysProvider extends ProviderClass {
      * @example await sendContact("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "+xxxxxxxxxxx", "Robin Smith", messages)
      */
 
-    sendContact = async (
-        remoteJid,
-        contactNumber,
-        displayName,
-        messages = null
-    ) => {
+    sendContact = async (remoteJid, contactNumber, displayName, messages = null) => {
         const cleanContactNumber = contactNumber.replaceAll(' ', '')
         const waid = cleanContactNumber.replace('+', '')
 

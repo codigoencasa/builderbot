@@ -3,9 +3,7 @@ const flatObject = (listArray = []) => {
 
     if (!listArray.length) return {}
 
-    const cbNestedObj = cbNestedList
-        .map(({ ctx }) => ctx?.callbacks)
-        .filter((i) => !!i)
+    const cbNestedObj = cbNestedList.map(({ ctx }) => ctx?.callbacks).filter((i) => !!i)
     const queueCb = cbNestedObj.reduce((acc, current) => {
         const getKeys = Object.keys(current)
         const parse = getKeys.map((icb, i) => ({
