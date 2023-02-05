@@ -20,13 +20,9 @@ const installDeps = (pkgManager, packageList) => {
     const installSingle = (pkgInstall) => () => {
         new Promise((resolve) => {
             try {
-                childProcess = spawn(
-                    pkgManager,
-                    [PKG_OPTION[pkgManager], pkgInstall],
-                    {
-                        stdio: 'inherit',
-                    }
-                )
+                childProcess = spawn(pkgManager, [PKG_OPTION[pkgManager], pkgInstall], {
+                    stdio: 'inherit',
+                })
 
                 childProcess.on('error', (e) => {
                     console.error(e)

@@ -43,8 +43,7 @@ class CoreClass {
         },
         {
             event: 'require_action',
-            func: ({ instructions, title = '⚡⚡ ACCIÓN REQUERIDA ⚡⚡' }) =>
-                printer(instructions, title),
+            func: ({ instructions, title = '⚡⚡ ACCIÓN REQUERIDA ⚡⚡' }) => printer(instructions, title),
         },
         {
             event: 'ready',
@@ -52,8 +51,7 @@ class CoreClass {
         },
         {
             event: 'auth_failure',
-            func: ({ instructions }) =>
-                printer(instructions, '⚡⚡ ERROR AUTH ⚡⚡'),
+            func: ({ instructions }) => printer(instructions, '⚡⚡ ERROR AUTH ⚡⚡'),
         },
 
         {
@@ -78,9 +76,7 @@ class CoreClass {
         if (!body.length) return
 
         let prevMsg = await this.databaseClass.getPrevByNumber(from)
-        const refToContinue = this.flowClass.findBySerialize(
-            prevMsg?.refSerialize
-        )
+        const refToContinue = this.flowClass.findBySerialize(prevMsg?.refSerialize)
 
         if (prevMsg?.ref) {
             const ctxByNumber = toCtx({
@@ -93,10 +89,7 @@ class CoreClass {
 
         // 📄 Crar CTX de mensaje (uso private)
         const createCtxMessage = (payload = {}, index = 0) => {
-            const body =
-                typeof payload === 'string'
-                    ? payload
-                    : payload?.body ?? payload?.answer
+            const body = typeof payload === 'string' ? payload : payload?.body ?? payload?.answer
             const media = payload?.media ?? null
             const buttons = payload?.buttons ?? []
             const capture = payload?.capture ?? false
@@ -118,30 +111,16 @@ class CoreClass {
 
         // 📄 Finalizar flujo
         const endFlow = async (message = null) => {
-            prevMsg = null
             endFlowFlag = true
-            if (message)
-                this.sendProviderAndSave(from, createCtxMessage(message))
+            if (message) this.sendProviderAndSave(from, createCtxMessage(message))
             clearQueue()
-            return
-        }
-
-        // 📄 Continuar con el siguiente flujo
-        const continueFlow = async () => {
-            const cotinueMessage =
-                this.flowClass.find(refToContinue?.ref, true) || []
-            sendFlow(cotinueMessage, from, { continue: true })
+            sendFlow([])
             return
         }
 
         // 📄 Esta funcion se encarga de enviar un array de mensajes dentro de este ctx
-        const sendFlow = async (
-            messageToSend,
-            numberOrId,
-            options = { continue: false }
-        ) => {
-            if (!options.continue && prevMsg?.options?.capture)
-                await cbEveryCtx(prevMsg?.ref)
+        const sendFlow = async (messageToSend, numberOrId, options = { prev: prevMsg }) => {
+            if (options.prev?.options?.capture) await cbEveryCtx(options.prev?.ref)
 
             const queue = []
             for (const ctxMessage of messageToSend) {
@@ -150,9 +129,7 @@ class CoreClass {
                 if (delayMs) await delay(delayMs)
                 QueuePrincipal.enqueue(() =>
                     Promise.all([
-                        this.sendProviderAndSave(numberOrId, ctxMessage).then(
-                            () => resolveCbEveryCtx(ctxMessage)
-                        ),
+                        this.sendProviderAndSave(numberOrId, ctxMessage).then(() => resolveCbEveryCtx(ctxMessage)),
                     ])
                 )
             }
@@ -160,20 +137,26 @@ class CoreClass {
         }
 
         // 📄 [options: fallBack]: esta funcion se encarga de repetir el ultimo mensaje
-        const fallBack = async (next = false, message = null) => {
+        const fallBack = async (validation = false, message = null) => {
             QueuePrincipal.queue = []
-            if (next) return continueFlow()
-            return this.sendProviderAndSave(from, {
+
+            if (validation) {
+                const currentPrev = await this.databaseClass.getPrevByNumber(from)
+                const nextFlow = await this.flowClass.find(refToContinue?.ref, true)
+                const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
+
+                return sendFlow(filterNextFlow, from, { prev: undefined })
+            }
+
+            await this.sendProviderAndSave(from, {
                 ...prevMsg,
-                answer:
-                    typeof message === 'string'
-                        ? message
-                        : message?.body ?? prevMsg.answer,
+                answer: typeof message === 'string' ? message : message?.body ?? prevMsg.answer,
                 options: {
                     ...prevMsg.options,
-                    buttons: message?.buttons ?? prevMsg.options?.buttons,
+                    buttons: prevMsg.options?.buttons,
                 },
             })
+            return
         }
 
         // 📄 [options: flowDynamic]: esta funcion se encarga de responder un array de respuesta esta limitado a 5 mensajes
@@ -182,31 +165,45 @@ class CoreClass {
         const flowDynamic = async (listMsg = []) => {
             if (!Array.isArray(listMsg)) listMsg = [listMsg]
 
-            const parseListMsg = listMsg.map((opt, index) =>
-                createCtxMessage(opt, index)
-            )
+            const parseListMsg = listMsg.map((opt, index) => createCtxMessage(opt, index))
+            const currentPrev = await this.databaseClass.getPrevByNumber(from)
+
+            const skipContinueFlow = async () => {
+                const nextFlow = await this.flowClass.find(refToContinue?.ref, true)
+                const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
+                const isContinueFlow = filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)
+                return {
+                    continue: !isContinueFlow,
+                    contexts: filterNextFlow,
+                }
+            }
 
             if (endFlowFlag) return
             for (const msg of parseListMsg) {
                 await this.sendProviderAndSave(from, msg)
             }
-            return continueFlow()
+
+            const continueFlowData = await skipContinueFlow()
+
+            if (continueFlowData.continue) return sendFlow(continueFlowData.contexts, from, { prev: undefined })
+            return
         }
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback o fallback
         const resolveCbEveryCtx = async (ctxMessage) => {
-            if (!ctxMessage?.options?.capture)
-                return await cbEveryCtx(ctxMessage?.ref)
+            if (!ctxMessage?.options?.capture) return await cbEveryCtx(ctxMessage?.ref)
         }
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback y ejecutarlo
         const cbEveryCtx = async (inRef) => {
+            const provider = this.providerClass
+
             if (!this.flowClass.allCallbacks[inRef]) return Promise.resolve()
             return this.flowClass.allCallbacks[inRef](messageCtxInComming, {
+                provider,
                 fallBack,
                 flowDynamic,
                 endFlow,
-                continueFlow,
             })
         }
 
@@ -246,10 +243,9 @@ class CoreClass {
      */
     sendProviderAndSave = (numberOrId, ctxMessage) => {
         const { answer } = ctxMessage
-        return Promise.all([
-            this.providerClass.sendMessage(numberOrId, answer, ctxMessage),
-            this.databaseClass.save({ ...ctxMessage, from: numberOrId }),
-        ])
+        return this.providerClass
+            .sendMessage(numberOrId, answer, ctxMessage)
+            .then(() => this.databaseClass.save({ ...ctxMessage, from: numberOrId }))
     }
 
     /**
@@ -279,9 +275,7 @@ class CoreClass {
         for (const ctxMessage of messageToSend) {
             const delayMs = ctxMessage?.options?.delay || 0
             if (delayMs) await delay(delayMs)
-            QueuePrincipal.enqueue(() =>
-                this.sendProviderAndSave(numberOrId, ctxMessage)
-            )
+            QueuePrincipal.enqueue(() => this.sendProviderAndSave(numberOrId, ctxMessage))
         }
         return Promise.all(queue)
     }

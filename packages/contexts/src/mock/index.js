@@ -5,8 +5,7 @@ const MockClass = require('./mock.class')
  * @param {*} args
  * @returns
  */
-const createBotMock = async ({ database, provider }) =>
-    new MockClass(database, provider)
+const createBotMock = async ({ database, provider }) => new MockClass(database, provider)
 
 module.exports = {
     createBotMock,

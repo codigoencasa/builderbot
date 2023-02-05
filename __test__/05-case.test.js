@@ -2,12 +2,7 @@ const { test } = require('uvu')
 const assert = require('uvu/assert')
 const MOCK_DB = require('../packages/database/src/mock')
 const PROVIDER_DB = require('../packages/provider/src/mock')
-const {
-    addKeyword,
-    createBot,
-    createFlow,
-    createProvider,
-} = require('../packages/bot/index')
+const { addKeyword, createBot, createFlow, createProvider } = require('../packages/bot/index')
 
 /**
  * Falsear peticion async
@@ -21,11 +16,7 @@ const fakeHTTP = async (fakeData = []) => {
 }
 
 test(`[Caso - 05] Continuar Flujo (continueFlow)`, async () => {
-    const MOCK_VALUES = [
-        '¿CUal es tu email?',
-        'Continuamos....',
-        '¿Cual es tu edad?',
-    ]
+    const MOCK_VALUES = ['¿CUal es tu email?', 'Continuamos....', '¿Cual es tu edad?']
     const provider = createProvider(PROVIDER_DB)
     const database = new MOCK_DB()
 
@@ -39,26 +30,20 @@ test(`[Caso - 05] Continuar Flujo (continueFlow)`, async () => {
                 const validation = ctx.body.includes('@')
 
                 if (validation) {
-                    const getDataFromApi = await fakeHTTP([
-                        'Gracias por tu email se ha validado de manera correcta',
-                    ])
+                    const getDataFromApi = await fakeHTTP(['Gracias por tu email se ha validado de manera correcta'])
                     return flowDynamic(getDataFromApi)
                 }
                 return fallBack(validation)
             }
         )
         .addAnswer(MOCK_VALUES[1])
-        .addAnswer(
-            MOCK_VALUES[2],
-            { capture: true },
-            async (ctx, { flowDynamic, fallBack }) => {
-                if (ctx.body !== '18') {
-                    await delay(50)
-                    return fallBack(false, 'Ups creo que no eres mayor de edad')
-                }
-                return flowDynamic('Bien tu edad es correcta!')
+        .addAnswer(MOCK_VALUES[2], { capture: true }, async (ctx, { flowDynamic, fallBack }) => {
+            if (ctx.body !== '18') {
+                await delay(50)
+                return fallBack(false, 'Ups creo que no eres mayor de edad')
             }
-        )
+            return flowDynamic('Bien tu edad es correcta!')
+        })
         .addAnswer('Puedes pasar')
 
     createBot({
@@ -98,10 +83,7 @@ test(`[Caso - 05] Continuar Flujo (continueFlow)`, async () => {
     assert.is('this is not email value', getHistory[1])
     assert.is(MOCK_VALUES[0], getHistory[2])
     assert.is('test@test.com', getHistory[3])
-    assert.is(
-        '1 Gracias por tu email se ha validado de manera correcta',
-        getHistory[4]
-    )
+    assert.is('1 Gracias por tu email se ha validado de manera correcta', getHistory[4])
     assert.is(MOCK_VALUES[1], getHistory[5])
     assert.is(MOCK_VALUES[2], getHistory[6])
     assert.is('20', getHistory[7])

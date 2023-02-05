@@ -81,9 +81,7 @@ class MetaWebHookServer extends EventEmitter {
      * @returns
      */
     buildHTTPServer = () => {
-        this.metaServer
-            .use(urlencoded({ extended: true }))
-            .get('/webhook', this.verifyToken)
+        this.metaServer.use(urlencoded({ extended: true })).get('/webhook', this.verifyToken)
 
         this.metaServer
             .use(urlencoded({ extended: true }))
@@ -99,9 +97,7 @@ class MetaWebHookServer extends EventEmitter {
         this.metaServer.listen(this.metaPort, () => {
             console.log(``)
             console.log(`[meta]: Agregar esta url "WHEN A MESSAGE COMES IN"`)
-            console.log(
-                `[meta]: POST http://localhost:${this.metaPort}/webhook`
-            )
+            console.log(`[meta]: POST http://localhost:${this.metaPort}/webhook`)
             console.log(`[meta]: Más información en la documentacion`)
             console.log(``)
         })

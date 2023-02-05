@@ -1,3 +1,3 @@
 {
-    "recommendations": ["xyc.vscode-mdx-preview"]
+    "recommendations": ["xyc.vscode-mdx-preview", "vivaxy.vscode-conventional-commits", "mhutchie.git-graph"]
 }
