@@ -23,6 +23,7 @@
 - [X] Mongo adapter
 - [X] MySQL adapter
 - [ ] JsonFile adapter
+- [ ] SQLite3 Adapter
 
 ### @bot-whatsapp/provider
 - [X] agregar export package

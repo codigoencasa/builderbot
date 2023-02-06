@@ -1,0 +1,24 @@
+{
+    "name": "base-bailey-sqlite",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "pre-copy": "cd .. && yarn run copy.lib base-baileys-sqlite",
+        "start": "node app.js"
+    },
+    "keywords": [],
+    "dependencies": {
+        "@bot-whatsapp/bot": "latest",
+        "@bot-whatsapp/cli": "latest",
+        "@bot-whatsapp/database": "latest",
+        "@bot-whatsapp/provider": "latest",
+        "@bot-whatsapp/portal": "latest",
+        "@adiwajshing/baileys": "4.4.0",
+        "mime-types": "2.1.35",
+        "wa-sticker-formatter": "4.3.2",
+        "sqlite3": "^5.1.4"
+    },
+    "author": "Asenawritescode",
+    "license": "ISC"
+}

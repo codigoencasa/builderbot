@@ -2,12 +2,7 @@ const { test } = require('uvu')
 const assert = require('uvu/assert')
 const MOCK_DB = require('../packages/database/src/mock')
 const PROVIDER_DB = require('../packages/provider/src/mock')
-const {
-    addKeyword,
-    createBot,
-    createFlow,
-    createProvider,
-} = require('../packages/bot/index')
+const { addKeyword, createBot, createFlow, createProvider } = require('../packages/bot/index')
 
 test(`[Caso - 03] Flow puro`, async () => {
     const MOCK_VALUES = ['Bienvenido a mi tienda', 'Como estas?']
@@ -15,9 +10,7 @@ test(`[Caso - 03] Flow puro`, async () => {
     const provider = createProvider(PROVIDER_DB)
     const database = new MOCK_DB()
 
-    const flujoPrincipal = addKeyword(['hola'])
-        .addAnswer(MOCK_VALUES[0])
-        .addAnswer(MOCK_VALUES[1])
+    const flujoPrincipal = addKeyword(['hola']).addAnswer(MOCK_VALUES[0]).addAnswer(MOCK_VALUES[1])
 
     createBot({
         database,
