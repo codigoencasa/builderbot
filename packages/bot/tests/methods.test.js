@@ -35,10 +35,7 @@ test('Debere probar toSerialize', () => {
     const ARRANGE = {
         keyword: ['hola!', 'ole'],
     }
-    const MAIN_CTX = addKeyword(ARRANGE.keyword)
-        .addAnswer('Segundo!')
-        .addAnswer('Segundo!')
-        .toJson()
+    const MAIN_CTX = addKeyword(ARRANGE.keyword).addAnswer('Segundo!').addAnswer('Segundo!').toJson()
 
     const [ANSWER_A] = MAIN_CTX
 
@@ -71,9 +68,7 @@ test('Debere probar la anidación', () => {
         answer_A: 'Bienvenido',
         answer_B: 'Continuar',
     }
-    const MAIN_CTX = addKeyword(ARRANGE.keyword)
-        .addAnswer(ARRANGE.answer_A)
-        .addAnswer(ARRANGE.answer_B)
+    const MAIN_CTX = addKeyword(ARRANGE.keyword).addAnswer(ARRANGE.answer_A).addAnswer(ARRANGE.answer_B)
 
     assert.is(MAIN_CTX.ctx.answer, ARRANGE.answer_B)
 })
@@ -107,10 +102,7 @@ test('Debere probar error las addAnswer', () => {
 })
 
 test('Obtener toJson', () => {
-    const [ctxA, ctxB, ctxC] = addKeyword('hola')
-        .addAnswer('pera!')
-        .addAnswer('chao')
-        .toJson()
+    const [ctxA, ctxB, ctxC] = addKeyword('hola').addAnswer('pera!').addAnswer('chao').toJson()
 
     assert.is(ctxA.keyword, 'hola')
     assert.match(ctxA.ref, /^key_/)

@@ -1,4 +1,3 @@
-const delay = (miliseconds) =>
-    new Promise((res) => setTimeout(res, miliseconds))
+const delay = (miliseconds) => new Promise((res) => setTimeout(res, miliseconds))
 
 module.exports = { delay }

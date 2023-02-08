@@ -86,12 +86,8 @@ class TwilioProvider extends ProviderClass {
      */
     sendButtons = async () => {
         console.log(``)
-        console.log(
-            `[NOTA]: Actualmente enviar botons con Twilio esta en desarrollo`
-        )
-        console.log(
-            `[NOTA]: https://www.twilio.com/es-mx/docs/whatsapp/buttons`
-        )
+        console.log(`[NOTA]: Actualmente enviar botons con Twilio esta en desarrollo`)
+        console.log(`[NOTA]: https://www.twilio.com/es-mx/docs/whatsapp/buttons`)
         console.log(``)
     }
 
@@ -104,10 +100,8 @@ class TwilioProvider extends ProviderClass {
      */
     sendMessage = async (number, message, { options }) => {
         number = parseNumber(number)
-        if (options?.buttons?.length)
-            this.sendButtons(number, message, options.buttons)
-        if (options?.media)
-            return this.sendMedia(number, message, options.media)
+        if (options?.buttons?.length) this.sendButtons(number, message, options.buttons)
+        if (options?.media) return this.sendMedia(number, message, options.media)
         return this.vendor.messages.create({
             body: message,
             from: `whatsapp:+${this.vendorNumber}`,

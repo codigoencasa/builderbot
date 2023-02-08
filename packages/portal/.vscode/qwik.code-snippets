@@ -56,24 +56,13 @@
         "scope": "javascriptreact,typescriptreact",
         "prefix": "q:useTask",
         "description": "useTask$() function hook",
-        "body": [
-            "useTask$(({ track }) => {",
-            "  track(() => $1);",
-            "  $0",
-            "});",
-            ""
-        ]
+        "body": ["useTask$(({ track }) => {", "  track(() => $1);", "  $0", "});", ""]
     },
     "useResource": {
         "scope": "javascriptreact,typescriptreact",
         "prefix": "q:useResource",
         "description": "useResource$() declaration",
-        "body": [
-            "const $1 = useResource$(({ track, cleanup }) => {",
-            "  $0",
-            "});",
-            ""
-        ]
+        "body": ["const $1 = useResource$(({ track, cleanup }) => {", "  $0", "});", ""]
     },
     "useServerMount": {
         "scope": "javascriptreact,typescriptreact",

@@ -2,12 +2,7 @@ const { test } = require('uvu')
 const assert = require('uvu/assert')
 const MOCK_DB = require('../packages/database/src/mock')
 const PROVIDER_DB = require('../packages/provider/src/mock')
-const {
-    addKeyword,
-    createBot,
-    createFlow,
-    createProvider,
-} = require('../packages/bot')
+const { addKeyword, createBot, createFlow, createProvider } = require('../packages/bot/index')
 
 test(`[Caso - 01] Flow Basico`, async () => {
     const [VALUE_A, VALUE_B] = ['hola', 'buenas']

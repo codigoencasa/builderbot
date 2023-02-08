@@ -16,9 +16,6 @@ const generateRef = (prefix = false) => {
  * @returns
  */
 const generateRefSerialize = ({ index, answer, keyword }) =>
-    crypto
-        .createHash('md5')
-        .update(JSON.stringify({ index, answer, keyword }))
-        .digest('hex')
+    crypto.createHash('md5').update(JSON.stringify({ index, answer, keyword })).digest('hex')
 
 module.exports = { generateRef, generateRefSerialize }

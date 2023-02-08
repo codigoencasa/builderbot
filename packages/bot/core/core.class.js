@@ -43,8 +43,7 @@ class CoreClass {
         },
         {
             event: 'require_action',
-            func: ({ instructions, title = '⚡⚡ ACCIÓN REQUERIDA ⚡⚡' }) =>
-                printer(instructions, title),
+            func: ({ instructions, title = '⚡⚡ ACCIÓN REQUERIDA ⚡⚡' }) => printer(instructions, title),
         },
         {
             event: 'ready',
@@ -52,8 +51,7 @@ class CoreClass {
         },
         {
             event: 'auth_failure',
-            func: ({ instructions }) =>
-                printer(instructions, '⚡⚡ ERROR AUTH ⚡⚡'),
+            func: ({ instructions }) => printer(instructions, '⚡⚡ ERROR AUTH ⚡⚡'),
         },
 
         {
@@ -71,16 +69,14 @@ class CoreClass {
         logger.log(`[handleMsg]: `, messageCtxInComming)
         const { body, from } = messageCtxInComming
         let msgToSend = []
-        let fallBackFlag = false
         let endFlowFlag = false
+        let fallBackFlag = false
         if (this.generalArgs.blackList.includes(from)) return
         if (!body) return
         if (!body.length) return
 
         let prevMsg = await this.databaseClass.getPrevByNumber(from)
-        const refToContinue = this.flowClass.findBySerialize(
-            prevMsg?.refSerialize
-        )
+        const refToContinue = this.flowClass.findBySerialize(prevMsg?.refSerialize)
 
         if (prevMsg?.ref) {
             const ctxByNumber = toCtx({
@@ -91,6 +87,22 @@ class CoreClass {
             this.databaseClass.save(ctxByNumber)
         }
 
+        // 📄 Crar CTX de mensaje (uso private)
+        const createCtxMessage = (payload = {}, index = 0) => {
+            const body = typeof payload === 'string' ? payload : payload?.body ?? payload?.answer
+            const media = payload?.media ?? null
+            const buttons = payload?.buttons ?? []
+            const capture = payload?.capture ?? false
+
+            return toCtx({
+                body,
+                from,
+                keyword: null,
+                index,
+                options: { media, buttons, capture },
+            })
+        }
+
         // 📄 Limpiar cola de procesos
         const clearQueue = () => {
             QueuePrincipal.pendingPromise = false
@@ -98,18 +110,18 @@ class CoreClass {
         }
 
         // 📄 Finalizar flujo
-        const endFlow = async () => {
-            prevMsg = null
+        const endFlow = async (message = null) => {
             endFlowFlag = true
+            if (message) this.sendProviderAndSave(from, createCtxMessage(message))
             clearQueue()
+            sendFlow([])
             return
         }
 
         // 📄 Esta funcion se encarga de enviar un array de mensajes dentro de este ctx
-        const sendFlow = async (messageToSend, numberOrId) => {
-            // [1 Paso] esto esta bien!
+        const sendFlow = async (messageToSend, numberOrId, options = { prev: prevMsg }) => {
+            if (options.prev?.options?.capture) await cbEveryCtx(options.prev?.ref)
 
-            if (prevMsg?.options?.capture) await cbEveryCtx(prevMsg?.ref)
             const queue = []
             for (const ctxMessage of messageToSend) {
                 if (endFlowFlag) return
@@ -117,9 +129,7 @@ class CoreClass {
                 if (delayMs) await delay(delayMs)
                 QueuePrincipal.enqueue(() =>
                     Promise.all([
-                        this.sendProviderAndSave(numberOrId, ctxMessage).then(
-                            () => resolveCbEveryCtx(ctxMessage)
-                        ),
+                        this.sendProviderAndSave(numberOrId, ctxMessage).then(() => resolveCbEveryCtx(ctxMessage)),
                     ])
                 )
             }
@@ -127,57 +137,70 @@ class CoreClass {
         }
 
         // 📄 [options: fallBack]: esta funcion se encarga de repetir el ultimo mensaje
-        const fallBack = async () => {
-            fallBackFlag = true
-            await this.sendProviderAndSave(from, refToContinue)
+        const fallBack = async (validation = false, message = null) => {
             QueuePrincipal.queue = []
-            return refToContinue
+
+            if (validation) {
+                const currentPrev = await this.databaseClass.getPrevByNumber(from)
+                const nextFlow = await this.flowClass.find(refToContinue?.ref, true)
+                const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
+
+                return sendFlow(filterNextFlow, from, { prev: undefined })
+            }
+
+            await this.sendProviderAndSave(from, {
+                ...prevMsg,
+                answer: typeof message === 'string' ? message : message?.body ?? prevMsg.answer,
+                options: {
+                    ...prevMsg.options,
+                    buttons: prevMsg.options?.buttons,
+                },
+            })
+            return
         }
 
         // 📄 [options: flowDynamic]: esta funcion se encarga de responder un array de respuesta esta limitado a 5 mensajes
         // para evitar bloque de whatsapp
 
-        const flowDynamic = async (
-            listMsg = [],
-            optListMsg = { limit: 5, fallback: false }
-        ) => {
-            if (!Array.isArray(listMsg))
-                throw new Error('Esto debe ser un ARRAY')
+        const flowDynamic = async (listMsg = []) => {
+            if (!Array.isArray(listMsg)) listMsg = [listMsg]
 
-            fallBackFlag = optListMsg.fallback
-            const parseListMsg = listMsg
-                .map((opt, index) => {
-                    const body = typeof opt === 'string' ? opt : opt.body
-                    const media = opt?.media ?? null
-                    const buttons = opt?.buttons ?? []
+            const parseListMsg = listMsg.map((opt, index) => createCtxMessage(opt, index))
+            const currentPrev = await this.databaseClass.getPrevByNumber(from)
 
-                    return toCtx({
-                        body,
-                        from,
-                        keyword: null,
-                        index,
-                        options: { media, buttons },
-                    })
-                })
-                .slice(0, optListMsg.limit)
+            const skipContinueFlow = async () => {
+                const nextFlow = await this.flowClass.find(refToContinue?.ref, true)
+                const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
+                const isContinueFlow = filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)
+                return {
+                    continue: !isContinueFlow,
+                    contexts: filterNextFlow,
+                }
+            }
 
             if (endFlowFlag) return
             for (const msg of parseListMsg) {
                 await this.sendProviderAndSave(from, msg)
             }
+
+            const continueFlowData = await skipContinueFlow()
+
+            if (continueFlowData.continue) return sendFlow(continueFlowData.contexts, from, { prev: undefined })
             return
         }
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback o fallback
         const resolveCbEveryCtx = async (ctxMessage) => {
-            if (!ctxMessage?.options?.capture)
-                return await cbEveryCtx(ctxMessage?.ref)
+            if (!ctxMessage?.options?.capture) return await cbEveryCtx(ctxMessage?.ref)
         }
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback y ejecutarlo
         const cbEveryCtx = async (inRef) => {
+            const provider = this.providerClass
+
             if (!this.flowClass.allCallbacks[inRef]) return Promise.resolve()
             return this.flowClass.allCallbacks[inRef](messageCtxInComming, {
+                provider,
                 fallBack,
                 flowDynamic,
                 endFlow,
@@ -185,7 +208,7 @@ class CoreClass {
         }
 
         // 📄🤘(tiene return) [options: nested(array)]: Si se tiene flujos hijos los implementa
-        if (!fallBackFlag && prevMsg?.options?.nested?.length) {
+        if (!endFlowFlag && prevMsg?.options?.nested?.length) {
             const nestedRef = prevMsg.options.nested
             const flowStandalone = nestedRef.map((f) => ({
                 ...nestedRef.find((r) => r.refSerialize === f.refSerialize),
@@ -197,12 +220,11 @@ class CoreClass {
             return
         }
 
-        // 📄🤘(tiene return) [options: capture (boolean)]: Si se tiene option boolean
-        if (!fallBackFlag && !prevMsg?.options?.nested?.length) {
+        // 📄🤘(tiene return) Si el mensaje previo implementa capture
+        if (!endFlowFlag && !prevMsg?.options?.nested?.length) {
             const typeCapture = typeof prevMsg?.options?.capture
-            const valueCapture = prevMsg?.options?.capture
 
-            if (['string', 'boolean'].includes(typeCapture) && valueCapture) {
+            if (typeCapture === 'boolean' && fallBackFlag) {
                 msgToSend = this.flowClass.find(refToContinue?.ref, true) || []
                 sendFlow(msgToSend, from)
                 return
@@ -221,13 +243,13 @@ class CoreClass {
      */
     sendProviderAndSave = (numberOrId, ctxMessage) => {
         const { answer } = ctxMessage
-        return Promise.all([
-            this.providerClass.sendMessage(numberOrId, answer, ctxMessage),
-            this.databaseClass.save({ ...ctxMessage, from: numberOrId }),
-        ])
+        return this.providerClass
+            .sendMessage(numberOrId, answer, ctxMessage)
+            .then(() => this.databaseClass.save({ ...ctxMessage, from: numberOrId }))
     }
 
     /**
+     * @deprecated
      * @private
      * @param {*} message
      * @param {*} ref
@@ -253,9 +275,7 @@ class CoreClass {
         for (const ctxMessage of messageToSend) {
             const delayMs = ctxMessage?.options?.delay || 0
             if (delayMs) await delay(delayMs)
-            QueuePrincipal.enqueue(() =>
-                this.sendProviderAndSave(numberOrId, ctxMessage)
-            )
+            QueuePrincipal.enqueue(() => this.sendProviderAndSave(numberOrId, ctxMessage))
         }
         return Promise.all(queue)
     }

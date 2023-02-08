@@ -3,6 +3,7 @@ import type { DocumentHead } from '@builder.io/qwik-city'
 import ExtraBar from '~/components/widgets/ExtraBar'
 import Header from '~/components/widgets/Header'
 import NavBar from '~/components/widgets/NavBar'
+// import { SearchModal } from '~/components/widgets/SearchModal'
 import SponsorBar from '~/components/widgets/SponsorBar'
 import { GlobalStore } from '~/contexts'
 // import Navigation from '~/components/widgets/Navigation'
@@ -14,6 +15,7 @@ export default component$(() => {
 
     return (
         <>
+            {/* <SearchModal /> */}
             <Header />
             <main class={'overflow-hidden'}>
                 <div class={'max-w-8xl'}>
@@ -25,11 +27,7 @@ export default component$(() => {
                         <NavBar options={store} />
                     </div>
                     <div class={'lg:pl-[14.5rem] lg:pr-[14.5rem]'}>
-                        <div
-                            class={
-                                'slot max-w-3xl mx-auto relative z-20 p-5 xl:max-w-none'
-                            }
-                        >
+                        <div class={'slot max-w-3xl mx-auto relative z-20 p-5 xl:max-w-none'}>
                             <Slot />
                         </div>
                     </div>
@@ -52,8 +50,7 @@ export const head: DocumentHead = {
     meta: [
         {
             name: 'description',
-            content:
-                'Crear chatbot WhatsApp en minutos — Servicio de chatbot para whatspp gratis proyecto OpenSource',
+            content: 'Crear chatbot WhatsApp en minutos — Servicio de chatbot para whatspp gratis proyecto OpenSource',
         },
     ],
 }

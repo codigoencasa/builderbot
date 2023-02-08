@@ -32,8 +32,7 @@ export default component$((props: { users: User[] }) => {
                         Super estrellas
                     </h2>
                     <p class="max-w-3xl mx-auto sm:text-center text-xl text-gray-600 dark:text-slate-400">
-                        Todo es posible gracias a el mayor recursos de todos, el
-                        recurso humano. Tu tambien puedes{' '}
+                        Todo es posible gracias a el mayor recursos de todos, el recurso humano. Tu tambien puedes{' '}
                         <a class={'font-semibold'} href="/docs/contributing">
                             formar parte
                         </a>

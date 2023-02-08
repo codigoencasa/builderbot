@@ -10,14 +10,7 @@ const copyLibPkg = async (pkgName, to) => {
     await fs.copy(FROM, TO)
 }
 
-const listLib = [
-    'create-bot-whatsapp',
-    'bot',
-    'database',
-    'provider',
-    'contexts',
-    'portal',
-]
+const listLib = ['create-bot-whatsapp', 'bot', 'database', 'provider', 'contexts', 'portal']
 
 const main = async () => {
     for (const iterator of listLib) {

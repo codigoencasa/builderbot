@@ -9,16 +9,31 @@ Tan sencillo como decir **palabra/s clave** y **mensaje a responder**
 Ambos metodos **[addKeyword](https://github.com/codigoencasa/bot-whatsapp/blob/dev/packages/bot/io/methods/addKeyword.js)** y el **[addAnswer](https://github.com/codigoencasa/bot-whatsapp/blob/dev/packages/bot/io/methods/addAnswer.js)** tienen una serie opciones disponibles
 
 ```js
-const {
-    createBot,
-    createProvider,
-    createFlow,
-    addKeyword,
-} = require('@bot-whatsapp/bot')
+const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
 
 const flowPrincipal = addKeyword(['hola', 'alo'])
     .addAnswer(['Hola, bienvenido a mi tienda', '¿Como puedo ayudarte?'])
     .addAnswer(['Tengo:', 'Zapatos', 'Bolsos', 'etc ...'])
+```
+
+---
+
+## blackList
+
+Éste argumento se utiliza para **evitar que el bot se active** cuando los números de la lista activen el bot.
+Es importante que el número **vaya acompañado de su prefijo**, en el caso de España "34".
+
+```js
+createBot(
+    {
+        flow: adapterFlow,
+        provider: adapterProvider,
+        database: adapterDB,
+    },
+    {
+        blackList: ['34XXXXXXXXX', '34XXXXXXXXX', '34XXXXXXXXX', '34XXXXXXXXX'],
+    }
+)
 ```
 
 ---
@@ -55,43 +70,27 @@ Esta funcion se utliza para responder un mensaje despues del `addKeyword()`
 -   delay: 0 (milisegundos)
 -   media: url de imagen
 -   buttons: array `[{body:'Boton1'}, {body:'Boton2'}, {body:'Boton3'}]`
--   capture: false (para esperar respuesta)
+-   capture: true (para esperar respuesta)
 -   child: Objecto tipo flujo o arra de flujos hijos
 
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
 
-const flowString = addKeyword('hola').addAnswer(
-    'Este mensaje se enviara 1 segundo despues',
-    {
-        delay: 1000,
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Este mensaje se enviara 1 segundo despues', {
+    delay: 1000,
+})
 
-const flowString = addKeyword('hola').addAnswer(
-    'Este mensaje envia una imagen',
-    {
-        media: 'https://i.imgur.com/0HpzsEm.png',
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Este mensaje envia una imagen', {
+    media: 'https://i.imgur.com/0HpzsEm.png',
+})
 
-const flowString = addKeyword('hola').addAnswer(
-    'Este mensaje envia tres botones',
-    {
-        buttons: [
-            { body: 'Boton 1' },
-            { body: 'Boton 2' },
-            { body: 'Boton 3' },
-        ],
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Este mensaje envia tres botones', {
+    buttons: [{ body: 'Boton 1' }, { body: 'Boton 2' }, { body: 'Boton 3' }],
+})
 
-const flowString = addKeyword('hola').addAnswer(
-    'Este mensaje espera una respueta del usuario',
-    {
-        capture: true,
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Este mensaje espera una respueta del usuario', {
+    capture: true,
+})
 ```
 
 ---
@@ -103,13 +102,9 @@ Este argumento se utiliza para obtener el contexto de la conversación
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
 
-const flowString = addKeyword('hola').addAnswer(
-    'Indica cual es tu email',
-    null,
-    (ctx) => {
-        console.log('👉 Informacion del contexto: ', ctx)
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Indica cual es tu email', null, (ctx) => {
+    console.log('👉 Informacion del contexto: ', ctx)
+})
 ```
 
 ---
@@ -123,13 +118,9 @@ se repetira el mensaje `Indica cual es tu email`
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
 
-const flowString = addKeyword('hola').addAnswer(
-    'Indica cual es tu email',
-    null,
-    (ctx, { fallBack }) => {
-        if (!ctx.body.includes('@')) return fallBack()
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Indica cual es tu email', null, (ctx, { fallBack }) => {
+    if (!ctx.body.includes('@')) return fallBack()
+})
 ```
 
 ---
@@ -155,6 +146,74 @@ const flowString = addKeyword('hola')
     })
 
 
+```
+
+---
+
+## endFlow()
+
+Esta funcion se utliza para finalizar un flujo con dos o más addAnswer. Un ejemplo de uso sería registrar 3 datos de un usuario en 3 preguntas distinas y
+que el usuario pueda finalizar por él mismo el flujo.
+Como podrás comprobar en el ejemplo siguiente, se puede vincular flowDynamic y todas sus funciones; como por ejemplo botones.
+
+```js
+const flowFormulario = addKeyword(['Hola'])
+    .addAnswer(
+        ['Hola!', 'Escriba su *Nombre* para generar su solicitud'],
+        { capture: true, buttons: [{ body: '❌ Cancelar solicitud' }] },
+        async (ctx, { flowDynamic, endFlow }) => {
+            if (ctx.body == '❌ Cancelar solicitud') {
+                await flowDynamic([
+                    {
+                        body: '❌ *Su solicitud de cita ha sido cancelada* ❌',
+                        buttons: [{ body: '⬅️ Volver al Inicio' }],
+                    },
+                ])
+                return endFlow()
+            }
+        }
+    )
+    .addAnswer(
+        ['También necesito tus dos apellidos'],
+        { capture: true, buttons: [{ body: '❌ Cancelar solicitud' }] },
+        async (ctx, { flowDynamic, endFlow }) => {
+            if (ctx.body == '❌ Cancelar solicitud') {
+                await flowDynamic([
+                    {
+                        body: '❌ *Su solicitud de cita ha sido cancelada* ❌',
+                        buttons: [{ body: '⬅️ Volver al Inicio' }],
+                    },
+                ])
+                return endFlow()
+            }
+        }
+    )
+    .addAnswer(
+        ['Dejeme su número de teléfono y le llamaré lo antes posible.'],
+        { capture: true, buttons: [{ body: '❌ Cancelar solicitud' }] },
+        async (ctx, { flowDynamic, endFlow }) => {
+            if (ctx.body == '❌ Cancelar solicitud') {
+                await flowDynamic([
+                    {
+                        body: '❌ *Su solicitud de cita ha sido cancelada* ❌',
+                        buttons: [{ body: '⬅️ Volver al Inicio' }],
+                    },
+                ])
+                return endFlow()
+            }
+        }
+    )
+```
+
+---
+
+# QRPortalWeb
+
+Argumento para asignar nombre y puerto al BOT
+
+```js
+const BOTNAME = 'bot'
+QRPortalWeb({ name: BOTNAME, port: 3005 })
 ```
 
 ---
