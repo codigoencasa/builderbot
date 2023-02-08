@@ -23,6 +23,8 @@ class ProviderClass extends EventEmitter {
         if (NODE_ENV !== 'production') console.log('[sendMessage]', { userId, message })
         return message
     }
+
+    getInstance = () => this.vendor
 }
 
 module.exports = ProviderClass

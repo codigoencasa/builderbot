@@ -39,8 +39,7 @@ const main = async () => {
         const githubToken = GITHUB_TOKEN ? GITHUB_TOKEN.split('=').at(1) : null
         const pkgNumber = PKG_ARG ? PKG_ARG.split('=').at(1) : null
 
-        if (pkgNumber)
-            await githubGithubRelease(`v${pkgNumber}`, pkgNumber, githubToken)
+        if (pkgNumber) await githubGithubRelease(`v${pkgNumber}`, pkgNumber, githubToken)
     }
 }
 

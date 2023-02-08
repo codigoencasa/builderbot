@@ -226,6 +226,14 @@ class WebWhatsappProvider extends ProviderClass {
     }
 
     /**
+     * Funcion SendRaw envia opciones directamente del proveedor
+     * @param {string} number
+     * @param {string} message
+     * @example await sendMessage('+XXXXXXXXXXX', 'Hello World')
+     */
+
+    sendRaw = () => this.vendor.sendMessage
+    /**
      *
      * @param {*} userId
      * @param {*} message
