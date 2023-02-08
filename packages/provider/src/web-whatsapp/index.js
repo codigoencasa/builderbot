@@ -90,6 +90,11 @@ class WebWhatsappProvider extends ProviderClass {
                     return
                 }
                 payload.from = wwebCleanNumber(payload.from, true)
+                if (payload._data.lat && payload._data.lng) {
+                    let lat = payload._data.lat
+                    let lng = payload._data.lng
+                    payload = { ...payload, body: `${lat},${lng}` }
+                }
                 this.emit('message', payload)
             },
         },
