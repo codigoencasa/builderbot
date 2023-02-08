@@ -65,9 +65,9 @@ class SqliteFileAdapter {
 
         const sql = `INSERT INTO history (ref, keyword, answer, refSerialize, phone, options ) values (?,?,?,?,?,?)`
 
-        this.db.all(sql, [values], (err) => {
+        this.db.all(sql, values, (err) => {
             if (err) throw err
-            console.log('Error with the values - >', values)
+            // console.log('Error with the values - >', err)
         })
         this.listHistory.push(ctx)
     }
