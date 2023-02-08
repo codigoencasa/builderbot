@@ -58,6 +58,9 @@ class SqliteFileAdapter {
         })
 
     save = (ctx) => {
+
+        // console.log('ctx ->', ctx);
+
         const values = [ctx.ref, ctx.keyword, ctx.answer, ctx.refSerialize, ctx.from, JSON.stringify(ctx.options)]
 
         const sql = `INSERT INTO history (ref, keyword, answer, refSerialize, phone, options ) values (?,?,?,?,?,?)`
@@ -74,12 +77,12 @@ class SqliteFileAdapter {
             const tableName = 'history'
             const sql = `CREATE TABLE IF NOT EXISTS ${tableName} 
                         (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                        ref TEXT NOT NULL,
-                        keyword TEXT NOT NULL,
-                        answer TEXT NOT NULL,
-                        refSerialize TEXT NOT NULL,
-                        phone TEXT NOT NULL,
-                        options TEXT NOT NULL)
+                        ref TEXT,
+                        keyword TEXT,
+                        answer TEXT,
+                        refSerialize TEXT,
+                        phone TEXT,
+                        options TEXT)
                         `
             this.db.all(sql, (err) => {
                 if (err) throw err
