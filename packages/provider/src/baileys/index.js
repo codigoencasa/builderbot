@@ -164,6 +164,13 @@ class BaileysProvider extends ProviderClass {
     }
 
     /**
+     * Funcion SendRaw envia opciones directamente del proveedor
+     * @example await sendMessage('+XXXXXXXXXXX', 'Hello World')
+     */
+
+    sendRaw = () => this.vendor.sendMessage
+
+    /**
      * @alpha
      * @param {string} number
      * @param {string} message
@@ -222,10 +229,10 @@ class BaileysProvider extends ProviderClass {
      * @example await sendMessage('+XXXXXXXXXXX', 'audio.mp3')
      */
 
-    sendAudio = async (number, audioUrl, voiceNote = false) => {
+    sendAudio = async (number, audioUrl) => {
         return this.vendor.sendMessage(number, {
             audio: { url: audioUrl },
-            ptt: voiceNote,
+            ptt: true,
         })
     }
 
@@ -291,6 +298,7 @@ class BaileysProvider extends ProviderClass {
      * @param {string} message
      * @example await sendMessage('+XXXXXXXXXXX', 'Hello World')
      */
+
     sendMessage = async (numberIn, message, { options }) => {
         const number = baileyCleanNumber(numberIn)
 
