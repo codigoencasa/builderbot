@@ -1,5 +1,6 @@
 const sqlite3 = require('sqlite3').verbose()
 const { join } = require('path')
+const fs = require('fs')
 
 class SqliteFileAdapter {
     db
@@ -7,12 +8,14 @@ class SqliteFileAdapter {
     listHistory = []
 
     constructor() {
-        this.pathFile = join(process.cwd(), 'data.db')
+        this.pathFile = join(process.cwd(), 'db/data.db')
         this.init().then()
     }
 
     async init() {
         // open the database connection
+        this.checkDir()
+
         this.db = new sqlite3.Database(this.pathFile, (err) => {
             if (err) {
                 console.error(`There was an error connecting ${err.message}`)
@@ -23,6 +26,16 @@ class SqliteFileAdapter {
             this.createTable()
         })
     }
+
+    checkDir = () =>
+        new Promise((resolve) => {
+            this.folderName = 'db'
+            this.dir = join(process.cwd(), this.folderName)
+            if (!fs.existsSync(this.dir)) {
+                resolve(fs.mkdirSync(this.folderName))
+            }
+            return
+        })
 
     getPrevByNumber = (from) =>
         new Promise((resolve, reject) => {
@@ -47,9 +60,9 @@ class SqliteFileAdapter {
     save = (ctx) => {
         const values = [ctx.ref, ctx.keyword, ctx.answer, ctx.refSerialize, ctx.from, JSON.stringify(ctx.options)]
 
-        const sql = 'INSERT INTO history (ref, keyword, answer, refSerialize, phone, options ) values ?'
+        const sql = `INSERT INTO history (ref, keyword, answer, refSerialize, phone, options ) values (?,?,?,?,?,?)`
 
-        this.db.all(sql, values, (err) => {
+        this.db.all(sql, [values], (err) => {
             if (err) throw err
             console.log('Error with the values - >', values)
         })
@@ -60,13 +73,13 @@ class SqliteFileAdapter {
         new Promise((resolve) => {
             const tableName = 'history'
             const sql = `CREATE TABLE IF NOT EXISTS ${tableName} 
-                        (id INT AUTO_INCREMENT PRIMARY KEY, 
-                        ref varchar(255) NOT NULL,
-                        keyword varchar(255) NOT NULL,
-                        answer longtext NOT NULL,
-                        refSerialize varchar(255) NOT NULL,
-                        phone varchar(255) NOT NULL,
-                        options longtext NOT NULL)
+                        (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                        ref TEXT NOT NULL,
+                        keyword TEXT NOT NULL,
+                        answer TEXT NOT NULL,
+                        refSerialize TEXT NOT NULL,
+                        phone TEXT NOT NULL,
+                        options TEXT NOT NULL)
                         `
             this.db.all(sql, (err) => {
                 if (err) throw err
