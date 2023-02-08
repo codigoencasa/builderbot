@@ -1,23 +1,12 @@
-const {
-    createBot,
-    createProvider,
-    createFlow,
-    addKeyword,
-} = require('@bot-whatsapp/bot')
+const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
 
 const QRPortalWeb = require('@bot-whatsapp/portal')
 const BaileysProvider = require('@bot-whatsapp/provider/baileys')
 const MockAdapter = require('@bot-whatsapp/database/mock')
 
-const flowSecundario = addKeyword(['2', 'siguiente']).addAnswer([
-    '📄 Aquí tenemos el flujo secundario',
-])
+const flowSecundario = addKeyword(['2', 'siguiente']).addAnswer(['📄 Aquí tenemos el flujo secundario'])
 
-const flowDocs = addKeyword([
-    'doc',
-    'documentacion',
-    'documentación',
-]).addAnswer(
+const flowDocs = addKeyword(['doc', 'documentacion', 'documentación']).addAnswer(
     [
         '📄 Aquí encontras las documentación recuerda que puedes mejorarla',
         'https://bot-whatsapp.netlify.app/',
@@ -53,11 +42,7 @@ const flowGracias = addKeyword(['gracias', 'grac']).addAnswer(
 )
 
 const flowDiscord = addKeyword(['discord']).addAnswer(
-    [
-        '🤪 Únete al discord',
-        'https://link.codigoencasa.com/DISCORD',
-        '\n*2* Para siguiente paso.',
-    ],
+    ['🤪 Únete al discord', 'https://link.codigoencasa.com/DISCORD', '\n*2* Para siguiente paso.'],
     null,
     null,
     [flowSecundario]

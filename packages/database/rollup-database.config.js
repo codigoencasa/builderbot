@@ -39,4 +39,13 @@ module.exports = [
         },
         plugins: [commonjs()],
     },
+    {
+        input: join(__dirname, 'src', 'sqlite', 'index.js'),
+        output: {
+            banner: banner['banner.output'].join(''),
+            file: join(__dirname, 'lib', 'sqlite', 'index.cjs'),
+            format: 'cjs',
+        },
+        plugins: [commonjs()],
+    },
 ]

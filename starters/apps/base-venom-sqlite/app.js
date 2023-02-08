@@ -1,15 +1,8 @@
 const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
 
 const QRPortalWeb = require('@bot-whatsapp/portal')
-const BaileysProvider = require('@bot-whatsapp/provider/baileys')
-const MongoAdapter = require('@bot-whatsapp/database/mongo')
-
-/**
- * Declaramos las conexiones de Mongo
- */
-
-const MONGO_DB_URI = 'mongodb://0.0.0.0:27017'
-const MONGO_DB_NAME = 'db_bot'
+const VenomProvider = require('@bot-whatsapp/provider/venom')
+const SqliteAdapter = require('@bot-whatsapp/database/sqlite')
 
 /**
  * Aqui declaramos los flujos hijos, los flujos se declaran de atras para adelante, es decir que si tienes un flujo de este tipo:
@@ -82,12 +75,9 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
     )
 
 const main = async () => {
-    const adapterDB = new MongoAdapter({
-        dbUri: MONGO_DB_URI,
-        dbName: MONGO_DB_NAME,
-    })
+    const adapterDB = new SqliteAdapter()
     const adapterFlow = createFlow([flowPrincipal])
-    const adapterProvider = createProvider(BaileysProvider)
+    const adapterProvider = createProvider(VenomProvider)
     createBot({
         flow: adapterFlow,
         provider: adapterProvider,

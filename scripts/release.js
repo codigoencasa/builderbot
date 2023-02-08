@@ -18,14 +18,10 @@ const cmd = util.promisify(execFile)
  */
 const npmToken = (token = null) =>
     new Promise((resolve, reject) => {
-        writeFile(
-            `${process.cwd()}/.npmrc`,
-            `//registry.npmjs.org/:_authToken=${token}`,
-            (error) => {
-                if (error) reject(error)
-                resolve()
-            }
-        )
+        writeFile(`${process.cwd()}/.npmrc`, `//registry.npmjs.org/:_authToken=${token}`, (error) => {
+            if (error) reject(error)
+            resolve()
+        })
     })
 
 /**
@@ -66,18 +62,11 @@ const updateVersion = async (packageName = null, number = null) => {
 
     const pkgJsonObject = readPackage(packageName)
     const { version } = pkgJsonObject
-    const newVersion = !number
-        ? semver.inc(version, 'prepatch', 'alpha')
-        : `${number}`
+    const newVersion = !number ? semver.inc(version, 'prepatch', 'alpha') : `${number}`
 
-    if (!semver.valid(newVersion))
-        throw new Error(`VERSION_ERROR: ${newVersion}`)
+    if (!semver.valid(newVersion)) throw new Error(`VERSION_ERROR: ${newVersion}`)
 
-    const newPkgJson = JSON.stringify(
-        { ...pkgJsonObject, version: newVersion },
-        null,
-        2
-    )
+    const newPkgJson = JSON.stringify({ ...pkgJsonObject, version: newVersion }, null, 2)
     await updatePackage(packageName, newPkgJson)
     return { version: newVersion }
 }
@@ -92,14 +81,10 @@ const checkExistVersion = async (packageName = null, version = null) => {
     try {
         const pkgJson = join(PATH_PACKAGES, packageName)
         const pkgJsonObject = readPackage(packageName)
-        const { stdout } = await cmd(
-            NPM_COMMAND,
-            ['view', `${pkgJsonObject.name}@${version}`],
-            {
-                stdio: 'inherit',
-                cwd: pkgJson,
-            }
-        )
+        const { stdout } = await cmd(NPM_COMMAND, ['view', `${pkgJsonObject.name}@${version}`], {
+            stdio: 'inherit',
+            cwd: pkgJson,
+        })
         return true
     } catch (e) {
         return false
@@ -149,9 +134,7 @@ const main = async () => {
         let EXIST_VERSION = true
         const tokenNpm = NPM_TOKEN ? NPM_TOKEN.split('=').at(1) : null
         const pkgName = PKG_ARG ? PKG_ARG.split('=').at(1) : null
-        const pkgNumber = PKG_ARG_VERSION
-            ? PKG_ARG_VERSION.split('=').at(1)
-            : null
+        const pkgNumber = PKG_ARG_VERSION ? PKG_ARG_VERSION.split('=').at(1) : null
         if (tokenNpm) await npmToken(tokenNpm)
 
         while (EXIST_VERSION) {

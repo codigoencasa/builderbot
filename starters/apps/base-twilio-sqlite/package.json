@@ -1,0 +1,23 @@
+{
+    "name": "base-twilio-sqlite",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "pre-copy": "cd .. && yarn run copy.lib base-twilio-sqlite",
+        "start": "node app.js"
+    },
+    "keywords": [],
+    "dependencies": {
+        "body-parser": "^1.20.1",
+        "polka": "^0.5.2",
+        "twilio": "3.84.1",
+        "@bot-whatsapp/bot": "latest",
+        "@bot-whatsapp/cli": "latest",
+        "@bot-whatsapp/database": "latest",
+        "@bot-whatsapp/provider": "latest",
+        "sqlite3": "^5.1.4"
+    },
+    "author": "Asenawritescode",
+    "license": "ISC"
+}

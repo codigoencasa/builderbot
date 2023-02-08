@@ -65,6 +65,7 @@ const nextSteps = async () => {
                 { title: 'Json', value: 'json' },
                 { title: 'Mongo', value: 'mongo' },
                 { title: 'MySQL', value: 'mysql' },
+                { title: 'Sqlite3', value: 'sqlite' },
             ],
             max: 1,
             hint: 'Espacio para seleccionar',
