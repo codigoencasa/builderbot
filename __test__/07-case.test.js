@@ -4,17 +4,6 @@ const MOCK_DB = require('../packages/database/src/mock')
 const PROVIDER_DB = require('../packages/provider/src/mock')
 const { addKeyword, createBot, createFlow, createProvider } = require('../packages/bot/index')
 
-/**
- * Falsear peticion async
- * @param {*} fakeData
- * @returns
- */
-const fakeHTTP = async (fakeData = []) => {
-    await delay(5)
-    const data = fakeData.map((u, i) => ({ body: `${i + 1} ${u}` }))
-    return Promise.resolve(data)
-}
-
 let STATE_APP = {}
 
 test(`[Caso - 07] Retornar estado`, async () => {

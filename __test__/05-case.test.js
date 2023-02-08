@@ -11,7 +11,7 @@ const { addKeyword, createBot, createFlow, createProvider } = require('../packag
  */
 const fakeHTTP = async (fakeData = []) => {
     await delay(5)
-    const data = fakeData.map((u, i) => ({ body: `${i + 1} ${u}` }))
+    const data = fakeData.map((u, i) => ({ body: `${u}` }))
     return Promise.resolve(data)
 }
 
@@ -33,14 +33,14 @@ test(`[Caso - 05] Continuar Flujo (continueFlow)`, async () => {
                     const getDataFromApi = await fakeHTTP(['Gracias por tu email se ha validado de manera correcta'])
                     return flowDynamic(getDataFromApi)
                 }
-                return fallBack(validation)
+                return fallBack()
             }
         )
         .addAnswer(MOCK_VALUES[1])
         .addAnswer(MOCK_VALUES[2], { capture: true }, async (ctx, { flowDynamic, fallBack }) => {
             if (ctx.body !== '18') {
-                await delay(50)
-                return fallBack(false, 'Ups creo que no eres mayor de edad')
+                await delay(20)
+                return fallBack('Ups creo que no eres mayor de edad')
             }
             return flowDynamic('Bien tu edad es correcta!')
         })
@@ -83,7 +83,7 @@ test(`[Caso - 05] Continuar Flujo (continueFlow)`, async () => {
     assert.is('this is not email value', getHistory[1])
     assert.is(MOCK_VALUES[0], getHistory[2])
     assert.is('test@test.com', getHistory[3])
-    assert.is('1 Gracias por tu email se ha validado de manera correcta', getHistory[4])
+    assert.is('Gracias por tu email se ha validado de manera correcta', getHistory[4])
     assert.is(MOCK_VALUES[1], getHistory[5])
     assert.is(MOCK_VALUES[2], getHistory[6])
     assert.is('20', getHistory[7])
