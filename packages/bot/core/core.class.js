@@ -139,7 +139,7 @@ class CoreClass {
 
         const continueFlow = async () => {
             const currentPrev = await this.databaseClass.getPrevByNumber(from)
-            const nextFlow = await this.flowClass.find(refToContinue?.ref, true)
+            const nextFlow = (await this.flowClass.find(refToContinue?.ref, true)) ?? []
             const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
             const isContinueFlow = filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)
             if (!isContinueFlow) await sendFlow(filterNextFlow, from, { prev: undefined })
