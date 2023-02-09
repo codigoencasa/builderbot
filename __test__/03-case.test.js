@@ -1,37 +1,40 @@
-const { test } = require('uvu')
+const { suite } = require('uvu')
 const assert = require('uvu/assert')
-const MOCK_DB = require('../packages/database/src/mock')
-const PROVIDER_DB = require('../packages/provider/src/mock')
-const { addKeyword, createBot, createFlow, createProvider } = require('../packages/bot/index')
+const { addKeyword, createBot, createFlow } = require('../packages/bot/index')
+const { setup, clear, delay } = require('../__mocks__/env')
 
-test(`[Caso - 03] Flow puro`, async () => {
-    const MOCK_VALUES = ['Bienvenido a mi tienda', 'Como estas?']
+const suiteCase = suite('Flujo: capture')
 
-    const provider = createProvider(PROVIDER_DB)
-    const database = new MOCK_DB()
+suiteCase.before.each(setup)
+suiteCase.after.each(clear)
 
-    const flujoPrincipal = addKeyword(['hola']).addAnswer(MOCK_VALUES[0]).addAnswer(MOCK_VALUES[1])
+suiteCase(`Responder a "pregunta"`, async ({ database, provider }) => {
+    const flow = addKeyword(['hola'])
+        .addAnswer(['Hola como estas?', '¿Cual es tu edad?'], { capture: true })
+        .addAnswer('Gracias por tu respuesta')
 
     createBot({
         database,
-        flow: createFlow([flujoPrincipal]),
         provider,
+        flow: createFlow([flow]),
     })
 
-    provider.delaySendMessage(0, 'message', {
+    await provider.delaySendMessage(0, 'message', {
         from: '000',
         body: 'hola',
     })
 
-    await delay(10)
-    const getHistory = database.listHistory.map((i) => i.answer)
+    await provider.delaySendMessage(10, 'message', {
+        from: '000',
+        body: '90',
+    })
 
-    assert.is(MOCK_VALUES[0], getHistory[0])
-    assert.is(MOCK_VALUES[1], getHistory[1])
+    await delay(20)
+
+    assert.is(['Hola como estas?', '¿Cual es tu edad?'].join('\n'), database.listHistory[0].answer)
+    assert.is('90', database.listHistory[1].answer)
+    assert.is('Gracias por tu respuesta', database.listHistory[2].answer)
+    assert.is(undefined, database.listHistory[3])
 })
 
-test.run()
-
-function delay(ms) {
-    return new Promise((res) => setTimeout(res, ms))
-}
+suiteCase.run()

@@ -1,24 +1,16 @@
-const { test } = require('uvu')
+const { suite } = require('uvu')
 const assert = require('uvu/assert')
-const MOCK_DB = require('../packages/database/src/mock')
-const PROVIDER_DB = require('../packages/provider/src/mock')
-const { addKeyword, createBot, createFlow, createProvider } = require('../packages/bot/index')
+const { addKeyword, createBot, createFlow } = require('../packages/bot/index')
+const { setup, clear, delay } = require('../__mocks__/env')
 
-/**
- * Falsear peticion async
- * @param {*} fakeData
- * @returns
- */
-const fakeHTTP = async (fakeData = []) => {
-    await delay(5)
-    const data = fakeData.map((u, i) => ({ body: `${i + 1} ${u}` }))
-    return Promise.resolve(data)
-}
+const suiteCase = suite('Flujo: manejo de estado')
 
-test(`[Caso - 06] Finalizar Flujo (endFlow)`, async () => {
-    const MOCK_VALUES = ['¿CUal es tu email?', 'Continuamos....', '¿Cual es tu edad?']
-    const provider = createProvider(PROVIDER_DB)
-    const database = new MOCK_DB()
+suiteCase.before.each(setup)
+suiteCase.after.each(clear)
+
+suiteCase(`Debe retornar un mensaje resumen`, async ({ database, provider }) => {
+    let STATE_APP = {}
+    const MOCK_VALUES = ['¿Cual es tu nombre?', '¿Cual es tu edad?', 'Tu datos son:']
 
     const flujoPrincipal = addKeyword(['hola'])
         .addAnswer(
@@ -26,27 +18,27 @@ test(`[Caso - 06] Finalizar Flujo (endFlow)`, async () => {
             {
                 capture: true,
             },
-            async (ctx, { flowDynamic, fallBack }) => {
-                const validation = ctx.body.includes('@')
+            async (ctx, { flowDynamic }) => {
+                STATE_APP[ctx.from] = { ...STATE_APP[ctx.from], name: ctx.body }
 
-                if (validation) {
-                    const getDataFromApi = await fakeHTTP(['Gracias por tu email se ha validado de manera correcta'])
-                    return flowDynamic(getDataFromApi)
-                }
-                return fallBack(validation)
+                flowDynamic('Gracias por tu nombre!')
             }
         )
-        .addAnswer(MOCK_VALUES[1], null, async (_, { endFlow }) => {
-            return endFlow()
-        })
-        .addAnswer(MOCK_VALUES[2], { capture: true }, async (ctx, { flowDynamic, fallBack }) => {
-            if (ctx.body !== '18') {
-                await delay(50)
-                return fallBack(false, 'Ups creo que no eres mayor de edad')
+        .addAnswer(
+            MOCK_VALUES[1],
+            {
+                capture: true,
+            },
+            async (ctx, { flowDynamic }) => {
+                STATE_APP[ctx.from] = { ...STATE_APP[ctx.from], age: ctx.body }
+
+                await flowDynamic(`Gracias por tu edad! ${STATE_APP[ctx.from].name}`)
             }
-            return flowDynamic('Bien tu edad es correcta!')
+        )
+        .addAnswer(MOCK_VALUES[2], null, async (ctx, { flowDynamic }) => {
+            flowDynamic(`Nombre: ${STATE_APP[ctx.from].name} Edad: ${STATE_APP[ctx.from].age}`)
         })
-        .addAnswer('Puedes pasar')
+        .addAnswer('🤖🤖 Gracias por tu participacion')
 
     createBot({
         database,
@@ -54,40 +46,52 @@ test(`[Caso - 06] Finalizar Flujo (endFlow)`, async () => {
         provider,
     })
 
-    provider.delaySendMessage(0, 'message', {
+    await provider.delaySendMessage(0, 'message', {
         from: '000',
         body: 'hola',
     })
 
-    provider.delaySendMessage(10, 'message', {
-        from: '000',
-        body: 'this is not email value',
+    await provider.delaySendMessage(5, 'message', {
+        from: '001',
+        body: 'hola',
     })
 
-    provider.delaySendMessage(20, 'message', {
+    await provider.delaySendMessage(10, 'message', {
         from: '000',
-        body: 'test@test.com',
+        body: 'Leifer',
     })
 
-    provider.delaySendMessage(90, 'message', {
+    await provider.delaySendMessage(15, 'message', {
         from: '000',
-        body: '20',
+        body: '90',
     })
 
-    await delay(1200)
+    await provider.delaySendMessage(20, 'message', {
+        from: '001',
+        body: 'Maria',
+    })
+
+    await provider.delaySendMessage(25, 'message', {
+        from: '001',
+        body: '100',
+    })
+
+    await delay(500)
     const getHistory = database.listHistory.map((i) => i.answer)
     assert.is(MOCK_VALUES[0], getHistory[0])
-    assert.is('this is not email value', getHistory[1])
-    assert.is(MOCK_VALUES[0], getHistory[2])
-    assert.is('test@test.com', getHistory[3])
-    assert.is('1 Gracias por tu email se ha validado de manera correcta', getHistory[4])
-    assert.is(MOCK_VALUES[1], getHistory[5])
-    assert.is('20', getHistory[6])
-    assert.is(undefined, getHistory[7])
+    assert.is('¿Cual es tu nombre?', getHistory[1])
+    assert.is('Leifer', getHistory[2])
+    assert.is('Gracias por tu nombre!', getHistory[3])
+    assert.is('¿Cual es tu edad?', getHistory[4])
+    assert.is('90', getHistory[5])
+    assert.is('Gracias por tu edad! Leifer', getHistory[6])
+    assert.is('Tu datos son:', getHistory[7])
+    assert.is('Nombre: Leifer Edad: 90', getHistory[8])
+    assert.is('🤖🤖 Gracias por tu participacion', getHistory[9])
+    assert.is('Maria', getHistory[10])
+    assert.is('Gracias por tu nombre!', getHistory[11])
+    assert.is('100', getHistory[12])
+    assert.is(undefined, getHistory[13])
 })
 
-test.run()
-
-function delay(ms) {
-    return new Promise((res) => setTimeout(res, ms))
-}
+suiteCase.run()
