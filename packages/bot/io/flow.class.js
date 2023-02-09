@@ -59,6 +59,37 @@ class FlowClass {
     findBySerialize = (refSerialize) => this.flowSerialize.find((r) => r.refSerialize === refSerialize)
 
     findIndexByRef = (ref) => this.flowSerialize.findIndex((r) => r.ref === ref)
+
+    getRefToContinueChild = (keyword) => {
+        try {
+            const flowChilds = this.flowSerialize
+                .reduce((acc, cur) => {
+                    const merge = [...acc, cur?.options?.nested].flat(2)
+                    return merge
+                }, [])
+                .filter((i) => !!i && i?.refSerialize === keyword)
+                .shift()
+
+            return flowChilds
+        } catch (e) {
+            return undefined
+        }
+    }
+
+    getFlowsChild = () => {
+        try {
+            const flowChilds = this.flowSerialize
+                .reduce((acc, cur) => {
+                    const merge = [...acc, cur?.options?.nested].flat(2)
+                    return merge
+                }, [])
+                .filter((i) => !!i)
+
+            return flowChilds
+        } catch (e) {
+            return []
+        }
+    }
 }
 
 module.exports = FlowClass

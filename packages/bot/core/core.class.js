@@ -142,8 +142,19 @@ class CoreClass {
             const nextFlow = (await this.flowClass.find(refToContinue?.ref, true)) ?? []
             const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
             const isContinueFlow = filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)
-            if (!isContinueFlow) await sendFlow(filterNextFlow, from, { prev: undefined })
-            return
+
+            if (!isContinueFlow) {
+                const refToContinueChild = this.flowClass.getRefToContinueChild(currentPrev?.keyword)
+                const flowStandaloneChild = this.flowClass.getFlowsChild()
+                const nextChildMessages =
+                    (await this.flowClass.find(refToContinueChild?.ref, true, flowStandaloneChild)) || []
+                if (nextChildMessages?.length) return await sendFlow(nextChildMessages, from, { prev: undefined })
+            }
+
+            if (!isContinueFlow) {
+                await sendFlow(filterNextFlow, from, { prev: undefined })
+                return
+            }
         }
         // 📄 [options: fallBack]: esta funcion se encarga de repetir el ultimo mensaje
         const fallBack =

@@ -9,14 +9,14 @@ const fakeHTTP = async (fakeData = []) => {
     return Promise.resolve(data)
 }
 
-const suiteCase = suite('Flujo: endFlow')
+const suiteCase = suite('Flujo: flowDynamic')
 
 suiteCase.before.each(setup)
 suiteCase.after.each(clear)
 
-suiteCase(`Detener el flujo`, async ({ database, provider }) => {
+suiteCase(`Responder con mensajes asyncronos`, async ({ database, provider }) => {
     const MOCK_VALUES = [
-        'Bienvenido te envio muchas marcas',
+        'Bienvenido te envio muchas marcas (5510)',
         'Seleccione marca del auto a cotizar, con el *número* correspondiente',
         'Seleccione la sub marca del auto a cotizar, con el *número* correspondiente:',
         'Los precios rondan:',
@@ -26,10 +26,14 @@ suiteCase(`Detener el flujo`, async ({ database, provider }) => {
             const data = await fakeHTTP(['Ford', 'GM', 'BMW'])
             return flowDynamic(data)
         })
-        .addAnswer(MOCK_VALUES[1], null, async (_, { endFlow }) => {
-            return endFlow()
+        .addAnswer(MOCK_VALUES[1], null, async (_, { flowDynamic }) => {
+            const data = await fakeHTTP(['Ranger', 'Explorer'])
+            return flowDynamic(data)
         })
-        .addAnswer(MOCK_VALUES[2])
+        .addAnswer(MOCK_VALUES[2], null, async (_, { flowDynamic }) => {
+            const data = await fakeHTTP(['Usado', 'Nuevos'])
+            return flowDynamic(data)
+        })
         .addAnswer(MOCK_VALUES[3], null, async (_, { flowDynamic }) => {
             const data = await fakeHTTP(['1000', '2000', '3000'])
             return flowDynamic(data)
@@ -46,7 +50,7 @@ suiteCase(`Detener el flujo`, async ({ database, provider }) => {
         body: 'hola',
     })
 
-    await delay(500)
+    await delay(1200)
     const getHistory = database.listHistory.map((i) => i.answer)
     assert.is(MOCK_VALUES[0], getHistory[0])
 
@@ -58,17 +62,30 @@ suiteCase(`Detener el flujo`, async ({ database, provider }) => {
     assert.is(MOCK_VALUES[1], getHistory[4])
 
     //FlowDynamic
-    assert.is(undefined, getHistory[5])
-    assert.is(undefined, getHistory[6])
+    assert.is('Ranger', getHistory[5])
+    assert.is('Explorer', getHistory[6])
+
+    assert.is(MOCK_VALUES[2], getHistory[7])
+
+    //FlowDynamic
+    assert.is('Usado', getHistory[8])
+    assert.is('Nuevos', getHistory[9])
+
+    assert.is(MOCK_VALUES[3], getHistory[10])
+
+    //FlowDynamic
+    assert.is('1000', getHistory[11])
+    assert.is('2000', getHistory[12])
+    assert.is('3000', getHistory[13])
+    assert.is(undefined, getHistory[14])
 })
 
-suiteCase(`Detener el flujo flowDynamic`, async ({ database, provider }) => {
+suiteCase(`Responder con un "string"`, async ({ database, provider }) => {
     const flow = addKeyword(['hola'])
-        .addAnswer('Buenas!', null, async (_, { endFlow, flowDynamic }) => {
-            await flowDynamic('Continuamos...')
-            return endFlow()
+        .addAnswer('Como vas?', null, async (_, { flowDynamic }) => {
+            return flowDynamic('Todo bien!')
         })
-        .addAnswer('Como estas!')
+        .addAnswer('y vos?')
 
     createBot({
         database,
@@ -83,39 +100,18 @@ suiteCase(`Detener el flujo flowDynamic`, async ({ database, provider }) => {
 
     await delay(10)
     const getHistory = database.listHistory.map((i) => i.answer)
-    assert.is('Buenas!', getHistory[0])
-    assert.is('Continuamos...', getHistory[1])
-    assert.is(undefined, getHistory[2])
+    assert.is('Como vas?', getHistory[0])
+    assert.is('Todo bien!', getHistory[1])
+    assert.is('y vos?', getHistory[2])
+    assert.is(undefined, getHistory[3])
 })
 
-suiteCase(`flowDynamic con capture`, async ({ database, provider }) => {
-    const MOCK_VALUES = ['¿CUal es tu email?', 'Continuamos....', '¿Cual es tu edad?']
-
+suiteCase(`Responder con un "array"`, async ({ database, provider }) => {
     const flow = addKeyword(['hola'])
-        .addAnswer(
-            MOCK_VALUES[0],
-            {
-                capture: true,
-            },
-            async (ctx, { flowDynamic, fallBack }) => {
-                const validation = ctx.body.includes('@')
-
-                if (validation) {
-                    const getDataFromApi = await fakeHTTP(['Gracias por tu email se ha validado de manera correcta'])
-                    return flowDynamic(getDataFromApi)
-                }
-                return fallBack()
-            }
-        )
-        .addAnswer(MOCK_VALUES[1])
-        .addAnswer(MOCK_VALUES[2], { capture: true }, async (ctx, { flowDynamic, fallBack }) => {
-            if (ctx.body !== '18') {
-                await delay(20)
-                return fallBack('Ups creo que no eres mayor de edad')
-            }
-            return flowDynamic('Bien tu edad es correcta!')
+        .addAnswer('Como vas?', null, async (_, { flowDynamic }) => {
+            return flowDynamic(['Todo bien!', 'trabajando'])
         })
-        .addAnswer('Puedes pasar')
+        .addAnswer('y vos?')
 
     createBot({
         database,
@@ -128,40 +124,39 @@ suiteCase(`flowDynamic con capture`, async ({ database, provider }) => {
         body: 'hola',
     })
 
-    await provider.delaySendMessage(10, 'message', {
-        from: '000',
-        body: 'this is not email value',
-    })
-
-    await provider.delaySendMessage(20, 'message', {
-        from: '000',
-        body: 'test@test.com',
-    })
-
-    await provider.delaySendMessage(90, 'message', {
-        from: '000',
-        body: '20',
-    })
-
-    await provider.delaySendMessage(200, 'message', {
-        from: '000',
-        body: '18',
-    })
-
-    await delay(500)
+    await delay(10)
     const getHistory = database.listHistory.map((i) => i.answer)
-    assert.is(MOCK_VALUES[0], getHistory[0])
-    assert.is('this is not email value', getHistory[1])
-    assert.is(MOCK_VALUES[0], getHistory[2])
-    assert.is('test@test.com', getHistory[3])
-    assert.is('Gracias por tu email se ha validado de manera correcta', getHistory[4])
-    assert.is(MOCK_VALUES[1], getHistory[5])
-    assert.is(MOCK_VALUES[2], getHistory[6])
-    assert.is('20', getHistory[7])
-    assert.is('Ups creo que no eres mayor de edad', getHistory[8])
-    assert.is('18', getHistory[9])
-    assert.is('Bien tu edad es correcta!', getHistory[10])
-    assert.is('Puedes pasar', getHistory[11])
+    assert.is('Como vas?', getHistory[0])
+    assert.is('Todo bien!', getHistory[1])
+    assert.is('trabajando', getHistory[2])
+    assert.is('y vos?', getHistory[3])
+    assert.is(undefined, getHistory[4])
+})
+
+suiteCase(`Responder con un "object"`, async ({ database, provider }) => {
+    const flow = addKeyword(['hola'])
+        .addAnswer('Como vas?', null, async (_, { flowDynamic }) => {
+            return flowDynamic([{ body: 'Todo bien!' }])
+        })
+        .addAnswer('y vos?')
+
+    createBot({
+        database,
+        provider,
+        flow: createFlow([flow]),
+    })
+
+    await provider.delaySendMessage(0, 'message', {
+        from: '000',
+        body: 'hola',
+    })
+
+    await delay(10)
+    const getHistory = database.listHistory.map((i) => i.answer)
+    assert.is('Como vas?', getHistory[0])
+    assert.is('Todo bien!', getHistory[1])
+    assert.is('y vos?', getHistory[2])
+    assert.is(undefined, getHistory[3])
 })
 
 suiteCase.run()
