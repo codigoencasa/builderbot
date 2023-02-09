@@ -17,6 +17,8 @@ class MockFlow {
     }
     findBySerialize = () => ({})
     findIndexByRef = () => 0
+    getRefToContinueChild = () => ({})
+    getFlowsChild = () => []
 }
 
 class MockDBA {
