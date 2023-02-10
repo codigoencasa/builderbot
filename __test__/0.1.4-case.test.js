@@ -50,7 +50,7 @@ suiteCase(`Responder con mensajes asyncronos`, async ({ database, provider }) =>
         body: 'hola',
     })
 
-    await delay(1200)
+    await delay(1500)
     const getHistory = database.listHistory.map((i) => i.answer)
     assert.is(MOCK_VALUES[0], getHistory[0])
 
@@ -98,7 +98,7 @@ suiteCase(`Responder con un "string"`, async ({ database, provider }) => {
         body: 'hola',
     })
 
-    await delay(10)
+    await delay(100)
     const getHistory = database.listHistory.map((i) => i.answer)
     assert.is('Como vas?', getHistory[0])
     assert.is('Todo bien!', getHistory[1])
@@ -124,7 +124,7 @@ suiteCase(`Responder con un "array"`, async ({ database, provider }) => {
         body: 'hola',
     })
 
-    await delay(10)
+    await delay(100)
     const getHistory = database.listHistory.map((i) => i.answer)
     assert.is('Como vas?', getHistory[0])
     assert.is('Todo bien!', getHistory[1])
@@ -151,7 +151,7 @@ suiteCase(`Responder con un "object"`, async ({ database, provider }) => {
         body: 'hola',
     })
 
-    await delay(10)
+    await delay(100)
     const getHistory = database.listHistory.map((i) => i.answer)
     assert.is('Como vas?', getHistory[0])
     assert.is('Todo bien!', getHistory[1])

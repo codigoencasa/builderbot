@@ -1,63 +1,79 @@
 const { join } = require('path')
-const { existsSync, writeFileSync, readFileSync } = require('fs')
+const { existsSync } = require('fs')
+const { writeFile, readFile } = require('fs').promises
 
 class JsonFileAdapter {
     db
     pathFile
     listHistory = []
+    options = { filename: 'db.json' }
 
-    constructor() {
-        this.pathFile = join(process.cwd(), 'db.json')
+    constructor(options = {}) {
+        this.options = { ...this.options, ...options }
+        this.pathFile = join(process.cwd(), this.options.filename)
         this.init().then()
     }
 
-    databaseExists() {
-        return existsSync(this.pathFile)
-    }
-
-    async init() {
-        const dbExists = await this.databaseExists()
-
-        if (!dbExists) {
-            const data = {
-                history: [],
-            }
-            await this.saveData(data)
+    /**
+     * Revisamos si existe o no el json file
+     * @returns
+     */
+    init = async () => {
+        if (existsSync(this.pathFile)) {
+            return Promise.resolve()
+        }
+        try {
+            const parseData = JSON.stringify([], null, 2)
+            return writeFile(this.pathFile, parseData, 'utf-8')
+        } catch (e) {
+            return Promise.reject(e.message)
         }
     }
 
-    readDatabase() {
-        const db = readFileSync(this.pathFile)
-        return JSON.parse(db)
+    validateJson = (raw) => {
+        try {
+            return JSON.parse(raw)
+        } catch (e) {
+            return {}
+        }
     }
 
-    saveData(data) {
-        writeFileSync(this.pathFile, JSON.stringify(data, null, 2))
+    /**
+     * Leer archivo y parsear
+     * @returns
+     */
+    readFileAndParse = async () => {
+        const data = await readFile(this.pathFile, 'utf-8')
+        const parseData = this.validateJson(data)
+        return parseData
     }
 
+    /**
+     * Buscamos el ultimo mensaje por numero
+     * @param {*} from
+     * @returns
+     */
     getPrevByNumber = async (from) => {
-        const { history } = await this.readDatabase()
-
+        const history = await this.readFileAndParse()
         if (!history.length) {
-            return null
+            return []
         }
 
-        const result = history.filter((res) => res.from === from).pop()
-
-        return {
-            ...result,
-        }
+        const result = history
+            .slice()
+            .reverse()
+            .filter((i) => !!i.keyword)
+        return result.find((a) => a.from === from)
     }
 
+    /**
+     * Guardar dato
+     * @param {*} ctx
+     */
     save = async (ctx) => {
-        this.db = await this.readDatabase()
-
-        this.db.history.push(ctx)
-
-        await this.saveData(this.db)
-
         this.listHistory.push(ctx)
-        console.log('Guardado en DB...', ctx)
+        const parseData = JSON.stringify(this.listHistory, null, 2)
+        await writeFile(this.pathFile, parseData, 'utf-8')
     }
 }
 

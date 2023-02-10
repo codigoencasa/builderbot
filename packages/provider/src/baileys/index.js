@@ -125,7 +125,7 @@ class BaileysProvider extends ProviderClass {
                 if (messageCtx.message.locationMessage) {
                     const { degreesLatitude, degreesLongitude } = messageCtx.message.locationMessage
                     if (typeof degreesLatitude === 'number' && typeof degreesLongitude === 'number') {
-                        payload = { ...payload, body: `📍` }
+                        payload = { ...payload, body: `#CURRENT_LOCATION#` }
                     }
                 }
 

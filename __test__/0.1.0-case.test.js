@@ -22,7 +22,7 @@ suiteCase(`Responder a "ole" en minuscula`, async ({ database, provider }) => {
         body: 'ole',
     })
 
-    await delay(0)
+    await delay(100)
 
     assert.is('Bienvenido a la OLA', database.listHistory[0].answer)
     assert.is(undefined, database.listHistory[1])
@@ -42,7 +42,7 @@ suiteCase(`NO Responder a "ole" en minuscula`, async ({ database, provider }) =>
         body: 'OLE',
     })
 
-    await delay(0)
+    await delay(100)
 
     assert.is(undefined, database.listHistory[0])
     assert.is(undefined, database.listHistory[1])

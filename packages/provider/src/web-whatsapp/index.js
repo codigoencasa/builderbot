@@ -91,7 +91,7 @@ class WebWhatsappProvider extends ProviderClass {
                 }
                 payload.from = wwebCleanNumber(payload.from, true)
                 if (payload._data.lat && payload._data.lng) {
-                    payload = { ...payload, body: `📍` }
+                    payload = { ...payload, body: `#CURRENT_LOCATION#` }
                 }
                 this.emit('message', payload)
             },

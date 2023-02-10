@@ -84,7 +84,7 @@ class CoreClass {
                 from,
                 prevRef: prevMsg.refSerialize,
             })
-            this.databaseClass.save(ctxByNumber)
+            await this.databaseClass.save(ctxByNumber)
         }
 
         // 📄 Crar CTX de mensaje (uso private)

@@ -22,8 +22,7 @@ suiteCase(`Responder a "hola"`, async ({ database, provider }) => {
         body: 'hola',
     })
 
-    await delay(0)
-
+    await delay(10)
     assert.is('Buenas!', database.listHistory[0].answer)
     assert.is('Como vamos!', database.listHistory[1].answer)
     assert.is(undefined, database.listHistory[2])
@@ -43,7 +42,7 @@ suiteCase(`NO reponder a "pepe"`, async ({ database, provider }) => {
         body: 'pepe',
     })
 
-    await delay(0)
+    await delay(100)
 
     assert.is(undefined, database.listHistory[0])
     assert.is(undefined, database.listHistory[1])
