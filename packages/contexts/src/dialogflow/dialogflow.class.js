@@ -108,7 +108,7 @@ class DialogFlowContext extends CoreClass {
             answer: queryResult?.fulfillmentText,
         } */
 
-        const arrayMsg = queryResult['fulfillmentMessages']
+        const messagesFromCX = queryResult['fulfillmentMessages']
             .map((a) => {
                 if (a.message === 'text') {
                     return { answer: a.text.text[0] }
@@ -116,7 +116,7 @@ class DialogFlowContext extends CoreClass {
             })
             .filter((e) => e)
 
-        this.sendFlowSimple(arrayMsg, from)
+        this.sendFlowSimple(messagesFromCX, from)
     }
 }
 
