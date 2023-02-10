@@ -12,6 +12,7 @@ const MYSQL_DB_HOST = 'localhost'
 const MYSQL_DB_USER = 'user'
 const MYSQL_DB_PASSWORD = 'pass'
 const MYSQL_DB_NAME = 'bot'
+const MYSQL_DB_PORT = '3306'
 
 /**
  * Aqui declaramos los flujos hijos, los flujos se declaran de atras para adelante, es decir que si tienes un flujo de este tipo:
@@ -89,6 +90,7 @@ const main = async () => {
         user: MYSQL_DB_USER,
         database: MYSQL_DB_NAME,
         password: MYSQL_DB_PASSWORD,
+        port: MYSQL_DB_PORT,
     })
     const adapterFlow = createFlow([flowPrincipal])
     const adapterProvider = createProvider(VenomProvider)
