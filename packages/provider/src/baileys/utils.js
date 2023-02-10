@@ -1,9 +1,6 @@
 const { createWriteStream } = require('fs')
 const combineImage = require('combine-image')
 const qr = require('qr-image')
-const { tmpdir } = require('os')
-const http = require('http')
-const https = require('https')
 
 const baileyCleanNumber = (number, full = false) => {
     number = number.replace('@s.whatsapp.net', '')
@@ -41,38 +38,8 @@ const baileyIsValidNumber = (rawNumber) => {
     return !exist
 }
 
-/**
- * Incompleta
- * Descargar archivo multimedia para enviar
- * @param {*} url
- * @returns
- */
-const baileyDownloadMedia = (url) => {
-    return new Promise((resolve, reject) => {
-        const ext = url.split('.').pop()
-        const checkProtocol = url.includes('https:')
-        const handleHttp = checkProtocol ? https : http
-        const name = `tmp-${Date.now()}.${ext}`
-        const fullPath = `${tmpdir()}/${name}`
-        const file = createWriteStream(fullPath)
-        handleHttp.get(url, function (response) {
-            response.pipe(file)
-            file.on('finish', function () {
-                file.close()
-                resolve(fullPath)
-            })
-            file.on('error', function () {
-                console.log('errro')
-                file.close()
-                reject(null)
-            })
-        })
-    })
-}
-
 module.exports = {
     baileyCleanNumber,
     baileyGenerateImage,
     baileyIsValidNumber,
-    baileyDownloadMedia,
 }

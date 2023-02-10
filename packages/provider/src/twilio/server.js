@@ -51,9 +51,7 @@ class TwilioWebHookServer extends EventEmitter {
         this.twilioServer.listen(this.twilioPort, () => {
             console.log(``)
             console.log(`[Twilio]: Agregar esta url "WHEN A MESSAGE COMES IN"`)
-            console.log(
-                `[Twilio]: POST http://localhost:${this.twilioPort}/twilio-hook`
-            )
+            console.log(`[Twilio]: POST http://localhost:${this.twilioPort}/twilio-hook`)
             console.log(`[Twilio]: Más información en la documentacion`)
             console.log(``)
         })

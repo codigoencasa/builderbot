@@ -18,13 +18,9 @@ const [PKG_NAME, PKG_STABLE] = process.argv.slice(2) || [null, null]
  * @param {*} pkgName
  */
 const checkPkg = async (pkgName = '') => {
-    const { stdout } = await cmd(
-        NPM_COMMAND,
-        ['show', `${pkgName}`, 'version'],
-        {
-            stdio: 'inherit',
-        }
-    )
+    const { stdout } = await cmd(NPM_COMMAND, ['show', `${pkgName}`, 'version'], {
+        stdio: 'inherit',
+    })
 
     return stdout.trim().replace('\n', '')
 }
@@ -36,12 +32,7 @@ const checkPkg = async (pkgName = '') => {
 const checkPkgStable = async (pkgName = '', version = '') => {
     const { stdout } = await cmd(
         NPM_COMMAND,
-        [
-            'show',
-            `${pkgName}@${version.split('.').shift()}.*`,
-            'version',
-            '--json',
-        ],
+        ['show', `${pkgName}@${version.split('.').shift()}.*`, 'version', '--json'],
         {
             stdio: 'inherit',
         }
@@ -65,17 +56,14 @@ const checkPkgStable = async (pkgName = '', version = '') => {
  * @returns
  */
 const checkEveryProvider = async (provider = '', stable = true) => {
-    const pkgDependencies = readFileSync(
-        join(PATH_PACKAGES, 'provider', 'src', provider, 'package.json')
-    )
+    const pkgDependencies = readFileSync(join(PATH_PACKAGES, 'provider', 'src', provider, 'package.json'))
     try {
         const { dependencies } = JSON.parse(pkgDependencies)
         const devParse = Object.entries(dependencies)
         const newDevParse = {}
         for (const [pkgName, pkgVersion] of devParse) {
             if (!stable) newDevParse[pkgName] = await checkPkg(pkgName)
-            if (stable)
-                newDevParse[pkgName] = await checkPkgStable(pkgName, pkgVersion)
+            if (stable) newDevParse[pkgName] = await checkPkgStable(pkgName, pkgVersion)
 
             console.log(newDevParse)
         }
@@ -93,25 +81,12 @@ const checkEveryProvider = async (provider = '', stable = true) => {
  * @returns
  */
 const updateDependencies = async (provider = '', list = {}) => {
-    const pathProvider = join(
-        PATH_PACKAGES,
-        'provider',
-        'src',
-        provider,
-        'package.json'
-    )
+    const pathProvider = join(PATH_PACKAGES, 'provider', 'src', provider, 'package.json')
 
     try {
         const pkgDependencies = readFileSync(pathProvider)
         const { dependencies } = JSON.parse(pkgDependencies)
-        writeFileSync(
-            pathProvider,
-            JSON.stringify(
-                { dependencies: { ...dependencies, ...list } },
-                null,
-                2
-            )
-        )
+        writeFileSync(pathProvider, JSON.stringify({ dependencies: { ...dependencies, ...list } }, null, 2))
     } catch (e) {
         console.log(e)
         return {}
@@ -125,15 +100,11 @@ const updateDependencies = async (provider = '', list = {}) => {
  */
 const updateStarters = async (provider = '', updateDev = {}) => {
     provider = provider === 'web-whatsapp' ? 'wweb' : provider
-    const allStarters = readdirSync(PATH_STARTERS).filter((n) =>
-        n.includes(provider)
-    )
+    const allStarters = readdirSync(PATH_STARTERS).filter((n) => n.includes(provider))
 
     try {
         for (const base of allStarters) {
-            const pkgDependenciesBase = readFileSync(
-                join(PATH_STARTERS, base, 'package.json')
-            )
+            const pkgDependenciesBase = readFileSync(join(PATH_STARTERS, base, 'package.json'))
             const pkgBase = JSON.parse(pkgDependenciesBase)
             writeFileSync(
                 join(PATH_STARTERS, base, 'package.json'),
@@ -157,10 +128,7 @@ const main = async () => {
     if (PKG_NAME) {
         const providerName = PKG_NAME ? PKG_NAME.split('=').at(1) : null
         const providerStable = PKG_STABLE ? PKG_STABLE.split('=').at(1) : null
-        const list = await checkEveryProvider(
-            providerName,
-            providerStable === 'true'
-        )
+        const list = await checkEveryProvider(providerName, providerStable === 'true')
         await updateDependencies(providerName, list)
         await updateStarters(providerName, list)
     }

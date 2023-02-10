@@ -4,21 +4,14 @@ const pino = require('pino')
 const rimraf = require('rimraf')
 const mime = require('mime-types')
 const { join } = require('path')
-const { existsSync, createWriteStream, readFileSync } = require('fs')
+const { createWriteStream, readFileSync } = require('fs')
 const { Console } = require('console')
 
-const {
-    default: makeWASocket,
-    useMultiFileAuthState,
-    Browsers,
-    DisconnectReason,
-} = require('@adiwajshing/baileys')
-const {
-    baileyGenerateImage,
-    baileyCleanNumber,
-    baileyIsValidNumber,
-    baileyDownloadMedia,
-} = require('./utils')
+const { default: makeWASocket, useMultiFileAuthState, Browsers, DisconnectReason } = require('@adiwajshing/baileys')
+
+const { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber } = require('./utils')
+
+const { generalDownload } = require('../../common/download')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/baileys.log`),
@@ -44,9 +37,7 @@ class BaileysProvider extends ProviderClass {
      */
     initBailey = async () => {
         const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
-        const { state, saveCreds } = await useMultiFileAuthState(
-            NAME_DIR_SESSION
-        )
+        const { state, saveCreds } = await useMultiFileAuthState(NAME_DIR_SESSION)
         this.saveCredsGlobal = saveCreds
 
         try {
@@ -55,7 +46,7 @@ class BaileysProvider extends ProviderClass {
                 auth: state,
                 browser: Browsers.macOS('Desktop'),
                 syncFullHistory: false,
-                logger: pino({ level: 'error' }),
+                logger: pino({ level: 'fatal' }),
             })
 
             sock.ev.on('connection.update', async (update) => {
@@ -94,10 +85,7 @@ class BaileysProvider extends ProviderClass {
                             `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
                         ],
                     })
-                    await baileyGenerateImage(
-                        qr,
-                        `${this.globalVendorArgs.name}.qr.png`
-                    )
+                    await baileyGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)
                 }
             })
 
@@ -129,9 +117,18 @@ class BaileysProvider extends ProviderClass {
                 const [messageCtx] = messages
                 let payload = {
                     ...messageCtx,
-                    body: messageCtx?.message?.conversation,
+                    body: messageCtx?.message?.extendedTextMessage?.text ?? messageCtx?.message?.conversation,
+
                     from: messageCtx?.key?.remoteJid,
                 }
+
+                if (messageCtx.message.locationMessage) {
+                    const { degreesLatitude, degreesLongitude } = messageCtx.message.locationMessage
+                    if (typeof degreesLatitude === 'number' && typeof degreesLongitude === 'number') {
+                        payload = { ...payload, body: `📍` }
+                    }
+                }
+
                 if (payload.from === 'status@broadcast') return
 
                 if (payload?.key?.fromMe) return
@@ -140,9 +137,7 @@ class BaileysProvider extends ProviderClass {
                     return
                 }
 
-                const btnCtx =
-                    payload?.message?.buttonsResponseMessage
-                        ?.selectedDisplayText
+                const btnCtx = payload?.message?.buttonsResponseMessage?.selectedDisplayText
 
                 if (btnCtx) payload.body = btnCtx
 
@@ -162,6 +157,11 @@ class BaileysProvider extends ProviderClass {
     }
 
     /**
+     * Funcion SendRaw envia opciones directamente del proveedor
+     * @example await sendMessage('+XXXXXXXXXXX', 'Hello World')
+     */
+
+    /**
      * @alpha
      * @param {string} number
      * @param {string} message
@@ -169,14 +169,47 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendMedia = async (number, imageUrl, text) => {
-        const fileDownloaded = await baileyDownloadMedia(imageUrl)
+        const fileDownloaded = await generalDownload(imageUrl)
+        const mimeType = mime.lookup(fileDownloaded)
+
+        if (mimeType.includes('image')) return this.sendImage(number, fileDownloaded, text)
+        if (mimeType.includes('video')) return this.sendVideo(number, fileDownloaded, text)
+        if (mimeType.includes('audio')) return this.sendAudio(number, fileDownloaded, text)
+
+        return this.sendFile(number, fileDownloaded)
+    }
+
+    /**
+     * Enviar imagen
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+    sendImage = async (number, filePath, text) => {
         return this.vendor.sendMessage(number, {
-            image: readFileSync(fileDownloaded),
+            image: readFileSync(filePath),
             caption: text,
         })
     }
 
     /**
+     * Enviar video
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+    sendVideo = async (number, filePath, text) => {
+        return this.vendor.sendMessage(number, {
+            video: readFileSync(filePath),
+            caption: text,
+            gifPlayback: true,
+        })
+    }
+
+    /**
+     * Enviar audio
      * @alpha
      * @param {string} number
      * @param {string} message
@@ -184,11 +217,10 @@ class BaileysProvider extends ProviderClass {
      * @example await sendMessage('+XXXXXXXXXXX', 'audio.mp3')
      */
 
-    sendAudio = async (number, audioUrl, voiceNote = false) => {
-        const numberClean = number.replace('+', '')
-        await this.vendor.sendMessage(`${numberClean}@c.us`, {
+    sendAudio = async (number, audioUrl) => {
+        return this.vendor.sendMessage(number, {
             audio: { url: audioUrl },
-            ptt: voiceNote,
+            ptt: true,
         })
     }
 
@@ -210,17 +242,13 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendFile = async (number, filePath) => {
-        if (existsSync(filePath)) {
-            const mimeType = mime.lookup(filePath)
-            const numberClean = number.replace('+', '')
-            const fileName = filePath.split('/').pop()
-
-            await this.vendor.sendMessage(`${numberClean}@c.us`, {
-                document: { url: filePath },
-                mimetype: mimeType,
-                fileName: fileName,
-            })
-        }
+        const mimeType = mime.lookup(filePath)
+        const fileName = filePath.split('/').pop()
+        return this.vendor.sendMessage(number, {
+            document: { url: filePath },
+            mimetype: mimeType,
+            fileName: fileName,
+        })
     }
 
     /**
@@ -258,13 +286,12 @@ class BaileysProvider extends ProviderClass {
      * @param {string} message
      * @example await sendMessage('+XXXXXXXXXXX', 'Hello World')
      */
+
     sendMessage = async (numberIn, message, { options }) => {
         const number = baileyCleanNumber(numberIn)
 
-        if (options?.buttons?.length)
-            return this.sendButtons(number, message, options.buttons)
-        if (options?.media)
-            return this.sendMedia(number, options.media, message)
+        if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
+        if (options?.media) return this.sendMedia(number, options.media, message)
         return this.sendText(number, message)
     }
 
@@ -299,12 +326,7 @@ class BaileysProvider extends ProviderClass {
      * @example await sendContact("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "+xxxxxxxxxxx", "Robin Smith", messages)
      */
 
-    sendContact = async (
-        remoteJid,
-        contactNumber,
-        displayName,
-        messages = null
-    ) => {
+    sendContact = async (remoteJid, contactNumber, displayName, messages = null) => {
         const cleanContactNumber = contactNumber.replaceAll(' ', '')
         const waid = cleanContactNumber.replace('+', '')
 

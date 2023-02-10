@@ -25,9 +25,9 @@ class FlowClass {
         let refSymbol = null
         overFlow = overFlow ?? this.flowSerialize
 
-        /** Retornar expresion regular para buscar coincidencia */
-        const mapSensitive = (str, flag = false) => {
-            const regexSensitive = flag ? 'g' : 'i'
+        const mapSensitive = (str, mapOptions = { sensitive: false, regex: false }) => {
+            if (mapOptions.regex) return new RegExp(str)
+            const regexSensitive = mapOptions.sensitive ? 'g' : 'i'
             if (Array.isArray(str)) {
                 return new RegExp(str.join('|'), regexSensitive)
             }
@@ -35,9 +35,7 @@ class FlowClass {
         }
 
         const findIn = (keyOrWord, symbol = false, flow = overFlow) => {
-            const sensitive = refSymbol?.options?.sensitive || false
             capture = refSymbol?.options?.capture || false
-
             if (capture) return messages
 
             if (symbol) {
@@ -46,7 +44,9 @@ class FlowClass {
                 if (refSymbol?.ref) findIn(refSymbol.ref, true)
             } else {
                 refSymbol = flow.find((c) => {
-                    return mapSensitive(c.keyword, sensitive).test(keyOrWord)
+                    const sensitive = c?.options?.sensitive || false
+                    const regex = c?.options?.regex || false
+                    return mapSensitive(c.keyword, { sensitive, regex }).test(keyOrWord)
                 })
                 if (refSymbol?.ref) findIn(refSymbol.ref, true)
                 return messages
@@ -56,10 +56,40 @@ class FlowClass {
         return messages
     }
 
-    findBySerialize = (refSerialize) =>
-        this.flowSerialize.find((r) => r.refSerialize === refSerialize)
+    findBySerialize = (refSerialize) => this.flowSerialize.find((r) => r.refSerialize === refSerialize)
 
     findIndexByRef = (ref) => this.flowSerialize.findIndex((r) => r.ref === ref)
+
+    getRefToContinueChild = (keyword) => {
+        try {
+            const flowChilds = this.flowSerialize
+                .reduce((acc, cur) => {
+                    const merge = [...acc, cur?.options?.nested].flat(2)
+                    return merge
+                }, [])
+                .filter((i) => !!i && i?.refSerialize === keyword)
+                .shift()
+
+            return flowChilds
+        } catch (e) {
+            return undefined
+        }
+    }
+
+    getFlowsChild = () => {
+        try {
+            const flowChilds = this.flowSerialize
+                .reduce((acc, cur) => {
+                    const merge = [...acc, cur?.options?.nested].flat(2)
+                    return merge
+                }, [])
+                .filter((i) => !!i)
+
+            return flowChilds
+        } catch (e) {
+            return []
+        }
+    }
 }
 
 module.exports = FlowClass

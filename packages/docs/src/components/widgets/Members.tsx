@@ -32,14 +32,9 @@ export default component$((props: { users: User[] }) => {
                         Miembros
                     </h2>
                     <p class="max-w-3xl mx-auto sm:text-center text-xl text-gray-600 dark:text-slate-400">
-                        Conviértete en un miembro destacado y forma parte del
-                        proyecto y disfruta de manera adelantada de las
-                        actualizaciones{' '}
-                        <a
-                            class={'font-semibold'}
-                            target={'_blank'}
-                            href="https://opencollective.com/bot-whatsapp"
-                        >
+                        Conviértete en un miembro destacado y forma parte del proyecto y disfruta de manera adelantada
+                        de las actualizaciones{' '}
+                        <a class={'font-semibold'} target={'_blank'} href="https://opencollective.com/bot-whatsapp">
                             Únete
                         </a>
                     </p>

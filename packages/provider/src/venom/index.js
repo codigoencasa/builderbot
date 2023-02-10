@@ -2,17 +2,15 @@ const { ProviderClass } = require('@bot-whatsapp/bot')
 const venom = require('venom-bot')
 const { createWriteStream } = require('fs')
 const { Console } = require('console')
+const mime = require('mime-types')
 
-const {
-    venomCleanNumber,
-    venomGenerateImage,
-    venomisValidNumber,
-    venomDownloadMedia,
-} = require('./utils')
+const { venomCleanNumber, venomGenerateImage, venomisValidNumber } = require('./utils')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/venom.log`),
 })
+
+const { generalDownload } = require('../../common/download')
 
 /**
  * ⚙️ VenomProvider: Es una clase tipo adaptor
@@ -87,11 +85,17 @@ class VenomProvider extends ProviderClass {
                 if (payload.from === 'status@broadcast') {
                     return
                 }
-
                 if (!venomisValidNumber(payload.from)) {
                     return
                 }
                 payload.from = venomCleanNumber(payload.from, true)
+                if (payload.hasOwnProperty('lat') && payload.hasOwnProperty('lng')) {
+                    const lat = payload.lat
+                    const lng = payload.lng
+                    if (lat !== '' && lng !== '') {
+                        payload = { ...payload, body: `📍` }
+                    }
+                }
                 this.emit('message', payload)
             },
         },
@@ -106,8 +110,7 @@ class VenomProvider extends ProviderClass {
         const listEvents = this.busEvents()
 
         for (const { event, func } of listEvents) {
-            if (this.vendor[event])
-                this.vendor[event]((payload) => func(payload))
+            if (this.vendor[event]) this.vendor[event]((payload) => func(payload))
         }
     }
 
@@ -120,18 +123,62 @@ class VenomProvider extends ProviderClass {
      * @returns
      */
     sendButtons = async (number, message, buttons = []) => {
-        const NOTE_VENOM_BUTTON = [
-            `Actualmente VENOM tiene problemas con la API`,
-            `para el envio de Botones`,
-        ].join('\n')
+        const NOTE_VENOM_BUTTON = [`Actualmente VENOM tiene problemas con la API`, `para el envio de Botones`].join(
+            '\n'
+        )
 
         console.log(`[NOTA]: ${NOTE_VENOM_BUTTON}`)
 
-        const buttonToStr = [message]
-            .concat(buttons.map((btn) => `${btn.body}`))
-            .join(`\n`)
+        const buttonToStr = [message].concat(buttons.map((btn) => `${btn.body}`)).join(`\n`)
         return this.vendor.sendText(number, buttonToStr)
         // return this.vendor.sendButtons(number, "Title", buttons1, "Description");
+    }
+
+    /**
+     * Enviar audio
+     * @alpha
+     * @param {string} number
+     * @param {string} message
+     * @param {boolean} voiceNote optional
+     * @example await sendMessage('+XXXXXXXXXXX', 'audio.mp3')
+     */
+
+    sendAudio = async (number, audioPath) => {
+        return this.vendor.sendVoice(number, audioPath)
+    }
+
+    /**
+     * Enviar imagen
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+    sendImage = async (number, filePath, text) => {
+        return this.vendor.sendImage(number, filePath, 'image-name', text)
+    }
+
+    /**
+     *
+     * @param {string} number
+     * @param {string} filePath
+     * @example await sendMessage('+XXXXXXXXXXX', './document/file.pdf')
+     */
+
+    sendFile = async (number, filePath, text) => {
+        const fileName = filePath.split('/').pop()
+        return this.vendor.sendFile(number, filePath, fileName, text)
+    }
+
+    /**
+     * Enviar video
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+    sendVideo = async (number, filePath, text) => {
+        return this.vendor.sendVideoAsGif(number, filePath, 'video.gif', text)
     }
 
     /**
@@ -141,10 +188,15 @@ class VenomProvider extends ProviderClass {
      * @param {*} message
      * @returns
      */
-    sendMedia = async (number, mediaInput, message) => {
-        if (!mediaInput) throw new Error(`NO_SE_ENCONTRO: ${mediaInput}`)
-        const fileDownloaded = await venomDownloadMedia(mediaInput)
-        return this.vendor.sendImage(number, fileDownloaded, '.', message)
+    sendMedia = async (number, mediaUrl, text) => {
+        const fileDownloaded = await generalDownload(mediaUrl)
+        const mimeType = mime.lookup(fileDownloaded)
+
+        if (mimeType.includes('image')) return this.sendImage(number, fileDownloaded, text)
+        if (mimeType.includes('video')) return this.sendVideo(number, fileDownloaded, text)
+        if (mimeType.includes('audio')) return this.sendAudio(number, fileDownloaded)
+
+        return this.sendFile(number, fileDownloaded, text)
     }
 
     /**
@@ -156,10 +208,8 @@ class VenomProvider extends ProviderClass {
      */
     sendMessage = async (userId, message, { options }) => {
         const number = venomCleanNumber(userId)
-        if (options?.buttons?.length)
-            return this.sendButtons(number, message, options.buttons)
-        if (options?.media)
-            return this.sendMedia(number, options.media, message)
+        if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
+        if (options?.media) return this.sendMedia(number, options.media, message)
         return this.vendor.sendText(number, message)
     }
 }

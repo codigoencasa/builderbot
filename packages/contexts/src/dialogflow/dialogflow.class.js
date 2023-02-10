@@ -65,10 +65,7 @@ class DialogFlowContext extends CoreClass {
          * para evitar este problema.
          * https://github.com/codigoencasa/bot-whatsapp/pull/140
          */
-        const session = this.sessionClient.projectAgentSessionPath(
-            this.projectId,
-            from
-        )
+        const session = this.sessionClient.projectAgentSessionPath(this.projectId, from)
         const reqDialog = {
             session,
             queryInput: {
@@ -79,15 +76,11 @@ class DialogFlowContext extends CoreClass {
             },
         }
 
-        const [single] = (await this.sessionClient.detectIntent(reqDialog)) || [
-            null,
-        ]
+        const [single] = (await this.sessionClient.detectIntent(reqDialog)) || [null]
 
         const { queryResult } = single
 
-        const msgPayload = queryResult?.fulfillmentMessages?.find(
-            (a) => a.message === 'payload'
-        )
+        const msgPayload = queryResult?.fulfillmentMessages?.find((a) => a.message === 'payload')
 
         // Revisamos si el dialogFlow tiene multimedia
         if (msgPayload && msgPayload?.payload) {
