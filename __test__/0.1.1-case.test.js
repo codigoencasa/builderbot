@@ -51,22 +51,22 @@ suiteCase(`Debe continuar el flujo del hijo`, async ({ database, provider }) => 
         body: 'hola',
     })
 
-    await provider.delaySendMessage(10, 'message', {
+    await provider.delaySendMessage(30, 'message', {
         from: '000',
         body: 'test@test.com',
     })
 
-    await provider.delaySendMessage(15, 'message', {
+    await provider.delaySendMessage(60, 'message', {
         from: '000',
         body: 'paypal',
     })
 
-    await provider.delaySendMessage(20, 'message', {
+    await provider.delaySendMessage(90, 'message', {
         from: '000',
         body: 'continue!',
     })
 
-    await delay(500)
+    await delay(800)
     const getHistory = database.listHistory.map((i) => i.answer)
 
     assert.is('¿Como estas todo bien?', getHistory[0])

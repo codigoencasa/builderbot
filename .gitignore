@@ -36,6 +36,7 @@ tmp/
 .fleet/
 example-app*/
 base-*/
+test-*.json
 !starters/apps/base-*/
 qr.svg
 package-lock.json

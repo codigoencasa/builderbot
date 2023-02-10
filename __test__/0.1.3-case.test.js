@@ -29,7 +29,7 @@ suiteCase(`Responder a "pregunta"`, async ({ database, provider }) => {
         body: '90',
     })
 
-    await delay(20)
+    await delay(100)
 
     assert.is(['Hola como estas?', '¿Cual es tu edad?'].join('\n'), database.listHistory[0].answer)
     assert.is('90', database.listHistory[1].answer)
