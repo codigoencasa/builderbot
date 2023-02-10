@@ -115,7 +115,6 @@ class BaileysProvider extends ProviderClass {
             func: ({ messages, type }) => {
                 if (type !== 'notify') return
                 const [messageCtx] = messages
-                console.log(messageCtx)
                 let payload = {
                     ...messageCtx,
                     body: messageCtx?.message?.extendedTextMessage?.text ?? messageCtx?.message?.conversation,
@@ -126,7 +125,7 @@ class BaileysProvider extends ProviderClass {
                 if (messageCtx.message.locationMessage) {
                     const { degreesLatitude, degreesLongitude } = messageCtx.message.locationMessage
                     if (typeof degreesLatitude === 'number' && typeof degreesLongitude === 'number') {
-                        payload = { ...payload, body: `${degreesLatitude},${degreesLongitude}` }
+                        payload = { ...payload, body: `📍` }
                     }
                 }
 

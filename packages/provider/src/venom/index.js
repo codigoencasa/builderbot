@@ -93,7 +93,7 @@ class VenomProvider extends ProviderClass {
                     const lat = payload.lat
                     const lng = payload.lng
                     if (lat !== '' && lng !== '') {
-                        payload = { ...payload, body: `${lat},${lng}` }
+                        payload = { ...payload, body: `📍` }
                     }
                 }
                 this.emit('message', payload)
