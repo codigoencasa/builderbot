@@ -85,11 +85,17 @@ class VenomProvider extends ProviderClass {
                 if (payload.from === 'status@broadcast') {
                     return
                 }
-
                 if (!venomisValidNumber(payload.from)) {
                     return
                 }
                 payload.from = venomCleanNumber(payload.from, true)
+                if (payload.hasOwnProperty('lat') && payload.hasOwnProperty('lng')) {
+                    const lat = payload.lat
+                    const lng = payload.lng
+                    if (lat !== '' && lng !== '') {
+                        payload = { ...payload, body: `📍` }
+                    }
+                }
                 this.emit('message', payload)
             },
         },
