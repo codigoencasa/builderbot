@@ -2,13 +2,7 @@ const { test } = require('uvu')
 const assert = require('uvu/assert')
 const FlowClass = require('../io/flow.class')
 const MockProvider = require('../../../__mocks__/mock.provider')
-const {
-    createBot,
-    CoreClass,
-    createFlow,
-    createProvider,
-    ProviderClass,
-} = require('../index')
+const { createBot, CoreClass, createFlow, createProvider, ProviderClass } = require('../index')
 
 class MockFlow {
     allCallbacks = { ref: () => 1 }
@@ -100,20 +94,13 @@ test(`[Bot] Eventos 'require_action,ready,auth_failure,message '`, async () => {
     await createBot(setting)
 
     /// Escuchamos eventos
-    mockProvider.on(
-        'require_action',
-        (r) => (responseEvents['require_action'] = r)
-    )
+    mockProvider.on('require_action', (r) => (responseEvents['require_action'] = r))
     mockProvider.on('ready', (r) => (responseEvents['ready'] = r))
     mockProvider.on('auth_failure', (r) => (responseEvents['auth_failure'] = r))
     mockProvider.on('message', (r) => (responseEvents['message'] = r))
 
     /// Emitimos eventos
-    mockProvider.delaySendMessage(
-        0,
-        'require_action',
-        MOCK_EVENTS.require_action
-    )
+    mockProvider.delaySendMessage(0, 'require_action', MOCK_EVENTS.require_action)
     mockProvider.delaySendMessage(0, 'ready', MOCK_EVENTS.ready)
     mockProvider.delaySendMessage(0, 'auth_failure', MOCK_EVENTS.auth_failure)
     mockProvider.delaySendMessage(0, 'message', MOCK_EVENTS.message)
@@ -121,21 +108,12 @@ test(`[Bot] Eventos 'require_action,ready,auth_failure,message '`, async () => {
     await delay(0)
 
     /// Testeamos eventos
-    assert.is(
-        JSON.stringify(responseEvents.require_action),
-        JSON.stringify(MOCK_EVENTS.require_action)
-    )
+    assert.is(JSON.stringify(responseEvents.require_action), JSON.stringify(MOCK_EVENTS.require_action))
     assert.is(responseEvents.ready, MOCK_EVENTS.ready)
 
-    assert.is(
-        JSON.stringify(responseEvents.auth_failure),
-        JSON.stringify(MOCK_EVENTS.auth_failure)
-    )
+    assert.is(JSON.stringify(responseEvents.auth_failure), JSON.stringify(MOCK_EVENTS.auth_failure))
 
-    assert.is(
-        JSON.stringify(responseEvents.message),
-        JSON.stringify(MOCK_EVENTS.message)
-    )
+    assert.is(JSON.stringify(responseEvents.message), JSON.stringify(MOCK_EVENTS.message))
 })
 
 test(`[Bot] Probando Flujos Internos`, async () => {
@@ -166,20 +144,13 @@ test(`[Bot] Probando Flujos Internos`, async () => {
     await createBot(setting)
 
     /// Escuchamos eventos
-    mockProvider.on(
-        'require_action',
-        (r) => (responseEvents['require_action'] = r)
-    )
+    mockProvider.on('require_action', (r) => (responseEvents['require_action'] = r))
     mockProvider.on('ready', (r) => (responseEvents['ready'] = r))
     mockProvider.on('auth_failure', (r) => (responseEvents['auth_failure'] = r))
     mockProvider.on('message', (r) => (responseEvents['message'] = r))
 
     /// Emitimos eventos
-    mockProvider.delaySendMessage(
-        0,
-        'require_action',
-        MOCK_EVENTS.require_action
-    )
+    mockProvider.delaySendMessage(0, 'require_action', MOCK_EVENTS.require_action)
     mockProvider.delaySendMessage(0, 'ready', MOCK_EVENTS.ready)
     mockProvider.delaySendMessage(0, 'auth_failure', MOCK_EVENTS.auth_failure)
     mockProvider.delaySendMessage(0, 'message', MOCK_EVENTS.message)
@@ -187,21 +158,12 @@ test(`[Bot] Probando Flujos Internos`, async () => {
     await delay(0)
 
     /// Testeamos eventos
-    assert.is(
-        JSON.stringify(responseEvents.require_action),
-        JSON.stringify(MOCK_EVENTS.require_action)
-    )
+    assert.is(JSON.stringify(responseEvents.require_action), JSON.stringify(MOCK_EVENTS.require_action))
     assert.is(responseEvents.ready, MOCK_EVENTS.ready)
 
-    assert.is(
-        JSON.stringify(responseEvents.auth_failure),
-        JSON.stringify(MOCK_EVENTS.auth_failure)
-    )
+    assert.is(JSON.stringify(responseEvents.auth_failure), JSON.stringify(MOCK_EVENTS.auth_failure))
 
-    assert.is(
-        JSON.stringify(responseEvents.message),
-        JSON.stringify(MOCK_EVENTS.message)
-    )
+    assert.is(JSON.stringify(responseEvents.message), JSON.stringify(MOCK_EVENTS.message))
 })
 
 test(`[Bot] Probando Flujos Nested`, async () => {
@@ -234,20 +196,13 @@ test(`[Bot] Probando Flujos Nested`, async () => {
     botInstance.sendProviderAndSave('xxxxx', 'xxxxx')
     botInstance.continue('xxxxx', 'xxxxx')
     /// Escuchamos eventos
-    mockProvider.on(
-        'require_action',
-        (r) => (responseEvents['require_action'] = r)
-    )
+    mockProvider.on('require_action', (r) => (responseEvents['require_action'] = r))
     mockProvider.on('ready', (r) => (responseEvents['ready'] = r))
     mockProvider.on('auth_failure', (r) => (responseEvents['auth_failure'] = r))
     mockProvider.on('message', (r) => (responseEvents['message'] = r))
 
     /// Emitimos eventos
-    mockProvider.delaySendMessage(
-        0,
-        'require_action',
-        MOCK_EVENTS.require_action
-    )
+    mockProvider.delaySendMessage(0, 'require_action', MOCK_EVENTS.require_action)
     mockProvider.delaySendMessage(0, 'ready', MOCK_EVENTS.ready)
     mockProvider.delaySendMessage(0, 'auth_failure', MOCK_EVENTS.auth_failure)
     mockProvider.delaySendMessage(0, 'message', MOCK_EVENTS.message)
@@ -255,21 +210,12 @@ test(`[Bot] Probando Flujos Nested`, async () => {
     await delay(0)
 
     /// Testeamos eventos
-    assert.is(
-        JSON.stringify(responseEvents.require_action),
-        JSON.stringify(MOCK_EVENTS.require_action)
-    )
+    assert.is(JSON.stringify(responseEvents.require_action), JSON.stringify(MOCK_EVENTS.require_action))
     assert.is(responseEvents.ready, MOCK_EVENTS.ready)
 
-    assert.is(
-        JSON.stringify(responseEvents.auth_failure),
-        JSON.stringify(MOCK_EVENTS.auth_failure)
-    )
+    assert.is(JSON.stringify(responseEvents.auth_failure), JSON.stringify(MOCK_EVENTS.auth_failure))
 
-    assert.is(
-        JSON.stringify(responseEvents.message),
-        JSON.stringify(MOCK_EVENTS.message)
-    )
+    assert.is(JSON.stringify(responseEvents.message), JSON.stringify(MOCK_EVENTS.message))
 })
 
 test.run()

@@ -1,0 +1,146 @@
+import Alert from '../../../../components/widgets/Alert'
+import Navigation from '../../../../components/widgets/Navigation'
+
+# Twilio
+
+Twilio es una plataforma de desarrollo que permite a los desarrolladores construir aplicaciones de comunicación en la nube y sistemas web. Las API de comunicaciones de Twilio permiten a las empresas proporcionar la experiencia de comunicación adecuada para sus clientes dentro de la web y las aplicaciones móviles. Al usar las API de Twilio, los desarrolladores pueden agregar rápidamente esta funcionalidad a una aplicación, como mensajes de voz, videollamadas, mensajes de texto y más.
+
+<Alert>Twilio te proporciona una cuenta **Sandbox** para que puedas probar gratuitamente el servicio</Alert>
+
+### Requerimientos
+
+-   Registrar una cuenta de [twilio](https://www.twilio.com/try-twilio)
+
+---
+
+### Requerimientos
+
+Debemos aceptar los términos y condiciones y luego activar la cuenta sandbox
+
+![](https://i.imgur.com/53RyhZD.png)
+
+---
+
+Observamos que ahora tenemos un número de WhatsApp y una frase. El número proporcionado es un **número de pruebas** que te ofrece Twilio, luego que actives un plan de pago puedes comprar un número para tu uso. 
+Guarda ese número como un contacto de WhatsApp en tu móvil y después envíale el mensaje que te asignan. En el ejemplo de la pantalla sale **join score-state**
+
+![](https://i.imgur.com/Eb69grk.png)
+
+---
+
+Luego Twilio te responde con un mensaje confirmando la verificación de la conexión. **Este paso solo es necesario cuando estás en modo Sandbox.**
+
+![](https://i.imgur.com/cTWNxBF.png)
+
+---
+
+Ahora dirígete a la sección de Ajustes de WhatsApp ubicada en la consola de Twilio.
+
+![](https://i.imgur.com/UQG8LkW.png)
+
+---
+
+En esta sección puedes configurar los **Webhook** que conectaran con el chatbot.
+
+**¿No sabes cuál es tu link?** continúa leyendo esta guía más adelante entenderás
+
+![](https://i.imgur.com/WovZGPm.png)
+
+---
+
+También necesitarás el **Account SID y Auth Token** estos datos los consigues [console.twilio.com](https://console.twilio.com).
+
+**¿Que hago con estos datos?** guardalos o tenlos ubicados porque los necesitaremos en las siguientes pantallas
+
+![](https://i.imgur.com/RxlxEEm.png)
+
+---
+
+En el **archivo principal** del bot donde estás implementando la función del adaptador de twilio vas a colocar los siguientes datos:
+
+-   **ACC_SID:** Lo encontraras en console.twilio puedes ver la pantalla anterior
+-   **ACC_TOKEN:** Lo encontraras en console.twilio puedes ver la pantalla anterior
+-   **ACC_VENDOR:** Es el numero de whatsapp (si ya tienes el plan de pago de Twilio usa el numero que compraste), si aun estas en modo
+    sandbox utliza el numero proporcionado en el paso numero 2
+
+<Alert>En el ejemplo de abajo puedes ver como una sugerencia de como puede ser utilizando variables de entorno</Alert>
+
+```js
+const main = async () => {
+    const adapterDB = new MockAdapter()
+    const adapterFlow = createFlow([flowPrincipal])
+
+    const adapterProvider = createProvider(TwilioProvider, {
+        accountSid: process.env.ACC_SID, //AC4695aa720b4d700a***************
+        authToken: process.env.ACC_TOKEN, //3f6fae09f7a1c3534***************
+        vendorNumber: process.env.ACC_VENDOR, //+14155238886
+    })
+
+    createBot({
+        flow: adapterFlow,
+        provider: adapterProvider,
+        database: adapterDB,
+    })
+}
+```
+
+---
+
+Luego de ejecutar el bot encontraras un mensaje en la consola similar al siguiente.
+Donde podrás encontrar la URL para tu **webhook**
+
+```shell
+$ npm start
+
+> bot-whatsapp-base-twilio-memory@1.0.0 start
+> node app.js
+
+
+[Twilio]: Agregar esta url "WHEN A MESSAGE COMES IN"
+[Twilio]: POST http://localhost:3000/twilio-hook
+[Twilio]: Más información en la documentacion
+```
+
+---
+
+## ¿Ahora que hago?
+
+Podrás observar que el bot inicia un servicio HTTP (endpoint) que debe estar en un servidor en linea para que puedas conectarlo con Twilio.
+
+---
+
+### Opción 1:
+
+Puedes hacer pruebas en local atrevés de un servidor proxy tunnel. 
+Descarga **[ngork](https://ngrok.com/download)** es una herramienta gratuita que nos ayudara con esto.
+
+![](https://i.imgur.com/TjjBtRh.png)
+
+---
+
+Esto genera una URL en línea que podemos usar en la parte de **WebHook** de Twilio
+
+![](https://i.imgur.com/S9zXROt.png)
+
+---
+
+### Opción 2:
+
+Si ya tienes desplegado tu bot en un servidor tienes que obtener la IP publica o subdominio que te proporcionaron. **Ejemplo** si estas usando
+[Railway](https://railway.app/) puedes ir a la seccion de ajustes y generar un subdominio. Ya tendriamos el **WebHook**
+`https://base-twilio-memory-production.up.railway.app/twilio-hook`
+
+![](https://i.imgur.com/Yg2BYqB.png)
+
+---
+
+![](https://i.imgur.com/dpv6RTR.png)
+
+---
+
+<Navigation
+    pages={[
+        { name: 'Proveedores', link: '/docs/providers' },
+        { name: 'Meta', link: '/docs/providers/meta' },
+    ]}
+/>

@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/cli",
-    "version": "0.0.36-alpha.0",
+    "version": "0.0.72-alpha.0",
     "description": "",
     "main": "index.js",
     "devDependencies": {
@@ -15,5 +15,9 @@
     ],
     "bin": {
         "bot": "./bin/cli.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/codigoencasa/bot-whatsapp/tree/main/packages/cli"
     }
 }

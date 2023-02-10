@@ -10,8 +10,8 @@ const venomCleanNumber = (number, full = false) => {
     return number
 }
 
-const venomGenerateImage = async (base) => {
-    const PATH_QR = `${process.cwd()}/qr.png`
+const venomGenerateImage = async (base, name = 'qr.png') => {
+    const PATH_QR = `${process.cwd()}/${name}`
     const matches = base.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
     if (matches.length !== 3) {
         return new Error('Invalid input string')

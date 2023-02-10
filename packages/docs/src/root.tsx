@@ -1,14 +1,5 @@
-import {
-    component$,
-    useContextProvider,
-    useStore,
-    useStyles$,
-} from '@builder.io/qwik'
-import {
-    QwikCityProvider,
-    RouterOutlet,
-    ServiceWorkerRegister,
-} from '@builder.io/qwik-city'
+import { component$, useContextProvider, useStore, useStyles$ } from '@builder.io/qwik'
+import { QwikCityProvider, RouterOutlet, ServiceWorkerRegister } from '@builder.io/qwik-city'
 
 import { RouterHead } from '~/components/core/RouterHead'
 import { DarkThemeLauncher } from '~/components/core/DarkThemeLauncher'
@@ -52,16 +43,22 @@ export default component$(() => {
             title: 'Avanzado',
             list: [
                 { name: 'Migración', link: '/docs/migration' },
-                { name: 'Extender funcionalidades', link: '/docs/custom' },
+                { name: 'MasterClass', link: '/docs/masterclass' },
+            ],
+        },
+        {
+            title: 'Despliegue',
+            list: [
+                { name: 'Local', link: '/docs/deploy/local' },
+                { name: 'Docker', link: '/docs/deploy/docker' },
+                { name: 'Cloud', link: '/docs/deploy/cloud' },
             ],
         },
         {
             title: 'Comunidad',
             list: [
-                { name: 'MasterClass', link: '/docs/masterclass' },
                 { name: 'Colabores', link: '/docs/contributing' },
                 { name: 'Unirme al proyecto', link: '/docs/join' },
-                { name: 'Sponsors', link: '/docs/sponsors' },
             ],
         },
     ])
@@ -72,10 +69,7 @@ export default component$(() => {
         <QwikCityProvider>
             <head>
                 <meta charSet="utf-8" />
-                <meta
-                    name="viewport"
-                    content="width=device-width, initial-scale=1"
-                />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="manifest" href="/manifest.json" />
 
                 <RouterHead />

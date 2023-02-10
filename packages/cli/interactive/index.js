@@ -1,9 +1,9 @@
 const prompts = require('prompts')
 const { join } = require('path')
-const { yellow, red, cyan, bgMagenta } = require('kleur')
+const { yellow, red, cyan, bgMagenta, bgRed } = require('kleur')
 const { existsSync } = require('fs')
 const { copyBaseApp } = require('../create-app')
-const { checkNodeVersion, checkOs } = require('../check')
+const { checkNodeVersion, checkOs, checkGit } = require('../check')
 
 const bannerDone = () => {
     console.log(``)
@@ -21,6 +21,20 @@ const bannerDone = () => {
 }
 
 const startInteractive = async () => {
+    try {
+        console.clear()
+        await checkNodeVersion()
+        checkOs()
+        await checkGit()
+        console.clear()
+        await nextSteps()
+    } catch (e) {
+        console.error(bgRed(`Ups! 🙄 algo no va bien.`))
+        console.error(bgRed(`Revisa los requerimientos minimos en la documentacion`))
+    }
+}
+
+const nextSteps = async () => {
     const questions = [
         {
             type: 'text',
@@ -32,11 +46,11 @@ const startInteractive = async () => {
             name: 'providerWs',
             message: '¿Cuál proveedor de whatsapp quieres utilizar?',
             choices: [
-                { title: 'whatsapp-web.js (gratis)', value: 'wweb' },
-                { title: 'Venom (gratis)', value: 'venom' },
                 { title: 'Baileys (gratis)', value: 'baileys' },
+                { title: 'Venom (gratis)', value: 'venom' },
+                { title: 'whatsapp-web.js (gratis)', value: 'wweb' },
                 { title: 'Twilio', value: 'twilio' },
-                { title: 'API Oficial (Meta)', value: 'meta' },
+                { title: 'Meta', value: 'meta' },
             ],
             max: 1,
             hint: 'Espacio para seleccionar',
@@ -58,9 +72,6 @@ const startInteractive = async () => {
         },
     ]
 
-    console.clear()
-    checkNodeVersion()
-    checkOs()
     const onCancel = () => {
         console.log('¡Proceso cancelado!')
         return true
@@ -69,8 +80,7 @@ const startInteractive = async () => {
     const { outDir = '', providerDb = [], providerWs = [] } = response
 
     const createApp = async (templateName = null) => {
-        if (!templateName)
-            throw new Error('TEMPLATE_NAME_INVALID: ', templateName)
+        if (!templateName) throw new Error('TEMPLATE_NAME_INVALID: ', templateName)
 
         const possiblesPath = [
             join(__dirname, '..', '..', 'starters', 'apps', templateName),
@@ -102,11 +112,7 @@ const startInteractive = async () => {
     const vendorProvider = async () => {
         const [answer] = providerWs
         if (!providerWs.length) {
-            console.log(
-                red(
-                    `Debes seleccionar un proveedor de whatsapp. Tecla [Space] para seleccionar`
-                )
-            )
+            console.log(red(`Debes seleccionar un proveedor de whatsapp. Tecla [Space] para seleccionar`))
             process.exit(1)
         }
         return answer
@@ -119,11 +125,7 @@ const startInteractive = async () => {
     const dbProvider = async () => {
         const [answer] = providerDb
         if (!providerDb.length) {
-            console.log(
-                red(
-                    `Debes seleccionar un proveedor de base de datos. Tecla [Space] para seleccionar`
-                )
-            )
+            console.log(red(`Debes seleccionar un proveedor de base de datos. Tecla [Space] para seleccionar`))
             process.exit(1)
         }
         return answer

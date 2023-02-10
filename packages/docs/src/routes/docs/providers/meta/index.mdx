@@ -1,0 +1,156 @@
+import Alert from '../../../../components/widgets/Alert'
+import Navigation from '../../../../components/widgets/Navigation'
+
+# Meta
+
+La Plataforma de WhatsApp Business permite a medianas y grandes empresas comunicarse con sus clientes a gran escala.
+Puedes iniciar conversaciones con clientes en apenas unos minutos, enviarles notificaciones de atención al cliente o actualizaciones de compras, ofrecerles un nivel de servicio personalizado y
+prestarles ayuda a través del canal que ellos prefieran.
+
+### Requerimientos
+
+-   Registrar una cuenta de [facebook developers](https://developers.facebook.com/apps)
+
+---
+
+### Requerimientos
+
+Debes crear una aplicación nueva. Para ello haz clic en el botón **Crear aplicación**
+
+![](https://i.imgur.com/DKgjwj9.png)
+
+---
+
+En esta pantalla debes de seleccionar **Empresa o Business**
+
+![](https://i.imgur.com/tapmpMk.png)
+
+---
+
+En el siguiente paso debes escribir un nombre al tu aplicación también colocar un email de contacto y seleccionar la aplicación de Test Business
+
+![](https://i.imgur.com/cfHLJTJ.png)
+
+---
+
+Ahora dirígete a la sección de Ajustes de WhatsApp.
+
+![](https://i.imgur.com/37gMMM5.png)
+
+---
+
+Está la parte donde encontraras el token acceso y también puedes ver el número **desde donde** se envía los mensajes de WhatsApp
+y **a donde** se va a enviar.
+Como estás en la versión de prueba, deberás dar de alta los números a los que quieres enviar.
+
+![](https://i.imgur.com/bkSAZn2.png)
+
+---
+
+En esta misma página puedes encontrar el apartado de **Webhook** que pronto necesitaremos usar
+
+![](https://i.imgur.com/L3PRcj7.png)
+
+---
+
+En el **archivo principal** del bot donde estás implementando la función del adaptador de meta vas a colocar los siguientes datos:
+
+-   **numberId:** Lo puedes encontrar en la pagina anterior
+-   **jwtToken:** Lo puedes encontrar en la pagina anterior
+-   **verifyToken:** Puedes escribir lo que quieras es como una palabra clave
+
+<Alert>En el ejemplo de abajo puedes ver como una sugerencia de como puede ser utilizando variables de entorno</Alert>
+
+```js
+const main = async () => {
+    const adapterDB = new MockAdapter()
+    const adapterFlow = createFlow([flowPrincipal])
+
+    const adapterProvider = createProvider(MetaProvider, {
+        jwtToken: process.env.JWTOKEN, //EAARBW3ZBGU0UBAACDjtQIzI8JuEa.............
+        numberId: process.env.NUMBER_ID, //103975305758520
+        verifyToken: process.env.VERIFY_TOKEN, //LO_QUE_SEA
+    })
+
+    createBot({
+        flow: adapterFlow,
+        provider: adapterProvider,
+        database: adapterDB,
+    })
+}
+
+main()
+```
+
+---
+
+Luego de ejecutar el bot encontraras un mensaje en la consola similar al siguiente.
+Donde podrás encontrar la URL para tu **webhook**
+
+```shell
+$ npm start
+
+> bot-whatsapp-base-meta-memory@1.0.0 start
+> node app.js
+
+
+[meta]: Agregar esta url "WHEN A MESSAGE COMES IN"
+[meta]: POST http://localhost:3000/webhook
+[meta]: Más información en la documentacion
+```
+
+---
+
+## ¿Ahora que hago?
+
+Podrás observar que el bot inicia un servicio HTTP (endpoint) que debe estar en un servidor en linea para que puedas conectarlo con Meta.
+
+---
+
+### Opción 1:
+
+Puedes hacer pruebas en local atrevés de un servidor proxy tunnel. 
+Descarga **[ngork](https://ngrok.com/download)** es una herramienta gratuita que nos ayudara con esto.
+
+![](https://i.imgur.com/TjjBtRh.png)
+
+---
+
+Esto genera una URL en línea que podemos usar en la parte de **WebHook** de Meta
+
+![](https://i.imgur.com/NXHMDsf.png)
+
+---
+
+![](https://i.imgur.com/tpov3D1.png)
+
+---
+
+![](https://i.imgur.com/haRGylR.png)
+
+---
+
+![](https://i.imgur.com/cMaIzeC.png)
+
+---
+
+### Opción 2:
+
+Si ya tienes desplegado tu bot en un servidor tienes que obtener la IP publica o subdominio que te proporcionaron. **Ejemplo** si estas usando
+[Railway](https://railway.app/) puedes ir a la seccion de ajustes y generar un subdominio. Ya tendriamos el **WebHook**
+`https://base-twilio-memory-production.up.railway.app/twilio-hook`
+
+![](https://i.imgur.com/Yg2BYqB.png)
+
+---
+
+![](https://i.imgur.com/dIbyEwp.png)
+
+---
+
+<Navigation
+    pages={[
+        { name: 'Proveedores', link: '/docs/providers' },
+        { name: 'Meta', link: '/docs/providers/meta' },
+    ]}
+/>

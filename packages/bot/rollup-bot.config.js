@@ -10,6 +10,7 @@ module.exports = [
             banner: banner['banner.output'].join(''),
             file: join(__dirname, 'lib', 'bundle.bot.cjs'),
             format: 'cjs',
+            sourcemap: true,
         },
         plugins: [commonjs(), nodeResolve()],
     },

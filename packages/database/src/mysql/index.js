@@ -46,18 +46,8 @@ class MyslAdapter {
         })
 
     save = (ctx) => {
-        const values = [
-            [
-                ctx.ref,
-                ctx.keyword,
-                ctx.answer,
-                ctx.refSerialize,
-                ctx.from,
-                JSON.stringify(ctx.options),
-            ],
-        ]
-        const sql =
-            'INSERT INTO history (ref, keyword, answer, refSerialize, phone, options ) values ?'
+        const values = [[ctx.ref, ctx.keyword, ctx.answer, ctx.refSerialize, ctx.from, JSON.stringify(ctx.options)]]
+        const sql = 'INSERT INTO history (ref, keyword, answer, refSerialize, phone, options ) values ?'
 
         this.db.query(sql, [values], (err) => {
             if (err) throw err
@@ -71,14 +61,14 @@ class MyslAdapter {
             const tableName = 'history'
 
             const sql = `CREATE TABLE ${tableName} 
-        (id INT AUTO_INCREMENT PRIMARY KEY, 
-        ref varchar(255) NOT NULL,
-        keyword varchar(255) NOT NULL,
-        answer longtext NOT NULL,
-        refSerialize varchar(255) NOT NULL,
-        phone varchar(255) NOT NULL,
-        options longtext NOT NULL
-        )`
+            (id INT AUTO_INCREMENT PRIMARY KEY, 
+            ref varchar(255) NOT NULL,
+            keyword varchar(255) NOT NULL,
+            answer longtext NOT NULL,
+            refSerialize varchar(255) NOT NULL,
+            phone varchar(255) NOT NULL,
+            options longtext NOT NULL) 
+            CHARACTER SET utf8mb4 COLLATE utf8mb4_General_ci`
 
             this.db.query(sql, (err) => {
                 if (err) throw err

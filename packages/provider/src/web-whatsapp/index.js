@@ -1,17 +1,15 @@
 const { Client, LocalAuth, MessageMedia, Buttons } = require('whatsapp-web.js')
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const { Console } = require('console')
-const { createWriteStream } = require('fs')
-const {
-    wwebCleanNumber,
-    wwebDownloadMedia,
-    wwebGenerateImage,
-    wwebIsValidNumber,
-} = require('./utils')
+const { createWriteStream, readFileSync } = require('fs')
+const { wwebCleanNumber, wwebGenerateImage, wwebIsValidNumber } = require('./utils')
 
 const logger = new Console({
     stdout: createWriteStream('./log'),
 })
+
+const { generalDownload } = require('../../common/download')
+const mime = require('mime-types')
 
 /**
  * ⚙️ WebWhatsappProvider: Es una clase tipo adaptor
@@ -19,11 +17,20 @@ const logger = new Console({
  * https://github.com/pedroslopez/whatsapp-web.js
  */
 class WebWhatsappProvider extends ProviderClass {
+    globalVendorArgs = { name: `bot` }
     vendor
-    constructor() {
+    constructor(args) {
         super()
+        this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
         this.vendor = new Client({
-            authStrategy: new LocalAuth(),
+            authStrategy: new LocalAuth({
+                clientId: `${this.globalVendorArgs.name}_sessions`,
+            }),
+            puppeteer: {
+                headless: true,
+                args: ['--no-sandbox', '--disable-setuid-sandbox', '--unhandled-rejections=strict'],
+                //executablePath: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+            },
         })
 
         const listEvents = this.busEvents()
@@ -60,12 +67,12 @@ class WebWhatsappProvider extends ProviderClass {
             func: async (qr) => {
                 this.emit('require_action', {
                     instructions: [
-                        `Debes escanear el QR Code para iniciar session reivsa qr.png`,
+                        `Debes escanear el QR Code para iniciar ${this.globalVendorArgs.name}.qr.png`,
                         `Recuerda que el QR se actualiza cada minuto `,
                         `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
                     ],
                 })
-                await wwebGenerateImage(qr)
+                await wwebGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)
             },
         },
         {
@@ -83,27 +90,15 @@ class WebWhatsappProvider extends ProviderClass {
                     return
                 }
                 payload.from = wwebCleanNumber(payload.from, true)
+                if (payload._data.lat && payload._data.lng) {
+                    let lat = payload._data.lat
+                    let lng = payload._data.lng
+                    payload = { ...payload, body: `${lat},${lng}` }
+                }
                 this.emit('message', payload)
             },
         },
     ]
-
-    /**
-     * Enviar un archivo multimedia
-     * https://docs.wwebjs.dev/MessageMedia.html
-     * @private
-     * @param {*} number
-     * @param {*} mediaInput
-     * @returns
-     */
-    sendMedia = async (number, mediaInput = null) => {
-        if (!mediaInput) throw new Error(`NO_SE_ENCONTRO: ${mediaInput}`)
-        const fileDownloaded = await wwebDownloadMedia(mediaInput)
-        const media = MessageMedia.fromFilePath(fileDownloaded)
-        return this.vendor.sendMessage(number, media, {
-            sendAudioAsVoice: true,
-        })
-    }
 
     /**
      * Enviar botones
@@ -115,6 +110,9 @@ class WebWhatsappProvider extends ProviderClass {
      * @returns
      */
     sendButtons = async (number, message, buttons = []) => {
+        console.log(`🚩 ¿No te funciona los botones? Intenta instalar`)
+        console.log(`npm i github:pedroslopez/whatsapp-web.js#fix-buttons-list`)
+
         const buttonMessage = new Buttons(message, buttons, '', '')
         return this.vendor.sendMessage(number, buttonMessage)
     }
@@ -156,6 +154,83 @@ class WebWhatsappProvider extends ProviderClass {
     }
 
     /**
+     * Enviar imagen
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+    sendImage = async (number, filePath, caption) => {
+        const base64 = readFileSync(filePath, { encoding: 'base64' })
+        const mimeType = mime.lookup(filePath)
+        const media = new MessageMedia(mimeType, base64)
+        return this.vendor.sendMessage(number, media, { caption })
+    }
+
+    /**
+     * Enviar audio
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+
+    sendAudio = async (number, filePath, caption) => {
+        const base64 = readFileSync(filePath, { encoding: 'base64' })
+        const mimeType = mime.lookup(filePath)
+        const media = new MessageMedia(mimeType, base64)
+        return this.vendor.sendMessage(number, media, { caption })
+    }
+
+    /**
+     * Enviar video
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+    sendVideo = async (number, filePath) => {
+        const base64 = readFileSync(filePath, { encoding: 'base64' })
+        const mimeType = mime.lookup(filePath)
+        const media = new MessageMedia(mimeType, base64)
+        return this.vendor.sendMessage(number, media, {
+            sendMediaAsDocument: true,
+        })
+    }
+
+    /**
+     * Enviar Arhivos/pdf
+     * @param {*} number
+     * @param {*} imageUrl
+     * @param {*} text
+     * @returns
+     */
+    sendFile = async (number, filePath) => {
+        const base64 = readFileSync(filePath, { encoding: 'base64' })
+        const mimeType = mime.lookup(filePath)
+        const media = new MessageMedia(mimeType, base64)
+        return this.vendor.sendMessage(number, media)
+    }
+
+    /**
+     * Enviar imagen o multimedia
+     * @param {*} number
+     * @param {*} mediaInput
+     * @param {*} message
+     * @returns
+     */
+    sendMedia = async (number, mediaUrl, text) => {
+        const fileDownloaded = await generalDownload(mediaUrl)
+        const mimeType = mime.lookup(fileDownloaded)
+
+        if (mimeType.includes('image')) return this.sendImage(number, fileDownloaded, text)
+        if (mimeType.includes('video')) return this.sendVideo(number, fileDownloaded)
+        if (mimeType.includes('audio')) return this.sendAudio(number, fileDownloaded)
+
+        return this.sendFile(number, fileDownloaded)
+    }
+
+    /**
      *
      * @param {*} userId
      * @param {*} message
@@ -164,8 +239,7 @@ class WebWhatsappProvider extends ProviderClass {
      */
     sendMessage = async (userId, message, { options }) => {
         const number = wwebCleanNumber(userId)
-        if (options?.buttons?.length)
-            return this.sendButtons(number, message, options.buttons)
+        if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
         if (options?.media) return this.sendMedia(number, options.media)
         return this.sendText(number, message)
     }

@@ -1,4 +1,5 @@
 /node_modules
+/packages/repl
 /packages/*/starters
 /packages/*/node_modules
 /packages/*/dist
@@ -14,6 +15,10 @@ mediaSend/*
 !mediaSend/nota-de-voz.mp3
 .env
 .wwebjs_auth
+/session
+/session/*
+/tokens
+/tokens/*
 packages/cli/config.json
 config.json
 .yarnrc.yml
@@ -38,3 +43,4 @@ yarn-error.log
 .npmrc
 # Local Netlify folder
 .netlify
+.secrets
