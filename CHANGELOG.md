@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.21](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.20...v0.1.21) (2023-02-12)
+
+
+### Features
+
+* **provider:** :bug: add_location ([a46a9ef](https://github.com/leifermendez/bot-whatsapp/commit/a46a9efd8dbd921c773395d331154dc9a8aae783))
+* **provider:** :rocket: feat Instance provider ([2278149](https://github.com/leifermendez/bot-whatsapp/commit/227814929561cedc11a1f69c8029515a7f47c9ff))
+* **provider:** :rocket: provider raw ([2d44a00](https://github.com/leifermendez/bot-whatsapp/commit/2d44a002ff226fb0eb7362ad49936f1e00b84242))
+* **provider:** :zap: add location provider ([c7de860](https://github.com/leifermendez/bot-whatsapp/commit/c7de860803fb362f5afe06cc38ad71b2c316d524))
+* **provider:** :zap: add location provider ([c0ece6f](https://github.com/leifermendez/bot-whatsapp/commit/c0ece6feb2b0325476880a604c32de341eb60544))
+* **provider:** :zap: support location � ([a147677](https://github.com/leifermendez/bot-whatsapp/commit/a147677a26b36bba429c3dd3c2c81a44a7a4d2b6))
+
+
+### Bug Fixes
+
+* arreglando dir y varios mensajes en dialog flow essential ([01c7db8](https://github.com/leifermendez/bot-whatsapp/commit/01c7db8fe7dda2482eb0aa1fd7b3469b6ae8eae1))
+
 ### [0.1.20](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.19...v0.1.20) (2023-02-05)
 
 

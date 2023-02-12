@@ -118,7 +118,15 @@ class BaileysProvider extends ProviderClass {
                 let payload = {
                     ...messageCtx,
                     body: messageCtx?.message?.extendedTextMessage?.text ?? messageCtx?.message?.conversation,
+
                     from: messageCtx?.key?.remoteJid,
+                }
+
+                if (messageCtx.message.locationMessage) {
+                    const { degreesLatitude, degreesLongitude } = messageCtx.message.locationMessage
+                    if (typeof degreesLatitude === 'number' && typeof degreesLongitude === 'number') {
+                        payload = { ...payload, body: `#CURRENT_LOCATION#` }
+                    }
                 }
 
                 if (payload.from === 'status@broadcast') return
@@ -147,6 +155,11 @@ class BaileysProvider extends ProviderClass {
             this.vendor.ev.on(event, func)
         }
     }
+
+    /**
+     * Funcion SendRaw envia opciones directamente del proveedor
+     * @example await sendMessage('+XXXXXXXXXXX', 'Hello World')
+     */
 
     /**
      * @alpha
@@ -204,10 +217,10 @@ class BaileysProvider extends ProviderClass {
      * @example await sendMessage('+XXXXXXXXXXX', 'audio.mp3')
      */
 
-    sendAudio = async (number, audioUrl, voiceNote = false) => {
+    sendAudio = async (number, audioUrl) => {
         return this.vendor.sendMessage(number, {
             audio: { url: audioUrl },
-            ptt: voiceNote,
+            ptt: true,
         })
     }
 
@@ -273,6 +286,7 @@ class BaileysProvider extends ProviderClass {
      * @param {string} message
      * @example await sendMessage('+XXXXXXXXXXX', 'Hello World')
      */
+
     sendMessage = async (numberIn, message, { options }) => {
         const number = baileyCleanNumber(numberIn)
 

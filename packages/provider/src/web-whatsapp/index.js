@@ -90,6 +90,9 @@ class WebWhatsappProvider extends ProviderClass {
                     return
                 }
                 payload.from = wwebCleanNumber(payload.from, true)
+                if (payload._data.lat && payload._data.lng) {
+                    payload = { ...payload, body: `#CURRENT_LOCATION#` }
+                }
                 this.emit('message', payload)
             },
         },
@@ -225,6 +228,14 @@ class WebWhatsappProvider extends ProviderClass {
         return this.sendFile(number, fileDownloaded)
     }
 
+    /**
+     * Funcion SendRaw envia opciones directamente del proveedor
+     * @param {string} number
+     * @param {string} message
+     * @example await sendMessage('+XXXXXXXXXXX', 'Hello World')
+     */
+
+    sendRaw = () => this.vendor.sendMessage
     /**
      *
      * @param {*} userId

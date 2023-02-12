@@ -104,11 +104,19 @@ class DialogFlowContext extends CoreClass {
             return
         }
 
-        const ctxFromDX = {
+        /* const ctxFromDX = {
             answer: queryResult?.fulfillmentText,
-        }
+        } */
 
-        this.sendFlowSimple([ctxFromDX], from)
+        const messagesFromCX = queryResult['fulfillmentMessages']
+            .map((a) => {
+                if (a.message === 'text') {
+                    return { answer: a.text.text[0] }
+                }
+            })
+            .filter((e) => e)
+
+        this.sendFlowSimple(messagesFromCX, from)
     }
 }
 

@@ -30,7 +30,6 @@ class MongoAdapter {
 
     save = async (ctx) => {
         await this.db.collection('history').insert(ctx)
-        console.log('Guardando DB...', ctx)
         this.listHistory.push(ctx)
     }
 }
