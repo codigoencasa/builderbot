@@ -1,4 +1,4 @@
-const MOCK_DB = require('../packages/database/src/json')
+const MOCK_DB = require('../packages/database/src/mock')
 const PROVIDER_DB = require('../packages/provider/src/mock')
 
 class MOCK_FLOW {
