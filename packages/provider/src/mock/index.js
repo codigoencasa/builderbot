@@ -1,20 +1,20 @@
-const { ProviderClass } = require('@bot-whatsapp/bot')
+const { ProviderClass } = require('../../../bot')
+
+function delay(ms) {
+    return new Promise((res) => setTimeout(res, ms))
+}
 
 class MockProvider extends ProviderClass {
     constructor() {
         super()
     }
 
-    delaySendMessage = (miliseconds, eventName, payload) =>
-        new Promise((res) =>
-            setTimeout(() => {
-                this.emit(eventName, payload)
-                res
-            }, miliseconds)
-        )
+    delaySendMessage = async (miliseconds, eventName, payload) => {
+        await delay(miliseconds)
+        this.emit(eventName, payload)
+    }
 
     sendMessage = async (userId, message) => {
-        console.log(`Enviando... ${userId}, ${message}`)
         return Promise.resolve({ userId, message })
     }
 }

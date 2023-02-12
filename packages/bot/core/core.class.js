@@ -84,7 +84,7 @@ class CoreClass {
                 from,
                 prevRef: prevMsg.refSerialize,
             })
-            this.databaseClass.save(ctxByNumber)
+            await this.databaseClass.save(ctxByNumber)
         }
 
         // 📄 Crar CTX de mensaje (uso private)
@@ -110,13 +110,16 @@ class CoreClass {
         }
 
         // 📄 Finalizar flujo
-        const endFlow = async (message = null) => {
-            endFlowFlag = true
-            if (message) this.sendProviderAndSave(from, createCtxMessage(message))
-            clearQueue()
-            sendFlow([])
-            return
-        }
+        const endFlow =
+            (flag) =>
+            async (message = null) => {
+                flag.endFlow = true
+                endFlowFlag = true
+                if (message) this.sendProviderAndSave(from, createCtxMessage(message))
+                clearQueue()
+                sendFlow([])
+                return
+            }
 
         // 📄 Esta funcion se encarga de enviar un array de mensajes dentro de este ctx
         const sendFlow = async (messageToSend, numberOrId, options = { prev: prevMsg }) => {
@@ -127,67 +130,67 @@ class CoreClass {
                 if (endFlowFlag) return
                 const delayMs = ctxMessage?.options?.delay || 0
                 if (delayMs) await delay(delayMs)
-                QueuePrincipal.enqueue(() =>
-                    Promise.all([
-                        this.sendProviderAndSave(numberOrId, ctxMessage).then(() => resolveCbEveryCtx(ctxMessage)),
-                    ])
+                await QueuePrincipal.enqueue(() =>
+                    this.sendProviderAndSave(numberOrId, ctxMessage).then(() => resolveCbEveryCtx(ctxMessage))
                 )
             }
             return Promise.all(queue)
         }
 
-        // 📄 [options: fallBack]: esta funcion se encarga de repetir el ultimo mensaje
-        const fallBack = async (validation = false, message = null) => {
-            QueuePrincipal.queue = []
+        const continueFlow = async () => {
+            const currentPrev = await this.databaseClass.getPrevByNumber(from)
+            const nextFlow = (await this.flowClass.find(refToContinue?.ref, true)) ?? []
+            const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
+            const isContinueFlow = filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)
 
-            if (validation) {
-                const currentPrev = await this.databaseClass.getPrevByNumber(from)
-                const nextFlow = await this.flowClass.find(refToContinue?.ref, true)
-                const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
-
-                return sendFlow(filterNextFlow, from, { prev: undefined })
+            if (!isContinueFlow) {
+                const refToContinueChild = this.flowClass.getRefToContinueChild(currentPrev?.keyword)
+                const flowStandaloneChild = this.flowClass.getFlowsChild()
+                const nextChildMessages =
+                    (await this.flowClass.find(refToContinueChild?.ref, true, flowStandaloneChild)) || []
+                if (nextChildMessages?.length) return await sendFlow(nextChildMessages, from, { prev: undefined })
             }
 
-            await this.sendProviderAndSave(from, {
-                ...prevMsg,
-                answer: typeof message === 'string' ? message : message?.body ?? prevMsg.answer,
-                options: {
-                    ...prevMsg.options,
-                    buttons: prevMsg.options?.buttons,
-                },
-            })
-            return
+            if (!isContinueFlow) {
+                await sendFlow(filterNextFlow, from, { prev: undefined })
+                return
+            }
         }
+        // 📄 [options: fallBack]: esta funcion se encarga de repetir el ultimo mensaje
+        const fallBack =
+            (flag) =>
+            async (message = null) => {
+                QueuePrincipal.queue = []
+                flag.fallBack = true
+                await this.sendProviderAndSave(from, {
+                    ...prevMsg,
+                    answer: typeof message === 'string' ? message : message?.body ?? prevMsg.answer,
+                    options: {
+                        ...prevMsg.options,
+                        buttons: prevMsg.options?.buttons,
+                    },
+                })
+                return
+            }
 
         // 📄 [options: flowDynamic]: esta funcion se encarga de responder un array de respuesta esta limitado a 5 mensajes
         // para evitar bloque de whatsapp
 
-        const flowDynamic = async (listMsg = []) => {
-            if (!Array.isArray(listMsg)) listMsg = [listMsg]
+        const flowDynamic =
+            (flag) =>
+            async (listMsg = []) => {
+                flag.flowDynamic = true
+                if (!Array.isArray(listMsg)) listMsg = [listMsg]
 
-            const parseListMsg = listMsg.map((opt, index) => createCtxMessage(opt, index))
-            const currentPrev = await this.databaseClass.getPrevByNumber(from)
+                const parseListMsg = listMsg.map((opt, index) => createCtxMessage(opt, index))
 
-            const skipContinueFlow = async () => {
-                const nextFlow = await this.flowClass.find(refToContinue?.ref, true)
-                const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
-                const isContinueFlow = filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)
-                return {
-                    continue: !isContinueFlow,
-                    contexts: filterNextFlow,
+                if (endFlowFlag) return
+                for (const msg of parseListMsg) {
+                    await this.sendProviderAndSave(from, msg)
                 }
+                await continueFlow()
+                return
             }
-
-            if (endFlowFlag) return
-            for (const msg of parseListMsg) {
-                await this.sendProviderAndSave(from, msg)
-            }
-
-            const continueFlowData = await skipContinueFlow()
-
-            if (continueFlowData.continue) return sendFlow(continueFlowData.contexts, from, { prev: undefined })
-            return
-        }
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback o fallback
         const resolveCbEveryCtx = async (ctxMessage) => {
@@ -196,15 +199,29 @@ class CoreClass {
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback y ejecutarlo
         const cbEveryCtx = async (inRef) => {
+            let flags = {
+                endFlow: false,
+                fallBack: false,
+                flowDynamic: false,
+                wait: true,
+            }
+
             const provider = this.providerClass
 
             if (!this.flowClass.allCallbacks[inRef]) return Promise.resolve()
-            return this.flowClass.allCallbacks[inRef](messageCtxInComming, {
+
+            const argsCb = {
                 provider,
-                fallBack,
-                flowDynamic,
-                endFlow,
-            })
+                fallBack: fallBack(flags),
+                flowDynamic: flowDynamic(flags),
+                endFlow: endFlow(flags),
+            }
+
+            await this.flowClass.allCallbacks[inRef](messageCtxInComming, argsCb)
+            const wait = !(!flags.endFlow && !flags.fallBack && !flags.flowDynamic)
+            if (!wait) await continueFlow()
+
+            return
         }
 
         // 📄🤘(tiene return) [options: nested(array)]: Si se tiene flujos hijos los implementa
@@ -216,7 +233,7 @@ class CoreClass {
 
             msgToSend = this.flowClass.find(body, false, flowStandalone) || []
 
-            sendFlow(msgToSend, from)
+            await sendFlow(msgToSend, from)
             return
         }
 
@@ -226,7 +243,7 @@ class CoreClass {
 
             if (typeCapture === 'boolean' && fallBackFlag) {
                 msgToSend = this.flowClass.find(refToContinue?.ref, true) || []
-                sendFlow(msgToSend, from)
+                await sendFlow(msgToSend, from)
                 return
             }
         }
@@ -241,11 +258,11 @@ class CoreClass {
      * @param {*} ctxMessage ver más en GLOSSARY.md
      * @returns
      */
-    sendProviderAndSave = (numberOrId, ctxMessage) => {
+    sendProviderAndSave = async (numberOrId, ctxMessage) => {
         const { answer } = ctxMessage
-        return this.providerClass
-            .sendMessage(numberOrId, answer, ctxMessage)
-            .then(() => this.databaseClass.save({ ...ctxMessage, from: numberOrId }))
+        await this.providerClass.sendMessage(numberOrId, answer, ctxMessage)
+        await this.databaseClass.save({ ...ctxMessage, from: numberOrId })
+        return
     }
 
     /**
