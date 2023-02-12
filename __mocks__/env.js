@@ -16,14 +16,25 @@ class MOCK_FLOW {
     findIndexByRef = () => 0
 }
 
+const cleaName = (name) => {
+    name = name.toLowerCase()
+    name = name.replaceAll(' ', '-')
+    name = name.replaceAll(':', '-')
+    name = name.replaceAll('"', '-')
+    return name
+}
+
 /**
  * Preparar env para el test
  * @param {*} context
  */
 const setup = async (context) => {
+    const name = cleaName(`${context.__suite__}-${context.__test__}`)
+    const filename = `test-${name}.json`
     context.provider = new PROVIDER_DB()
-    context.database = new MOCK_DB()
+    context.database = new MOCK_DB({ filename })
     context.flow = new MOCK_FLOW()
+    await delay(10)
 }
 
 const clear = async (context) => {

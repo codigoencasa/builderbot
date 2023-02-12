@@ -76,7 +76,7 @@ suiteCase(`Debe retornar un mensaje resumen`, async ({ database, provider }) => 
         body: '100',
     })
 
-    await delay(500)
+    await delay(1000)
     const getHistory = database.listHistory.map((i) => i.answer)
     assert.is(MOCK_VALUES[0], getHistory[0])
     assert.is('¿Cual es tu nombre?', getHistory[1])

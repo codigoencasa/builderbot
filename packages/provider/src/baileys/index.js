@@ -118,7 +118,15 @@ class BaileysProvider extends ProviderClass {
                 let payload = {
                     ...messageCtx,
                     body: messageCtx?.message?.extendedTextMessage?.text ?? messageCtx?.message?.conversation,
+
                     from: messageCtx?.key?.remoteJid,
+                }
+
+                if (messageCtx.message.locationMessage) {
+                    const { degreesLatitude, degreesLongitude } = messageCtx.message.locationMessage
+                    if (typeof degreesLatitude === 'number' && typeof degreesLongitude === 'number') {
+                        payload = { ...payload, body: `#CURRENT_LOCATION#` }
+                    }
                 }
 
                 if (payload.from === 'status@broadcast') return

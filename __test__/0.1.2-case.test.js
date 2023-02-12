@@ -26,7 +26,7 @@ suiteCase(`Responder a una expresion regular`, async ({ database, provider }) =>
         body: '374245455400126',
     })
 
-    await delay(10)
+    await delay(100)
 
     assert.is('Gracias por proporcionar un numero de tarjeta valido', database.listHistory[0].answer)
     assert.is('Fin!', database.listHistory[1].answer)
@@ -50,7 +50,7 @@ suiteCase(`NO Responder a una expresion regular`, async ({ database, provider })
         body: 'hola',
     })
 
-    await delay(10)
+    await delay(100)
 
     assert.is(undefined, database.listHistory[0])
     assert.is(undefined, database.listHistory[1])

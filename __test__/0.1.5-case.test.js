@@ -46,7 +46,7 @@ suiteCase(`Detener el flujo`, async ({ database, provider }) => {
         body: 'hola',
     })
 
-    await delay(500)
+    await delay(900)
     const getHistory = database.listHistory.map((i) => i.answer)
     assert.is(MOCK_VALUES[0], getHistory[0])
 
@@ -81,7 +81,7 @@ suiteCase(`Detener el flujo flowDynamic`, async ({ database, provider }) => {
         body: 'hola',
     })
 
-    await delay(10)
+    await delay(100)
     const getHistory = database.listHistory.map((i) => i.answer)
     assert.is('Buenas!', getHistory[0])
     assert.is('Continuamos...', getHistory[1])
@@ -148,7 +148,7 @@ suiteCase(`flowDynamic con capture`, async ({ database, provider }) => {
         body: '18',
     })
 
-    await delay(500)
+    await delay(900)
     const getHistory = database.listHistory.map((i) => i.answer)
     assert.is(MOCK_VALUES[0], getHistory[0])
     assert.is('this is not email value', getHistory[1])
