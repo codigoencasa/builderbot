@@ -10,6 +10,7 @@ const logger = new Console({
 
 const { generalDownload } = require('../../common/download')
 const mime = require('mime-types')
+const { generateRefprovider } = require('../../common/hash')
 
 /**
  * ⚙️ WebWhatsappProvider: Es una clase tipo adaptor
@@ -91,8 +92,13 @@ class WebWhatsappProvider extends ProviderClass {
                 }
                 payload.from = wwebCleanNumber(payload.from, true)
                 if (payload._data.lat && payload._data.lng) {
-                    payload = { ...payload, body: `#CURRENT_LOCATION#` }
+                    payload = { ...payload, body: generateRefprovider('_event_location_') }
                 }
+
+                if (payload._data.hasOwnProperty('type') && ['image', 'video'].includes(payload._data.type)) {
+                    payload = { ...payload, body: generateRefprovider('_event_media_') }
+                }
+
                 this.emit('message', payload)
             },
         },

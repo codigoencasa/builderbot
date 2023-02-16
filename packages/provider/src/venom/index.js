@@ -11,6 +11,7 @@ const logger = new Console({
 })
 
 const { generalDownload } = require('../../common/download')
+const { generateRefprovider } = require('../../common/hash')
 
 /**
  * ⚙️ VenomProvider: Es una clase tipo adaptor
@@ -89,11 +90,16 @@ class VenomProvider extends ProviderClass {
                     return
                 }
                 payload.from = venomCleanNumber(payload.from, true)
+
+                if (payload.hasOwnProperty('type') && ['image', 'video'].includes(payload.type)) {
+                    payload = { ...payload, body: generateRefprovider('_event_media_') }
+                }
+
                 if (payload.hasOwnProperty('lat') && payload.hasOwnProperty('lng')) {
                     const lat = payload.lat
                     const lng = payload.lng
                     if (lat !== '' && lng !== '') {
-                        payload = { ...payload, body: `#CURRENT_LOCATION#` }
+                        payload = { ...payload, body: generateRefprovider('_event_location_') }
                     }
                 }
                 this.emit('message', payload)

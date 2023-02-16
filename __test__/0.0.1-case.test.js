@@ -1,6 +1,6 @@
 const { suite } = require('uvu')
 const assert = require('uvu/assert')
-const { addKeyword, createBot, createFlow } = require('../packages/bot/index')
+const { addKeyword, createBot, createFlow, EVENTS } = require('../packages/bot/index')
 const { setup, clear, delay } = require('../__mocks__/env')
 
 const suiteCase = suite('Flujo: Provider envia un location')
@@ -8,8 +8,8 @@ const suiteCase = suite('Flujo: Provider envia un location')
 suiteCase.before.each(setup)
 suiteCase.after.each(clear)
 
-suiteCase(`Responder a "CURRENT_LOCATION"`, async ({ database, provider }) => {
-    const flow = addKeyword('#CURRENT_LOCATION#').addAnswer('Gracias por tu location')
+suiteCase(`Responder a "EVENTS.LOCATION"`, async ({ database, provider }) => {
+    const flow = addKeyword(EVENTS.LOCATION).addAnswer('Gracias por tu location')
 
     createBot({
         database,
@@ -19,7 +19,7 @@ suiteCase(`Responder a "CURRENT_LOCATION"`, async ({ database, provider }) => {
 
     await provider.delaySendMessage(0, 'message', {
         from: '000',
-        body: '#CURRENT_LOCATION#',
+        body: '_event_location__f405d946-cf07-uutt-l7e0-b6d475bc7f81',
     })
 
     await delay(200)

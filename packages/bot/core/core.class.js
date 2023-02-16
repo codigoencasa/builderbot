@@ -4,6 +4,8 @@ const { delay } = require('../utils/delay')
 const Queue = require('../utils/queue')
 const { Console } = require('console')
 const { createWriteStream } = require('fs')
+const { REGEX_EVENT_LOCATION } = require('../io/events/eventLocation')
+const { REGEX_EVENT_MEDIA } = require('../io/events/eventMedia')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
@@ -21,7 +23,7 @@ class CoreClass {
     flowClass
     databaseClass
     providerClass
-    generalArgs = { blackList: [] }
+    generalArgs = { blackList: [], listEvents: {} }
     constructor(_flow, _database, _provider, _args) {
         this.flowClass = _flow
         this.databaseClass = _database
@@ -117,7 +119,6 @@ class CoreClass {
                 endFlowFlag = true
                 if (message) this.sendProviderAndSave(from, createCtxMessage(message))
                 clearQueue()
-                sendFlow([])
                 return
             }
 
@@ -249,7 +250,20 @@ class CoreClass {
         }
 
         msgToSend = this.flowClass.find(body) || []
-        sendFlow(msgToSend, from)
+        if (msgToSend.length) return sendFlow(msgToSend, from)
+
+        if (!prevMsg?.options?.capture) {
+            msgToSend = this.flowClass.find(this.generalArgs.listEvents.WELCOME) || []
+
+            if (REGEX_EVENT_LOCATION.test(body)) {
+                msgToSend = this.flowClass.find(this.generalArgs.listEvents.LOCATION) || []
+            }
+
+            if (REGEX_EVENT_MEDIA.test(body)) {
+                msgToSend = this.flowClass.find(this.generalArgs.listEvents.MEDIA) || []
+            }
+        }
+        return sendFlow(msgToSend, from)
     }
 
     /**
