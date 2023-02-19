@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.22](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.21...v0.1.22) (2023-02-19)
+
+
+### Features
+
+* :sparkles: list Eventos ([7a5c4a2](https://github.com/leifermendez/bot-whatsapp/commit/7a5c4a2c415edd1f41e7830f257e5ef55f98764b))
+* :zap: events list ([cd47cc5](https://github.com/leifermendez/bot-whatsapp/commit/cd47cc5f849e7b9fa04b20b75f251df3418734c9))
+* **provider:** :zap: add listener EVENTS ([d3ce1e0](https://github.com/leifermendez/bot-whatsapp/commit/d3ce1e0f718ac573a562e84bd64b59fa0e4f23a0))
+
 ### [0.1.21](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.20...v0.1.21) (2023-02-12)
 
 
