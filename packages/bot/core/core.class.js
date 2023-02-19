@@ -4,9 +4,7 @@ const { delay } = require('../utils/delay')
 const Queue = require('../utils/queue')
 const { Console } = require('console')
 const { createWriteStream } = require('fs')
-const { REGEX_EVENT_LOCATION } = require('../io/events/eventLocation')
-const { REGEX_EVENT_MEDIA } = require('../io/events/eventMedia')
-const { REGEX_EVENT_DOCUMENT } = require('../io/events/eventDocument')
+const { LIST_REGEX } = require('../io/events')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
@@ -256,16 +254,20 @@ class CoreClass {
         if (!prevMsg?.options?.capture) {
             msgToSend = this.flowClass.find(this.generalArgs.listEvents.WELCOME) || []
 
-            if (REGEX_EVENT_LOCATION.test(body)) {
+            if (LIST_REGEX.REGEX_EVENT_LOCATION.test(body)) {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.LOCATION) || []
             }
 
-            if (REGEX_EVENT_MEDIA.test(body)) {
+            if (LIST_REGEX.REGEX_EVENT_MEDIA.test(body)) {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.MEDIA) || []
             }
 
-            if (REGEX_EVENT_DOCUMENT.test(body)) {
+            if (LIST_REGEX.REGEX_EVENT_DOCUMENT.test(body)) {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.DOCUMENT) || []
+            }
+
+            if (LIST_REGEX.REGEX_EVENT_VOICE_NOTE.test(body)) {
+                msgToSend = this.flowClass.find(this.generalArgs.listEvents.VOICE_NOTE) || []
             }
         }
         return sendFlow(msgToSend, from)

@@ -95,6 +95,14 @@ class VenomProvider extends ProviderClass {
                     payload = { ...payload, body: generateRefprovider('_event_media_') }
                 }
 
+                if (payload.hasOwnProperty('type') && ['document'].includes(payload.type)) {
+                    payload = { ...payload, body: generateRefprovider('_event_document_') }
+                }
+
+                if (payload.hasOwnProperty('type') && ['ptt'].includes(payload.type)) {
+                    payload = { ...payload, body: generateRefprovider('_event_voice_note_') }
+                }
+
                 if (payload.hasOwnProperty('lat') && payload.hasOwnProperty('lng')) {
                     const lat = payload.lat
                     const lng = payload.lng

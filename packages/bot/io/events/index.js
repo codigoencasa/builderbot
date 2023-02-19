@@ -1,7 +1,7 @@
-const { eventDocument } = require('./eventDocument')
-const { eventLocation } = require('./eventLocation')
-const { eventMedia } = require('./eventMedia')
-const { eventVoiceNote } = require('./eventVoiceNote')
+const { eventDocument, REGEX_EVENT_DOCUMENT } = require('./eventDocument')
+const { eventLocation, REGEX_EVENT_LOCATION } = require('./eventLocation')
+const { eventMedia, REGEX_EVENT_MEDIA } = require('./eventMedia')
+const { eventVoiceNote, REGEX_EVENT_VOICE_NOTE } = require('./eventVoiceNote')
 const { eventWelcome } = require('./eventWelcome')
 
 const LIST_ALL = {
@@ -12,4 +12,11 @@ const LIST_ALL = {
     VOICE_NOTE: eventVoiceNote(),
 }
 
-module.exports = LIST_ALL
+const LIST_REGEX = {
+    REGEX_EVENT_DOCUMENT,
+    REGEX_EVENT_LOCATION,
+    REGEX_EVENT_MEDIA,
+    REGEX_EVENT_VOICE_NOTE,
+}
+
+module.exports = { LIST_ALL, LIST_REGEX }

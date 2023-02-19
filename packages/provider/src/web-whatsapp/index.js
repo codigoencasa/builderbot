@@ -46,7 +46,7 @@ class WebWhatsappProvider extends ProviderClass {
             this.emit('require_action', {
                 instructions: [
                     `(Opcion 1): Debes eliminar la carpeta .wwebjs_auth y reiniciar nuevamente el bot. `,
-                    `(Opcion 2): Intenta actualizar el paquete [npm install whatsapp-web.js] `,
+                    `(Opcion 2): Ejecutar este comando "npm install whatsapp-web.js@latest" `,
                     `(Opcion 3): Ir FORO de discord https://link.codigoencasa.com/DISCORD `,
                 ],
             })
@@ -97,6 +97,14 @@ class WebWhatsappProvider extends ProviderClass {
 
                 if (payload._data.hasOwnProperty('type') && ['image', 'video'].includes(payload._data.type)) {
                     payload = { ...payload, body: generateRefprovider('_event_media_') }
+                }
+
+                if (payload._data.hasOwnProperty('type') && ['document'].includes(payload._data.type)) {
+                    payload = { ...payload, body: generateRefprovider('_event_document_') }
+                }
+
+                if (payload._data.hasOwnProperty('type') && ['ptt'].includes(payload._data.type)) {
+                    payload = { ...payload, body: generateRefprovider('_event_voice_note_') }
                 }
 
                 this.emit('message', payload)
