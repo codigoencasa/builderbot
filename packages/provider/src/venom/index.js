@@ -19,7 +19,7 @@ const { generateRefprovider } = require('../../common/hash')
  * https://github.com/orkestral/venom
  */
 class VenomProvider extends ProviderClass {
-    globalVendorArgs = { name: `bot` }
+    globalVendorArgs = { name: `bot`, gifPlayback: false }
     vendor
     constructor(args) {
         super()

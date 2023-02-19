@@ -18,7 +18,7 @@ const { generateRefprovider } = require('../../common/hash')
  * https://github.com/pedroslopez/whatsapp-web.js
  */
 class WebWhatsappProvider extends ProviderClass {
-    globalVendorArgs = { name: `bot` }
+    globalVendorArgs = { name: `bot`, gifPlayback: false }
     vendor
     constructor(args) {
         super()

@@ -24,7 +24,7 @@ const logger = new Console({
  * https://github.com/adiwajshing/Baileys
  */
 class BaileysProvider extends ProviderClass {
-    globalVendorArgs = { name: `bot` }
+    globalVendorArgs = { name: `bot`, gifPlayback: false }
     vendor
     saveCredsGlobal = null
     constructor(args) {
@@ -136,6 +136,11 @@ class BaileysProvider extends ProviderClass {
                     payload = { ...payload, body: generateRefprovider('_event_media_') }
                 }
 
+                //Detectar file
+                if (messageCtx.message?.documentMessage) {
+                    payload = { ...payload, body: generateRefprovider('_event_document_') }
+                }
+
                 if (payload.from === 'status@broadcast') return
 
                 if (payload?.key?.fromMe) return
@@ -211,7 +216,7 @@ class BaileysProvider extends ProviderClass {
         return this.vendor.sendMessage(number, {
             video: readFileSync(filePath),
             caption: text,
-            gifPlayback: true,
+            gifPlayback: this.globalVendorArgs.gifPlayback,
         })
     }
 

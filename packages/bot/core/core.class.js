@@ -6,6 +6,7 @@ const { Console } = require('console')
 const { createWriteStream } = require('fs')
 const { REGEX_EVENT_LOCATION } = require('../io/events/eventLocation')
 const { REGEX_EVENT_MEDIA } = require('../io/events/eventMedia')
+const { REGEX_EVENT_DOCUMENT } = require('../io/events/eventDocument')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
@@ -261,6 +262,10 @@ class CoreClass {
 
             if (REGEX_EVENT_MEDIA.test(body)) {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.MEDIA) || []
+            }
+
+            if (REGEX_EVENT_DOCUMENT.test(body)) {
+                msgToSend = this.flowClass.find(this.generalArgs.listEvents.DOCUMENT) || []
             }
         }
         return sendFlow(msgToSend, from)
