@@ -12,6 +12,7 @@ const { default: makeWASocket, useMultiFileAuthState, Browsers, DisconnectReason
 const { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber } = require('./utils')
 
 const { generalDownload } = require('../../common/download')
+const { generateRefprovider } = require('../../common/hash')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/baileys.log`),
@@ -23,7 +24,7 @@ const logger = new Console({
  * https://github.com/adiwajshing/Baileys
  */
 class BaileysProvider extends ProviderClass {
-    globalVendorArgs = { name: `bot` }
+    globalVendorArgs = { name: `bot`, gifPlayback: false }
     vendor
     saveCredsGlobal = null
     constructor(args) {
@@ -122,11 +123,29 @@ class BaileysProvider extends ProviderClass {
                     from: messageCtx?.key?.remoteJid,
                 }
 
+                //Detectar location
                 if (messageCtx.message.locationMessage) {
                     const { degreesLatitude, degreesLongitude } = messageCtx.message.locationMessage
                     if (typeof degreesLatitude === 'number' && typeof degreesLongitude === 'number') {
-                        payload = { ...payload, body: `#CURRENT_LOCATION#` }
+                        payload = { ...payload, body: generateRefprovider('_event_location_') }
                     }
+                }
+
+                console.log(messageCtx.message)
+
+                //Detectar media
+                if (messageCtx.message?.imageMessage) {
+                    payload = { ...payload, body: generateRefprovider('_event_media_') }
+                }
+
+                //Detectar file
+                if (messageCtx.message?.documentMessage) {
+                    payload = { ...payload, body: generateRefprovider('_event_document_') }
+                }
+
+                //Detectar voice note
+                if (messageCtx.message?.audioMessage) {
+                    payload = { ...payload, body: generateRefprovider('_event_voice_note_') }
                 }
 
                 if (payload.from === 'status@broadcast') return
@@ -204,7 +223,7 @@ class BaileysProvider extends ProviderClass {
         return this.vendor.sendMessage(number, {
             video: readFileSync(filePath),
             caption: text,
-            gifPlayback: true,
+            gifPlayback: this.globalVendorArgs.gifPlayback,
         })
     }
 

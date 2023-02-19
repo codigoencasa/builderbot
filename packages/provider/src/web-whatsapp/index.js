@@ -10,6 +10,7 @@ const logger = new Console({
 
 const { generalDownload } = require('../../common/download')
 const mime = require('mime-types')
+const { generateRefprovider } = require('../../common/hash')
 
 /**
  * ⚙️ WebWhatsappProvider: Es una clase tipo adaptor
@@ -17,7 +18,7 @@ const mime = require('mime-types')
  * https://github.com/pedroslopez/whatsapp-web.js
  */
 class WebWhatsappProvider extends ProviderClass {
-    globalVendorArgs = { name: `bot` }
+    globalVendorArgs = { name: `bot`, gifPlayback: false }
     vendor
     constructor(args) {
         super()
@@ -45,7 +46,7 @@ class WebWhatsappProvider extends ProviderClass {
             this.emit('require_action', {
                 instructions: [
                     `(Opcion 1): Debes eliminar la carpeta .wwebjs_auth y reiniciar nuevamente el bot. `,
-                    `(Opcion 2): Intenta actualizar el paquete [npm install whatsapp-web.js] `,
+                    `(Opcion 2): Ejecutar este comando "npm install whatsapp-web.js@latest" `,
                     `(Opcion 3): Ir FORO de discord https://link.codigoencasa.com/DISCORD `,
                 ],
             })
@@ -91,8 +92,21 @@ class WebWhatsappProvider extends ProviderClass {
                 }
                 payload.from = wwebCleanNumber(payload.from, true)
                 if (payload._data.lat && payload._data.lng) {
-                    payload = { ...payload, body: `#CURRENT_LOCATION#` }
+                    payload = { ...payload, body: generateRefprovider('_event_location_') }
                 }
+
+                if (payload._data.hasOwnProperty('type') && ['image', 'video'].includes(payload._data.type)) {
+                    payload = { ...payload, body: generateRefprovider('_event_media_') }
+                }
+
+                if (payload._data.hasOwnProperty('type') && ['document'].includes(payload._data.type)) {
+                    payload = { ...payload, body: generateRefprovider('_event_document_') }
+                }
+
+                if (payload._data.hasOwnProperty('type') && ['ptt'].includes(payload._data.type)) {
+                    payload = { ...payload, body: generateRefprovider('_event_voice_note_') }
+                }
+
                 this.emit('message', payload)
             },
         },
