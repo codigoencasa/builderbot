@@ -2,13 +2,15 @@ const CoreClass = require('./core/core.class')
 const ProviderClass = require('./provider/provider.class')
 const FlowClass = require('./io/flow.class')
 const { addKeyword, addAnswer, addChild, toSerialize } = require('./io/methods')
+const { LIST_ALL: EVENTS } = require('./io/events')
 
 /**
  * Crear instancia de clase Bot
  * @param {*} args
  * @returns
  */
-const createBot = async ({ flow, database, provider }, args = {}) => new CoreClass(flow, database, provider, args)
+const createBot = async ({ flow, database, provider }, args = {}) =>
+    new CoreClass(flow, database, provider, { ...args, listEvents: EVENTS })
 
 /**
  * Crear instancia de clase Io (Flow)
@@ -42,4 +44,5 @@ module.exports = {
     toSerialize,
     ProviderClass,
     CoreClass,
+    EVENTS,
 }
