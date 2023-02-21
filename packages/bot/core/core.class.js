@@ -173,6 +173,21 @@ class CoreClass {
                 return
             }
 
+        const gotoFlow =
+            (flag) =>
+            async (flowInstance, step = 0) => {
+                flag.gotoFlow = true
+                const flowTree = flowInstance.toJson()
+                const flowParentId = flowTree[step]
+                const parseListMsg = await this.flowClass.find(flowParentId?.ref, true, flowTree)
+                if (endFlowFlag) return
+                for (const msg of parseListMsg) {
+                    await this.sendProviderAndSave(from, msg)
+                }
+                await endFlow(flag)()
+                return
+            }
+
         // 📄 [options: flowDynamic]: esta funcion se encarga de responder un array de respuesta esta limitado a 5 mensajes
         // para evitar bloque de whatsapp
 
@@ -203,7 +218,7 @@ class CoreClass {
                 endFlow: false,
                 fallBack: false,
                 flowDynamic: false,
-                wait: true,
+                gotoFlow: false,
             }
 
             const provider = this.providerClass
@@ -215,11 +230,13 @@ class CoreClass {
                 fallBack: fallBack(flags),
                 flowDynamic: flowDynamic(flags),
                 endFlow: endFlow(flags),
+                gotoFlow: gotoFlow(flags),
             }
 
             await this.flowClass.allCallbacks[inRef](messageCtxInComming, argsCb)
-            const wait = !(!flags.endFlow && !flags.fallBack && !flags.flowDynamic)
-            if (!wait) await continueFlow()
+            //Si no hay llamado de fallaback y no hay llamado de flowDynamic y no hay llamado de enflow EL flujo continua
+            const ifContinue = !flags.endFlow && !flags.fallBack && !flags.flowDynamic
+            if (ifContinue) await continueFlow()
 
             return
         }
