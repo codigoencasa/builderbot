@@ -22,8 +22,13 @@
   "devDependencies": {
     "@builder.io/qwik": "0.16.1",
     "@builder.io/qwik-city": "0.0.128",
+    "@builder.io/qwik-react": "0.2.1",
+    "@emotion/react": "11.10.4",
+    "@emotion/styled": "11.10.4",
     "@fontsource/inter": "^4.5.14",
     "@iconify-json/tabler": "^1.1.49",
+    "@mui/material": "5.10.10",
+    "@mui/x-data-grid": "5.17.8",
     "@tailwindcss/aspect-ratio": "^0.4.0",
     "@tailwindcss/forms": "^0.5.3",
     "@tailwindcss/line-clamp": "^0.3.1",
@@ -31,6 +36,8 @@
     "@types/compression": "^1.7.2",
     "@types/eslint": "8.4.10",
     "@types/node": "latest",
+    "@types/react": "18.0.14",
+    "@types/react-dom": "18.0.5",
     "@typescript-eslint/eslint-plugin": "5.45.0",
     "@typescript-eslint/parser": "5.45.0",
     "autoprefixer": "10.4.13",
@@ -42,6 +49,8 @@
     "node-fetch": "^3.3.0",
     "postcss": "^8.4.19",
     "prettier": "2.8.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "rehype-autolink-headings": "^6.1.1",
     "subfont": "^6.12.2",
     "tailwindcss": "^3.1.8",
@@ -52,5 +61,8 @@
   },
   "engines": {
     "node": ">=17.0.0"
+  },
+  "dependencies": {
+    "@docsearch/react": "^3.3.3"
   }
 }

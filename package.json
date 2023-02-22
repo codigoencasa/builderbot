@@ -33,7 +33,6 @@
         "dev": "node ./example-app/app.js",
         "prepare": "npx husky install",
         "preinstall": "npx only-allow yarn",
-        "postinstall": "npx prettier --write .",
         "release": "standard-version -- --prerelease --global"
     },
     "workspaces": [
