@@ -114,7 +114,6 @@ class CoreClass {
         const endFlow =
             (flag) =>
             async (message = null) => {
-                console.log('Cuando??')
                 flag.endFlow = true
                 endFlowFlag = true
                 if (message) this.sendProviderAndSave(from, createCtxMessage(message))
