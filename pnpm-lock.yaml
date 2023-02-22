@@ -10,6 +10,7 @@ importers:
             '@rollup/plugin-json': ^5.0.2
             '@rollup/plugin-node-resolve': ^15.0.1
             '@rollup/plugin-replace': ^5.0.2
+            '@rollup/plugin-strip': ^3.0.2
             c8: ^7.13.0
             conventional-changelog: ^3.1.25
             cross-env: ^7.0.3
@@ -30,6 +31,8 @@ importers:
             semver: ^7.3.8
             standard-version: ^9.5.0
             uvu: ^0.5.6
+        dependencies:
+            '@rollup/plugin-strip': 3.0.2_rollup@3.17.2
         devDependencies:
             '@commitlint/cli': 17.4.4
             '@commitlint/config-conventional': 17.4.4
@@ -2666,7 +2669,6 @@ packages:
             {
                 integrity: sha512-XPSJHWmi394fuUuzDnGz1wiKqWfo1yXecHQMRf2l6hztTO+nPru658AyDngaBe7isIxEkRsPR3FZh+s7iVa4Uw==,
             }
-        dev: true
 
     /@jridgewell/trace-mapping/0.3.17:
         resolution:
@@ -3823,6 +3825,24 @@ packages:
             rollup: 3.17.2
         dev: true
 
+    /@rollup/plugin-strip/3.0.2_rollup@3.17.2:
+        resolution:
+            {
+                integrity: sha512-L8Whin/DB5XsLE586+xcud6yX/pMVUlfalA999uAsC+dtwmBHSiUwtAxMl3eVvykX3N5BhdeAjStqDlzMmfUXw==,
+            }
+        engines: { node: '>=14.0.0' }
+        peerDependencies:
+            rollup: ^1.20.0||^2.0.0||^3.0.0
+        peerDependenciesMeta:
+            rollup:
+                optional: true
+        dependencies:
+            '@rollup/pluginutils': 5.0.2_rollup@3.17.2
+            estree-walker: 2.0.2
+            magic-string: 0.27.0
+            rollup: 3.17.2
+        dev: false
+
     /@rollup/pluginutils/4.2.1:
         resolution:
             {
@@ -3867,7 +3887,6 @@ packages:
             estree-walker: 2.0.2
             picomatch: 2.3.1
             rollup: 3.17.2
-        dev: true
 
     /@samverschueren/stream-to-observable/0.3.1_rxjs@6.6.7:
         resolution:
@@ -4159,7 +4178,6 @@ packages:
             {
                 integrity: sha512-WulqXMDUTYAXCjZnk6JtIHPigp55cVtDgDrO2gHRwhyJto21+1zbVCtOYB2L1F9w4qCQ0rOGWBnBe0FNTiEJIQ==,
             }
-        dev: true
 
     /@types/express-serve-static-core/4.17.33:
         resolution:
@@ -9904,7 +9922,6 @@ packages:
             {
                 integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==,
             }
-        dev: true
 
     /estree-walker/3.0.3:
         resolution:
@@ -11042,7 +11059,6 @@ packages:
         engines: { node: ^8.16.0 || ^10.6.0 || >=11.0.0 }
         os: [darwin]
         requiresBuild: true
-        dev: true
         optional: true
 
     /function-bind/1.1.1:
@@ -14413,7 +14429,6 @@ packages:
         engines: { node: '>=12' }
         dependencies:
             '@jridgewell/sourcemap-codec': 1.4.14
-        dev: true
 
     /make-dir/1.3.0:
         resolution:
@@ -17110,7 +17125,6 @@ packages:
                 integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==,
             }
         engines: { node: '>=8.6' }
-        dev: true
 
     /pify/2.3.0:
         resolution:
@@ -18982,7 +18996,6 @@ packages:
         hasBin: true
         optionalDependencies:
             fsevents: 2.3.2
-        dev: true
 
     /run-async/2.4.1:
         resolution:
