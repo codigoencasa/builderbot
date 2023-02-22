@@ -131,8 +131,6 @@ class BaileysProvider extends ProviderClass {
                     }
                 }
 
-                console.log(messageCtx.message)
-
                 //Detectar media
                 if (messageCtx.message?.imageMessage) {
                     payload = { ...payload, body: generateRefprovider('_event_media_') }

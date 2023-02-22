@@ -10,6 +10,7 @@ export const RouterHead = component$(() => {
 
     return (
         <>
+
             <title>{head.title}</title>
 
             <link rel="canonical" href={loc.href} />
