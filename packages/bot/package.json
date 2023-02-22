@@ -22,8 +22,6 @@
     "license": "ISC",
     "devDependencies": {
         "@bot-whatsapp/cli": "*",
-        "@bot-whatsapp/database": "*",
-        "@bot-whatsapp/provider": "*",
         "kleur": "^4.1.5"
     },
     "dependencies": {
