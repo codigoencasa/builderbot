@@ -30,7 +30,7 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Add netlify
-              run: pnpm install netlify-cli -D
+              run: pnpm install netlify-cli -w
 
             - name: Create .env build file
               run: |
