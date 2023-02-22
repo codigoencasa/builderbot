@@ -18,11 +18,13 @@ jobs:
               id: vars
               run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
 
+            - uses: pnpm/action-setup@v2.2.4
+
             - name: Setup Node
               uses: actions/setup-node@v3
               with:
                   node-version: 16.x
-                  cache: 'yarn'
+                  cache: 'pnpm'
                   registry-url: https://registry.npmjs.org/
 
             - run: corepack enable
@@ -31,41 +33,41 @@ jobs:
               run: git config --global user.email "leifer.contacto@gmail.com" && git config --global user.name "Leifer Mendez"
 
             - name: Install NPM Dependencies
-              run: yarn install --immutable --network-timeout 300000
+              run: pnpm install --immutable --network-timeout 300000
 
             - name: Set CHANGELOG
-              run: yarn release
+              run: pnpm release
 
             - name: get-npm-version
               id: package-version
               uses: martinbeentjes/npm-get-version-action@main
 
             - name: Build Package
-              run: yarn build:full
+              run: pnpm build:full
 
             - name: Release @bot-whatsapp/bot
-              run: yarn node ./scripts/release.js --name=bot --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: pnpm node ./scripts/release.js --name=bot --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/cli
-              run: yarn node ./scripts/release.js --name=cli --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: pnpm node ./scripts/release.js --name=cli --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/create-bot-whatsapp
-              run: yarn node ./scripts/release.js --name=create-bot-whatsapp --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: pnpm node ./scripts/release.js --name=create-bot-whatsapp --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/database
-              run: yarn node ./scripts/release.js --name=database --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: pnpm node ./scripts/release.js --name=database --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/provider
-              run: yarn node ./scripts/release.js --name=provider --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: pnpm node ./scripts/release.js --name=provider --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/contexts
-              run: yarn node ./scripts/release.js --name=contexts --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: pnpm node ./scripts/release.js --name=contexts --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/portal
-              run: yarn node ./scripts/release.js --name=portal --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: pnpm node ./scripts/release.js --name=portal --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release Github
-              run: yarn node ./scripts/github.js --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.OCTO_TOKEN }}"
+              run: pnpm node ./scripts/github.js --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.OCTO_TOKEN }}"
 
             - name: Commit & Push changes
               uses: actions-js/push@master

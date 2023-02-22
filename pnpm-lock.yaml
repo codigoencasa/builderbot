@@ -23,7 +23,7 @@ importers:
             prettier: ^2.8.4
             pretty-quick: ^3.1.3
             prompts: ^2.4.2
-            rimraf: ^3.0.2
+            rimraf: ^4.1.2
             rollup: ^3.17.2
             rollup-plugin-cleanup: ^3.2.1
             rollup-plugin-copy: ^3.4.0
@@ -51,7 +51,7 @@ importers:
             prettier: 2.8.4
             pretty-quick: 3.1.3_prettier@2.8.4
             prompts: 2.4.2
-            rimraf: 3.0.2
+            rimraf: 4.1.2
             rollup: 3.17.2
             rollup-plugin-cleanup: 3.2.1_rollup@3.17.2
             rollup-plugin-copy: 3.4.0
@@ -72,11 +72,16 @@ importers:
 
     packages/cli:
         specifiers:
+            '@clack/prompts': ^0.5.0
             cross-env: ^7.0.3
             cross-spawn: ^7.0.3
             detect-package-manager: ^2.0.1
             kleur: ^4.1.5
+            picocolors: ^1.0.0
+        dependencies:
+            picocolors: 1.0.0
         devDependencies:
+            '@clack/prompts': 0.5.0
             cross-env: 7.0.3
             cross-spawn: 7.0.3
             detect-package-manager: 2.0.1
@@ -1638,6 +1643,29 @@ packages:
             undici: 5.14.0
         dev: true
 
+    /@clack/core/0.2.0:
+        resolution:
+            {
+                integrity: sha512-fFGxlUXCHGnfSVevr40991AEhuI0r+krziqWzGty5bx/9tfFDV22+z2WeNzf74VSlzbjI8bOu5KIbaQyDBGFWQ==,
+            }
+        dependencies:
+            picocolors: 1.0.0
+            sisteransi: 1.0.5
+        dev: true
+
+    /@clack/prompts/0.5.0:
+        resolution:
+            {
+                integrity: sha512-4XZeJ65dgpXk6k+KtJ6aWNu0uuwHatAp0nXacfBZM9hTrScv3OvqXzaEavz9fq10lrTXHvqLBJIaZJ/IjwGEwA==,
+            }
+        dependencies:
+            '@clack/core': 0.2.0
+            picocolors: 1.0.0
+            sisteransi: 1.0.5
+        dev: true
+        bundledDependencies:
+            - is-unicode-supported
+
     /@colors/colors/1.5.0:
         resolution:
             {
@@ -1762,13 +1790,13 @@ packages:
             '@types/node': 18.14.0
             chalk: 4.1.2
             cosmiconfig: 8.0.0
-            cosmiconfig-typescript-loader: 4.3.0_gcbe2vwfy4axboyq6f77rnqdui
+            cosmiconfig-typescript-loader: 4.3.0_ipkhww4xc5z2tt2x53vp2mt2be
             lodash.isplainobject: 4.0.6
             lodash.merge: 4.6.2
             lodash.uniq: 4.5.0
             resolve-from: 5.0.0
-            ts-node: 10.9.1_qxgdw2effbhrskuhsstxkzdqiq
-            typescript: 4.9.4
+            ts-node: 10.9.1_tncu2ai53lzgmizdedur7lbibe
+            typescript: 4.9.5
         transitivePeerDependencies:
             - '@swc/core'
             - '@swc/wasm'
@@ -7548,7 +7576,7 @@ packages:
             }
         dev: true
 
-    /cosmiconfig-typescript-loader/4.3.0_gcbe2vwfy4axboyq6f77rnqdui:
+    /cosmiconfig-typescript-loader/4.3.0_ipkhww4xc5z2tt2x53vp2mt2be:
         resolution:
             {
                 integrity: sha512-NTxV1MFfZDLPiBMjxbHRwSh5LaLcPMwNdCutmnHJCKoVnlvldPWlllonKwrsRJ5pYZBIBGRWWU2tfvzxgeSW5Q==,
@@ -7562,8 +7590,8 @@ packages:
         dependencies:
             '@types/node': 18.14.0
             cosmiconfig: 8.0.0
-            ts-node: 10.9.1_qxgdw2effbhrskuhsstxkzdqiq
-            typescript: 4.9.4
+            ts-node: 10.9.1_tncu2ai53lzgmizdedur7lbibe
+            typescript: 4.9.5
         dev: true
 
     /cosmiconfig/7.1.0:
@@ -17075,7 +17103,6 @@ packages:
             {
                 integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==,
             }
-        dev: true
 
     /picomatch/2.3.1:
         resolution:
@@ -18888,6 +18915,15 @@ packages:
         hasBin: true
         dependencies:
             glob: 7.2.3
+
+    /rimraf/4.1.2:
+        resolution:
+            {
+                integrity: sha512-BlIbgFryTbw3Dz6hyoWFhKk+unCcHMSkZGrTFVAx2WmttdBSonsdtRlwiuTbDqTKr+UlXIUqJVS4QT5tUzGENQ==,
+            }
+        engines: { node: '>=14' }
+        hasBin: true
+        dev: true
 
     /rollup-plugin-cleanup/3.2.1_rollup@3.17.2:
         resolution:
@@ -20906,6 +20942,40 @@ packages:
             yn: 3.1.1
         dev: true
 
+    /ts-node/10.9.1_tncu2ai53lzgmizdedur7lbibe:
+        resolution:
+            {
+                integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==,
+            }
+        hasBin: true
+        peerDependencies:
+            '@swc/core': '>=1.2.50'
+            '@swc/wasm': '>=1.2.50'
+            '@types/node': '*'
+            typescript: '>=2.7'
+        peerDependenciesMeta:
+            '@swc/core':
+                optional: true
+            '@swc/wasm':
+                optional: true
+        dependencies:
+            '@cspotcode/source-map-support': 0.8.1
+            '@tsconfig/node10': 1.0.9
+            '@tsconfig/node12': 1.0.11
+            '@tsconfig/node14': 1.0.3
+            '@tsconfig/node16': 1.0.3
+            '@types/node': 18.14.0
+            acorn: 8.8.2
+            acorn-walk: 8.2.0
+            arg: 4.1.3
+            create-require: 1.1.1
+            diff: 4.0.2
+            make-error: 1.3.6
+            typescript: 4.9.5
+            v8-compile-cache-lib: 3.0.1
+            yn: 3.1.1
+        dev: true
+
     /tsconfig-paths/4.1.2:
         resolution:
             {
@@ -21106,6 +21176,15 @@ packages:
         resolution:
             {
                 integrity: sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg==,
+            }
+        engines: { node: '>=4.2.0' }
+        hasBin: true
+        dev: true
+
+    /typescript/4.9.5:
+        resolution:
+            {
+                integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==,
             }
         engines: { node: '>=4.2.0' }
         hasBin: true
