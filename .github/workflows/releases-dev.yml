@@ -38,25 +38,25 @@ jobs:
               run: pnpm build:full
 
             - name: Release @bot-whatsapp/bot
-              run: pnpm node ./scripts/release.js --name=bot --version=  --token="${{ secrets.NPM_TOKEN }}"
+              run: node ./scripts/release.js --name=bot --version=  --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/cli
-              run: pnpm node ./scripts/release.js --name=cli --version=  --token="${{ secrets.NPM_TOKEN }}"
+              run: node ./scripts/release.js --name=cli --version=  --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/create-bot-whatsapp
-              run: pnpm node ./scripts/release.js --name=create-bot-whatsapp --version=  --token="${{ secrets.NPM_TOKEN }}"
+              run: node ./scripts/release.js --name=create-bot-whatsapp --version=  --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/database
-              run: pnpm node ./scripts/release.js --name=database --version=  --token="${{ secrets.NPM_TOKEN }}"
+              run: node ./scripts/release.js --name=database --version=  --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/provider
-              run: pnpm node ./scripts/release.js --name=provider --version=  --token="${{ secrets.NPM_TOKEN }}"
+              run: node ./scripts/release.js --name=provider --version=  --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/contexts
-              run: pnpm node ./scripts/release.js --name=contexts --version=  --token="${{ secrets.NPM_TOKEN }}"
+              run: node ./scripts/release.js --name=contexts --version=  --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/portal
-              run: pnpm node ./scripts/release.js --name=portal --version=  --token="${{ secrets.NPM_TOKEN }}"
+              run: node ./scripts/release.js --name=portal --version=  --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Commit & Push changes
               uses: actions-js/push@master
