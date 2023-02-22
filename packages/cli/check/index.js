@@ -1,7 +1,7 @@
 const { exec } = require('node:child_process')
 
 const checkNodeVersion = () => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         const version = process.version
         const majorVersion = parseInt(version.replace('v', '').split('.').shift())
         if (majorVersion < 16) {
