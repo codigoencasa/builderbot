@@ -33,7 +33,7 @@ jobs:
               run: git config --global user.email "leifer.contacto@gmail.com" && git config --global user.name "Leifer Mendez"
 
             - name: Install NPM Dependencies
-              run: pnpm install --immutable --network-timeout 300000
+              run: pnpm install --frozen-lockfile
 
             - name: Set CHANGELOG
               run: pnpm release
