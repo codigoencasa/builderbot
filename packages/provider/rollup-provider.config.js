@@ -1,5 +1,6 @@
 const banner = require('../../config/banner.rollup.json')
 const { join } = require('path')
+const strip = require('@rollup/plugin-strip')
 const commonjs = require('@rollup/plugin-commonjs')
 
 module.exports = [
@@ -9,8 +10,9 @@ module.exports = [
             banner: banner['banner.output'].join(''),
             file: join(__dirname, 'lib', 'web-whatsapp', 'index.cjs'),
             format: 'cjs',
+            sourcemap: true,
         },
-        plugins: [commonjs()],
+        plugins: [strip(), commonjs()],
     },
     {
         input: join(__dirname, 'src', 'twilio', 'index.js'),
@@ -18,8 +20,9 @@ module.exports = [
             banner: banner['banner.output'].join(''),
             file: join(__dirname, 'lib', 'twilio', 'index.cjs'),
             format: 'cjs',
+            sourcemap: true,
         },
-        plugins: [commonjs()],
+        plugins: [strip(), commonjs()],
     },
     {
         input: join(__dirname, 'src', 'mock', 'index.js'),
@@ -27,8 +30,9 @@ module.exports = [
             banner: banner['banner.output'].join(''),
             file: join(__dirname, 'lib', 'mock', 'index.cjs'),
             format: 'cjs',
+            sourcemap: true,
         },
-        plugins: [commonjs()],
+        plugins: [strip(), commonjs()],
     },
     {
         input: join(__dirname, 'src', 'venom', 'index.js'),
