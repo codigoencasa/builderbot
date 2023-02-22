@@ -124,7 +124,6 @@ class CoreClass {
         // 📄 Esta funcion se encarga de enviar un array de mensajes dentro de este ctx
         const sendFlow = async (messageToSend, numberOrId, options = { prev: prevMsg }) => {
             if (options.prev?.options?.capture) await cbEveryCtx(options.prev?.ref)
-
             const queue = []
             for (const ctxMessage of messageToSend) {
                 if (endFlowFlag) return
@@ -193,7 +192,7 @@ class CoreClass {
 
         const flowDynamic =
             (flag) =>
-            async (listMsg = []) => {
+            async (listMsg = [], options = { continue: true }) => {
                 flag.flowDynamic = true
                 if (!Array.isArray(listMsg)) listMsg = [listMsg]
 
@@ -203,7 +202,8 @@ class CoreClass {
                 for (const msg of parseListMsg) {
                     await this.sendProviderAndSave(from, msg)
                 }
-                await continueFlow()
+
+                if (options?.continue) await continueFlow()
                 return
             }
 
