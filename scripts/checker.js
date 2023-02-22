@@ -3,7 +3,6 @@ const { readFileSync, writeFileSync, readdirSync } = require('node:fs')
 const { join } = require('path')
 const process = require('node:process')
 const util = require('node:util')
-const semver = require('semver')
 
 const cmd = util.promisify(execFile)
 const OS_ENVIROMENT_WIN = process.platform.includes('win32')

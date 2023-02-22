@@ -4,6 +4,7 @@
     "description": "",
     "main": "index.js",
     "devDependencies": {
+        "@clack/prompts": "^0.5.0",
         "cross-env": "^7.0.3",
         "cross-spawn": "^7.0.3",
         "detect-package-manager": "^2.0.1",
@@ -19,5 +20,8 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/codigoencasa/bot-whatsapp/tree/main/packages/cli"
+    },
+    "dependencies": {
+        "picocolors": "^1.0.0"
     }
 }

@@ -4,7 +4,7 @@
     "description": "",
     "main": "app.js",
     "scripts": {
-        "pre-copy": "cd .. && yarn run copy.lib base-venom-memory",
+        "pre-copy": "cd .. && npm run  copy.lib base-venom-memory",
         "start": "node app.js"
     },
     "keywords": [],

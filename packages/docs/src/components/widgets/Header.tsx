@@ -5,6 +5,7 @@ import ToggleTheme from '~/components/core/ToggleTheme'
 import ToggleMenu from '~/components/core/ToggleMenu'
 import { IconDiscord } from '../icons/IconDiscord'
 import { GlobalStore } from '~/contexts'
+import { Algolia } from '~/integrations/react/docsearch'
 
 export default component$(() => {
     const storeScroll = useStore({
@@ -30,10 +31,13 @@ export default component$(() => {
             }}
         >
             <div class="py-3 px-3 mx-auto w-full md:flex md:justify-between max-w-6xl md:px-4">
-                <div class="flex justify-between">
+                <div class="flex justify-between  gap-4">
                     <a class="flex items-center" href={'/'}>
-                        <Logo />
+                        <Logo /> 
                     </a>
+                    <div class="flex items-center content-center">
+                        <Algolia />
+                    </div>
                     <div class="flex items-center md:hidden">
                         <ToggleTheme iconClass="w-6 h-6" />
                         <ToggleMenu iconClass="w-6 h-6" />
