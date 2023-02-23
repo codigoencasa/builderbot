@@ -1,5 +1,5 @@
 const { createWriteStream } = require('fs')
-const combineImage = require('combine-image')
+const { cleanImage } = require('../utils/cleanImage')
 const qr = require('qr-image')
 
 const baileyCleanNumber = (number, full = false) => {
@@ -24,12 +24,7 @@ const baileyGenerateImage = async (base64, name = 'qr.png') => {
         })
 
     await writeFilePromise()
-
-    const cleanImage = await combineImage([PATH_QR], {
-        margin: 15,
-        color: 0xffffffff,
-    })
-    cleanImage.write(PATH_QR)
+    await cleanImage(PATH_QR)
 }
 
 const baileyIsValidNumber = (rawNumber) => {

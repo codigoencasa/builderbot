@@ -33,10 +33,10 @@ jobs:
               run: git config --global user.email "leifer.contacto@gmail.com" && git config --global user.name "Leifer Mendez"
 
             - name: Install NPM Dependencies
-              run: pnpm install --immutable --network-timeout 300000
+              run: pnpm install --frozen-lockfile
 
             - name: Set CHANGELOG
-              run: pnpm release
+              run: pnpm run release
 
             - name: get-npm-version
               id: package-version
@@ -46,28 +46,28 @@ jobs:
               run: pnpm build:full
 
             - name: Release @bot-whatsapp/bot
-              run: pnpm node ./scripts/release.js --name=bot --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: node ./scripts/release.js --name=bot --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/cli
-              run: pnpm node ./scripts/release.js --name=cli --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: node ./scripts/release.js --name=cli --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/create-bot-whatsapp
-              run: pnpm node ./scripts/release.js --name=create-bot-whatsapp --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: node ./scripts/release.js --name=create-bot-whatsapp --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/database
-              run: pnpm node ./scripts/release.js --name=database --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: node ./scripts/release.js --name=database --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/provider
-              run: pnpm node ./scripts/release.js --name=provider --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: node ./scripts/release.js --name=provider --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/contexts
-              run: pnpm node ./scripts/release.js --name=contexts --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: node ./scripts/release.js --name=contexts --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release @bot-whatsapp/portal
-              run: pnpm node ./scripts/release.js --name=portal --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+              run: node ./scripts/release.js --name=portal --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
 
             - name: Release Github
-              run: pnpm node ./scripts/github.js --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.OCTO_TOKEN }}"
+              run: node ./scripts/github.js --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.OCTO_TOKEN }}"
 
             - name: Commit & Push changes
               uses: actions-js/push@master

@@ -85,10 +85,13 @@ class TwilioProvider extends ProviderClass {
      * @returns
      */
     sendButtons = async () => {
-        console.log(``)
-        console.log(`[NOTA]: Actualmente enviar botons con Twilio esta en desarrollo`)
-        console.log(`[NOTA]: https://www.twilio.com/es-mx/docs/whatsapp/buttons`)
-        console.log(``)
+        this.emit(
+            'notice',
+            [
+                `[NOTA]: Actualmente enviar botons con Twilio esta en desarrollo`,
+                `[NOTA]: https://www.twilio.com/es-mx/docs/whatsapp/buttons`,
+            ].join('\n')
+        )
     }
 
     /**

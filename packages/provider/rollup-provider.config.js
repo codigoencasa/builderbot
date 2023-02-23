@@ -22,7 +22,7 @@ module.exports = [
             format: 'cjs',
             sourcemap: true,
         },
-        plugins: [strip(), commonjs()],
+        plugins: [commonjs()],
     },
     {
         input: join(__dirname, 'src', 'mock', 'index.js'),
@@ -32,7 +32,7 @@ module.exports = [
             format: 'cjs',
             sourcemap: true,
         },
-        plugins: [strip(), commonjs()],
+        plugins: [commonjs()],
     },
     {
         input: join(__dirname, 'src', 'venom', 'index.js'),
@@ -41,7 +41,7 @@ module.exports = [
             file: join(__dirname, 'lib', 'venom', 'index.cjs'),
             format: 'cjs',
         },
-        plugins: [commonjs()],
+        plugins: [strip(), commonjs()],
     },
     {
         input: join(__dirname, 'src', 'baileys', 'index.js'),
@@ -50,7 +50,7 @@ module.exports = [
             file: join(__dirname, 'lib', 'baileys', 'index.cjs'),
             format: 'cjs',
         },
-        plugins: [commonjs()],
+        plugins: [strip(), commonjs()],
     },
     {
         input: join(__dirname, 'src', 'meta', 'index.js'),

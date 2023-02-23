@@ -54,10 +54,13 @@ class CoreClass {
             event: 'auth_failure',
             func: ({ instructions }) => printer(instructions, '⚡⚡ ERROR AUTH ⚡⚡'),
         },
-
         {
             event: 'message',
             func: (msg) => this.handleMsg(msg),
+        },
+        {
+            event: 'notice',
+            func: (note) => printer(note),
         },
     ]
 

@@ -13,6 +13,12 @@ module.exports = [
             format: 'cjs',
             sourcemap: true,
         },
-        plugins: [strip(), commonjs(), nodeResolve()],
+        plugins: [
+            strip({
+                exclude: ['**/interactive.js'],
+            }),
+            commonjs(),
+            nodeResolve(),
+        ],
     },
 ]
