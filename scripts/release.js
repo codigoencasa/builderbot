@@ -7,7 +7,7 @@ const util = require('node:util')
 const OS_ENVIROMENT_WIN = process.platform.includes('win32')
 const semver = require('semver')
 
-const NPM_COMMAND = OS_ENVIROMENT_WIN ? 'npm.cmd' : 'npm'
+const NPM_COMMAND = OS_ENVIROMENT_WIN ? 'pnpm.cmd' : 'pnpm'
 const [PKG_ARG, PKG_ARG_VERSION, NPM_TOKEN] = process.argv.slice(2) || [null]
 const PATH_PACKAGES = join(__dirname, '..', `packages`)
 
