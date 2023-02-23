@@ -150,12 +150,11 @@ importers:
             vite: 3.2.4
             vite-imagetools: ^4.0.11
             vite-tsconfig-paths: 3.6.0
-        dependencies:
-            '@docsearch/react': 3.3.3_twyhzqqpkwvvgrmyeapdo6i4my
         devDependencies:
             '@builder.io/qwik': 0.16.1
             '@builder.io/qwik-city': 0.0.128
             '@builder.io/qwik-react': 0.2.1_5fycq4irwzcdmzrzr2bqbkmgsa
+            '@docsearch/react': 3.3.3_twyhzqqpkwvvgrmyeapdo6i4my
             '@emotion/react': 11.10.4_luyos4mouogwq6z3wafb3re4ce
             '@emotion/styled': 11.10.4_zihtkqst7yq25r5a7lby6nwrdu
             '@fontsource/inter': 4.5.15
@@ -166,7 +165,7 @@ importers:
             '@tailwindcss/typography': 0.5.9_tailwindcss@3.2.7
             '@types/compression': 1.7.2
             '@types/eslint': 8.4.10
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
             '@types/react': 18.0.14
             '@types/react-dom': 18.0.5
             '@typescript-eslint/eslint-plugin': 5.45.0_e7dbdy4h4uife7ujplb4sbnkau
@@ -176,7 +175,7 @@ importers:
             eslint: 8.29.0
             eslint-plugin-qwik: 0.15.0_eslint@8.29.0
             imagetools-core: 3.3.1
-            netlify-cli: 12.14.0_@types+node@18.14.0
+            netlify-cli: 12.14.0_@types+node@18.14.1
             node-fetch: 3.3.0
             postcss: 8.4.21
             prettier: 2.8.0
@@ -186,7 +185,7 @@ importers:
             subfont: 6.12.4
             tailwindcss: 3.2.7_postcss@8.4.21
             typescript: 4.8.4
-            vite: 3.2.4_@types+node@18.14.0
+            vite: 3.2.4_@types+node@18.14.1
             vite-imagetools: 4.0.18
             vite-tsconfig-paths: 3.6.0_vite@3.2.4
 
@@ -255,7 +254,7 @@ packages:
             }
         dependencies:
             '@algolia/autocomplete-shared': 1.7.4
-        dev: false
+        dev: true
 
     /@algolia/autocomplete-preset-algolia/1.7.4_algoliasearch@4.14.3:
         resolution:
@@ -268,14 +267,14 @@ packages:
         dependencies:
             '@algolia/autocomplete-shared': 1.7.4
             algoliasearch: 4.14.3
-        dev: false
+        dev: true
 
     /@algolia/autocomplete-shared/1.7.4:
         resolution:
             {
                 integrity: sha512-2VGCk7I9tA9Ge73Km99+Qg87w0wzW4tgUruvWAn/gfey1ZXgmxZtyIRBebk35R1O8TbK77wujVtCnpsGpRy1kg==,
             }
-        dev: false
+        dev: true
 
     /@algolia/cache-browser-local-storage/4.14.3:
         resolution:
@@ -284,14 +283,14 @@ packages:
             }
         dependencies:
             '@algolia/cache-common': 4.14.3
-        dev: false
+        dev: true
 
     /@algolia/cache-common/4.14.3:
         resolution:
             {
                 integrity: sha512-oZJofOoD9FQOwiGTzyRnmzvh3ZP8WVTNPBLH5xU5JNF7drDbRT0ocVT0h/xB2rPHYzOeXRrLaQQBwRT/CKom0Q==,
             }
-        dev: false
+        dev: true
 
     /@algolia/cache-in-memory/4.14.3:
         resolution:
@@ -300,7 +299,7 @@ packages:
             }
         dependencies:
             '@algolia/cache-common': 4.14.3
-        dev: false
+        dev: true
 
     /@algolia/client-account/4.14.3:
         resolution:
@@ -311,7 +310,7 @@ packages:
             '@algolia/client-common': 4.14.3
             '@algolia/client-search': 4.14.3
             '@algolia/transporter': 4.14.3
-        dev: false
+        dev: true
 
     /@algolia/client-analytics/4.14.3:
         resolution:
@@ -323,7 +322,7 @@ packages:
             '@algolia/client-search': 4.14.3
             '@algolia/requester-common': 4.14.3
             '@algolia/transporter': 4.14.3
-        dev: false
+        dev: true
 
     /@algolia/client-common/4.14.3:
         resolution:
@@ -333,7 +332,7 @@ packages:
         dependencies:
             '@algolia/requester-common': 4.14.3
             '@algolia/transporter': 4.14.3
-        dev: false
+        dev: true
 
     /@algolia/client-personalization/4.14.3:
         resolution:
@@ -344,7 +343,7 @@ packages:
             '@algolia/client-common': 4.14.3
             '@algolia/requester-common': 4.14.3
             '@algolia/transporter': 4.14.3
-        dev: false
+        dev: true
 
     /@algolia/client-search/4.14.3:
         resolution:
@@ -355,14 +354,14 @@ packages:
             '@algolia/client-common': 4.14.3
             '@algolia/requester-common': 4.14.3
             '@algolia/transporter': 4.14.3
-        dev: false
+        dev: true
 
     /@algolia/logger-common/4.14.3:
         resolution:
             {
                 integrity: sha512-kUEAZaBt/J3RjYi8MEBT2QEexJR2kAE2mtLmezsmqMQZTV502TkHCxYzTwY2dE7OKcUTxi4OFlMuS4GId9CWPw==,
             }
-        dev: false
+        dev: true
 
     /@algolia/logger-console/4.14.3:
         resolution:
@@ -371,7 +370,7 @@ packages:
             }
         dependencies:
             '@algolia/logger-common': 4.14.3
-        dev: false
+        dev: true
 
     /@algolia/requester-browser-xhr/4.14.3:
         resolution:
@@ -380,14 +379,14 @@ packages:
             }
         dependencies:
             '@algolia/requester-common': 4.14.3
-        dev: false
+        dev: true
 
     /@algolia/requester-common/4.14.3:
         resolution:
             {
                 integrity: sha512-RrRzqNyKFDP7IkTuV3XvYGF9cDPn9h6qEDl595lXva3YUk9YSS8+MGZnnkOMHvjkrSCKfoLeLbm/T4tmoIeclw==,
             }
-        dev: false
+        dev: true
 
     /@algolia/requester-node-http/4.14.3:
         resolution:
@@ -396,7 +395,7 @@ packages:
             }
         dependencies:
             '@algolia/requester-common': 4.14.3
-        dev: false
+        dev: true
 
     /@algolia/transporter/4.14.3:
         resolution:
@@ -407,7 +406,7 @@ packages:
             '@algolia/cache-common': 4.14.3
             '@algolia/logger-common': 4.14.3
             '@algolia/requester-common': 4.14.3
-        dev: false
+        dev: true
 
     /@arr/every/1.0.1:
         resolution:
@@ -1793,15 +1792,15 @@ packages:
             '@commitlint/execute-rule': 17.4.0
             '@commitlint/resolve-extends': 17.4.4
             '@commitlint/types': 17.4.4
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
             chalk: 4.1.2
             cosmiconfig: 8.0.0
-            cosmiconfig-typescript-loader: 4.3.0_ipkhww4xc5z2tt2x53vp2mt2be
+            cosmiconfig-typescript-loader: 4.3.0_s4dpre5ezutgdzsn47klmddvia
             lodash.isplainobject: 4.0.6
             lodash.merge: 4.6.2
             lodash.uniq: 4.5.0
             resolve-from: 5.0.0
-            ts-node: 10.9.1_tncu2ai53lzgmizdedur7lbibe
+            ts-node: 10.9.1_uayvamxqnl5yeiojjysxwopmsy
             typescript: 4.9.5
         transitivePeerDependencies:
             - '@swc/core'
@@ -1932,7 +1931,7 @@ packages:
             {
                 integrity: sha512-6SCwI7P8ao+se1TUsdZ7B4XzL+gqeQZnBc+2EONZlcVa0dVrk0NjETxozFKgMv0eEGH8QzP1fkN+A1rH61l4eg==,
             }
-        dev: false
+        dev: true
 
     /@docsearch/react/3.3.3_twyhzqqpkwvvgrmyeapdo6i4my:
         resolution:
@@ -1960,7 +1959,7 @@ packages:
             react-dom: 18.2.0_react@18.2.0
         transitivePeerDependencies:
             - '@algolia/client-search'
-        dev: false
+        dev: true
 
     /@emotion/babel-plugin/11.10.6:
         resolution:
@@ -2758,7 +2757,7 @@ packages:
         dependencies:
             '@types/istanbul-lib-coverage': 2.0.4
             '@types/istanbul-reports': 3.0.1
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
             '@types/yargs': 16.0.5
             chalk: 4.1.2
         dev: true
@@ -2893,7 +2892,7 @@ packages:
             }
         dev: true
 
-    /@netlify/build/29.5.8_@types+node@18.14.0:
+    /@netlify/build/29.5.8_@types+node@18.14.1:
         resolution:
             {
                 integrity: sha512-bZQ38RY4yB+rvGG9JLr1vCvGFcT15IOkAUy+vhyPFNnT1XTkRZHW7KzwG0U+fyqADHR21FhQE9MGeja4o6ranQ==,
@@ -2949,7 +2948,7 @@ packages:
             supports-color: 9.3.1
             terminal-link: 3.0.0
             tmp-promise: 3.0.3
-            ts-node: 10.9.1_qxgdw2effbhrskuhsstxkzdqiq
+            ts-node: 10.9.1_fwhrdah3qt2b7otyggpxt7mmz4
             typescript: 4.9.4
             uuid: 8.3.2
             yargs: 17.7.1
@@ -4201,7 +4200,7 @@ packages:
             }
         dependencies:
             '@types/connect': 3.4.35
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
         dev: true
 
     /@types/cacheable-request/6.0.3:
@@ -4212,7 +4211,7 @@ packages:
         dependencies:
             '@types/http-cache-semantics': 4.0.1
             '@types/keyv': 3.1.4
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
             '@types/responselike': 1.0.0
         dev: true
 
@@ -4231,7 +4230,7 @@ packages:
                 integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==,
             }
         dependencies:
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
         dev: true
 
     /@types/debug/4.1.7:
@@ -4249,7 +4248,7 @@ packages:
                 integrity: sha512-/C8kTMRTNiNuWGl5nEyKbPiMv6HA+0RbEXzFhFBEzASM6+oa4tJro9b8nj7eRlOFfuLdzUU+DS/GPDlvvzMOhA==,
             }
         dependencies:
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
         dev: true
 
     /@types/download/8.0.2:
@@ -4260,7 +4259,7 @@ packages:
         dependencies:
             '@types/decompress': 4.2.4
             '@types/got': 9.6.12
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
         dev: true
 
     /@types/eslint/8.4.10:
@@ -4295,7 +4294,7 @@ packages:
                 integrity: sha512-TPBqmR/HRYI3eC2E5hmiivIzv+bidAfXofM+sbonAGvyDhySGw9/PQZFt2BLOrjUUR++4eJVpx6KnLQK1Fk9tA==,
             }
         dependencies:
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
             '@types/qs': 6.9.7
             '@types/range-parser': 1.2.4
         dev: true
@@ -4318,7 +4317,7 @@ packages:
                 integrity: sha512-SvSrYXfWSc7R4eqnOzbQF4TZmfpNSM9FrSWLU3EUnWBuyZqNBOrv1B1JA3byUDPUl9z4Ab3jeZG2eDdySlgNMg==,
             }
         dependencies:
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
         dev: true
 
     /@types/glob/7.2.0:
@@ -4328,7 +4327,7 @@ packages:
             }
         dependencies:
             '@types/minimatch': 5.1.2
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
         dev: true
 
     /@types/got/9.6.12:
@@ -4337,7 +4336,7 @@ packages:
                 integrity: sha512-X4pj/HGHbXVLqTpKjA2ahI4rV/nNBc9mGO2I/0CgAra+F2dKgMXnENv2SRpemScBzBAI4vMelIVYViQxlSE6xA==,
             }
         dependencies:
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
             '@types/tough-cookie': 4.0.2
             form-data: 2.5.1
         dev: true
@@ -4364,7 +4363,7 @@ packages:
                 integrity: sha512-QsbSjA/fSk7xB+UXlCT3wHBy5ai9wOcNDWwZAtud+jXhwOM3l+EYZh8Lng4+/6n8uar0J7xILzqftJdJ/Wdfkw==,
             }
         dependencies:
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
         dev: true
 
     /@types/istanbul-lib-coverage/2.0.4:
@@ -4405,7 +4404,7 @@ packages:
                 integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==,
             }
         dependencies:
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
         dev: true
 
     /@types/mdast/3.0.10:
@@ -4465,7 +4464,7 @@ packages:
                 integrity: sha512-DHqhlq5jeESLy19TYhLakJ07kNumXWjcDdxXsLUMJZ6ue8VZJj4kLPQVE/2mdHh3xZziNF1xppu5lwmS53HR+A==,
             }
         dependencies:
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
             form-data: 3.0.1
         dev: true
 
@@ -4473,6 +4472,13 @@ packages:
         resolution:
             {
                 integrity: sha512-5EWrvLmglK+imbCJY0+INViFWUHg1AHel1sq4ZVSfdcNqGy9Edv3UB9IIzzg+xPaUcAgZYcfVs2fBcwDeZzU0A==,
+            }
+        dev: true
+
+    /@types/node/18.14.1:
+        resolution:
+            {
+                integrity: sha512-QH+37Qds3E0eDlReeboBxfHbX9omAcBCXEzswCu6jySP642jiM3cYSIkU/REqwhCUqXdonHFuBfJDiAJxMNhaQ==,
             }
 
     /@types/normalize-package-data/2.4.1:
@@ -4494,6 +4500,7 @@ packages:
             {
                 integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==,
             }
+        dev: true
 
     /@types/qs/6.9.7:
         resolution:
@@ -4527,6 +4534,7 @@ packages:
             '@types/prop-types': 15.7.5
             '@types/scheduler': 0.16.2
             csstype: 3.1.1
+        dev: true
 
     /@types/resolve/1.20.2:
         resolution:
@@ -4541,7 +4549,7 @@ packages:
                 integrity: sha512-85Y2BjiufFzaMIlvJDvTTB8Fxl2xfLo4HgmHzVBz08w4wDePCTjYw66PdrolO0kzli3yam/YCgRufyo1DdQVTA==,
             }
         dependencies:
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
         dev: true
 
     /@types/retry/0.12.1:
@@ -4556,6 +4564,7 @@ packages:
             {
                 integrity: sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==,
             }
+        dev: true
 
     /@types/semver/7.3.13:
         resolution:
@@ -4571,7 +4580,7 @@ packages:
             }
         dependencies:
             '@types/mime': 3.0.1
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
         dev: true
 
     /@types/tough-cookie/4.0.2:
@@ -4608,7 +4617,7 @@ packages:
                 integrity: sha512-FtQu10RWgn3D9U4aazdwIE2yzphmTJREDqNdODHrbrZmmMqI0vMheC/6NE/J1Yveaj8H+ela+YwWTjq5PGmuhA==,
             }
         dependencies:
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
             '@types/webidl-conversions': 7.0.0
         dev: false
 
@@ -4635,7 +4644,7 @@ packages:
             }
         requiresBuild: true
         dependencies:
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
         dev: true
         optional: true
 
@@ -5299,7 +5308,7 @@ packages:
             '@algolia/requester-common': 4.14.3
             '@algolia/requester-node-http': 4.14.3
             '@algolia/transporter': 4.14.3
-        dev: false
+        dev: true
 
     /all-node-versions/9.0.0:
         resolution:
@@ -7613,7 +7622,7 @@ packages:
             }
         dev: true
 
-    /cosmiconfig-typescript-loader/4.3.0_ipkhww4xc5z2tt2x53vp2mt2be:
+    /cosmiconfig-typescript-loader/4.3.0_s4dpre5ezutgdzsn47klmddvia:
         resolution:
             {
                 integrity: sha512-NTxV1MFfZDLPiBMjxbHRwSh5LaLcPMwNdCutmnHJCKoVnlvldPWlllonKwrsRJ5pYZBIBGRWWU2tfvzxgeSW5Q==,
@@ -7625,9 +7634,9 @@ packages:
             ts-node: '>=10'
             typescript: '>=3'
         dependencies:
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
             cosmiconfig: 8.0.0
-            ts-node: 10.9.1_tncu2ai53lzgmizdedur7lbibe
+            ts-node: 10.9.1_uayvamxqnl5yeiojjysxwopmsy
             typescript: 4.9.5
         dev: true
 
@@ -8007,6 +8016,7 @@ packages:
             {
                 integrity: sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==,
             }
+        dev: true
 
     /cyclist/1.0.1:
         resolution:
@@ -13326,6 +13336,7 @@ packages:
             {
                 integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==,
             }
+        dev: true
 
     /js-yaml/4.1.0:
         resolution:
@@ -14149,6 +14160,7 @@ packages:
         hasBin: true
         dependencies:
             js-tokens: 4.0.0
+        dev: true
 
     /lower-case/1.1.4:
         resolution:
@@ -15518,7 +15530,7 @@ packages:
             }
         dev: true
 
-    /netlify-cli/12.14.0_@types+node@18.14.0:
+    /netlify-cli/12.14.0_@types+node@18.14.1:
         resolution:
             {
                 integrity: sha512-zQ9eB3eWe8ae5G8Dr76IXADarKXrI08idGwSzJfYdvdgSRvc42R+7H/V2XAkJouZOkt5/YKPmRl3Sj8OzsP4CQ==,
@@ -15528,7 +15540,7 @@ packages:
         requiresBuild: true
         dependencies:
             '@fastify/static': 6.9.0
-            '@netlify/build': 29.5.8_@types+node@18.14.0
+            '@netlify/build': 29.5.8_@types+node@18.14.1
             '@netlify/config': 20.3.3
             '@netlify/edge-bundler': 8.7.0
             '@netlify/framework-info': 9.8.2
@@ -18003,6 +18015,7 @@ packages:
             loose-envify: 1.4.0
             react: 18.2.0
             scheduler: 0.23.0
+        dev: true
 
     /react-is/16.13.1:
         resolution:
@@ -18026,6 +18039,7 @@ packages:
         engines: { node: '>=0.10.0' }
         dependencies:
             loose-envify: 1.4.0
+        dev: true
 
     /read-cache/1.0.0:
         resolution:
@@ -18822,6 +18836,7 @@ packages:
             }
         dependencies:
             loose-envify: 1.4.0
+        dev: true
 
     /schemes/1.4.0:
         resolution:
@@ -20539,7 +20554,7 @@ packages:
             }
         dev: true
 
-    /ts-node/10.9.1_qxgdw2effbhrskuhsstxkzdqiq:
+    /ts-node/10.9.1_fwhrdah3qt2b7otyggpxt7mmz4:
         resolution:
             {
                 integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==,
@@ -20561,7 +20576,7 @@ packages:
             '@tsconfig/node12': 1.0.11
             '@tsconfig/node14': 1.0.3
             '@tsconfig/node16': 1.0.3
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
             acorn: 8.8.2
             acorn-walk: 8.2.0
             arg: 4.1.3
@@ -20573,7 +20588,7 @@ packages:
             yn: 3.1.1
         dev: true
 
-    /ts-node/10.9.1_tncu2ai53lzgmizdedur7lbibe:
+    /ts-node/10.9.1_uayvamxqnl5yeiojjysxwopmsy:
         resolution:
             {
                 integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==,
@@ -20595,7 +20610,7 @@ packages:
             '@tsconfig/node12': 1.0.11
             '@tsconfig/node14': 1.0.3
             '@tsconfig/node16': 1.0.3
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
             acorn: 8.8.2
             acorn-walk: 8.2.0
             arg: 4.1.3
@@ -21396,12 +21411,12 @@ packages:
             globrex: 0.1.2
             recrawl-sync: 2.2.3
             tsconfig-paths: 4.1.2
-            vite: 3.2.4_@types+node@18.14.0
+            vite: 3.2.4_@types+node@18.14.1
         transitivePeerDependencies:
             - supports-color
         dev: true
 
-    /vite/3.2.4_@types+node@18.14.0:
+    /vite/3.2.4_@types+node@18.14.1:
         resolution:
             {
                 integrity: sha512-Z2X6SRAffOUYTa+sLy3NQ7nlHFU100xwanq1WDwqaiFiCe+25zdxP1TfCS5ojPV2oDDcXudHIoPnI1Z/66B7Yw==,
@@ -21429,7 +21444,7 @@ packages:
             terser:
                 optional: true
         dependencies:
-            '@types/node': 18.14.0
+            '@types/node': 18.14.1
             esbuild: 0.15.18
             postcss: 8.4.21
             resolve: 1.22.1

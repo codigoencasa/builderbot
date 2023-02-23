@@ -1,7 +1,6 @@
 
 import { qwikify$ } from '@builder.io/qwik-react';
 import { DocSearch } from '@docsearch/react';
-import '@docsearch/css';
 import { component$ } from '@builder.io/qwik';
 
 export const DocSearch$ = qwikify$(DocSearch,{eagerness:'visible'});
