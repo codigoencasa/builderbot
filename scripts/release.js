@@ -7,7 +7,7 @@ const util = require('node:util')
 const OS_ENVIROMENT_WIN = process.platform.includes('win32')
 const semver = require('semver')
 
-const NPM_COMMAND = OS_ENVIROMENT_WIN ? 'npm.cmd' : 'npm'
+const NPM_COMMAND = OS_ENVIROMENT_WIN ? 'pnpm.cmd' : 'pnpm'
 const [PKG_ARG, PKG_ARG_VERSION, NPM_TOKEN] = process.argv.slice(2) || [null]
 const PATH_PACKAGES = join(__dirname, '..', `packages`)
 
@@ -112,7 +112,7 @@ const packRelease = async (packageName) => {
  * @returns
  */
 const publishRelease = async (packageName, latest = null) => {
-    const args = !latest ? ['--tag', 'dev'] : ['--access', 'public']
+    const args = !latest ? ['--tag', 'dev', '--no-git-checks'] : ['--access', 'public', '--no-git-checks']
     const pkgJson = join(PATH_PACKAGES, packageName)
     const { stdout } = await cmd(NPM_COMMAND, ['publish'].concat(args), {
         stdio: 'inherit',
