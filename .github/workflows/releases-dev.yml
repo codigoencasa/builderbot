@@ -67,6 +67,9 @@ jobs:
 
             - run: corepack enable
 
+            - name: Install NPM Dependencies
+              run: pnpm install --frozen-lockfile
+
             - uses: actions/cache@v3
               with:
                   path: ./packages
