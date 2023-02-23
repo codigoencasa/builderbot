@@ -112,7 +112,7 @@ const packRelease = async (packageName) => {
  * @returns
  */
 const publishRelease = async (packageName, latest = null) => {
-    const args = !latest ? ['--tag', 'dev'] : ['--access', 'public']
+    const args = !latest ? ['--tag', 'dev', '--no-git-checks'] : ['--access', 'public', '--no-git-checks']
     const pkgJson = join(PATH_PACKAGES, packageName)
     const { stdout } = await cmd(NPM_COMMAND, ['publish'].concat(args), {
         stdio: 'inherit',
