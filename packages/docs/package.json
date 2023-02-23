@@ -55,12 +55,11 @@
     "typescript": "4.8.4",
     "vite": "3.2.4",
     "vite-imagetools": "^4.0.11",
-    "vite-tsconfig-paths": "3.6.0"
+    "vite-tsconfig-paths": "3.6.0",
+    "@docsearch/react": "^3.3.3"
+
   },
   "engines": {
     "node": ">=17.0.0"
-  },
-  "dependencies": {
-    "@docsearch/react": "^3.3.3"
   }
 }

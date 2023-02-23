@@ -2,7 +2,7 @@ const { writeFile, createWriteStream } = require('fs')
 const { tmpdir } = require('os')
 const http = require('http')
 const https = require('https')
-const combineImage = require('combine-image')
+const { cleanImage } = require('../utils/cleanImage')
 
 const venomCleanNumber = (number, full = false) => {
     number = number.replace('@c.us', '')
@@ -30,12 +30,7 @@ const venomGenerateImage = async (base, name = 'qr.png') => {
         })
 
     await writeFilePromise()
-
-    const cleanImage = await combineImage([PATH_QR], {
-        margin: 15,
-        color: 0xffffffff,
-    })
-    cleanImage.write(PATH_QR)
+    await cleanImage(PATH_QR)
 }
 
 /**

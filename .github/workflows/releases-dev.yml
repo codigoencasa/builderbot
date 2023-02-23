@@ -95,10 +95,3 @@ jobs:
 
             - name: Release @bot-whatsapp/portal
               run: node ./scripts/release.js --name=portal --version=  --token="${{ secrets.NPM_TOKEN }}"
-
-            - name: Commit & Push changes
-              uses: actions-js/push@master
-              with:
-                  branch: release/next
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  force: true

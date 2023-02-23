@@ -13,6 +13,7 @@ const { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber } = require(
 
 const { generalDownload } = require('../../common/download')
 const { generateRefprovider } = require('../../common/hash')
+const { convertAudio } = require('../utils/convertAudio')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/baileys.log`),
@@ -191,7 +192,10 @@ class BaileysProvider extends ProviderClass {
 
         if (mimeType.includes('image')) return this.sendImage(number, fileDownloaded, text)
         if (mimeType.includes('video')) return this.sendVideo(number, fileDownloaded, text)
-        if (mimeType.includes('audio')) return this.sendAudio(number, fileDownloaded, text)
+        if (mimeType.includes('audio')) {
+            const fileOpus = await convertAudio(fileDownloaded)
+            return this.sendAudio(number, fileOpus, text)
+        }
 
         return this.sendFile(number, fileDownloaded)
     }

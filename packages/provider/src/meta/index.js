@@ -101,7 +101,7 @@ class MetaProvider extends ProviderClass {
      * @returns
      */
     sendMessage = async (number, message, { options }) => {
-        if (options?.buttons?.length) return console.log('Envio de botones')
+        if (options?.buttons?.length) return this.emit('notice', 'Envio de botones')
         if (options?.media) return this.sendMedia(number, message, options.media)
 
         this.sendtext(number, message)

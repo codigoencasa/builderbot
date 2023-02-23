@@ -2,13 +2,31 @@ const { intro, outro, confirm, select, spinner, isCancel, cancel, note } = requi
 const color = require('picocolors')
 
 const { join } = require('path')
-const { existsSync } = require('fs')
+const { existsSync, readFileSync } = require('fs')
 const { copyBaseApp } = require('../create-app')
 const { checkNodeVersion, checkGit } = require('../check')
 
+const PATH_BASE = join(process.cwd())
+
+const pkgJson = () => {
+    const pkgJson = join(PATH_BASE, 'package.json')
+    const rawFile = readFileSync(pkgJson, 'utf-8')
+    return JSON.parse(rawFile)
+}
+
 const bannerDone = (templateName = '') => {
     note(
-        [color.yellow(` cd ${templateName} `), color.yellow(` npm install `), color.yellow(` npm start `)].join('\n'),
+        [
+            color.yellow(` cd ${templateName} `),
+            color.yellow(` npm install `),
+            color.yellow(` npm start `),
+            ``,
+            `📄 Documentación y Curso:`,
+            `   https://bot-whatsapp.netlify.app`,
+            ``,
+            `🤖 ¿Problemas? Únete:`,
+            `   https://link.codigoencasa.com/DISCORD`,
+        ].join('\n'),
         'Instrucciones:'
     )
 }
@@ -50,7 +68,7 @@ const startInteractive = async () => {
         console.clear()
         console.log('')
 
-        intro(color.inverse(' instalador '))
+        intro(`Vamos a crear un ${color.bgBlue(' Chatbot ')} ✨ (${pkgJson().version})`)
 
         const stepContinue = await confirm({
             message: '¿Quieres continuar?',
