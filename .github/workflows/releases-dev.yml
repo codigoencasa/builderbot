@@ -79,6 +79,10 @@ jobs:
                   path: ./packages
                   key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pnpm-workspace.yaml') }}
 
+            - name: get-npm-version
+              id: package-version
+              uses: martinbeentjes/npm-get-version-action@main
+
             - name: Release @bot-whatsapp/bot
               run: node ./scripts/release.js --name=bot --version=  --token="${{ secrets.NPM_TOKEN }}"
 
