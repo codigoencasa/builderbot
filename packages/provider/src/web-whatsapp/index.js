@@ -1,6 +1,7 @@
 const { Client, LocalAuth, MessageMedia, Buttons } = require('whatsapp-web.js')
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const { Console } = require('console')
+const mime = require('mime-types')
 const { createWriteStream, readFileSync } = require('fs')
 const { wwebCleanNumber, wwebGenerateImage, wwebIsValidNumber } = require('./utils')
 
@@ -9,8 +10,8 @@ const logger = new Console({
 })
 
 const { generalDownload } = require('../../common/download')
-const mime = require('mime-types')
 const { generateRefprovider } = require('../../common/hash')
+const { convertAudio } = require('../utils/convertAudio')
 
 /**
  * ⚙️ WebWhatsappProvider: Es una clase tipo adaptor
@@ -122,9 +123,6 @@ class WebWhatsappProvider extends ProviderClass {
      * @returns
      */
     sendButtons = async (number, message, buttons = []) => {
-        console.log(`🚩 ¿No te funciona los botones? Intenta instalar`)
-        console.log(`npm i github:pedroslopez/whatsapp-web.js#fix-buttons-list`)
-
         const buttonMessage = new Buttons(message, buttons, '', '')
         return this.vendor.sendMessage(number, buttonMessage)
     }
@@ -237,7 +235,10 @@ class WebWhatsappProvider extends ProviderClass {
 
         if (mimeType.includes('image')) return this.sendImage(number, fileDownloaded, text)
         if (mimeType.includes('video')) return this.sendVideo(number, fileDownloaded)
-        if (mimeType.includes('audio')) return this.sendAudio(number, fileDownloaded)
+        if (mimeType.includes('audio')) {
+            const fileOpus = await convertAudio(fileDownloaded)
+            return this.sendAudio(number, fileOpus)
+        }
 
         return this.sendFile(number, fileDownloaded)
     }
