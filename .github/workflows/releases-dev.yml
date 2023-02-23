@@ -56,11 +56,13 @@ jobs:
                   ref: ${{github.event.after}}
                   persist-credentials: false
 
+            - uses: pnpm/action-setup@v2.2.4
+
             - name: Setup Node
               uses: actions/setup-node@v3
               with:
                   node-version: 16.x
-                  cache: 'npm'
+                  cache: 'pnpm'
                   registry-url: https://registry.npmjs.org/
 
             - run: corepack enable
