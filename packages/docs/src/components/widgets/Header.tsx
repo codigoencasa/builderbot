@@ -5,7 +5,7 @@ import ToggleTheme from '~/components/core/ToggleTheme'
 import ToggleMenu from '~/components/core/ToggleMenu'
 import { IconDiscord } from '../icons/IconDiscord'
 import { GlobalStore } from '~/contexts'
-import { Algolia } from '~/integrations/react/docsearch'
+// import { Algolia } from '~/integrations/react/docsearch'
 
 export default component$(() => {
     const storeScroll = useStore({
@@ -36,7 +36,7 @@ export default component$(() => {
                         <Logo /> 
                     </a>
                     <div class="flex items-center content-center">
-                        <Algolia />
+                        {/* <Algolia /> */}
                     </div>
                     <div class="flex items-center md:hidden">
                         <ToggleTheme iconClass="w-6 h-6" />
