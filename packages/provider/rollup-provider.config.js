@@ -41,7 +41,7 @@ module.exports = [
             file: join(__dirname, 'lib', 'venom', 'index.cjs'),
             format: 'cjs',
         },
-        plugins: [commonjs()],
+        plugins: [strip(), commonjs()],
     },
     {
         input: join(__dirname, 'src', 'baileys', 'index.js'),
@@ -50,7 +50,7 @@ module.exports = [
             file: join(__dirname, 'lib', 'baileys', 'index.cjs'),
             format: 'cjs',
         },
-        plugins: [commonjs()],
+        plugins: [strip(), commonjs()],
     },
     {
         input: join(__dirname, 'src', 'meta', 'index.js'),
