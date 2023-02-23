@@ -11,9 +11,9 @@
     ],
     "dependencies": {
         "@bot-whatsapp/bot": "*",
-        "combine-image": "^1.0.3",
         "qr-image": "^3.2.0",
-        "rimraf": "^3.0.2"
+        "rimraf": "^3.0.2",
+        "sharp": "^0.31.3"
     },
     "exports": {
         "./mock": "./lib/mock/index.cjs",
