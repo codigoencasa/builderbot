@@ -38,9 +38,11 @@ jobs:
               run: pnpm build:full
 
             - uses: actions/cache@v3
+              env:
+                  cache-name: cache-node-modules
               with:
                   path: ./packages
-                  key: packages-key
+                  key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pnpm-workspace.yaml') }}
     release:
         name: Release DEV
         runs-on: ubuntu-latest
@@ -71,9 +73,15 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - uses: actions/cache@v3
+              env:
+                  cache-name: cache-node-modules
               with:
                   path: ./packages
-                  key: packages-key
+                  key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pnpm-workspace.yaml') }}
+
+            - name: get-npm-version
+              id: package-version
+              uses: martinbeentjes/npm-get-version-action@main
 
             - name: Release @bot-whatsapp/bot
               run: node ./scripts/release.js --name=bot --version=  --token="${{ secrets.NPM_TOKEN }}"
