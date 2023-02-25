@@ -1,0 +1,5 @@
+{
+    "dependencies": {
+        "@wppconnect-team/wppconnect": "1.22.0"
+    }
+}
