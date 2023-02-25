@@ -110,6 +110,27 @@ class WPPConnectProviderClass extends ProviderClass {
     }
 
     /**
+     * Enviar mensaje con botones
+     * @param {string} number
+     * @param {string} text
+     * @param {Array} buttons
+     * @example await sendButtons("+XXXXXXXXXXX", "Your Text", [{"body": "Button 1"},{"body": "Button 2"}])
+     */
+    sendButtons = async (number, text, buttons) => {
+        const templateButtons = buttons.map((btn, i) => ({
+            id: `id-btn-${i}`,
+            text: btn.body,
+        }))
+
+        const buttonMessage = {
+            useTemplateButtons: true,
+            buttons: templateButtons,
+        }
+
+        return this.vendor.sendText(number, text, buttonMessage)
+    }
+
+    /**
      * Enviar audio
      * @alpha
      * @param {string} number
@@ -186,6 +207,7 @@ class WPPConnectProviderClass extends ProviderClass {
      */
     sendMessage = async (to, message, { options }) => {
         const number = to
+        if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
         if (options?.media) return this.sendMedia(number, options.media, message)
         return this.vendor.sendText(number, message)
     }
