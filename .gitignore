@@ -46,3 +46,9 @@ yarn-error.log
 # Local Netlify folder
 .netlify
 .secrets
+
+# managed
+**.data.json
+**.node-persist**
+**_IGNORE_**
+# end managed
