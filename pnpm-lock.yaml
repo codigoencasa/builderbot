@@ -97,9 +97,9 @@ importers:
 
     packages/create-bot-whatsapp:
         specifiers:
-            '@bot-whatsapp/cli': '*'
+            '@bot-whatsapp/cli': workspace:@bot-whatsapp/cli@*
         dependencies:
-            '@bot-whatsapp/cli': 0.1.23
+            '@bot-whatsapp/cli': link:../cli
 
     packages/database:
         specifiers:
@@ -1529,6 +1529,7 @@ packages:
                 integrity: sha512-tsgzRVhJH8b9xE6/KnM0cUiUVq5vra7MRAwF9m7PcKnZw5tVjkgV8C4z5n8InLvXk6sNOzJ5s5sFntO+ge/Lhw==,
             }
         hasBin: true
+        dev: true
 
     /@bugsnag/browser/7.20.0:
         resolution:
