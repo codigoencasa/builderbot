@@ -1,4 +1,4 @@
-const { writeFile, createWriteStream } = require('fs')
+const { writeFile } = require('fs')
 const { cleanImage } = require('../utils/cleanImage')
 
 const WppConnectCleanNumber = (number, full = false) => {

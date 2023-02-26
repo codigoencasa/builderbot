@@ -208,7 +208,7 @@ class VenomProvider extends ProviderClass {
         if (mimeType.includes('image')) return this.sendImage(number, fileDownloaded, text)
         if (mimeType.includes('video')) return this.sendVideo(number, fileDownloaded, text)
         if (mimeType.includes('audio')) {
-            const fileOpus = await convertAudio(fileDownloaded)
+            const fileOpus = await convertAudio(fileDownloaded, 'mp3')
             return this.sendAudio(number, fileOpus)
         }
 
