@@ -2,7 +2,7 @@ const { intro, outro, confirm, select, spinner, isCancel, cancel, note } = requi
 const color = require('picocolors')
 
 const { join } = require('path')
-const { existsSync, readFileSync } = require('fs')
+const { existsSync } = require('fs')
 const { copyBaseApp } = require('../create-app')
 const { checkNodeVersion, checkGit } = require('../check')
 
