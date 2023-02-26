@@ -203,16 +203,31 @@ suiteCase(`FlowDynamic con capture`, async ({ database, provider }) => {
     assert.is(undefined, getHistory[6])
 })
 
-suiteCase.skip(`FlowDynamic con capture en hijo`, async ({ database, provider }) => {
-    // const flowTres = addKeyword('flowTres').addAnswer('Soy flujo 3',null,null,[flowTres]).addAnswer('Soy flujo 3-1')
+suiteCase(`FlowDynamic con capture en hijo`, async ({ database, provider }) => {
+    const flowCuatro = addKeyword('flow4')
+        .addAnswer('Soy flujo 4', null, async (_, { flowDynamic }) => {
+            await flowDynamic('Vamos por mas')
+        })
+        .addAnswer('Soy flujo 4-1')
 
-    const flowDos = addKeyword('flowDos').addAnswer('Soy flujo 2').addAnswer('Soy flujo 2-1')
+    const flowTres = addKeyword('flow3').addAnswer('Soy flujo 3', { capture: true }, null, [flowCuatro])
+
+    const flowDos = addKeyword('flowDos')
+        .addAnswer('Soy flujo 2')
+        .addAnswer(
+            'Soy flujo 2-1 escribe flow3',
+            { capture: true },
+            async (_, { flowDynamic }) => {
+                await flowDynamic('Vamos al flow3')
+            },
+            [flowTres]
+        )
 
     const flow = addKeyword(['hola']).addAnswer(
-        'Buenas!',
+        'Buenas! escribe flowDos',
         { capture: true },
         async (_, { flowDynamic }) => {
-            return flowDynamic('Escribe flowDos')
+            return flowDynamic('Vamos al flowDos')
         },
         [flowDos]
     )
@@ -230,22 +245,33 @@ suiteCase.skip(`FlowDynamic con capture en hijo`, async ({ database, provider })
 
     await provider.delaySendMessage(10, 'message', {
         from: '000',
-        body: 'mirame',
+        body: 'flowDos',
     })
 
     await provider.delaySendMessage(20, 'message', {
         from: '000',
-        body: 'flowDos',
+        body: 'flow3',
+    })
+
+    await provider.delaySendMessage(30, 'message', {
+        from: '000',
+        body: 'flow4',
     })
 
     await delay(100)
+
     const getHistory = database.listHistory.map((i) => i.answer)
-    assert.is('Buenas!', getHistory[0])
-    assert.is('mirame', getHistory[1])
-    assert.is('Escribe flowDos', getHistory[2])
-    assert.is('flowDos', getHistory[3])
-    assert.is('Soy flujo 2', getHistory[4])
-    // assert.is('Soy flujo 2-1', getHistory[5])
+    assert.is('Buenas! escribe flowDos', getHistory[0])
+    assert.is('flowDos', getHistory[1])
+    assert.is('Vamos al flowDos', getHistory[2])
+    assert.is('Soy flujo 2', getHistory[3])
+    assert.is('Soy flujo 2-1 escribe flow3', getHistory[4])
+    assert.is('flow3', getHistory[5])
+    assert.is('Soy flujo 3', getHistory[7])
+    assert.is('flow4', getHistory[8])
+    assert.is('Soy flujo 4', getHistory[9])
+    assert.is('Vamos por mas', getHistory[10])
+    assert.is('Soy flujo 4-1', getHistory[11])
     // assert.is(undefined, getHistory[7])
 })
 

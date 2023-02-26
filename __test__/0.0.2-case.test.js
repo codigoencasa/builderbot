@@ -13,10 +13,8 @@ suiteCase(`Debe saltar de flujo`, async ({ database, provider }) => {
         .addAnswer('Hola usuario registrado')
         .addAnswer('como estas usuario registrado')
 
-    // console.log('ARBOL', flujoUsuarioRegistrado.toJson())
-
     const flujoBienvenida = addKeyword(['hola'])
-        .addAnswer('Buenas', null, async (_, { gotoFlow, flowDynamic, endFlow }) => {
+        .addAnswer('Buenas', null, async (_, { gotoFlow, flowDynamic }) => {
             await delay(10)
             await flowDynamic('Usuario registrado DEMO')
             await gotoFlow(flujoUsuarioRegistrado)
