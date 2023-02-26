@@ -1,6 +1,5 @@
-const { createWriteStream } = require('fs')
+const { writeFile, createWriteStream } = require('fs')
 const { cleanImage } = require('../utils/cleanImage')
-const qr = require('qr-image')
 
 const WppConnectCleanNumber = (number, full = false) => {
     number = number.replace('@s.whatsapp.net', '')
@@ -8,19 +7,23 @@ const WppConnectCleanNumber = (number, full = false) => {
     return number
 }
 
-/**
- * Hace promesa el write
- * @param {*} base64
- */
-const WppConnectGenerateImage = async (base64, name = 'qr.png') => {
+const WppConnectGenerateImage = async (base, name = 'qr.png') => {
     const PATH_QR = `${process.cwd()}/${name}`
-    let qr_svg = qr.image(base64, { type: 'png', margin: 4 })
+    const matches = base.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
+    if (matches.length !== 3) {
+        return new Error('Invalid input string')
+    }
+
+    let response = {}
+    response.type = matches[1]
+    response.data = new Buffer.from(matches[2], 'base64')
 
     const writeFilePromise = () =>
         new Promise((resolve, reject) => {
-            const file = qr_svg.pipe(createWriteStream(PATH_QR))
-            file.on('finish', () => resolve(true))
-            file.on('error', reject)
+            writeFile(PATH_QR, response['data'], 'binary', (err) => {
+                if (err != null) reject('ERROR_QR_GENERATE')
+                resolve(true)
+            })
         })
 
     await writeFilePromise()
