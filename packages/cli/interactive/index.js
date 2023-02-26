@@ -5,6 +5,8 @@ const { join } = require('path')
 const { existsSync } = require('fs')
 const { copyBaseApp } = require('../create-app')
 const { checkNodeVersion, checkGit } = require('../check')
+const { PROVIDER_LIST, PROVIDER_DATA } = require('../configuration')
+const { startInteractiveLegacy } = require('../interactive-legacy')
 
 // const PATH_BASE = [join(__dirname, '..', '..', 'package.json'), join(__dirname, '..', 'package.json')].find((i) =>
 //     existsSync(i)
@@ -15,6 +17,10 @@ const { checkNodeVersion, checkGit } = require('../check')
 //     const rawFile = readFileSync(pkgJson, 'utf-8')
 //     return JSON.parse(rawFile)
 // }
+
+const handleLegacyCli = async () => {
+    await startInteractiveLegacy()
+}
 
 const bannerDone = (templateName = '') => {
     note(
@@ -88,13 +94,7 @@ const startInteractive = async () => {
 
         const stepProvider = await select({
             message: '¿Cuál proveedor de whatsapp quieres utilizar?',
-            options: [
-                { value: 'baileys', label: 'Baileys', hint: 'gratis' },
-                { value: 'venom', label: 'Venom', hint: 'gratis' },
-                { value: 'wweb', label: 'whatsapp-web.js', hint: 'gratis' },
-                { value: 'twilio', label: 'Twilio' },
-                { value: 'meta', label: 'Meta' },
-            ],
+            options: PROVIDER_LIST,
         })
 
         if (isCancel(stepProvider)) {
@@ -104,12 +104,7 @@ const startInteractive = async () => {
 
         const stepDatabase = await select({
             message: '¿Cuál base de datos quieres utilizar?',
-            options: [
-                { value: 'memory', label: 'Memory' },
-                { value: 'json', label: 'Json' },
-                { value: 'mongo', label: 'Mongo' },
-                { value: 'mysql', label: 'MySQL' },
-            ],
+            options: PROVIDER_DATA,
         })
 
         if (isCancel(stepDatabase)) {
@@ -129,7 +124,7 @@ const startInteractive = async () => {
         bannerDone(NAME_DIR)
         outro(color.inverse('Finalizado correctamente!'))
     } catch (e) {
-        console.log(e)
+        if (e?.code === 'ERR_TTY_INIT_FAILED') return handleLegacyCli()
         cancel([`Ups! 🙄 algo no va bien.`, `Revisa los requerimientos minimos en la documentacion`].join('\n'))
         return process.exit(0)
     }
