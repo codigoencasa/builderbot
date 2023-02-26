@@ -6,10 +6,9 @@ const { existsSync, readFileSync } = require('fs')
 const { copyBaseApp } = require('../create-app')
 const { checkNodeVersion, checkGit } = require('../check')
 
-const PATH_BASE = [
-    join(__dirname, '..', '..', 'package.json'),
-    // join(process.cwd(),'package.json'),
-].find((i) => existsSync(i))
+const PATH_BASE = [join(__dirname, '..', '..', 'package.json'), join(__dirname, '..', 'package.json')].find((i) =>
+    existsSync(i)
+)
 
 const pkgJson = () => {
     const pkgJson = PATH_BASE
