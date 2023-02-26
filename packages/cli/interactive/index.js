@@ -6,15 +6,15 @@ const { existsSync, readFileSync } = require('fs')
 const { copyBaseApp } = require('../create-app')
 const { checkNodeVersion, checkGit } = require('../check')
 
-const PATH_BASE = [join(__dirname, '..', '..', 'package.json'), join(__dirname, '..', 'package.json')].find((i) =>
-    existsSync(i)
-)
+// const PATH_BASE = [join(__dirname, '..', '..', 'package.json'), join(__dirname, '..', 'package.json')].find((i) =>
+//     existsSync(i)
+// )
 
-const pkgJson = () => {
-    const pkgJson = PATH_BASE
-    const rawFile = readFileSync(pkgJson, 'utf-8')
-    return JSON.parse(rawFile)
-}
+// const pkgJson = () => {
+//     const pkgJson = PATH_BASE
+//     const rawFile = readFileSync(pkgJson, 'utf-8')
+//     return JSON.parse(rawFile)
+// }
 
 const bannerDone = (templateName = '') => {
     note(
@@ -70,7 +70,7 @@ const startInteractive = async () => {
         console.clear()
         console.log('')
 
-        intro(`Vamos a crear un ${color.bgBlue(' Chatbot ')} ✨ (${pkgJson().version})`)
+        intro(`Vamos a crear un ${color.bgBlue(' Chatbot ')} ✨`)
 
         const stepContinue = await confirm({
             message: '¿Quieres continuar?',
