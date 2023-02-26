@@ -31,17 +31,17 @@ class WPPConnectProviderClass extends ProviderClass {
             const name = this.globalVendorArgs.name
             const session = await create({
                 session: name,
-                catchQR: (qrCode, { attempt }) => {
+                catchQR: (base64Qrimg, { attempt }) => {
                     if (attempt == 5) throw new Error()
 
                     this.emit('require_action', {
                         instructions: [
-                            `Debe escanear el código QR 👌 ${this.globalVendorArgs.name}.qr.png`,
+                            `Debes escanear el QR Code para iniciar ${this.globalVendorArgs.name}.qr.png`,
                             `Recuerde que el código QR se actualiza cada minuto `,
                             `¿Necesita ayuda? https://link.codigoencasa.com/DISCORD`,
                         ],
                     })
-                    WppConnectGenerateImage(qrCode, `${this.globalVendorArgs.name}.qr.png`)
+                    WppConnectGenerateImage(base64Qrimg, `${this.globalVendorArgs.name}.qr.png`)
                 },
             })
 
