@@ -1,6 +1,5 @@
 const banner = require('../../config/banner.rollup.json')
 const { join } = require('path')
-const strip = require('@rollup/plugin-strip')
 const commonjs = require('@rollup/plugin-commonjs')
 
 module.exports = [
@@ -10,9 +9,8 @@ module.exports = [
             banner: banner['banner.output'].join(''),
             file: join(__dirname, 'lib', 'web-whatsapp', 'index.cjs'),
             format: 'cjs',
-            sourcemap: true,
         },
-        plugins: [strip(), commonjs()],
+        plugins: [commonjs()],
     },
     {
         input: join(__dirname, 'src', 'twilio', 'index.js'),
@@ -20,7 +18,6 @@ module.exports = [
             banner: banner['banner.output'].join(''),
             file: join(__dirname, 'lib', 'twilio', 'index.cjs'),
             format: 'cjs',
-            sourcemap: true,
         },
         plugins: [commonjs()],
     },
@@ -30,7 +27,6 @@ module.exports = [
             banner: banner['banner.output'].join(''),
             file: join(__dirname, 'lib', 'mock', 'index.cjs'),
             format: 'cjs',
-            sourcemap: true,
         },
         plugins: [commonjs()],
     },
@@ -41,7 +37,7 @@ module.exports = [
             file: join(__dirname, 'lib', 'venom', 'index.cjs'),
             format: 'cjs',
         },
-        plugins: [strip(), commonjs()],
+        plugins: [commonjs()],
     },
     {
         input: join(__dirname, 'src', 'baileys', 'index.js'),
@@ -50,13 +46,22 @@ module.exports = [
             file: join(__dirname, 'lib', 'baileys', 'index.cjs'),
             format: 'cjs',
         },
-        plugins: [strip(), commonjs()],
+        plugins: [commonjs()],
     },
     {
         input: join(__dirname, 'src', 'meta', 'index.js'),
         output: {
             banner: banner['banner.output'].join(''),
             file: join(__dirname, 'lib', 'meta', 'index.cjs'),
+            format: 'cjs',
+        },
+        plugins: [commonjs()],
+    },
+    {
+        input: join(__dirname, 'src', 'wppconnect', 'index.js'),
+        output: {
+            banner: banner['banner.output'].join(''),
+            file: join(__dirname, 'lib', 'wppconnect', 'index.cjs'),
             format: 'cjs',
         },
         plugins: [commonjs()],

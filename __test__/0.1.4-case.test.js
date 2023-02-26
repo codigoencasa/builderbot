@@ -159,4 +159,94 @@ suiteCase(`Responder con un "object"`, async ({ database, provider }) => {
     assert.is(undefined, getHistory[3])
 })
 
+suiteCase(`FlowDynamic con capture`, async ({ database, provider }) => {
+    const flow = addKeyword(['hola'])
+        .addAnswer(
+            'Como vas?: dime "bien" sino entro en fallback',
+            { capture: true },
+            async (ctx, { flowDynamic, fallBack }) => {
+                if (ctx.body !== 'bien') return fallBack()
+                return flowDynamic([{ body: 'Todo bien!' }])
+            }
+        )
+        .addAnswer('fin!')
+
+    createBot({
+        database,
+        provider,
+        flow: createFlow([flow]),
+    })
+
+    await provider.delaySendMessage(0, 'message', {
+        from: '000',
+        body: 'hola',
+    })
+
+    await provider.delaySendMessage(10, 'message', {
+        from: '000',
+        body: 'mal',
+    })
+
+    await provider.delaySendMessage(20, 'message', {
+        from: '000',
+        body: 'bien',
+    })
+
+    await delay(100)
+    const getHistory = database.listHistory.map((i) => i.answer)
+    assert.is('Como vas?: dime "bien" sino entro en fallback', getHistory[0])
+    assert.is('mal', getHistory[1])
+    assert.is('Como vas?: dime "bien" sino entro en fallback', getHistory[2])
+    assert.is('bien', getHistory[3])
+    assert.is('Todo bien!', getHistory[4])
+    assert.is('fin!', getHistory[5])
+    assert.is(undefined, getHistory[6])
+})
+
+suiteCase.skip(`FlowDynamic con capture en hijo`, async ({ database, provider }) => {
+    // const flowTres = addKeyword('flowTres').addAnswer('Soy flujo 3',null,null,[flowTres]).addAnswer('Soy flujo 3-1')
+
+    const flowDos = addKeyword('flowDos').addAnswer('Soy flujo 2').addAnswer('Soy flujo 2-1')
+
+    const flow = addKeyword(['hola']).addAnswer(
+        'Buenas!',
+        { capture: true },
+        async (_, { flowDynamic }) => {
+            return flowDynamic('Escribe flowDos')
+        },
+        [flowDos]
+    )
+
+    createBot({
+        database,
+        provider,
+        flow: createFlow([flow]),
+    })
+
+    await provider.delaySendMessage(0, 'message', {
+        from: '000',
+        body: 'hola',
+    })
+
+    await provider.delaySendMessage(10, 'message', {
+        from: '000',
+        body: 'mirame',
+    })
+
+    await provider.delaySendMessage(20, 'message', {
+        from: '000',
+        body: 'flowDos',
+    })
+
+    await delay(100)
+    const getHistory = database.listHistory.map((i) => i.answer)
+    assert.is('Buenas!', getHistory[0])
+    assert.is('mirame', getHistory[1])
+    assert.is('Escribe flowDos', getHistory[2])
+    assert.is('flowDos', getHistory[3])
+    assert.is('Soy flujo 2', getHistory[4])
+    // assert.is('Soy flujo 2-1', getHistory[5])
+    // assert.is(undefined, getHistory[7])
+})
+
 suiteCase.run()
