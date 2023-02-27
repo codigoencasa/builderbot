@@ -4,7 +4,7 @@
     "description": "",
     "main": "app.js",
     "scripts": {
-        "pre-copy": "cd .. && yarn run copy.lib base-baileys-json",
+        "pre-copy": "cd .. && npm run  copy.lib base-baileys-json",
         "start": "node app.js"
     },
     "keywords": [],

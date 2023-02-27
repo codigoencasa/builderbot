@@ -57,4 +57,13 @@ module.exports = [
         },
         plugins: [commonjs()],
     },
+    {
+        input: join(__dirname, 'src', 'wppconnect', 'index.js'),
+        output: {
+            banner: banner['banner.output'].join(''),
+            file: join(__dirname, 'lib', 'wppconnect', 'index.cjs'),
+            format: 'cjs',
+        },
+        plugins: [commonjs()],
+    },
 ]

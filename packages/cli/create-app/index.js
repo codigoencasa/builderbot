@@ -1,5 +1,4 @@
 const fs = require('fs-extra')
-
 /**
  * Copy files
  */

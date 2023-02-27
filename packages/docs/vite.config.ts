@@ -4,7 +4,7 @@ import { qwikCity } from '@builder.io/qwik-city/vite'
 import { imagetools } from 'vite-imagetools'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { SITE } from './src/config.mjs'
-
+import { qwikReact } from '@builder.io/qwik-react/vite'
 const path = require('path')
 
 export default defineConfig(() => {
@@ -17,6 +17,7 @@ export default defineConfig(() => {
             qwikVite(),
             tsconfigPaths(),
             imagetools(),
+            qwikReact(),
         ],
         preview: {
             headers: {

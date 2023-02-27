@@ -17,23 +17,25 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v3
 
+            - uses: pnpm/action-setup@v2.2.4
+
             - name: Setup Node
               uses: actions/setup-node@v3
               with:
                   node-version: 16.x
-                  cache: 'yarn'
+                  cache: 'pnpm'
                   registry-url: https://registry.npmjs.org/
 
             - run: corepack enable
 
             - name: Install NPM Dependencies
-              run: yarn install --immutable --network-timeout 300000
+              run: pnpm install --frozen-lockfile
 
             - name: Build Package
-              run: yarn build:full
+              run: pnpm build:full
 
             - name: Build Eslint rules
-              run: yarn lint:fix
+              run: pnpm lint:fix
 
     ############ UNIT TEST ############
     test-unit:
@@ -43,20 +45,22 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v3
 
+            - uses: pnpm/action-setup@v2.2.4
+
             - name: Setup Node
               uses: actions/setup-node@v3
               with:
                   node-version: 16.x
-                  cache: 'yarn'
+                  cache: 'pnpm'
                   registry-url: https://registry.npmjs.org/
 
             - run: corepack enable
 
             - name: Install NPM Dependencies
-              run: yarn install --immutable --network-timeout 300000
+              run: pnpm install --frozen-lockfile
 
             - name: Unit Tests
-              run: yarn test
+              run: pnpm test
     ############ UNIT TEST ############
     test-e2e:
         name: e2e Tests
@@ -67,17 +71,19 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v3
 
+            - uses: pnpm/action-setup@v2.2.4
+
             - name: Setup Node
               uses: actions/setup-node@v3
               with:
                   node-version: 16.x
-                  cache: 'yarn'
+                  cache: 'pnpm'
                   registry-url: https://registry.npmjs.org/
 
             - run: corepack enable
 
             - name: Install NPM Dependencies
-              run: yarn install --immutable --network-timeout 300000
+              run: pnpm install --frozen-lockfile
 
             - name: e2e Tests
-              run: yarn test.e2e
+              run: pnpm test.e2e

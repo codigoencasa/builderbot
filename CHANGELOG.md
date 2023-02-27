@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.23](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.22...v0.1.23) (2023-02-27)
+
+
+### Features
+
+* :fire: pnpm implement ([41bc788](https://github.com/leifermendez/bot-whatsapp/commit/41bc788fb4568ddf6866bdd607d82607fad289df))
+* :fire: pnpm implement ([25f8062](https://github.com/leifermendez/bot-whatsapp/commit/25f8062add371f7a9954b915fb966df94fea1175))
+* :fire: pnpm implement ([b4b4650](https://github.com/leifermendez/bot-whatsapp/commit/b4b4650cc4c0e5904a25c91a4733c72644c47b6a))
+* :fire: pnpm implement ([ca65ace](https://github.com/leifermendez/bot-whatsapp/commit/ca65acede087735f7158a6fb08b9886989b1a8a8))
+* **bot:** :sparkles: new goto event ([8d7a948](https://github.com/leifermendez/bot-whatsapp/commit/8d7a94898db95da4751fee979d322f339fd297aa))
+* **bot:** :sparkles: new goto event ([58d43a7](https://github.com/leifermendez/bot-whatsapp/commit/58d43a75b1917de71b01c702a8fcedfb97df9780))
+* **bot:** :sparkles: new goto event ([c1227cf](https://github.com/leifermendez/bot-whatsapp/commit/c1227cf6a5618a00ee6822c2e174e5d65933b701))
+* fix cli ([d95cf0a](https://github.com/leifermendez/bot-whatsapp/commit/d95cf0a33d74afcd16e56bdff20b54c7475123ad))
+* fix cli ([cd50707](https://github.com/leifermendez/bot-whatsapp/commit/cd50707077c3eee8f3df685369951bde71e6ad7b))
+* **provider:** :white_check_mark: it was implemented to see the QR code from the page ([73a4822](https://github.com/leifermendez/bot-whatsapp/commit/73a4822c2445f0edc5c66078c4132d1264434a28))
+* **provider:** :zap: add listener EVENTS ([8dac130](https://github.com/leifermendez/bot-whatsapp/commit/8dac1303e4f02b3f945f75268f6c24a7ff8a59c2))
+* **provider:** :zap: new provider ([a8c84e4](https://github.com/leifermendez/bot-whatsapp/commit/a8c84e4a60d3fa21352530ec32c36df56829b21e))
+* **provider:** :zap: new wppconnect provider ([fd0e51c](https://github.com/leifermendez/bot-whatsapp/commit/fd0e51cb06189bfc8fdf476572eedcc9a3ef21dc))
+
+
+### Bug Fixes
+
+* :art: add convert audio ([8b5c5e1](https://github.com/leifermendez/bot-whatsapp/commit/8b5c5e14e4cd5b1ae67a020aabe9d027dcc5a0c8))
+* :art: fix goto ([94f9215](https://github.com/leifermendez/bot-whatsapp/commit/94f9215fce74635ce3b9a380275e8dc51c8c78be))
+* :art: fix goto ([a4a7d40](https://github.com/leifermendez/bot-whatsapp/commit/a4a7d4052fbd1b010f1dff2ba6efd17de60b3c77))
+* :art: fix goto ([bd6c66d](https://github.com/leifermendez/bot-whatsapp/commit/bd6c66ddb34fd87d798ee8de9623f8f296a9128e))
+* :bug: message npm audit ([a0701af](https://github.com/leifermendez/bot-whatsapp/commit/a0701af745f3b2a014ddd96abad3592f1a088074))
+* **cli:** :zap: change script install ([1c587d8](https://github.com/leifermendez/bot-whatsapp/commit/1c587d84de3392dffda34f3d96afce8b17ddbcbc))
+* **cli:** :zap: cli legacy ([6f48111](https://github.com/leifermendez/bot-whatsapp/commit/6f4811146299d7783abf130adb78254f2f135fe7))
+* **hook:** continue to next version ([5d621ac](https://github.com/leifermendez/bot-whatsapp/commit/5d621acec4af963fd50b219470306ea500a644e3))
+* **hook:** continue to next version ([bfe7a33](https://github.com/leifermendez/bot-whatsapp/commit/bfe7a33ece0408ecc116ee4be6bd005d59ce8a01))
+* hot fix and more test e2e ([1f98177](https://github.com/leifermendez/bot-whatsapp/commit/1f98177e28e72fb0708e4ddfede8337d2ce65d9a))
+* hot fix and more test e2e ([53bf9af](https://github.com/leifermendez/bot-whatsapp/commit/53bf9afcf1b0405fb8493709e295bbf7daa45911))
+* **provider:** :fire: add new emoji ([6e721d1](https://github.com/leifermendez/bot-whatsapp/commit/6e721d1b511332c7e8c076e8f9503a30590ca05b))
+* **provider:** :zap: fix qr generate ([5113ae8](https://github.com/leifermendez/bot-whatsapp/commit/5113ae819c704fbba65a4cf4e81f5154f207362b))
+* **provider:** :zap: fix qr generate ([dae14d1](https://github.com/leifermendez/bot-whatsapp/commit/dae14d1d73b26cecba99ef96e2e8651055a3b513))
+* **provider:** :zap: venom mp3 convert audio ([7964710](https://github.com/leifermendez/bot-whatsapp/commit/79647102799d889fb9cdb30ea75c603f6c89f726))
+* **provider:** :zap: venom mp3 convert audio ([45e8bd9](https://github.com/leifermendez/bot-whatsapp/commit/45e8bd9d4622b73a98159ea294bdc8c6f2890488))
+
 ### [0.1.22](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.21...v0.1.22) (2023-02-19)
 
 

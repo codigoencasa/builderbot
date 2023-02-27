@@ -7,7 +7,8 @@ const [, , appDir] = process.argv || []
 const copyLibPkg = async (pkgName, to) => {
     const FROM = `${PACKAGES_PATH}/${pkgName}`
     const TO = `${process.cwd()}/${to}/node_modules/${NAME_PREFIX}/${pkgName}`
-    await fs.copy(FROM, TO)
+    await fs.copy(`${FROM}/lib`, `${TO}/lib`, { overwrite: true })
+    await fs.copy(`${FROM}/package.json`, `${TO}/package.json`)
 }
 
 const listLib = ['create-bot-whatsapp', 'bot', 'database', 'provider', 'contexts', 'portal']

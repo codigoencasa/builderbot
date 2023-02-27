@@ -13,6 +13,7 @@ const { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber } = require(
 
 const { generalDownload } = require('../../common/download')
 const { generateRefprovider } = require('../../common/hash')
+const { convertAudio } = require('../utils/convertAudio')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/baileys.log`),
@@ -81,7 +82,7 @@ class BaileysProvider extends ProviderClass {
                 if (qr) {
                     this.emit('require_action', {
                         instructions: [
-                            `Debes escanear el QR Code para iniciar ${this.globalVendorArgs.name}.qr.png`,
+                            `Debes escanear el QR Code 👌 ${this.globalVendorArgs.name}.qr.png`,
                             `Recuerda que el QR se actualiza cada minuto `,
                             `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
                         ],
@@ -130,8 +131,6 @@ class BaileysProvider extends ProviderClass {
                         payload = { ...payload, body: generateRefprovider('_event_location_') }
                     }
                 }
-
-                console.log(messageCtx.message)
 
                 //Detectar media
                 if (messageCtx.message?.imageMessage) {
@@ -193,7 +192,10 @@ class BaileysProvider extends ProviderClass {
 
         if (mimeType.includes('image')) return this.sendImage(number, fileDownloaded, text)
         if (mimeType.includes('video')) return this.sendVideo(number, fileDownloaded, text)
-        if (mimeType.includes('audio')) return this.sendAudio(number, fileDownloaded, text)
+        if (mimeType.includes('audio')) {
+            const fileOpus = await convertAudio(fileDownloaded)
+            return this.sendAudio(number, fileOpus, text)
+        }
 
         return this.sendFile(number, fileDownloaded)
     }
