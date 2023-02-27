@@ -15,20 +15,22 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v3
 
+            - uses: pnpm/action-setup@v2.2.4
+
             - name: Setup Node
               uses: actions/setup-node@v3
               with:
                   node-version: 16.x
-                  cache: 'yarn'
+                  cache: 'pnpm'
                   registry-url: https://registry.npmjs.org/
 
             - run: corepack enable
 
             - name: Install NPM Dependencies
-              run: yarn install --immutable --network-timeout 300000
+              run: pnpm install --frozen-lockfile
 
             - name: Add netlify
-              run: yarn add netlify-cli -D
+              run: pnpm install netlify-cli -w
 
             - name: Create .env build file
               run: |

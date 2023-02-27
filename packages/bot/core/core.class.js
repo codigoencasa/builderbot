@@ -54,10 +54,13 @@ class CoreClass {
             event: 'auth_failure',
             func: ({ instructions }) => printer(instructions, '⚡⚡ ERROR AUTH ⚡⚡'),
         },
-
         {
             event: 'message',
             func: (msg) => this.handleMsg(msg),
+        },
+        {
+            event: 'notice',
+            func: (note) => printer(note),
         },
     ]
 
@@ -124,7 +127,6 @@ class CoreClass {
         // 📄 Esta funcion se encarga de enviar un array de mensajes dentro de este ctx
         const sendFlow = async (messageToSend, numberOrId, options = { prev: prevMsg }) => {
             if (options.prev?.options?.capture) await cbEveryCtx(options.prev?.ref)
-
             const queue = []
             for (const ctxMessage of messageToSend) {
                 if (endFlowFlag) return
@@ -173,12 +175,27 @@ class CoreClass {
                 return
             }
 
+        const gotoFlow =
+            (flag) =>
+            async (flowInstance, step = 0) => {
+                flag.gotoFlow = true
+                const flowTree = flowInstance.toJson()
+                const flowParentId = flowTree[step]
+                const parseListMsg = await this.flowClass.find(flowParentId?.ref, true, flowTree)
+                if (endFlowFlag) return
+                for (const msg of parseListMsg) {
+                    await this.sendProviderAndSave(from, msg)
+                }
+                await endFlow(flag)()
+                return
+            }
+
         // 📄 [options: flowDynamic]: esta funcion se encarga de responder un array de respuesta esta limitado a 5 mensajes
         // para evitar bloque de whatsapp
 
         const flowDynamic =
             (flag) =>
-            async (listMsg = []) => {
+            async (listMsg = [], options = { continue: true }) => {
                 flag.flowDynamic = true
                 if (!Array.isArray(listMsg)) listMsg = [listMsg]
 
@@ -188,7 +205,8 @@ class CoreClass {
                 for (const msg of parseListMsg) {
                     await this.sendProviderAndSave(from, msg)
                 }
-                await continueFlow()
+
+                if (options?.continue) await continueFlow()
                 return
             }
 
@@ -203,7 +221,7 @@ class CoreClass {
                 endFlow: false,
                 fallBack: false,
                 flowDynamic: false,
-                wait: true,
+                gotoFlow: false,
             }
 
             const provider = this.providerClass
@@ -215,11 +233,13 @@ class CoreClass {
                 fallBack: fallBack(flags),
                 flowDynamic: flowDynamic(flags),
                 endFlow: endFlow(flags),
+                gotoFlow: gotoFlow(flags),
             }
 
             await this.flowClass.allCallbacks[inRef](messageCtxInComming, argsCb)
-            const wait = !(!flags.endFlow && !flags.fallBack && !flags.flowDynamic)
-            if (!wait) await continueFlow()
+            //Si no hay llamado de fallaback y no hay llamado de flowDynamic y no hay llamado de enflow EL flujo continua
+            const ifContinue = !flags.endFlow && !flags.fallBack && !flags.flowDynamic
+            if (ifContinue) await continueFlow()
 
             return
         }

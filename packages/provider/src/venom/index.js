@@ -12,6 +12,7 @@ const logger = new Console({
 
 const { generalDownload } = require('../../common/download')
 const { generateRefprovider } = require('../../common/hash')
+const { convertAudio } = require('../utils/convertAudio')
 
 /**
  * ⚙️ VenomProvider: Es una clase tipo adaptor
@@ -140,9 +141,7 @@ class VenomProvider extends ProviderClass {
         const NOTE_VENOM_BUTTON = [`Actualmente VENOM tiene problemas con la API`, `para el envio de Botones`].join(
             '\n'
         )
-
-        console.log(`[NOTA]: ${NOTE_VENOM_BUTTON}`)
-
+        this.emit('notice', NOTE_VENOM_BUTTON)
         const buttonToStr = [message].concat(buttons.map((btn) => `${btn.body}`)).join(`\n`)
         return this.vendor.sendText(number, buttonToStr)
         // return this.vendor.sendButtons(number, "Title", buttons1, "Description");
@@ -208,7 +207,10 @@ class VenomProvider extends ProviderClass {
 
         if (mimeType.includes('image')) return this.sendImage(number, fileDownloaded, text)
         if (mimeType.includes('video')) return this.sendVideo(number, fileDownloaded, text)
-        if (mimeType.includes('audio')) return this.sendAudio(number, fileDownloaded)
+        if (mimeType.includes('audio')) {
+            const fileOpus = await convertAudio(fileDownloaded, 'mp3')
+            return this.sendAudio(number, fileOpus)
+        }
 
         return this.sendFile(number, fileDownloaded, text)
     }
