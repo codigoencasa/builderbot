@@ -238,6 +238,7 @@ importers:
             '@ffmpeg-installer/ffmpeg': ^1.1.0
             combine-image: ^1.0.3
             fluent-ffmpeg: ^2.1.2
+            follow-redirects: ^1.15.2
             qr-image: ^3.2.0
             rimraf: ^3.0.2
         dependencies:
@@ -247,6 +248,8 @@ importers:
             fluent-ffmpeg: 2.1.2
             qr-image: 3.2.0
             rimraf: 3.0.2
+        devDependencies:
+            follow-redirects: 1.15.2
 
 packages:
     /@algolia/autocomplete-core/1.7.4:
@@ -10897,6 +10900,19 @@ packages:
             }
         dependencies:
             from2: 2.3.0
+        dev: true
+
+    /follow-redirects/1.15.2:
+        resolution:
+            {
+                integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==,
+            }
+        engines: { node: '>=4.0' }
+        peerDependencies:
+            debug: '*'
+        peerDependenciesMeta:
+            debug:
+                optional: true
         dev: true
 
     /follow-redirects/1.15.2_debug@4.3.4:
