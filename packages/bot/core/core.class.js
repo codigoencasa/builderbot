@@ -77,7 +77,6 @@ class CoreClass {
         let fallBackFlag = false
         if (this.generalArgs.blackList.includes(from)) return
         if (!body) return
-        if (!body.length) return
 
         let prevMsg = await this.databaseClass.getPrevByNumber(from)
         const refToContinue = this.flowClass.findBySerialize(prevMsg?.refSerialize)
@@ -302,8 +301,12 @@ class CoreClass {
      */
     sendProviderAndSave = async (numberOrId, ctxMessage) => {
         const { answer } = ctxMessage
-        await this.providerClass.sendMessage(numberOrId, answer, ctxMessage)
-        await this.databaseClass.save({ ...ctxMessage, from: numberOrId })
+
+        if (answer && answer.length && answer !== '__call_action__') {
+            await this.providerClass.sendMessage(numberOrId, answer, ctxMessage)
+            await this.databaseClass.save({ ...ctxMessage, from: numberOrId })
+        }
+
         return
     }
 

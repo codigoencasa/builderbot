@@ -1,5 +1,6 @@
 const { flatObject } = require('../../utils/flattener')
 const { generateRef } = require('../../utils/hash')
+const { addAction } = require('./addAction')
 const { addChild } = require('./addChild')
 const { toJson } = require('./toJson')
 /**
@@ -98,6 +99,7 @@ const addAnswer =
             ctx,
             ref: ctx.ref,
             addAnswer: addAnswer(ctx),
+            addAction: (cb = () => null) => addAnswer(ctx)('__call_action__', null, cb),
             toJson: toJson(ctx),
         }
     }
