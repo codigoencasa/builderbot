@@ -1,5 +1,5 @@
 packages/**/lib
-packages/docs/*.json
+packages/docs/
 **/.git
 **/.svn
 **/.hg

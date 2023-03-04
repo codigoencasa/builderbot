@@ -1,9 +1,9 @@
 const { createWriteStream } = require('fs')
-const combineImage = require('combine-image')
 const qr = require('qr-image')
 const { tmpdir } = require('os')
 const http = require('http')
 const https = require('https')
+const { cleanImage } = require('../utils/cleanImage')
 
 const wwebCleanNumber = (number, full = false) => {
     number = number.replace('@c.us', '')
@@ -23,12 +23,7 @@ const wwebGenerateImage = async (base64, name = 'qr.png') => {
         })
 
     await writeFilePromise()
-
-    const cleanImage = await combineImage([PATH_QR], {
-        margin: 15,
-        color: 0xffffffff,
-    })
-    cleanImage.write(PATH_QR)
+    await cleanImage(PATH_QR)
 }
 
 const wwebIsValidNumber = (rawNumber) => {

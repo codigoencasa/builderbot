@@ -27,11 +27,7 @@ export default component$(() => {
                         <NavBar options={store} />
                     </div>
                     <div class={'lg:pl-[14.5rem] lg:pr-[14.5rem]'}>
-                        <div
-                            class={
-                                'slot max-w-3xl mx-auto relative z-20 p-5 xl:max-w-none'
-                            }
-                        >
+                        <div class={'slot max-w-3xl mx-auto relative z-20 p-5 xl:max-w-none'}>
                             <Slot />
                         </div>
                     </div>
@@ -54,8 +50,7 @@ export const head: DocumentHead = {
     meta: [
         {
             name: 'description',
-            content:
-                'Crear chatbot WhatsApp en minutos — Servicio de chatbot para whatspp gratis proyecto OpenSource',
+            content: 'Crear chatbot WhatsApp en minutos — Servicio de chatbot para whatspp gratis proyecto OpenSource',
         },
     ],
 }

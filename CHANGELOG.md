@@ -2,6 +2,92 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.23](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.22...v0.1.23) (2023-02-27)
+
+
+### Features
+
+* :fire: pnpm implement ([41bc788](https://github.com/leifermendez/bot-whatsapp/commit/41bc788fb4568ddf6866bdd607d82607fad289df))
+* :fire: pnpm implement ([25f8062](https://github.com/leifermendez/bot-whatsapp/commit/25f8062add371f7a9954b915fb966df94fea1175))
+* :fire: pnpm implement ([b4b4650](https://github.com/leifermendez/bot-whatsapp/commit/b4b4650cc4c0e5904a25c91a4733c72644c47b6a))
+* :fire: pnpm implement ([ca65ace](https://github.com/leifermendez/bot-whatsapp/commit/ca65acede087735f7158a6fb08b9886989b1a8a8))
+* **bot:** :sparkles: new goto event ([8d7a948](https://github.com/leifermendez/bot-whatsapp/commit/8d7a94898db95da4751fee979d322f339fd297aa))
+* **bot:** :sparkles: new goto event ([58d43a7](https://github.com/leifermendez/bot-whatsapp/commit/58d43a75b1917de71b01c702a8fcedfb97df9780))
+* **bot:** :sparkles: new goto event ([c1227cf](https://github.com/leifermendez/bot-whatsapp/commit/c1227cf6a5618a00ee6822c2e174e5d65933b701))
+* fix cli ([d95cf0a](https://github.com/leifermendez/bot-whatsapp/commit/d95cf0a33d74afcd16e56bdff20b54c7475123ad))
+* fix cli ([cd50707](https://github.com/leifermendez/bot-whatsapp/commit/cd50707077c3eee8f3df685369951bde71e6ad7b))
+* **provider:** :white_check_mark: it was implemented to see the QR code from the page ([73a4822](https://github.com/leifermendez/bot-whatsapp/commit/73a4822c2445f0edc5c66078c4132d1264434a28))
+* **provider:** :zap: add listener EVENTS ([8dac130](https://github.com/leifermendez/bot-whatsapp/commit/8dac1303e4f02b3f945f75268f6c24a7ff8a59c2))
+* **provider:** :zap: new provider ([a8c84e4](https://github.com/leifermendez/bot-whatsapp/commit/a8c84e4a60d3fa21352530ec32c36df56829b21e))
+* **provider:** :zap: new wppconnect provider ([fd0e51c](https://github.com/leifermendez/bot-whatsapp/commit/fd0e51cb06189bfc8fdf476572eedcc9a3ef21dc))
+
+
+### Bug Fixes
+
+* :art: add convert audio ([8b5c5e1](https://github.com/leifermendez/bot-whatsapp/commit/8b5c5e14e4cd5b1ae67a020aabe9d027dcc5a0c8))
+* :art: fix goto ([94f9215](https://github.com/leifermendez/bot-whatsapp/commit/94f9215fce74635ce3b9a380275e8dc51c8c78be))
+* :art: fix goto ([a4a7d40](https://github.com/leifermendez/bot-whatsapp/commit/a4a7d4052fbd1b010f1dff2ba6efd17de60b3c77))
+* :art: fix goto ([bd6c66d](https://github.com/leifermendez/bot-whatsapp/commit/bd6c66ddb34fd87d798ee8de9623f8f296a9128e))
+* :bug: message npm audit ([a0701af](https://github.com/leifermendez/bot-whatsapp/commit/a0701af745f3b2a014ddd96abad3592f1a088074))
+* **cli:** :zap: change script install ([1c587d8](https://github.com/leifermendez/bot-whatsapp/commit/1c587d84de3392dffda34f3d96afce8b17ddbcbc))
+* **cli:** :zap: cli legacy ([6f48111](https://github.com/leifermendez/bot-whatsapp/commit/6f4811146299d7783abf130adb78254f2f135fe7))
+* **hook:** continue to next version ([5d621ac](https://github.com/leifermendez/bot-whatsapp/commit/5d621acec4af963fd50b219470306ea500a644e3))
+* **hook:** continue to next version ([bfe7a33](https://github.com/leifermendez/bot-whatsapp/commit/bfe7a33ece0408ecc116ee4be6bd005d59ce8a01))
+* hot fix and more test e2e ([1f98177](https://github.com/leifermendez/bot-whatsapp/commit/1f98177e28e72fb0708e4ddfede8337d2ce65d9a))
+* hot fix and more test e2e ([53bf9af](https://github.com/leifermendez/bot-whatsapp/commit/53bf9afcf1b0405fb8493709e295bbf7daa45911))
+* **provider:** :fire: add new emoji ([6e721d1](https://github.com/leifermendez/bot-whatsapp/commit/6e721d1b511332c7e8c076e8f9503a30590ca05b))
+* **provider:** :zap: fix qr generate ([5113ae8](https://github.com/leifermendez/bot-whatsapp/commit/5113ae819c704fbba65a4cf4e81f5154f207362b))
+* **provider:** :zap: fix qr generate ([dae14d1](https://github.com/leifermendez/bot-whatsapp/commit/dae14d1d73b26cecba99ef96e2e8651055a3b513))
+* **provider:** :zap: venom mp3 convert audio ([7964710](https://github.com/leifermendez/bot-whatsapp/commit/79647102799d889fb9cdb30ea75c603f6c89f726))
+* **provider:** :zap: venom mp3 convert audio ([45e8bd9](https://github.com/leifermendez/bot-whatsapp/commit/45e8bd9d4622b73a98159ea294bdc8c6f2890488))
+
+### [0.1.22](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.21...v0.1.22) (2023-02-19)
+
+
+### Features
+
+* :sparkles: list Eventos ([7a5c4a2](https://github.com/leifermendez/bot-whatsapp/commit/7a5c4a2c415edd1f41e7830f257e5ef55f98764b))
+* :zap: events list ([cd47cc5](https://github.com/leifermendez/bot-whatsapp/commit/cd47cc5f849e7b9fa04b20b75f251df3418734c9))
+* **provider:** :zap: add listener EVENTS ([d3ce1e0](https://github.com/leifermendez/bot-whatsapp/commit/d3ce1e0f718ac573a562e84bd64b59fa0e4f23a0))
+
+### [0.1.21](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.20...v0.1.21) (2023-02-12)
+
+
+### Features
+
+* **provider:** :bug: add_location ([a46a9ef](https://github.com/leifermendez/bot-whatsapp/commit/a46a9efd8dbd921c773395d331154dc9a8aae783))
+* **provider:** :rocket: feat Instance provider ([2278149](https://github.com/leifermendez/bot-whatsapp/commit/227814929561cedc11a1f69c8029515a7f47c9ff))
+* **provider:** :rocket: provider raw ([2d44a00](https://github.com/leifermendez/bot-whatsapp/commit/2d44a002ff226fb0eb7362ad49936f1e00b84242))
+* **provider:** :zap: add location provider ([c7de860](https://github.com/leifermendez/bot-whatsapp/commit/c7de860803fb362f5afe06cc38ad71b2c316d524))
+* **provider:** :zap: add location provider ([c0ece6f](https://github.com/leifermendez/bot-whatsapp/commit/c0ece6feb2b0325476880a604c32de341eb60544))
+* **provider:** :zap: support location � ([a147677](https://github.com/leifermendez/bot-whatsapp/commit/a147677a26b36bba429c3dd3c2c81a44a7a4d2b6))
+
+
+### Bug Fixes
+
+* arreglando dir y varios mensajes en dialog flow essential ([01c7db8](https://github.com/leifermendez/bot-whatsapp/commit/01c7db8fe7dda2482eb0aa1fd7b3469b6ae8eae1))
+
+### [0.1.20](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.19...v0.1.20) (2023-02-05)
+
+
+### Features
+
+* **cli:** :fire: add regex expression in addKeyworkd ([e34560c](https://github.com/leifermendez/bot-whatsapp/commit/e34560c77d4852d2e90930f0858e51aa67d4eeab))
+* **provider:** :zap: possible get class provider ([76ba717](https://github.com/leifermendez/bot-whatsapp/commit/76ba717927a75b3d6299206aa0b8aee2bc25b726))
+
+
+### Bug Fixes
+
+* **cli:** :zap: working flowDynamic test ([c0113ca](https://github.com/leifermendez/bot-whatsapp/commit/c0113ca49295aff220d8defcb53f2ba7f2872d75))
+* **cli:** :zap: working flowDynamic test ([aef52d2](https://github.com/leifermendez/bot-whatsapp/commit/aef52d2694fa6616d614338643db198b4f7f1fe8))
+* **cli:** :zap: working flowDynamic test ([f769320](https://github.com/leifermendez/bot-whatsapp/commit/f76932021ce968d93241b55cfcdb8ae0e0e6c934))
+* **cli:** :zap: working flowDynamic test ([23e09ef](https://github.com/leifermendez/bot-whatsapp/commit/23e09efaeccaf51018c55da492edff45b625f0a9))
+* **database:** add support emoji in mysql ([9311aa0](https://github.com/leifermendez/bot-whatsapp/commit/9311aa0a65623a1bf40e96207a281625154dae90))
+* **database:** fix naming ([cd082f2](https://github.com/leifermendez/bot-whatsapp/commit/cd082f235012cd5f5844c6437f51711beee0c865))
+* **database:** fix naming ([1afc3ba](https://github.com/leifermendez/bot-whatsapp/commit/1afc3ba182070713b5bec40eaab0fa1f680830cd))
+* **database:** fix naming ([c9831d2](https://github.com/leifermendez/bot-whatsapp/commit/c9831d202ab2c85f15a0247cd2a2426bc435270c))
+* **provider:** :zap: baily wa.link ([96c2bff](https://github.com/leifermendez/bot-whatsapp/commit/96c2bffd093269be8e39474a84c156938504a6cb))
+
 ### [0.1.19](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.18...v0.1.19) (2023-01-29)
 
 

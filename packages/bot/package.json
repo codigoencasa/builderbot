@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/bot",
-    "version": "0.0.91-alpha.0",
+    "version": "0.0.111-alpha.0",
     "description": "",
     "main": "./lib/bundle.bot.cjs",
     "scripts": {
@@ -22,8 +22,6 @@
     "license": "ISC",
     "devDependencies": {
         "@bot-whatsapp/cli": "*",
-        "@bot-whatsapp/database": "*",
-        "@bot-whatsapp/provider": "*",
         "kleur": "^4.1.5"
     },
     "dependencies": {

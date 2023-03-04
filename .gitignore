@@ -1,5 +1,6 @@
 /node_modules
 /packages/repl
+/packages/portal/server
 /packages/*/starters
 /packages/*/node_modules
 /packages/*/dist
@@ -36,6 +37,7 @@ tmp/
 .fleet/
 example-app*/
 base-*/
+test-*.json
 !starters/apps/base-*/
 qr.svg
 package-lock.json
@@ -44,3 +46,9 @@ yarn-error.log
 # Local Netlify folder
 .netlify
 .secrets
+
+# managed
+**.data.json
+**.node-persist**
+**_IGNORE_**
+# end managed

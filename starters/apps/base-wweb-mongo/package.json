@@ -4,12 +4,12 @@
     "description": "",
     "main": "app.js",
     "scripts": {
-        "pre-copy": "cd .. && yarn run copy.lib base-wweb-mongo",
+        "pre-copy": "cd .. && npm run  copy.lib base-wweb-mongo",
         "start": "node app.js"
     },
     "keywords": [],
     "dependencies": {
-        "whatsapp-web.js": "1.19.2",
+        "whatsapp-web.js": "1.19.4",
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",

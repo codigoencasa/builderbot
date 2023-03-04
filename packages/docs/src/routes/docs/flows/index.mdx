@@ -9,12 +9,7 @@ Tan sencillo como decir **palabra/s clave** y **mensaje a responder**
 Ambos metodos **[addKeyword](https://github.com/codigoencasa/bot-whatsapp/blob/dev/packages/bot/io/methods/addKeyword.js)** y el **[addAnswer](https://github.com/codigoencasa/bot-whatsapp/blob/dev/packages/bot/io/methods/addAnswer.js)** tienen una serie opciones disponibles
 
 ```js
-const {
-    createBot,
-    createProvider,
-    createFlow,
-    addKeyword,
-} = require('@bot-whatsapp/bot')
+const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
 
 const flowPrincipal = addKeyword(['hola', 'alo'])
     .addAnswer(['Hola, bienvenido a mi tienda', '¿Como puedo ayudarte?'])
@@ -81,37 +76,21 @@ Esta funcion se utliza para responder un mensaje despues del `addKeyword()`
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
 
-const flowString = addKeyword('hola').addAnswer(
-    'Este mensaje se enviara 1 segundo despues',
-    {
-        delay: 1000,
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Este mensaje se enviara 1 segundo despues', {
+    delay: 1000,
+})
 
-const flowString = addKeyword('hola').addAnswer(
-    'Este mensaje envia una imagen',
-    {
-        media: 'https://i.imgur.com/0HpzsEm.png',
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Este mensaje envia una imagen', {
+    media: 'https://i.imgur.com/0HpzsEm.png',
+})
 
-const flowString = addKeyword('hola').addAnswer(
-    'Este mensaje envia tres botones',
-    {
-        buttons: [
-            { body: 'Boton 1' },
-            { body: 'Boton 2' },
-            { body: 'Boton 3' },
-        ],
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Este mensaje envia tres botones', {
+    buttons: [{ body: 'Boton 1' }, { body: 'Boton 2' }, { body: 'Boton 3' }],
+})
 
-const flowString = addKeyword('hola').addAnswer(
-    'Este mensaje espera una respueta del usuario',
-    {
-        capture: true,
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Este mensaje espera una respueta del usuario', {
+    capture: true,
+})
 ```
 
 ---
@@ -123,13 +102,9 @@ Este argumento se utiliza para obtener el contexto de la conversación
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
 
-const flowString = addKeyword('hola').addAnswer(
-    'Indica cual es tu email',
-    null,
-    (ctx) => {
-        console.log('👉 Informacion del contexto: ', ctx)
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Indica cual es tu email', null, (ctx) => {
+    console.log('👉 Informacion del contexto: ', ctx)
+})
 ```
 
 ---
@@ -143,13 +118,9 @@ se repetira el mensaje `Indica cual es tu email`
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
 
-const flowString = addKeyword('hola').addAnswer(
-    'Indica cual es tu email',
-    null,
-    (ctx, { fallBack }) => {
-        if (!ctx.body.includes('@')) return fallBack()
-    }
-)
+const flowString = addKeyword('hola').addAnswer('Indica cual es tu email', null, (ctx, { fallBack }) => {
+    if (!ctx.body.includes('@')) return fallBack()
+})
 ```
 
 ---
@@ -181,57 +152,65 @@ const flowString = addKeyword('hola')
 
 ## endFlow()
 
-Esta funcion se utliza para finalizar un flujo con dos o más addAnswer. Un ejemplo de uso sería registrar 3 datos de un usuario en 3 preguntas distinas y
-que el usuario pueda finalizar por él mismo el flujo.
+Esta funcion se utliza para **finalizar un flujo con dos** o más addAnswer. Un ejemplo de uso sería registrar 3 datos de un usuario en 3 preguntas distinas y
+que el usuario **pueda finalizar por él mismo el flujo**.
 Como podrás comprobar en el ejemplo siguiente, se puede vincular flowDynamic y todas sus funciones; como por ejemplo botones.
 
 ```js
-const flowFormulario = addKeyword(['Hola'])
+let nombre;
+let apellidos;
+let telefono;
+
+const flowFormulario = addKeyword(['Hola','⬅️ Volver al Inicio'])
     .addAnswer(
-        ['Hola!', 'Escriba su *Nombre* para generar su solicitud'],
+        ['Hola!','Para enviar el formulario necesito unos datos...' ,'Escriba su *Nombre*'],
         { capture: true, buttons: [{ body: '❌ Cancelar solicitud' }] },
+
         async (ctx, { flowDynamic, endFlow }) => {
-            if (ctx.body == '❌ Cancelar solicitud') {
-                await flowDynamic([
-                    {
-                        body: '❌ *Su solicitud de cita ha sido cancelada* ❌',
-                        buttons: [{ body: '⬅️ Volver al Inicio' }],
-                    },
-                ])
-                return endFlow()
-            }
+            if (ctx.body == '❌ Cancelar solicitud')
+             return endFlow({body: '❌ Su solicitud ha sido cancelada ❌',    // Aquí terminamos el flow si la condicion se comple
+                 buttons:[{body:'⬅️ Volver al Inicio' }]                      // Y además, añadimos un botón por si necesitas derivarlo a otro flow
+
+            
+            })
+            nombre = ctx.body
+            return flowDynamic(`Encantado *${nombre}*, continuamos...`)
         }
     )
     .addAnswer(
         ['También necesito tus dos apellidos'],
         { capture: true, buttons: [{ body: '❌ Cancelar solicitud' }] },
+
         async (ctx, { flowDynamic, endFlow }) => {
-            if (ctx.body == '❌ Cancelar solicitud') {
-                await flowDynamic([
-                    {
-                        body: '❌ *Su solicitud de cita ha sido cancelada* ❌',
-                        buttons: [{ body: '⬅️ Volver al Inicio' }],
-                    },
-                ])
-                return endFlow()
-            }
+            if (ctx.body == '❌ Cancelar solicitud') 
+                return endFlow({body: '❌ Su solicitud ha sido cancelada ❌',
+                    buttons:[{body:'⬅️ Volver al Inicio' }]
+
+
+        })
+        apellidos = ctx.body
+        return flowDynamic(`Perfecto *${nombre}*, por último...`)
         }
     )
     .addAnswer(
         ['Dejeme su número de teléfono y le llamaré lo antes posible.'],
         { capture: true, buttons: [{ body: '❌ Cancelar solicitud' }] },
+
         async (ctx, { flowDynamic, endFlow }) => {
-            if (ctx.body == '❌ Cancelar solicitud') {
-                await flowDynamic([
-                    {
-                        body: '❌ *Su solicitud de cita ha sido cancelada* ❌',
-                        buttons: [{ body: '⬅️ Volver al Inicio' }],
-                    },
-                ])
-                return endFlow()
-            }
+            if (ctx.body == '❌ Cancelar solicitud') 
+                return endFlow({body: '❌ Su solicitud ha sido cancelada ❌',
+                      buttons:[{body:'⬅️ Volver al Inicio' }]
+                })
+
+
+                telefono = ctx.body
+                await delay(2000)
+                return flowDynamic(`Estupendo *${nombre}*! te dejo el resumen de tu formulario
+                \n- Nombre y apellidos: *${nombre} ${apellidos}*
+                \n- Telefono: *${telefono}*`)
         }
     )
+
 ```
 
 ---

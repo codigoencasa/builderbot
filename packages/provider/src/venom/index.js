@@ -4,17 +4,15 @@ const { createWriteStream } = require('fs')
 const { Console } = require('console')
 const mime = require('mime-types')
 
-const {
-    venomCleanNumber,
-    venomGenerateImage,
-    venomisValidNumber,
-} = require('./utils')
+const { venomCleanNumber, venomGenerateImage, venomisValidNumber } = require('./utils')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/venom.log`),
 })
 
 const { generalDownload } = require('../../common/download')
+const { generateRefprovider } = require('../../common/hash')
+const { convertAudio } = require('../utils/convertAudio')
 
 /**
  * ⚙️ VenomProvider: Es una clase tipo adaptor
@@ -22,7 +20,7 @@ const { generalDownload } = require('../../common/download')
  * https://github.com/orkestral/venom
  */
 class VenomProvider extends ProviderClass {
-    globalVendorArgs = { name: `bot` }
+    globalVendorArgs = { name: `bot`, gifPlayback: false }
     vendor
     constructor(args) {
         super()
@@ -89,11 +87,30 @@ class VenomProvider extends ProviderClass {
                 if (payload.from === 'status@broadcast') {
                     return
                 }
-
                 if (!venomisValidNumber(payload.from)) {
                     return
                 }
                 payload.from = venomCleanNumber(payload.from, true)
+
+                if (payload.hasOwnProperty('type') && ['image', 'video'].includes(payload.type)) {
+                    payload = { ...payload, body: generateRefprovider('_event_media_') }
+                }
+
+                if (payload.hasOwnProperty('type') && ['document'].includes(payload.type)) {
+                    payload = { ...payload, body: generateRefprovider('_event_document_') }
+                }
+
+                if (payload.hasOwnProperty('type') && ['ptt'].includes(payload.type)) {
+                    payload = { ...payload, body: generateRefprovider('_event_voice_note_') }
+                }
+
+                if (payload.hasOwnProperty('lat') && payload.hasOwnProperty('lng')) {
+                    const lat = payload.lat
+                    const lng = payload.lng
+                    if (lat !== '' && lng !== '') {
+                        payload = { ...payload, body: generateRefprovider('_event_location_') }
+                    }
+                }
                 this.emit('message', payload)
             },
         },
@@ -108,8 +125,7 @@ class VenomProvider extends ProviderClass {
         const listEvents = this.busEvents()
 
         for (const { event, func } of listEvents) {
-            if (this.vendor[event])
-                this.vendor[event]((payload) => func(payload))
+            if (this.vendor[event]) this.vendor[event]((payload) => func(payload))
         }
     }
 
@@ -122,16 +138,11 @@ class VenomProvider extends ProviderClass {
      * @returns
      */
     sendButtons = async (number, message, buttons = []) => {
-        const NOTE_VENOM_BUTTON = [
-            `Actualmente VENOM tiene problemas con la API`,
-            `para el envio de Botones`,
-        ].join('\n')
-
-        console.log(`[NOTA]: ${NOTE_VENOM_BUTTON}`)
-
-        const buttonToStr = [message]
-            .concat(buttons.map((btn) => `${btn.body}`))
-            .join(`\n`)
+        const NOTE_VENOM_BUTTON = [`Actualmente VENOM tiene problemas con la API`, `para el envio de Botones`].join(
+            '\n'
+        )
+        this.emit('notice', NOTE_VENOM_BUTTON)
+        const buttonToStr = [message].concat(buttons.map((btn) => `${btn.body}`)).join(`\n`)
         return this.vendor.sendText(number, buttonToStr)
         // return this.vendor.sendButtons(number, "Title", buttons1, "Description");
     }
@@ -194,12 +205,12 @@ class VenomProvider extends ProviderClass {
         const fileDownloaded = await generalDownload(mediaUrl)
         const mimeType = mime.lookup(fileDownloaded)
 
-        if (mimeType.includes('image'))
-            return this.sendImage(number, fileDownloaded, text)
-        if (mimeType.includes('video'))
-            return this.sendVideo(number, fileDownloaded, text)
-        if (mimeType.includes('audio'))
-            return this.sendAudio(number, fileDownloaded)
+        if (mimeType.includes('image')) return this.sendImage(number, fileDownloaded, text)
+        if (mimeType.includes('video')) return this.sendVideo(number, fileDownloaded, text)
+        if (mimeType.includes('audio')) {
+            const fileOpus = await convertAudio(fileDownloaded, 'mp3')
+            return this.sendAudio(number, fileOpus)
+        }
 
         return this.sendFile(number, fileDownloaded, text)
     }
@@ -213,10 +224,8 @@ class VenomProvider extends ProviderClass {
      */
     sendMessage = async (userId, message, { options }) => {
         const number = venomCleanNumber(userId)
-        if (options?.buttons?.length)
-            return this.sendButtons(number, message, options.buttons)
-        if (options?.media)
-            return this.sendMedia(number, options.media, message)
+        if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
+        if (options?.media) return this.sendMedia(number, options.media, message)
         return this.vendor.sendText(number, message)
     }
 }

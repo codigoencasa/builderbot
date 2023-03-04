@@ -25,4 +25,20 @@ test(`[FlowClass] Probando findBySerialize`, async () => {
     assert.is(flowClass instanceof FlowClass, true)
 })
 
+test(`[FlowClass] Probando getRefToContinueChild `, async () => {
+    const MOCK_FLOW = addKeyword('hola').addAnswer('Buenas!')
+    const flowClass = new FlowClass([MOCK_FLOW])
+
+    flowClass.getRefToContinueChild('')
+    assert.is(flowClass instanceof FlowClass, true)
+})
+
+test(`[FlowClass] Probando getFlowsChild  `, async () => {
+    const MOCK_FLOW = addKeyword('hola').addAnswer('Buenas!')
+    const flowClass = new FlowClass([MOCK_FLOW])
+
+    flowClass.getFlowsChild('')
+    assert.is(flowClass instanceof FlowClass, true)
+})
+
 test.run()

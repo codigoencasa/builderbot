@@ -4,18 +4,18 @@
     "description": "",
     "main": "app.js",
     "scripts": {
-        "pre-copy": "cd .. && yarn run copy.lib base-venom-json",
+        "pre-copy": "cd .. && npm run  copy.lib base-venom-json",
         "start": "node app.js"
     },
     "keywords": [],
     "dependencies": {
         "venom-bot": "4.3.7",
+        "mime-types": "2.1.35",
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",
         "@bot-whatsapp/provider": "latest",
-        "@bot-whatsapp/portal": "latest",
-        "mime-types": "2.1.35"
+        "@bot-whatsapp/portal": "latest"
     },
     "author": "",
     "license": "ISC"

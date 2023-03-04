@@ -1,19 +1,17 @@
 const { Client, LocalAuth, MessageMedia, Buttons } = require('whatsapp-web.js')
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const { Console } = require('console')
+const mime = require('mime-types')
 const { createWriteStream, readFileSync } = require('fs')
-const {
-    wwebCleanNumber,
-    wwebGenerateImage,
-    wwebIsValidNumber,
-} = require('./utils')
+const { wwebCleanNumber, wwebGenerateImage, wwebIsValidNumber } = require('./utils')
 
 const logger = new Console({
     stdout: createWriteStream('./log'),
 })
 
 const { generalDownload } = require('../../common/download')
-const mime = require('mime-types')
+const { generateRefprovider } = require('../../common/hash')
+const { convertAudio } = require('../utils/convertAudio')
 
 /**
  * ⚙️ WebWhatsappProvider: Es una clase tipo adaptor
@@ -21,7 +19,7 @@ const mime = require('mime-types')
  * https://github.com/pedroslopez/whatsapp-web.js
  */
 class WebWhatsappProvider extends ProviderClass {
-    globalVendorArgs = { name: `bot` }
+    globalVendorArgs = { name: `bot`, gifPlayback: false }
     vendor
     constructor(args) {
         super()
@@ -32,11 +30,7 @@ class WebWhatsappProvider extends ProviderClass {
             }),
             puppeteer: {
                 headless: true,
-                args: [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--unhandled-rejections=strict',
-                ],
+                args: ['--no-sandbox', '--disable-setuid-sandbox', '--unhandled-rejections=strict'],
                 //executablePath: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
             },
         })
@@ -53,7 +47,7 @@ class WebWhatsappProvider extends ProviderClass {
             this.emit('require_action', {
                 instructions: [
                     `(Opcion 1): Debes eliminar la carpeta .wwebjs_auth y reiniciar nuevamente el bot. `,
-                    `(Opcion 2): Intenta actualizar el paquete [npm install whatsapp-web.js] `,
+                    `(Opcion 2): Ejecutar este comando "npm install whatsapp-web.js@latest" `,
                     `(Opcion 3): Ir FORO de discord https://link.codigoencasa.com/DISCORD `,
                 ],
             })
@@ -80,10 +74,7 @@ class WebWhatsappProvider extends ProviderClass {
                         `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
                     ],
                 })
-                await wwebGenerateImage(
-                    qr,
-                    `${this.globalVendorArgs.name}.qr.png`
-                )
+                await wwebGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)
             },
         },
         {
@@ -101,6 +92,22 @@ class WebWhatsappProvider extends ProviderClass {
                     return
                 }
                 payload.from = wwebCleanNumber(payload.from, true)
+                if (payload._data.lat && payload._data.lng) {
+                    payload = { ...payload, body: generateRefprovider('_event_location_') }
+                }
+
+                if (payload._data.hasOwnProperty('type') && ['image', 'video'].includes(payload._data.type)) {
+                    payload = { ...payload, body: generateRefprovider('_event_media_') }
+                }
+
+                if (payload._data.hasOwnProperty('type') && ['document'].includes(payload._data.type)) {
+                    payload = { ...payload, body: generateRefprovider('_event_document_') }
+                }
+
+                if (payload._data.hasOwnProperty('type') && ['ptt'].includes(payload._data.type)) {
+                    payload = { ...payload, body: generateRefprovider('_event_voice_note_') }
+                }
+
                 this.emit('message', payload)
             },
         },
@@ -226,16 +233,24 @@ class WebWhatsappProvider extends ProviderClass {
         const fileDownloaded = await generalDownload(mediaUrl)
         const mimeType = mime.lookup(fileDownloaded)
 
-        if (mimeType.includes('image'))
-            return this.sendImage(number, fileDownloaded, text)
-        if (mimeType.includes('video'))
-            return this.sendVideo(number, fileDownloaded)
-        if (mimeType.includes('audio'))
-            return this.sendAudio(number, fileDownloaded, text)
+        if (mimeType.includes('image')) return this.sendImage(number, fileDownloaded, text)
+        if (mimeType.includes('video')) return this.sendVideo(number, fileDownloaded)
+        if (mimeType.includes('audio')) {
+            const fileOpus = await convertAudio(fileDownloaded)
+            return this.sendAudio(number, fileOpus)
+        }
 
         return this.sendFile(number, fileDownloaded)
     }
 
+    /**
+     * Funcion SendRaw envia opciones directamente del proveedor
+     * @param {string} number
+     * @param {string} message
+     * @example await sendMessage('+XXXXXXXXXXX', 'Hello World')
+     */
+
+    sendRaw = () => this.vendor.sendMessage
     /**
      *
      * @param {*} userId
@@ -245,8 +260,7 @@ class WebWhatsappProvider extends ProviderClass {
      */
     sendMessage = async (userId, message, { options }) => {
         const number = wwebCleanNumber(userId)
-        if (options?.buttons?.length)
-            return this.sendButtons(number, message, options.buttons)
+        if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
         if (options?.media) return this.sendMedia(number, options.media)
         return this.sendText(number, message)
     }

@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/provider",
-    "version": "0.0.70-alpha.0",
+    "version": "0.0.92-alpha.0",
     "description": "Esto es el conector a Twilio, Meta, etc...",
     "main": "./lib/mock/index.cjs",
     "keywords": [],
@@ -13,7 +13,10 @@
         "@bot-whatsapp/bot": "*",
         "combine-image": "^1.0.3",
         "qr-image": "^3.2.0",
-        "rimraf": "^3.0.2"
+        "rimraf": "^3.0.2",
+        "@ffmpeg-installer/ffmpeg": "^1.1.0",
+        "sharp": "^0.30.5",
+        "fluent-ffmpeg": "^2.1.2"
     },
     "exports": {
         "./mock": "./lib/mock/index.cjs",
@@ -21,7 +24,8 @@
         "./web-whatsapp": "./lib/web-whatsapp/index.cjs",
         "./venom": "./lib/venom/index.cjs",
         "./baileys": "./lib/baileys/index.cjs",
-        "./meta": "./lib/meta/index.cjs"
+        "./meta": "./lib/meta/index.cjs",
+        "./wppconnect": "./lib/wppconnect/index.cjs"
     },
     "repository": {
         "type": "git",

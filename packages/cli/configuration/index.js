@@ -1,33 +1,16 @@
-const { writeFile } = require('fs').promises
-const { join } = require('path')
+const PROVIDER_LIST = [
+    { value: 'baileys', label: 'Baileys', hint: 'gratis' },
+    { value: 'venom', label: 'Venom', hint: 'gratis' },
+    { value: 'wweb', label: 'whatsapp-web.js', hint: 'gratis' },
+    { value: 'twilio', label: 'Twilio' },
+    { value: 'meta', label: 'Meta' },
+]
 
-/**
- * JSON_TEMPLATE = {[key:string]{...pros}}
- */
-const JSON_TEMPLATE = {
-    provider: {
-        vendor: '',
-    },
-    database: {
-        host: '',
-        password: '',
-        port: '',
-        username: '',
-        db: '',
-    },
-    io: {
-        vendor: '',
-    },
-}
+const PROVIDER_DATA = [
+    { value: 'memory', label: 'Memory' },
+    { value: 'json', label: 'Json' },
+    { value: 'mongo', label: 'Mongo' },
+    { value: 'mysql', label: 'MySQL' },
+]
 
-const PATH_CONFIG = join(process.cwd(), 'config.json')
-
-const jsonConfig = () => {
-    return writeFile(
-        PATH_CONFIG,
-        JSON.stringify(JSON_TEMPLATE, null, 2),
-        'utf-8'
-    )
-}
-
-module.exports = { jsonConfig }
+module.exports = { PROVIDER_LIST, PROVIDER_DATA }
