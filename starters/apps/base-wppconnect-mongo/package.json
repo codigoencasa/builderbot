@@ -1,0 +1,22 @@
+{
+    "name": "base-wppconnect-memory",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js"
+    },
+    "keywords": [],
+    "dependencies": {
+        "@bot-whatsapp/bot": "latest",
+        "@bot-whatsapp/cli": "latest",
+        "@bot-whatsapp/database": "latest",
+        "@bot-whatsapp/portal": "latest",
+        "@bot-whatsapp/provider": "latest",
+        "@wppconnect-team/wppconnect": "1.22.0",
+        "mime-types": "2.1.35",
+        "mongodb": "4.12.1"
+    },
+    "author": "",
+    "license": "ISC"
+}

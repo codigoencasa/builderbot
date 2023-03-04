@@ -83,6 +83,7 @@ class CoreClass {
         const refToContinue = this.flowClass.findBySerialize(prevMsg?.refSerialize)
 
         if (prevMsg?.ref) {
+            delete prevMsg._id
             const ctxByNumber = toCtx({
                 body,
                 from,
