@@ -163,6 +163,7 @@ class CoreClass {
         const fallBack = async (next = false, message = null) => {
             QueuePrincipal.queue = []
             if (next) return continueFlow()
+            delete prevMsg._id;
             return this.sendProviderAndSave(from, {
                 ...prevMsg,
                 answer:
