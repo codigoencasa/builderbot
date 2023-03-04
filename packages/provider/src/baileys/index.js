@@ -156,8 +156,10 @@ class BaileysProvider extends ProviderClass {
                 }
 
                 const btnCtx = payload?.message?.buttonsResponseMessage?.selectedDisplayText
-
                 if (btnCtx) payload.body = btnCtx
+
+                const listRowId= payload?.message?.listResponseMessage?.singleSelectReply?.selectedRowId;
+                if (listRowId) payload.body = listRowId;
 
                 payload.from = baileyCleanNumber(payload.from, true)
                 this.emit('message', payload)
