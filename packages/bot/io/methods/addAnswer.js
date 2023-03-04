@@ -1,6 +1,5 @@
 const { flatObject } = require('../../utils/flattener')
 const { generateRef } = require('../../utils/hash')
-const { addAction } = require('./addAction')
 const { addChild } = require('./addChild')
 const { toJson } = require('./toJson')
 /**
