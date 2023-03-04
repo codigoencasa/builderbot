@@ -1,7 +1,7 @@
 const mimeDep = require('mime-types')
 const { tmpdir } = require('os')
-const http = require('http')
-const https = require('https')
+const http = require('follow-redirects').http
+const https = require('follow-redirects').https
 const { rename, createWriteStream } = require('fs')
 
 /**

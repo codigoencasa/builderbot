@@ -125,7 +125,7 @@ class BaileysProvider extends ProviderClass {
                 }
 
                 //Detectar location
-                if (messageCtx.message.locationMessage) {
+                if (messageCtx.message?.locationMessage) {
                     const { degreesLatitude, degreesLongitude } = messageCtx.message.locationMessage
                     if (typeof degreesLatitude === 'number' && typeof degreesLongitude === 'number') {
                         payload = { ...payload, body: generateRefprovider('_event_location_') }
@@ -158,8 +158,8 @@ class BaileysProvider extends ProviderClass {
                 const btnCtx = payload?.message?.buttonsResponseMessage?.selectedDisplayText
                 if (btnCtx) payload.body = btnCtx
 
-                const listRowId= payload?.message?.listResponseMessage?.singleSelectReply?.selectedRowId;
-                if (listRowId) payload.body = listRowId;
+                const listRowId = payload?.message?.listResponseMessage?.singleSelectReply?.selectedRowId
+                if (listRowId) payload.body = listRowId
 
                 payload.from = baileyCleanNumber(payload.from, true)
                 this.emit('message', payload)
