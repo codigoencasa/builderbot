@@ -125,7 +125,7 @@ class BaileysProvider extends ProviderClass {
                 }
 
                 //Detectar location
-                if (messageCtx.message.locationMessage) {
+                if (messageCtx.message?.locationMessage) {
                     const { degreesLatitude, degreesLongitude } = messageCtx.message.locationMessage
                     if (typeof degreesLatitude === 'number' && typeof degreesLongitude === 'number') {
                         payload = { ...payload, body: generateRefprovider('_event_location_') }
