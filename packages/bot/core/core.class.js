@@ -22,7 +22,7 @@ class CoreClass {
     flowClass
     databaseClass
     providerClass
-    generalArgs = { blackList: [], listEvents: {} }
+    generalArgs = { blackList: [], listEvents: {}, delay: 0 }
     constructor(_flow, _database, _provider, _args) {
         this.flowClass = _flow
         this.databaseClass = _database
@@ -131,7 +131,7 @@ class CoreClass {
             const queue = []
             for (const ctxMessage of messageToSend) {
                 if (endFlowFlag) return
-                const delayMs = ctxMessage?.options?.delay || 0
+                const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
                 if (delayMs) await delay(delayMs)
                 await QueuePrincipal.enqueue(() =>
                     this.sendProviderAndSave(numberOrId, ctxMessage).then(() => resolveCbEveryCtx(ctxMessage))
@@ -332,7 +332,7 @@ class CoreClass {
     sendFlowSimple = async (messageToSend, numberOrId) => {
         const queue = []
         for (const ctxMessage of messageToSend) {
-            const delayMs = ctxMessage?.options?.delay || 0
+            const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
             if (delayMs) await delay(delayMs)
             QueuePrincipal.enqueue(() => this.sendProviderAndSave(numberOrId, ctxMessage))
         }
