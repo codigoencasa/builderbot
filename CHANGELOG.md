@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.24](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.23...v0.1.24) (2023-03-05)
+
+
+### Features
+
+* **bot:** :sparkles:  feat ([d3f86db](https://github.com/leifermendez/bot-whatsapp/commit/d3f86db7df7f6807262cbbf26108ed3f233b239c))
+* **bot:** :sparkles: `.addAction` feat ([f3d73cc](https://github.com/leifermendez/bot-whatsapp/commit/f3d73cc3ee7904e947a4ae502f1cfef14b92bf34))
+* **bot:** :sparkles: `.addAction` feat ([d94459a](https://github.com/leifermendez/bot-whatsapp/commit/d94459a2b17db0503db560ef7336b090ad1f8628))
+* **bot:** :sparkles: `.addAction` feat ([70a23b7](https://github.com/leifermendez/bot-whatsapp/commit/70a23b77ade4c38d20be89d2304d831e605e39d6))
+* **bot:** :sparkles: `.addAction` feat ([6adbe32](https://github.com/leifermendez/bot-whatsapp/commit/6adbe323de5bfa56565f0b29c21c98dde968a886))
+* **cli:** :fire: added new provider in the cli ([9c6db88](https://github.com/leifermendez/bot-whatsapp/commit/9c6db884ee5d6553a46260229cc4e98faeb2710a))
+* **cli:** :fire: added new provider in the cli ([dbb1732](https://github.com/leifermendez/bot-whatsapp/commit/dbb1732e5ceb30664dd6d7b18b99b279b81d1b20))
+* **provider:** :sparkles: update starte `wppconnect` ([021a842](https://github.com/leifermendez/bot-whatsapp/commit/021a842dc46f1943766f302799ee51acee384f75))
+* **provider:** :zap: add `delay` general ([9f02ed5](https://github.com/leifermendez/bot-whatsapp/commit/9f02ed59a3b33d7a1b8ab52d443be2d5b3b31702))
+* **provider:** :zap: redirect download ([371d210](https://github.com/leifermendez/bot-whatsapp/commit/371d210c6992ead6684bfd0dd19b0755963df034))
+
+
+### Bug Fixes
+
+* **adapter:** :zap: fix error mongo duplicate INDEX ([244c6fb](https://github.com/leifermendez/bot-whatsapp/commit/244c6fb833157788d59ac581502d178dc34daa49))
+* **provider:** :bug: call event by list ([79d78af](https://github.com/leifermendez/bot-whatsapp/commit/79d78af63dbaf3df374bc1bf1cb5ef87a8c821c2))
+* **provider:** redirect 306  ([cfd0200](https://github.com/leifermendez/bot-whatsapp/commit/cfd02002be3195568b41969140e254020702bc0d))
+
 ### [0.1.23](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.22...v0.1.23) (2023-02-27)
 
 
