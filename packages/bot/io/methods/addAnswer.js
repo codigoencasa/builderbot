@@ -98,6 +98,7 @@ const addAnswer =
             ctx,
             ref: ctx.ref,
             addAnswer: addAnswer(ctx),
+            addAction: (cb = () => null) => addAnswer(ctx)('__call_action__', null, cb),
             toJson: toJson(ctx),
         }
     }
