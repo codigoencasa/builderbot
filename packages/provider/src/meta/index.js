@@ -1,7 +1,7 @@
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const axios = require('axios')
 const MetaWebHookServer = require('./server')
-const URL = `https://graph.facebook.com/v15.0`
+const URL = `https://graph.facebook.com`
 
 /**
  * ⚙️MetaProvider: Es un provedor que te ofrece enviar
@@ -15,13 +15,16 @@ const URL = `https://graph.facebook.com/v15.0`
 const PORT = process.env.PORT || 3000
 
 class MetaProvider extends ProviderClass {
-    metHook
-    jwtToken
-    numberId
-    constructor({ jwtToken, numberId, verifyToken, port = PORT }) {
+    metHook = undefined
+    jwtToken = undefined
+    numberId = undefined
+    version = 'v16.0'
+
+    constructor({ jwtToken, numberId, verifyToken, version, port = PORT }) {
         super()
         this.jwtToken = jwtToken
         this.numberId = numberId
+        this.version = version
         this.metHook = new MetaWebHookServer(verifyToken, port)
         this.metHook.start()
 
@@ -56,11 +59,12 @@ class MetaProvider extends ProviderClass {
 
     sendMessageMeta = async (body) => {
         try {
-            const response = await axios.post(`${URL}/${this.numberId}/messages`, body, {
+            const response = await axios.post(`${URL}/${this.version}/${this.numberId}/messages`, body, {
                 headers: {
                     Authorization: `Bearer ${this.jwtToken}`,
                 },
             })
+            console.log(body)
             return response.data
         } catch (error) {
             return Promise.resolve(error)

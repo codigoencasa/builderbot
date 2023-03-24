@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/provider",
-    "version": "0.0.92-alpha.0",
+    "version": "0.0.109-alpha.0",
     "description": "Esto es el conector a Twilio, Meta, etc...",
     "main": "./lib/mock/index.cjs",
     "keywords": [],
@@ -16,7 +16,8 @@
         "fluent-ffmpeg": "^2.1.2",
         "qr-image": "^3.2.0",
         "rimraf": "^3.0.2",
-        "sharp": "^0.30.5"
+        "sharp": "^0.30.5",
+        "follow-redirects": "^1.15.2"
     },
     "exports": {
         "./mock": "./lib/mock/index.cjs",
@@ -30,8 +31,5 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/codigoencasa/bot-whatsapp/tree/main/packages/provider"
-    },
-    "devDependencies": {
-        "follow-redirects": "^1.15.2"
     }
 }
