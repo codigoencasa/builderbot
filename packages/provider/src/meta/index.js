@@ -57,6 +57,11 @@ class MetaProvider extends ProviderClass {
         },
     ]
 
+    /**
+     * Enviar directo a META
+     * @param {*} body
+     * @returns
+     */
     sendMessageMeta = async (body) => {
         try {
             const response = await axios.post(`${URL}/${this.version}/${this.numberId}/messages`, body, {
@@ -64,9 +69,9 @@ class MetaProvider extends ProviderClass {
                     Authorization: `Bearer ${this.jwtToken}`,
                 },
             })
-            console.log(body)
             return response.data
         } catch (error) {
+            console.log(error)
             return Promise.resolve(error)
         }
     }
@@ -81,7 +86,7 @@ class MetaProvider extends ProviderClass {
                 body: message,
             },
         }
-        await this.sendMessageMeta(body)
+        return this.sendMessageMeta(body)
     }
 
     sendMedia = async (number, _, mediaInput = null) => {
@@ -94,7 +99,59 @@ class MetaProvider extends ProviderClass {
                 link: mediaInput,
             },
         }
-        await this.sendMessageMeta(body)
+        return this.sendMessageMeta(body)
+    }
+
+    /**
+     * Enviar listas
+     * @param {*} number
+     * @param {*} text
+     * @param {*} buttons
+     * @returns
+     */
+    sendLists = async (number, list) => {
+        const parseList = { ...list, ...{ type: 'list' } }
+        const body = {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to: number,
+            type: 'interactive',
+            interactive: parseList,
+        }
+        return this.sendMessageMeta(body)
+    }
+    /**
+     * Enviar buttons
+     * @param {*} number
+     * @param {*} text
+     * @param {*} buttons
+     * @returns
+     */
+    sendButtons = async (number, text, buttons) => {
+        const parseButtons = buttons.map((btn, i) => ({
+            type: 'reply',
+            reply: {
+                id: `btn-${i}`,
+                title: btn.body,
+            },
+        }))
+
+        const body = {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to: number,
+            type: 'interactive',
+            interactive: {
+                type: 'button',
+                body: {
+                    text: text,
+                },
+                action: {
+                    buttons: parseButtons,
+                },
+            },
+        }
+        return this.sendMessageMeta(body)
     }
 
     /**
@@ -105,7 +162,7 @@ class MetaProvider extends ProviderClass {
      * @returns
      */
     sendMessage = async (number, message, { options }) => {
-        if (options?.buttons?.length) return this.emit('notice', 'Envio de botones')
+        if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
         if (options?.media) return this.sendMedia(number, message, options.media)
 
         this.sendtext(number, message)
