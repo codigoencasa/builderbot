@@ -33,7 +33,7 @@ class MetaWebHookServer extends EventEmitter {
         this.emit('message', {
             from: message.from,
             to,
-            body: message.text?.body,
+            body: message.type === 'text' ? message.text?.body : message.interactive?.button_reply.title,
         })
 
         const json = JSON.stringify({ body })
