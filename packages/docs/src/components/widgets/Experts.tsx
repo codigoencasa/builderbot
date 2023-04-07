@@ -1,7 +1,7 @@
 import { component$ } from '@builder.io/qwik'
 import { RequestHandlerCloudflarePages } from '@builder.io/qwik-city/middleware/cloudflare-pages'
 import { User } from '~/contexts'
-import Collaborator from './Collaborator'
+import Expert from './Expert'
 
 export const onRequest: RequestHandlerCloudflarePages = async () => {
     console.log('??heree')
@@ -11,9 +11,9 @@ export const TaleUsers = component$((props: { users: User[] }) => {
     return (
         <>
             {props.users.map((user) => (
-                <div class="col-span-2 ">
+                <div class="col-span-4 ">
                     {' '}
-                    <Collaborator user={user} />
+                    <Expert user={user} />
                 </div>
             ))}
         </>
@@ -22,7 +22,7 @@ export const TaleUsers = component$((props: { users: User[] }) => {
 
 export default component$((props: { users: User[] }) => {
     return (
-        <section class="relative ">
+        <section class="relative " id='expert-section'>
             <div class={'px-4 py-16 mx-auto max-w-6xl lg:py-20'}>
                 <div class="mb-10 md:mx-auto sm:text-center md:mb-12 max-w-3xl">
                     <p class="text-base text-primary-600 dark:text-purple-200 font-semibold tracking-wide uppercase">
@@ -32,9 +32,9 @@ export default component$((props: { users: User[] }) => {
                         Expertos del bot
                     </h2>
                     <p class="max-w-3xl mx-auto sm:text-center text-xl text-gray-600 dark:text-slate-400">
-                        Todo es posible gracias a el mayor recursos de todos, el recurso humano. Tu tambien puedes{' '}
+                        Contrata a un experto capacitado para automatizar los flujos {' '}
                         <a class={'font-semibold'} href="/docs/contributing">
-                            formar parte
+                        de conversion de tu chatbot
                         </a>
                     </p>
                 </div>

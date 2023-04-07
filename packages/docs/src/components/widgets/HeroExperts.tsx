@@ -15,45 +15,28 @@ export default component$(() => {
                     <div class="pb-12 md:pb-0 md:py-0 max-w-5xl mx-auto md:pr-16 flex items-center basis-[56%]">
                         <div>
                             <h1 class="text-5xl md:text-[3.48rem] font-bold leading-tighter tracking-tighter mb-4 font-heading px-4 md:px-0">
-                                Crear chatbot <span class="sm:whitespace-nowrap text-[#25b637]">WhatsApp</span>
-                                <br class="hidden lg:block" /> <span class="lg:inline">en minutos</span>
+                                Buscas un
+                                <br class="hidden lg:block" /> <span class="sm:whitespace-nowrap text-[#25b637]">experto</span> <span class="lg:inline">en minutos</span>
                             </h1>
                             <div class="max-w-3xl mx-auto">
                                 <p class="text-xl text-gray-600 mb-8 dark:text-slate-400">
-                                    <span class="font-semibold  ">Con esta libreria, </span>
-                                    <span class="font-semibold    ">
-                                        puedes configurar respuestas automatizadas para preguntas frecuentes
-                                    </span>{' '}
-                                    , recibir y responder mensajes de manera automatizada, y hacer un seguimiento de las
-                                    interacciones con los clientes. Además, nuestro Chatbot se integra fácilmente con
-                                    otros sistemas y herramientas que ya esté utilizando en su negocio.
+
+                                <span class="font-semibold">Sabemos lo importante que es contar con una solución rápida y efectiva ante cualquier problema tecnológico que se nos presente.</span>  Por ello, hemos creado un servicio de asesoramiento en línea para brindarle a nuestros clientes la oportunidad de conectarse con expertos altamente calificados.
+
                                 </p>
 
                                 <div class="max-w-xs sm:max-w-md flex flex-nowrap flex-col sm:flex-col gap-4 m-auto md:m-0 justify-center md:justify-start">
-                                    <div class="flex w-full sm:w-auto">
-                                        <code class="btn btn-primary  sm:mb-0 w-full">
-                                            npm create bot-whatsapp@latest
-                                        </code>
-                                    </div>
-                                    <div class="flex w-full sm:w-auto">
-                                    <a href="/docs" class="btn  bg-gray-50 dark:bg-transparent">
-                                            Ver documentación
-                                        </a>
-                                    </div>
+                              
                                     <div class="flex w-full sm:w-auto gap-3">
-                                    
+                                        <a href="/experts#expert-section" class="btn  bg-gray-50 dark:bg-transparent">
+                                            Ver expertos
+                                        </a>
                                         <a
                                             target={'_blank'}
                                             href="https://app.codigoencasa.com/courses/curso-chatbot-whatsapp?refCode=LEIFERMENDEZ"
                                             class="btn  bg-gray-50 dark:bg-transparent"
                                         >
                                             Ver curso
-                                        </a>
-                                        <a
-                                            href="/experts/#expert-section"
-                                            class="btn  bg-gray-50 dark:bg-transparent"
-                                        >
-                                            Expertos
                                         </a>
                                     </div>
                                 </div>
