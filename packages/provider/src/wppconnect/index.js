@@ -49,7 +49,6 @@ class WPPConnectProviderClass extends ProviderClass {
             this.emit('ready', true)
             this.initBusEvents()
         } catch (error) {
-            console.error(error)
             this.emit('auth_failure', [
                 `Algo inesperado ha ocurrido, no entres en pánico`,
                 `Reinicie el bot`,
@@ -96,7 +95,6 @@ class WPPConnectProviderClass extends ProviderClass {
 
                 // Emitir el evento "message" con el payload modificado
                 this.emit('message', payload)
-                console.log(payload)
             },
         },
     ]

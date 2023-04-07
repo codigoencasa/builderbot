@@ -6,8 +6,12 @@ import { DarkThemeLauncher } from '~/components/core/DarkThemeLauncher'
 
 import fontStyles from '~/assets/styles/fonts.css?inline'
 import globalStyles from '~/assets/styles/global.css?inline'
-import { DocumentationCtx, GlobalStore } from './contexts'
+import { DocumentationCtx, ExpertStore, GlobalStore, User } from './contexts'
 import { Social } from './components/core/Social'
+// @ts-ignore
+import { src as freddyAvatar } from '~/assets/images/freddy.png?width=150&metadata'
+// @ts-ignore
+import { src as carlosAvatar } from '~/assets/images/carlos.png?width=150&metadata'
 
 export default component$(() => {
     /**
@@ -63,7 +67,25 @@ export default component$(() => {
         },
     ])
 
+    const expertsStore = useStore<User[]>([
+        {
+            id: 1,
+            login: 'Fredy Alejandro Gonzalez',
+            html_url: 'https://app.codigoencasa.com/market/bot-expert-fredy',
+            avatar_url: freddyAvatar,
+            description:'Experto es un desarrollador de chatbots con más de 4 años de experiencia en la automatización de procesos de atención al cliente en línea. Tiene un amplio conocimiento en el uso de herramientas de inteligencia artificial y aprendizaje automático para mejorar la experiencia del usuario'
+        },
+        {
+            id: 2,
+            login: 'Carlos Morán',
+            html_url: 'https://app.codigoencasa.com/market/bot-expert-carlos',
+            avatar_url: carlosAvatar,
+            description:'Conocido por su creatividad e innovación en la solución de problemas. Su habilidad para generar ideas frescas y originales lo hace un colaborador valioso en equipos de desarrollo. Innovador y capaz para pensar fuera de lo convencional lo hacen un recurso inestimable.'
+        }
+    ])
+
     useContextProvider(GlobalStore, store)
+    useContextProvider(ExpertStore, expertsStore)
 
     return (
         <QwikCityProvider>
