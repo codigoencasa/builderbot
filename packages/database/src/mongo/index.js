@@ -29,7 +29,7 @@ class MongoAdapter {
     }
 
     save = async (ctx) => {
-        await this.db.collection('history').insert(ctx)
+        await this.db.collection('history').insertOne(ctx)
         this.listHistory.push(ctx)
     }
 }
