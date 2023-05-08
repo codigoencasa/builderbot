@@ -29,7 +29,12 @@ class MongoAdapter {
     }
 
     save = async (ctx) => {
-        await this.db.collection('history').insert(ctx)
+        const ctxWithDate = {
+            ...ctx,
+            date: new Date(),
+        }
+
+        await this.db.collection('history').insertOne(ctxWithDate)
         this.listHistory.push(ctx)
     }
 }
