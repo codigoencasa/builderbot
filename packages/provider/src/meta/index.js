@@ -20,10 +20,11 @@ class MetaProvider extends ProviderClass {
     numberId = undefined
     version = 'v16.0'
 
-    constructor({ jwtToken, numberId, verifyToken, port = PORT }) {
+    constructor({ jwtToken, numberId, verifyToken, version, port = PORT }) {
         super()
         this.jwtToken = jwtToken
         this.numberId = numberId
+        this.version = version
         this.metHook = new MetaWebHookServer(verifyToken, port)
         this.metHook.start()
 
