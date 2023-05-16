@@ -2,13 +2,18 @@ const { EventEmitter } = require('node:events')
 const polka = require('polka')
 const { urlencoded, json } = require('body-parser')
 const { generateRefprovider } = require('../../common/hash')
+const { GetUrl } = require('./utils')
 
 class MetaWebHookServer extends EventEmitter {
-    constructor(token, metaPort = 3000) {
+    constructor(jwtToken, numberId, version, token, metaPort = 3000) {
         super()
         this.metaServer = polka()
         this.metaPort = metaPort
         this.token = token
+
+        this.jwtToken = jwtToken
+        this.numberId = numberId
+        this.version = version
         this.buildHTTPServer()
     }
 
@@ -45,39 +50,49 @@ class MetaWebHookServer extends EventEmitter {
             this.emit('message', responseObj)
         } else if (message.type === 'image') {
             const body = generateRefprovider('_event_image_')
+            const idUrl = message.image?.id
+            const url = GetUrl(this.version, idUrl, this.numberId, this.jwtToken)
+            url.then((resolvedUrl) => {
+                const responseObj = {
+                    type: message.type,
+                    from: message.from,
+                    url: resolvedUrl, // Utilizar el valor resuelto de la promesa
+                    to,
+                    body,
+                }
 
-            const responseObj = {
-                type: message.type,
-                from: message.from,
-                to,
-                id: message.image.id,
-                body,
-            }
-
-            this.emit('message', responseObj)
+                this.emit('message', responseObj)
+            })
         } else if (message.type === 'document') {
             const body = generateRefprovider('_event_document_')
+            const idUrl = message.document?.id
+            const url = GetUrl(this.version, idUrl, this.numberId, this.jwtToken)
+            url.then((resolvedUrl) => {
+                const responseObj = {
+                    type: message.type,
+                    from: message.from,
+                    url: resolvedUrl, // Utilizar el valor resuelto de la promesa
+                    to,
+                    body,
+                }
 
-            const responseObj = {
-                type: message.type,
-                from: message.from,
-                to,
-                id: message.document.id,
-                body,
-            }
-            this.emit('message', responseObj)
+                this.emit('message', responseObj)
+            })
         } else if (message.type === 'video') {
             const body = generateRefprovider('_event_video_')
+            const idUrl = message.video?.id
+            const url = GetUrl(this.version, idUrl, this.numberId, this.jwtToken)
+            url.then((resolvedUrl) => {
+                const responseObj = {
+                    type: message.type,
+                    from: message.from,
+                    url: resolvedUrl, // Utilizar el valor resuelto de la promesa
+                    to,
+                    body,
+                }
 
-            const responseObj = {
-                type: message.type,
-                from: message.from,
-                to,
-                id: message.video.id,
-                body,
-            }
-
-            this.emit('message', responseObj)
+                this.emit('message', responseObj)
+            })
         } else if (message.type === 'location') {
             const body = generateRefprovider('_event_location_')
 

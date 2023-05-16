@@ -25,7 +25,7 @@ class MetaProvider extends ProviderClass {
         this.jwtToken = jwtToken
         this.numberId = numberId
         this.version = version
-        this.metHook = new MetaWebHookServer(verifyToken, port)
+        this.metHook = new MetaWebHookServer(jwtToken, numberId, version, verifyToken, port)
         this.metHook.start()
 
         const listEvents = this.busEvents()
