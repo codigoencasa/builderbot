@@ -1,9 +1,9 @@
 const axios = require('axios')
 
-async function GetUrl(version, IdImage, numberId, Token) {
+async function getMediaUrl(version, IdMedia, numberId, Token) {
     try {
         const response = await axios.get(
-            `https://graph.facebook.com/${version}/${IdImage}?phone_number_id=${numberId}`,
+            `https://graph.facebook.com/${version}/${IdMedia}?phone_number_id=${numberId}`,
             {
                 headers: {
                     Authorization: `Bearer ${Token}`,
@@ -18,5 +18,5 @@ async function GetUrl(version, IdImage, numberId, Token) {
 }
 
 module.exports = {
-    GetUrl,
+    getMediaUrl,
 }

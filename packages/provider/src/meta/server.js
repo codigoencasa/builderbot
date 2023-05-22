@@ -2,7 +2,7 @@ const { EventEmitter } = require('node:events')
 const polka = require('polka')
 const { urlencoded, json } = require('body-parser')
 const { generateRefprovider } = require('../../common/hash')
-const { GetUrl } = require('./utils')
+const { getMediaUrl } = require('./utils')
 
 class MetaWebHookServer extends EventEmitter {
     constructor(jwtToken, numberId, version, token, metaPort = 3000) {
@@ -51,7 +51,7 @@ class MetaWebHookServer extends EventEmitter {
         } else if (message.type === 'image') {
             const body = generateRefprovider('_event_image_')
             const idUrl = message.image?.id
-            const url = GetUrl(this.version, idUrl, this.numberId, this.jwtToken)
+            const url = getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
             url.then((resolvedUrl) => {
                 const responseObj = {
                     type: message.type,
@@ -66,7 +66,7 @@ class MetaWebHookServer extends EventEmitter {
         } else if (message.type === 'document') {
             const body = generateRefprovider('_event_document_')
             const idUrl = message.document?.id
-            const url = GetUrl(this.version, idUrl, this.numberId, this.jwtToken)
+            const url = getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
             url.then((resolvedUrl) => {
                 const responseObj = {
                     type: message.type,
@@ -81,7 +81,9 @@ class MetaWebHookServer extends EventEmitter {
         } else if (message.type === 'video') {
             const body = generateRefprovider('_event_video_')
             const idUrl = message.video?.id
-            const url = GetUrl(this.version, idUrl, this.numberId, this.jwtToken)
+
+            const url = getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
+
             url.then((resolvedUrl) => {
                 const responseObj = {
                     type: message.type,
@@ -108,16 +110,19 @@ class MetaWebHookServer extends EventEmitter {
             this.emit('message', responseObj)
         } else if (message.type === 'audio') {
             const body = generateRefprovider('_event_audio_')
+            const idUrl = message.audio?.id
+            const url = getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
+            url.then((resolvedUrl) => {
+                const responseObj = {
+                    type: message.type,
+                    from: message.from,
+                    url: resolvedUrl, // Utilizar el valor resuelto de la promesa
+                    to,
+                    body,
+                }
 
-            const responseObj = {
-                type: message.type,
-                from: message.from,
-                to,
-                id: message.audio.id,
-                body,
-            }
-
-            this.emit('message', responseObj)
+                this.emit('message', responseObj)
+            })
         } else if (message.type === 'sticker') {
             const body = generateRefprovider('_event_sticker_')
 
