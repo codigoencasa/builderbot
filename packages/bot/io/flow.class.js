@@ -26,7 +26,7 @@ class FlowClass {
         overFlow = overFlow ?? this.flowSerialize
 
         const mapSensitive = (str, mapOptions = { sensitive: false, regex: false }) => {
-            if (mapOptions.regex) return new RegExp(str)
+            if (mapOptions.regex) return new Function(`return ${str}`)();
             const regexSensitive = mapOptions.sensitive ? 'g' : 'i'
             if (Array.isArray(str)) {
                 return new RegExp(str.join('|'), regexSensitive)
