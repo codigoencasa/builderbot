@@ -74,7 +74,6 @@ const addAnswer =
                 },
             ])
 
-            getCbFromNested()
             const callbacks = {
                 ...inCtx.callbacks,
                 ...getCbFromNested(),
