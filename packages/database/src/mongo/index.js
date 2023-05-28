@@ -29,7 +29,6 @@ class MongoAdapter {
     }
 
     save = async (ctx) => {
-
         const ctxWithDate = {
             ...ctx,
             date: new Date(),
