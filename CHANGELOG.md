@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.27](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.25...v0.1.27) (2023-05-28)
+
+
+### Features
+
+* **adapter:** :zap: added that it automatically generates the date when the data is added to the db ([889cbfa](https://github.com/leifermendez/bot-whatsapp/commit/889cbfab8abfb76ed8e111e702bdad93483ae611))
+* **provider:** :sparkles: the image, video, document, stickers, location and vcard events are added ([0705aeb](https://github.com/leifermendez/bot-whatsapp/commit/0705aeb6077fd151ccf7a37582f7afe64e089b36))
+
+
+### Bug Fixes
+
+* **bot:** :zap: hot fix `fotoFlow` and download ([dced080](https://github.com/leifermendez/bot-whatsapp/commit/dced08017c823791131a29ef4a5e81090800794c))
+* **provider:** :zap: version is added ([d4818f2](https://github.com/leifermendez/bot-whatsapp/commit/d4818f289d7e559fa46076c34c6ddfb1deaf427d))
+* **provider:** meta improved 🔥 ([2f21dfd](https://github.com/leifermendez/bot-whatsapp/commit/2f21dfd2b9092736a190a0a1ce4a4fa3762999e0))
+
 ### [0.1.25](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.23...v0.1.25) (2023-04-07)
 
 
