@@ -1,6 +1,7 @@
 const { EventEmitter } = require('node:events')
 const polka = require('polka')
 const { urlencoded, json } = require('body-parser')
+const { generateRefprovider } = require('../../common/hash')
 
 class MetaWebHookServer extends EventEmitter {
     constructor(token, metaPort = 3000) {
@@ -30,11 +31,103 @@ class MetaWebHookServer extends EventEmitter {
         const [message] = messages
         const to = body.entry[0].changes[0].value?.metadata?.display_phone_number
 
-        this.emit('message', {
-            from: message.from,
-            to,
-            body: message.type === 'text' ? message.text?.body : message.interactive?.button_reply.title,
-        })
+        if (message.type === 'text') {
+            // Si es un mensaje de texto, extrae el cuerpo del mensaje
+            const body = message.text?.body
+            // Luego, crea un objeto con los datos que deseas enviar al cuerpo de la respuesta
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                to,
+                body,
+            }
+            // Finalmente, envía el objeto como respuesta utilizando el evento 'message'
+            this.emit('message', responseObj)
+        } else if (message.type === 'image') {
+            const body = generateRefprovider('_event_image_')
+
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                to,
+                id: message.image.id,
+                body,
+            }
+
+            this.emit('message', responseObj)
+        } else if (message.type === 'document') {
+            const body = generateRefprovider('_event_document_')
+
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                to,
+                id: message.document.id,
+                body,
+            }
+            this.emit('message', responseObj)
+        } else if (message.type === 'video') {
+            const body = generateRefprovider('_event_video_')
+
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                to,
+                id: message.video.id,
+                body,
+            }
+
+            this.emit('message', responseObj)
+        } else if (message.type === 'location') {
+            const body = generateRefprovider('_event_location_')
+
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                to,
+                latitude: message.location.latitude,
+                longitude: message.location.longitude,
+                body,
+            }
+
+            this.emit('message', responseObj)
+        } else if (message.type === 'audio') {
+            const body = generateRefprovider('_event_audio_')
+
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                to,
+                id: message.audio.id,
+                body,
+            }
+
+            this.emit('message', responseObj)
+        } else if (message.type === 'sticker') {
+            const body = generateRefprovider('_event_sticker_')
+
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                to,
+                id: message.sticker.id,
+                body,
+            }
+
+            this.emit('message', responseObj)
+        } else if (message.type === 'contacts') {
+            const body = generateRefprovider('_event_contacts_')
+
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                contacts: [{ name: message.contacts[0].name, phones: message.contacts[0].phones }],
+                to,
+                body,
+            }
+
+            this.emit('message', responseObj)
+        }
 
         const json = JSON.stringify({ body })
         res.end(json)

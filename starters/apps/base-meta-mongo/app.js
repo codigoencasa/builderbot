@@ -92,6 +92,7 @@ const main = async () => {
         jwtToken: 'jwtToken',
         numberId: 'numberId',
         verifyToken: 'verifyToken',
+        version: 'v16.0',
     })
 
     createBot({
