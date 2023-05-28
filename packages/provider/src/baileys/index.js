@@ -22,7 +22,7 @@ const logger = new Console({
 /**
  * ⚙️ BaileysProvider: Es una clase tipo adaptor
  * que extiende clases de ProviderClass (la cual es como interfaz para sber que funciones rqueridas)
- * https://github.com/adiwajshing/Baileys
+ * https://github.com/whiskeysockets/Baileys
  */
 class BaileysProvider extends ProviderClass {
     globalVendorArgs = { name: `bot`, gifPlayback: false }

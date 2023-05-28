@@ -184,7 +184,9 @@ class CoreClass {
                 const parseListMsg = await this.flowClass.find(flowParentId?.ref, true, flowTree)
                 if (endFlowFlag) return
                 for (const msg of parseListMsg) {
-                    await this.sendProviderAndSave(from, msg)
+                    const msgParse = this.flowClass.findSerializeByRef(msg?.ref)
+                    const ctxMessage = { ...msgParse, ...msg }
+                    await this.sendProviderAndSave(from, ctxMessage).then(() => resolveCbEveryCtx(ctxMessage))
                 }
                 await endFlow(flag)()
                 return

@@ -69,7 +69,7 @@ const generalDownload = async (url) => {
 
     const handleFile = (pathInput, ext) =>
         new Promise((resolve, reject) => {
-            const fullPath = `${pathInput}.${ext}`
+            const fullPath = checkIsLocal ? `${pathInput}` : `${pathInput}.${ext}`
             rename(pathInput, fullPath, (err) => {
                 if (err) reject(null)
                 resolve(fullPath)

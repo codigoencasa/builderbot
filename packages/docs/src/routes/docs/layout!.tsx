@@ -21,7 +21,7 @@ export default component$(() => {
                 <div class={'max-w-8xl'}>
                     <div
                         class={
-                            'hidden lg:block fixed z-20 inset-0 top-[4rem] left-[max(0px,calc(50%-48rem))] right-auto w-[14.5rem] py-5 px-8 overflow-y-auto'
+                            'hidden lg:block fixed z-20 inset-0 top-[4rem]  right-auto w-[14.5rem] py-5 px-8 overflow-y-auto'
                         }
                     >
                         <NavBar options={store} />
@@ -33,7 +33,7 @@ export default component$(() => {
                     </div>
                     <div
                         class={
-                            'hidden lg:block fixed z-20 inset-0 top-[4rem] right-[max(0px,calc(50%-48rem))] left-auto w-[14.5rem] py-5 px-8 overflow-y-auto'
+                            'hidden lg:block fixed z-20 inset-0 top-[4rem] left-auto w-[14.5rem] py-5 px-8 overflow-y-auto'
                         }
                     >
                         <ExtraBar />

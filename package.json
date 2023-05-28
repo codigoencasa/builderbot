@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/root",
-    "version": "0.1.25",
+    "version": "0.1.26",
     "description": "Bot de wahtsapp open source para MVP o pequeños negocios",
     "main": "app.js",
     "private": true,
@@ -84,12 +84,12 @@
         "standard-version": "^9.5.0",
         "uvu": "^0.5.6"
     },
-    "packageManager": "pnpm@7.25.1",
+    "packageManager": "pnpm@8.5.0",
     "engines": {
         "node": ">=16",
         "npm": "please-use-pnpm",
         "yarn": "please-use-pnpm",
-        "pnpm": ">=7.18.0"
+        "pnpm": ">=8.5.0"
     },
     "author": "Leifer Mendez <leifer.contacto@gmail.com>"
 }
