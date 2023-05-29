@@ -330,6 +330,9 @@ importers:
             '@ffmpeg-installer/ffmpeg':
                 specifier: ^1.1.0
                 version: 1.1.0
+            axios:
+                specifier: ^1.4.0
+                version: 1.4.0
             combine-image:
                 specifier: ^1.0.3
                 version: 1.0.3
@@ -5845,6 +5848,19 @@ packages:
             }
         dev: false
 
+    /axios@1.4.0:
+        resolution:
+            {
+                integrity: sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==,
+            }
+        dependencies:
+            follow-redirects: 1.15.2(debug@4.3.4)
+            form-data: 4.0.0
+            proxy-from-env: 1.1.0
+        transitivePeerDependencies:
+            - debug
+        dev: false
+
     /babel-extract-comments@1.0.0:
         resolution:
             {
@@ -10894,6 +10910,18 @@ packages:
             combined-stream: 1.0.8
             mime-types: 2.1.35
         dev: true
+
+    /form-data@4.0.0:
+        resolution:
+            {
+                integrity: sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==,
+            }
+        engines: { node: '>= 6' }
+        dependencies:
+            asynckit: 0.4.0
+            combined-stream: 1.0.8
+            mime-types: 2.1.35
+        dev: false
 
     /formdata-polyfill@4.0.10:
         resolution:
@@ -17899,7 +17927,6 @@ packages:
             {
                 integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==,
             }
-        dev: true
 
     /ps-list@8.1.1:
         resolution:
