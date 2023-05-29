@@ -25,7 +25,7 @@ class MetaProvider extends ProviderClass {
         this.jwtToken = jwtToken
         this.numberId = numberId
         this.version = version
-        this.metHook = new MetaWebHookServer(verifyToken, port)
+        this.metHook = new MetaWebHookServer(jwtToken, numberId, version, verifyToken, port)
         this.metHook.start()
 
         const listEvents = this.busEvents()
@@ -121,7 +121,7 @@ class MetaProvider extends ProviderClass {
         }
         return this.sendMessageMeta(body)
     }
-    
+
     /**
      * Enviar listas alternativo
      * @param {*} number
@@ -135,11 +135,11 @@ class MetaProvider extends ProviderClass {
     sendList = async (number, header, text, footer, button, list) => {
         const parseList = list.map((list) => ({
             title: list.title,
-            rows: list.rows.map(row => ({
+            rows: list.rows.map((row) => ({
                 id: row.id,
                 title: row.title,
-                description: row.description
-            }))
+                description: row.description,
+            })),
         }))
 
         const body = {
@@ -161,10 +161,10 @@ class MetaProvider extends ProviderClass {
                 },
                 action: {
                     button: button,
-                    sections: parseList
+                    sections: parseList,
                 },
             },
-        };
+        }
         return this.sendMessageMeta(body)
     }
     /**
