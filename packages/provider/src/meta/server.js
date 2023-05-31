@@ -1,13 +1,19 @@
 const { EventEmitter } = require('node:events')
 const polka = require('polka')
 const { urlencoded, json } = require('body-parser')
+const { generateRefprovider } = require('../../common/hash')
+const { getMediaUrl } = require('./utils')
 
 class MetaWebHookServer extends EventEmitter {
-    constructor(token, metaPort = 3000) {
+    constructor(jwtToken, numberId, version, token, metaPort = 3000) {
         super()
         this.metaServer = polka()
         this.metaPort = metaPort
         this.token = token
+
+        this.jwtToken = jwtToken
+        this.numberId = numberId
+        this.version = version
         this.buildHTTPServer()
     }
 
@@ -17,7 +23,7 @@ class MetaWebHookServer extends EventEmitter {
      * @param {*} req
      * @param {*} res
      */
-    incomingMsg = (req, res) => {
+    incomingMsg = async (req, res) => {
         const { body } = req
         const messages = body?.entry?.[0]?.changes?.[0]?.value?.messages
 
@@ -30,11 +36,121 @@ class MetaWebHookServer extends EventEmitter {
         const [message] = messages
         const to = body.entry[0].changes[0].value?.metadata?.display_phone_number
 
-        this.emit('message', {
-            from: message.from,
-            to,
-            body: message.type === 'text' ? message.text?.body : message.interactive?.button_reply.title,
-        })
+        if (message.type === 'text') {
+            const body = message.text?.body
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                to,
+                body,
+            }
+            this.emit('message', responseObj)
+        }
+
+        if (message.type === 'image') {
+            const body = generateRefprovider('_event_image_')
+            const idUrl = message.image?.id
+            const resolvedUrl = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                url: resolvedUrl,
+                to,
+                body,
+            }
+
+            this.emit('message', responseObj)
+        }
+
+        if (message.type === 'document') {
+            const body = generateRefprovider('_event_document_')
+            const idUrl = message.document?.id
+            const resolvedUrl = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                url: resolvedUrl, // Utilizar el valor resuelto de la promesa
+                to,
+                body,
+            }
+
+            this.emit('message', responseObj)
+        }
+
+        if (message.type === 'video') {
+            const body = generateRefprovider('_event_video_')
+            const idUrl = message.video?.id
+
+            const resolvedUrl = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
+
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                url: resolvedUrl, // Utilizar el valor resuelto de la promesa
+                to,
+                body,
+            }
+
+            this.emit('message', responseObj)
+        }
+
+        if (message.type === 'location') {
+            const body = generateRefprovider('_event_location_')
+
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                to,
+                latitude: message.location.latitude,
+                longitude: message.location.longitude,
+                body,
+            }
+
+            this.emit('message', responseObj)
+        }
+
+        if (message.type === 'audio') {
+            const body = generateRefprovider('_event_audio_')
+            const idUrl = message.audio?.id
+            const resolvedUrl = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                url: resolvedUrl, // Utilizar el valor resuelto de la promesa
+                to,
+                body,
+            }
+
+            this.emit('message', responseObj)
+        }
+
+        if (message.type === 'sticker') {
+            const body = generateRefprovider('_event_sticker_')
+
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                to,
+                id: message.sticker.id,
+                body,
+            }
+
+            this.emit('message', responseObj)
+        }
+
+        if (message.type === 'contacts') {
+            const body = generateRefprovider('_event_contacts_')
+
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                contacts: [{ name: message.contacts[0].name, phones: message.contacts[0].phones }],
+                to,
+                body,
+            }
+
+            this.emit('message', responseObj)
+        }
 
         const json = JSON.stringify({ body })
         res.end(json)
@@ -78,7 +194,7 @@ class MetaWebHookServer extends EventEmitter {
         res.end('Invalid token!')
     }
 
-    emptyCtrl = (req, res) => {
+    emptyCtrl = (_, res) => {
         res.end('')
     }
 
@@ -99,7 +215,7 @@ class MetaWebHookServer extends EventEmitter {
      */
     start() {
         this.metaServer.listen(this.metaPort, () => {
-            console.log(`[meta]: Agregar esta url "WHEN A MESSAGE COMES IN"`)
+            console.log(`[meta]: Agregar esta url "Webhook"`)
             console.log(`[meta]: POST http://localhost:${this.metaPort}/webhook`)
             console.log(`[meta]: Más información en la documentación`)
         })

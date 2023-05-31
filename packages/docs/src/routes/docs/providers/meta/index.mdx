@@ -69,7 +69,8 @@ const main = async () => {
     const adapterProvider = createProvider(MetaProvider, {
         jwtToken: process.env.JWTOKEN, //EAARBW3ZBGU0UBAACDjtQIzI8JuEa.............
         numberId: process.env.NUMBER_ID, //103975305758520
-        verifyToken: process.env.VERIFY_TOKEN, //LO_QUE_SEA
+        verifyToken: process.env.VERIFY_TOKEN, //LO_QUE_SEA,
+        version:'v16.0'
     })
 
     createBot({

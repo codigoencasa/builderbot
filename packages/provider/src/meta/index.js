@@ -25,7 +25,7 @@ class MetaProvider extends ProviderClass {
         this.jwtToken = jwtToken
         this.numberId = numberId
         this.version = version
-        this.metHook = new MetaWebHookServer(verifyToken, port)
+        this.metHook = new MetaWebHookServer(jwtToken, numberId, version, verifyToken, port)
         this.metHook.start()
 
         const listEvents = this.busEvents()
@@ -79,6 +79,7 @@ class MetaProvider extends ProviderClass {
     sendtext = async (number, message) => {
         const body = {
             messaging_product: 'whatsapp',
+            recipient_type: 'individual',
             to: number,
             type: 'text',
             text: {
@@ -117,6 +118,52 @@ class MetaProvider extends ProviderClass {
             to: number,
             type: 'interactive',
             interactive: parseList,
+        }
+        return this.sendMessageMeta(body)
+    }
+
+    /**
+     * Enviar listas alternativo
+     * @param {*} number
+     * @param {*} header
+     * @param {*} text
+     * @param {*} footer
+     * @param {*} button
+     * @param {*} list
+     * @returns
+     */
+    sendList = async (number, header, text, footer, button, list) => {
+        const parseList = list.map((list) => ({
+            title: list.title,
+            rows: list.rows.map((row) => ({
+                id: row.id,
+                title: row.title,
+                description: row.description,
+            })),
+        }))
+
+        const body = {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to: number,
+            type: 'interactive',
+            interactive: {
+                type: 'list',
+                header: {
+                    type: 'text',
+                    text: header,
+                },
+                body: {
+                    text: text,
+                },
+                footer: {
+                    text: footer,
+                },
+                action: {
+                    button: button,
+                    sections: parseList,
+                },
+            },
         }
         return this.sendMessageMeta(body)
     }

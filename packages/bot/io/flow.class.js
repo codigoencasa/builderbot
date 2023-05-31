@@ -26,12 +26,16 @@ class FlowClass {
         overFlow = overFlow ?? this.flowSerialize
 
         const mapSensitive = (str, mapOptions = { sensitive: false, regex: false }) => {
+
             if (mapOptions.regex) return new Function(`return ${str}`)();
             const regexSensitive = mapOptions.sensitive ? 'g' : 'i'
+
             if (Array.isArray(str)) {
-                return new RegExp(str.join('|'), regexSensitive)
+                const patterns = mapOptions.sensitive ? str.map((item) => `\\b${item}\\b`) : str
+                return new RegExp(patterns.join('|'), regexSensitive)
             }
-            return new RegExp(str, regexSensitive)
+            const pattern = mapOptions.sensitive ? `\\b${str}\\b` : str
+            return new RegExp(pattern, regexSensitive)
         }
 
         const findIn = (keyOrWord, symbol = false, flow = overFlow) => {
@@ -59,6 +63,8 @@ class FlowClass {
     findBySerialize = (refSerialize) => this.flowSerialize.find((r) => r.refSerialize === refSerialize)
 
     findIndexByRef = (ref) => this.flowSerialize.findIndex((r) => r.ref === ref)
+
+    findSerializeByRef = (ref) => this.flowSerialize.find((r) => r.ref === ref)
 
     getRefToContinueChild = (keyword) => {
         try {

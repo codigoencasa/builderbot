@@ -27,7 +27,7 @@ export default component$(() => {
                     <a
                         class={'btn-link '}
                         target="_blank"
-                        href="https://www.youtube.com/watch?v=1u0TTbjK5bo&list=PL_WGMLcL4jzViIlmyDZPnhAdkc8RXGkFh"
+                        href="https://www.youtube.com/playlist?list=PL_WGMLcL4jzWPhdhcUyhbFU6bC0oJd2BR"
                     >
                         Ver videos
                     </a>
