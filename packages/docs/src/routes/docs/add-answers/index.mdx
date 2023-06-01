@@ -1,0 +1,36 @@
+import Navigation from '../../../components/widgets/Navigation'
+
+# addAnswer
+
+# ctx
+
+Esta funcion se importa desde `@bot-whatsapp/bot`
+
+```js
+    const { addKeyword } = require('@bot-whatsapp/bot')
+
+    const flowString = addKeyword('hola').addAnswer('Este mensaje se enviara 1 segundo despues', {
+        delay: 1000,
+    })
+
+    const flowString = addKeyword('hola').addAnswer('Este mensaje envia una imagen', {
+        media: 'https://i.imgur.com/0HpzsEm.png',
+    })
+
+    const flowString = addKeyword('hola').addAnswer('Este mensaje envia tres botones', {
+        buttons: [{ body: 'Boton 1' }, { body: 'Boton 2' }, { body: 'Boton 3' }],
+    })
+
+    const flowString = addKeyword('hola').addAnswer('Este mensaje espera una respueta del usuario', {
+        capture: true,
+    })
+```
+
+---
+
+<Navigation
+    pages={[
+        { name: 'Instalación', link: '/docs/install' },
+        { name: 'Conceptos', link: '/docs/essential' },
+    ]}
+/>

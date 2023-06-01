@@ -1,13 +1,21 @@
----
-title: Overview
-contributors:
-    - adamdbradley
-    - steve8708
-    - manucorporat
-    - gabrielgrant
+import Navigation from '../../../components/widgets/Navigation'
+
+# addKeyword
+
+Esta funcion se importa desde `@bot-whatsapp/bot`
+
+```js
+const { addKeyword } = require('@bot-whatsapp/bot')
+const flowPrincipal = addKeyword(['hola', 'alo'])
+    .addAnswer(['Hola, bienvenido a mi tienda', '¿Como puedo ayudarte?'])
+    .addAnswer(['Tengo:', 'Zapatos', 'Bolsos', 'etc ...'])
+```
+
 ---
 
-# AddKeyword
-```js
-const a = 1
-```
+<Navigation
+    pages={[
+        { name: 'Instalación', link: '/docs/install' },
+        { name: 'Conceptos', link: '/docs/essential' },
+    ]}
+/>
