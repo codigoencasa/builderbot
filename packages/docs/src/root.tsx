@@ -40,6 +40,7 @@ export default component$(() => {
             list: [
                 { name: 'addKeyword', link: '/docs/add-keyword' },
                 { name: 'addAnswers', link: '/docs/add-answers' },
+                { name: 'ctx', link: '/docs/ctx' },
                 { name: 'addAction', link: '/docs/add-action' },
                 { name: 'flowDynamic', link: '/docs/flow-dynamic' },
                 { name: 'fallBack', link: '/docs/fall-back' },
@@ -79,6 +80,7 @@ export default component$(() => {
             title: 'Casos de Uso',
             list: [
                 { name: 'Manejo de estado', link: '/docs/migration' },
+                { name: 'API', link: '/docs/api' },
             ],
         },
         {

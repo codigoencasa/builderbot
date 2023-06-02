@@ -13,13 +13,13 @@ El desarrollo de la librería se base en tres (3) piezas claves para su correcto
 
 ---
 
-## Flow (Flujos)
+## Flow
 
-Los flujos hace referencia al hecho de construir un flujo de conversion. Esto es un flow podemos observar que estan presente dos metodos importantes **addKeyword** y el **addAnswer**.
+Los flujos hace referencia al hecho de construir un flujo de conversion. Esto es un flow podemos observar que estan presente dos metodos importantes **[addKeyword](/docs/add-keyword)** y el **[addAnswer](/docs/add-answers)**.
 
 Tan sencillo como decir **palabra/s clave** y **mensaje a responder**
 
-Ambos metodos **[addKeyword](https://github.com/codigoencasa/bot-whatsapp/blob/dev/packages/bot/io/methods/addKeyword.js)** y el **[addAnswer](https://github.com/codigoencasa/bot-whatsapp/blob/dev/packages/bot/io/methods/addAnswer.js)** tienen una serie opciones disponibles
+Ambos metodos **[addKeyword](/docs/add-keyword)** y el **[addAnswer](/docs/add-answers)** tienen una serie opciones disponibles
 
 ```js
 const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
@@ -31,7 +31,7 @@ const flowPrincipal = addKeyword(['hola', 'alo'])
 
 ---
 
-## Provider (Proveedor)
+## Provider
 
 <Alert>
     ⚡ Dependiendo del tipo de proveedor que utlices puede que necesites pasar algunas configuracion adicional como
@@ -71,7 +71,7 @@ Los proveedores disponibles hasta el momento son los siguientes:
     documentación para ir agregando más info
 </Alert>
 
-Es la pieza encargada de mantener el **"estado"** de una conversación, para mayor facilidad la libreria te proporcia diferentes conectores que se de adapten mejor a tu desarrollo
+Es la pieza encargada de mantener el **"historial"** de una conversación, para mayor facilidad la libreria te proporcia diferentes conectores que se de adapten mejor a tu desarrollo
 
 ```js
 const MongoAdapter = require('@bot-whatsapp/database/mongo')
