@@ -2,26 +2,19 @@ import Navigation from '../../../components/widgets/Navigation'
 
 # addAction
 
-Este fragmento de código define una constante llamada **`flujoBienvenida`**, que utiliza la función **`addKeyword()`** para agregar la palabra clave "hola" al Chat Bot de WhatsApp. Cuando el Bot recibe un mensaje que contiene la palabra "hola", se activa la acción definida en la función **`addAction()`**.
-
-La acción en sí es asíncrona y toma dos argumentos: **`ctx`** y **`{provider}`**. **`ctx`** es un objeto que contiene información sobre el mensaje recibido, como el remitente, el destinatario y el contenido del mensaje. **`{provider}`** es un objeto que se utiliza para enviar mensajes de respuesta.
-
-Dentro de la función **`addAction()`**, primero se extrae el ID del remitente del mensaje utilizando **`ctx.key.remoteJid`**. Luego, se define un conjunto de botones que se incluirán en un mensaje de plantilla. Cada botón tiene un índice, un texto de visualización y una acción. Los botones incluidos son un botón de enlace, un botón de llamada y un botón de respuesta rápida.
-
-Después de definir los botones, se crea un objeto de mensaje de plantilla que contiene un texto de saludo y un pie de página, así como los botones definidos anteriormente.
-
-A continuación, se utiliza el objeto **`{provider}`** para enviar el mensaje de plantilla al remitente del mensaje original utilizando el método **`sendMessage()`**.
-
-Por último, se imprime un mensaje de registro en la consola que indica que se ha enviado el mensaje, y luego se retorna.
-
-En resumen, **`addAction()`**es una función útil para definir acciones que se activan cuando se recibe un mensaje de WhatsApp específico. La función **`action`** puede realizar diversas tareas y acceder a los métodos y propiedades. En general, **`addAction()`**te permite crear Chat Bots de WhatsApp personalizados que pueden interactuar con los usuarios de una manera programática. Puedes definir acciones específicas que se activan cuando se recibe un mensaje específico, lo que te permite crear una variedad de flujos de conversación y respuestas automatizadas. Con **`addAction()`**y otras funciones en la biblioteca puedes personalizar completamente la funcionalidad de tu Bot de WhatsApp para satisfacer las necesidades de tu proyecto o negocio.
-
-Esta funcion se importa desde `@bot-whatsapp/bot`
+Es una función útil para definir acciones que se activan cuando se recibe un mensaje de WhatsApp específico. 
+La función action puede realizar diversas tareas y acceder a los métodos y propiedades. En general, **addAction()** te permite crear Chat Bots de WhatsApp personalizados que pueden interactuar con los usuarios de una manera programática. 
+Puedes definir acciones específicas que se activan cuando se recibe un mensaje específico, lo que te permite crear una variedad de flujos de conversación y respuestas automatizadas. 
 
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
 const flowPrincipal = addKeyword(['hola', 'alo'])
     .addAnswer(['Hola, bienvenido a mi tienda', '¿Como puedo ayudarte?'])
+    .addAction(async(ctx) => {
+
+        console.log(`Enviar un mail con el con el numero de la persona: ${ctx.from}`)
+        
+    })
     .addAnswer(['Tengo:', 'Zapatos', 'Bolsos', 'etc ...'])
 ```
 

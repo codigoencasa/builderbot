@@ -16,6 +16,40 @@ const flowString = addKeyword('ver categorias')
     })
 ```
 
+### Más ejemplos de flowDynamic
+
+```js
+const { addKeyword } = require('@bot-whatsapp/bot')
+
+const flowString = addKeyword('ver categorias')
+    .addAnswer('Estas son las categorías disponibles:', null, async (ctx, {flowDynamic}) => {
+        await flowDynamic('Enviar un mensaje text')
+
+        const listaDeArticulos = [
+            {
+                name:'Item 1'
+            },
+            {
+                name:'Item 2'
+            },
+            {
+                name:'Item 3'
+            }
+        ]
+
+        const mapeoDeLista = listaDeArticulos.map((item) => item.name).join(', ') //Item 1, Item 2, Item 3
+
+        await flowDynamic(mapeoDeLista)
+
+        await flowDynamic({body:'Tambien puedes enviar un mensaje de esta manera'})
+
+        // Enviar una imagen o pdf o etc
+
+        await flowDynamic({media:'https://i.imgur.com/0HpzsEm.png'}) 
+        
+    })
+```
+
 ---
 
 <Navigation
