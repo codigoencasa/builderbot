@@ -46,6 +46,19 @@ class MetaWebHookServer extends EventEmitter {
             }
             this.emit('message', responseObj)
         }
+        
+        if (message.type === 'interactive') {
+            const body = message.interactive?.button_reply?.title || message.interactive?.list_reply?.id;
+            const title_list_reply = message.interactive?.list_reply?.title;
+            const responseObj = {
+                type: 'interactive',
+                from: message.from,
+                to,
+                body,
+                title_list_reply,
+            }
+            this.emit('message', responseObj);
+        }
 
         if (message.type === 'image') {
             const body = generateRefprovider('_event_image_')
