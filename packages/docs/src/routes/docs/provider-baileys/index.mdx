@@ -1,0 +1,148 @@
+import Alert from '../../../components/widgets/Alert'
+import Navigation from '../../../components/widgets/Navigation'
+
+# Baileys
+
+<Alert>
+    ⚡ Baileys es un proveedor gratuito de WhatsApp que se ejecuta mediante Whatsapp Web. No es necesario un registro para usarlo, pero tiene algunas limitaciones.
+    - El uso de botones y listas no es compatible (en algunos dispositivos puede llegar a visualizarse pero en general falla).
+    - En el caso de mensajeria masiva debe utilizarse con precaución ya que puede ser bloqueado por WhatsApp.
+</Alert>
+
+---
+
+## Documentación Baileys
+
+`require('@bot-whatsapp/provider/baileys')`
+
+Aca encontrarás la documentación en el repositorio oficial de [Baileys](https://github.com/whiskeysockets/Baileys).
+
+---
+
+## Funciones usando el proveedor Baileys
+
+### Baileys:
+### Enviar mensaje de texto
+
+```js
+const flowPrincipal = addKeyword('hola')
+    .addAnswer(
+        'Aqui va un mensaje',
+        { capture: true},
+        async (ctx, {provider}) => {
+            await provider.sendText(ctx.from@s.whatsapp.net, 'mensaje de texto')
+            // el número de telefono se envía en este formato 12345678901@s.whatsapp.net
+        }
+    )
+```
+---
+
+## Funciones usando la librería
+
+### Baileys:
+### Enviar archivo media
+
+Uso de tipo genérico
+
+```js
+const flowPrincipal = addKeyword('hola')
+    .addAnswer(
+        'Aqui va un mensaje',
+        { capture: true},
+        async (ctx, {provider}) => {
+            await provider.sendMedia(ctx.from@s.whatsapp.net, 'media url' 'mensaje de texto')
+            // el número de telefono se envía en este formato 12345678901@s.whatsapp.net
+        }
+    )
+```
+---
+
+### Baileys:
+### Enviar imagen
+
+```js
+const flowPrincipal = addKeyword('hola')
+    .addAnswer(
+        'Aqui va un mensaje',
+        { capture: true},
+        async (ctx, {provider}) => {
+            await provider.sendImage(ctx.from@s.whatsapp.net, 'imagen url' 'mensaje de texto')
+            // el número de telefono se envía en este formato 12345678901@s.whatsapp.net
+        }
+    )
+```
+---
+
+### Baileys:
+### Enviar video
+
+```js
+const flowPrincipal = addKeyword('hola')
+    .addAnswer(
+        'Aqui va un mensaje',
+        { capture: true},
+        async (ctx, {provider}) => {
+            await provider.sendVideo(ctx.from@s.whatsapp.net, 'video url' 'mensaje de texto')
+            // el número de telefono se envía en este formato 12345678901@s.whatsapp.net
+        }
+    )
+```
+---
+
+### Baileys:
+### Enviar audio
+
+```js
+const flowPrincipal = addKeyword('hola')
+    .addAnswer(
+        'Aqui va un mensaje',
+        { capture: true},
+        async (ctx, {provider}) => {
+            await provider.sendAudio(ctx.from@s.whatsapp.net, 'audio url')
+            // el número de telefono se envía en este formato 12345678901@s.whatsapp.net
+        }
+    )
+```
+---
+
+### Baileys:
+### Enviar ubicación
+
+```js
+const flowPrincipal = addKeyword('hola')
+    .addAnswer(
+        'Aqui va un mensaje',
+        { capture: true},
+        async (ctx, {provider}) => {
+            await provider.sendLocation(ctx.from@s.whatsapp.net, 'audio url')
+            // el número de telefono se envía en este formato 12345678901@s.whatsapp.net
+        }
+    )
+```
+---
+
+## Captar eventos
+
+La librería tiene implementado un sistema de eventos que permite captar los mensajes que envía el usuario, para ello se debe usar el método `EVENTS` de la siguiente manera:
+
+### EVENTS.WELCOME
+
+```js
+const flowPrincipal = addKeyword(EVENTS.WELCOME)
+    addAnswer(
+        'Aqui va un mensaje',
+        { capture: true},
+        null,
+        null
+    )
+
+```
+
+
+
+<Navigation
+    pages={[
+        { name: 'Twilio', link: '/docs/provider-twilio' },
+        { name: 'Venom', link: '/docs/provider-venom' },
+    ]}
+/>

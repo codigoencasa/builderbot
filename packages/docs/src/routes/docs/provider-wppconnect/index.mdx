@@ -1,0 +1,56 @@
+import Alert from '../../../components/widgets/Alert'
+import Navigation from '../../../components/widgets/Navigation'
+
+# WPPConnect
+
+<Alert>
+    ⚡ WPPConnect es un proveedor gratuito de WhatsApp que se ejecuta mediante Whatsapp Web. No es necesario un registro para usarlo, pero tiene algunas limitaciones.
+    - El uso de botones y listas no es compatible (en algunos dispositivos puede llegar a visualizarse pero en general falla).
+    - En el caso de mensajeria masiva debe utilizarse con precaución ya que puede ser bloqueado por WhatsApp.
+    - ⚠️ WPPConnect hace uso de puppeter para levantar instancias de WhatsApp Web, por lo que es necesario tener instalado Google Chrome en el servidor donde se ejecutará el bot en caso de hacer deploy del proyecto.
+</Alert>
+
+---
+
+## Documentación WPPConnect
+
+`require('@bot-whatsapp/provider/wppconnect')`
+
+Aca encontrarás la documentación en el repositorio oficial de [WPPConnect](https://github.com/wppconnect-team/wppconnect).
+
+---
+
+## Funciones usando el proveedor WPPConnect
+
+### WPPConnect:
+### Enviar mensaje de texto
+
+```js
+const flowPrincipal = addKeyword('hola')
+    .addAnswer(
+        'Aqui va un mensaje',
+        { capture: true},
+        async (ctx, {provider}) => {
+            await provider.sendText(ctx.from@c.us, 'mensaje de texto')
+            // el número de telefono se envía en este formato 12345678901@c.us
+        }
+    )
+```
+---
+
+<Alert>
+    ⚠️ WPPConnect tiene una gran variedad de funciones que aún no estan implementadas en la librería, puedes realizar tu aporte al proyecto mapeando las funciones que aún no estan implementadas [click aqui](https://wppconnect.io/wppconnect/pages/getting-started/basic-functions.html).
+</Alert>
+
+---
+## Funciones usando la librería
+
+Puede usarse las mismas funciones que se usan con el proveedor de [Baileys](/docs/provider-baileys).
+
+
+<Navigation
+    pages={[
+        { name: 'Venom', link: '/docs/provider-venom' },
+        { name: 'Whatsapp-web.js', link: '/docs/provider-wweb' },
+    ]}
+/>
