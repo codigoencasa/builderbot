@@ -32,22 +32,39 @@ export default component$(() => {
                 { name: 'Requerimientos', link: '/docs/requirements' },
                 { name: 'Instalación', link: '/docs/install' },
                 { name: 'Pruebalo', link: '/docs/example' },
-            ],
-        },
-        {
-            title: 'Esenciales',
-            list: [
                 { name: 'Conceptos', link: '/docs/essential' },
-                { name: 'Conversaciones', link: '/docs/flows' },
-                { name: 'Proveedores', link: '/docs/providers' },
-                { name: 'Base de datos', link: '/docs/database' },
             ],
         },
         {
-            title: 'Avanzado',
+            title: '@bot/core',
             list: [
-                { name: 'Migración', link: '/docs/migration' },
-                { name: 'MasterClass', link: '/docs/masterclass' },
+                { name: 'addKeyword', link: '/docs/add-keyword' },
+                { name: 'addAnswers', link: '/docs/add-answers' },
+                { name: 'addAction', link: '/docs/add-action' },
+                { name: 'flowDynamic', link: '/docs/flow-dynamic' },
+                { name: 'fallBack', link: '/docs/fall-back' },
+                { name: 'endFlow', link: '/docs/end-flow' },
+                { name: 'gotoFlow', link: '/docs/goto-flow' },
+            ],
+        },
+        {
+            title: '@bot/provider',
+            list: [
+                { name: 'Meta', link: '/docs/provider-meta' },
+                { name: 'Twilio', link: '/docs/provider-twilio' },
+                { name: 'Baileys', link: '/docs/provider-baileys' },
+                { name: 'Venom', link: '/docs/provider-venom' },
+                { name: 'WPPConnect', link: '/docs/provider-wppconnect' },
+                { name: 'Whatsapp-web.js', link: '/docs/provider-wweb' }
+            ],
+        },
+        {
+            title: '@bot/database',
+            list: [
+                { name: 'Memory', link: '/docs/database-memory' },
+                { name: 'Json', link: '/docs/database-json' },
+                { name: 'Mongo', link: '/docs/database-mongo' },
+                { name: 'MySQL', link: '/docs/database-mysql' }
             ],
         },
         {
@@ -56,6 +73,19 @@ export default component$(() => {
                 { name: 'Local', link: '/docs/deploy/local' },
                 { name: 'Docker', link: '/docs/deploy/docker' },
                 { name: 'Cloud', link: '/docs/deploy/cloud' },
+            ],
+        },
+        {
+            title: 'Casos de Uso',
+            list: [
+                { name: 'Manejo de estado', link: '/docs/migration' },
+            ],
+        },
+        {
+            title: 'Avanzado',
+            list: [
+                { name: 'Migración', link: '/docs/migration' },
+                { name: 'MasterClass', link: '/docs/masterclass' },
             ],
         },
         {
