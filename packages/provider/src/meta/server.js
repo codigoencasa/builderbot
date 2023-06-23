@@ -46,10 +46,21 @@ class MetaWebHookServer extends EventEmitter {
             }
             this.emit('message', responseObj)
         }
-        
+
+        if (message.type === 'button') {
+            const body = message.button?.text
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                to,
+                body,
+            }
+            this.emit('message', responseObj)
+        }
+
         if (message.type === 'interactive') {
-            const body = message.interactive?.button_reply?.title || message.interactive?.list_reply?.id;
-            const title_list_reply = message.interactive?.list_reply?.title;
+            const body = message.interactive?.button_reply?.title || message.interactive?.list_reply?.id
+            const title_list_reply = message.interactive?.list_reply?.title
             const responseObj = {
                 type: 'interactive',
                 from: message.from,
@@ -57,7 +68,7 @@ class MetaWebHookServer extends EventEmitter {
                 body,
                 title_list_reply,
             }
-            this.emit('message', responseObj);
+            this.emit('message', responseObj)
         }
 
         if (message.type === 'image') {
