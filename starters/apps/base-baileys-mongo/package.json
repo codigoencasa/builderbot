@@ -14,9 +14,10 @@
         "@bot-whatsapp/database": "latest",
         "@bot-whatsapp/provider": "latest",
         "@bot-whatsapp/portal": "latest",
-        "@adiwajshing/baileys": "4.4.0",
         "mime-types": "2.1.35",
         "mongodb": "^4.12.1",
+        "@adiwajshing/baileys": "github:WhiskeySockets/Baileys",
+        "@adiwajshing/keyed-db": "^0.2.4",
         "wa-sticker-formatter": "4.3.2"
     },
     "author": "",

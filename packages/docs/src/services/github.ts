@@ -12,8 +12,17 @@ export const fetchGithub = async (token: string) => {
         },
     })
     const listUsers = await data.json()
-    return listUsers.map((u: any) => ({
-        ...u,
-        avatar_url: `${u.avatar_url}&s=80`,
-    }))
+        return listUsers.map((u: any) => ({
+            ...u,
+            avatar_url: `${u.avatar_url}&s=80`,
+        }))
+    // try {
+    //     const listUsers = await data.json()
+    //     return listUsers.map((u: any) => ({
+    //         ...u,
+    //         avatar_url: `${u.avatar_url}&s=80`,
+    //     }))
+    // } catch (error) {
+    //     return []
+    // }
 }
