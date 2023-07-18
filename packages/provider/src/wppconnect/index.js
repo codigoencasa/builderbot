@@ -43,6 +43,10 @@ class WPPConnectProviderClass extends ProviderClass {
                     })
                     WppConnectGenerateImage(base64Qrimg, `${this.globalVendorArgs.name}.qr.png`)
                 },
+                puppeteerOptions: {
+                    headless: true,
+                    args: ['--no-sandbox'],
+                },
             })
 
             this.vendor = session
