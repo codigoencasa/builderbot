@@ -24,7 +24,7 @@
         "./lib/portal.http.cjs"
     ],
     "devDependencies": {
-        "@builder.io/qwik": "0.16.2",
+        "@builder.io/qwik": "0.21.0",
         "@builder.io/qwik-city": "0.0.128",
         "@types/eslint": "8.4.10",
         "@types/node": "^18.11.18",
