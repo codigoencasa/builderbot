@@ -4,7 +4,7 @@ const pino = require('pino')
 const rimraf = require('rimraf')
 const mime = require('mime-types')
 const { join } = require('path')
-const { createWriteStream, readFileSync } = require('fs')
+const { createWriteStream, readFileSync, existsSync } = require('fs')
 const { Console } = require('console')
 
 const {
@@ -34,7 +34,7 @@ const logger = new Console({
  * https://github.com/whiskeysockets/Baileys
  */
 class BaileysProvider extends ProviderClass {
-    globalVendorArgs = { name: `bot`, gifPlayback: false }
+    globalVendorArgs = { name: `bot`, gifPlayback: false, usePairingCode: false, phoneNumber: null }
     vendor
     store
     saveCredsGlobal = null
@@ -58,7 +58,10 @@ class BaileysProvider extends ProviderClass {
         this.store = makeInMemoryStore({ loggerBaileys })
         this.store.readFromFile(`${NAME_DIR_SESSION}/baileys_store.json`)
         setInterval(() => {
-            this.store.writeToFile(`${NAME_DIR_SESSION}/baileys_store.json`)
+            const path = `${this.NAME_DIR_SESSION}/baileys_store.json`
+            if (existsSync(path)) {
+                this.store.writeToFile(path)
+            }
         }, 10_000)
 
         try {
@@ -76,6 +79,28 @@ class BaileysProvider extends ProviderClass {
             })
 
             this.store?.bind(sock.ev)
+
+            if (this.globalVendorArgs.usePairingCode && !sock.authState.creds.registered) {
+                if (this.globalVendorArgs.phoneNumber) {
+                    await sock.waitForConnectionUpdate((update) => !!update.qr)
+                    const code = await sock.requestPairingCode(this.globalVendorArgs.phoneNumber)
+                    this.emit('require_action', {
+                        instructions: [
+                            `Acepta la notificación del WhatsApp ${this.globalVendorArgs.phoneNumber} en tu celular 👌`,
+                            `El token para la vinculación es: ${code}`,
+                            `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
+                        ],
+                    })
+                } else {
+                    this.emit('auth_failure', [
+                        `No se ha definido el numero de telefono agregalo`,
+                        `Reinicia el BOT`,
+                        `Tambien puedes mirar un log que se ha creado baileys.log`,
+                        `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
+                        `(Puedes abrir un ISSUE) https://github.com/codigoencasa/bot-whatsapp/issues/new/choose`,
+                    ])
+                }
+            }
 
             sock.ev.on('connection.update', async (update) => {
                 const { connection, lastDisconnect, qr } = update
@@ -105,7 +130,7 @@ class BaileysProvider extends ProviderClass {
                 }
 
                 /** QR Code */
-                if (qr) {
+                if (qr && !this.globalVendorArgs.usePairingCode) {
                     this.emit('require_action', {
                         instructions: [
                             `Debes escanear el QR Code 👌 ${this.globalVendorArgs.name}.qr.png`,
