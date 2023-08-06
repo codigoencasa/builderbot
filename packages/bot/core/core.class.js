@@ -5,12 +5,14 @@ const Queue = require('../utils/queue')
 const { Console } = require('console')
 const { createWriteStream } = require('fs')
 const { LIST_REGEX } = require('../io/events')
+const GlobalState = require('../context/state.class')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
 })
 
 const QueuePrincipal = new Queue()
+const StateHandler = new GlobalState()
 
 /**
  * [ ] Escuchar eventos del provider asegurarte que los provider emitan eventos
@@ -89,6 +91,14 @@ class CoreClass {
                 prevRef: prevMsg.refSerialize,
             })
             await this.databaseClass.save(ctxByNumber)
+        }
+
+        // 📄 Mantener estado de conversacion por numero
+        const state = {
+            getMyState: StateHandler.getMyState(messageCtxInComming.from),
+            getAllState: StateHandler.getAllState,
+            update: StateHandler.updateState(messageCtxInComming),
+            clear: StateHandler.clear(messageCtxInComming.from),
         }
 
         // 📄 Crar CTX de mensaje (uso private)
@@ -232,6 +242,7 @@ class CoreClass {
 
             const argsCb = {
                 provider,
+                state,
                 fallBack: fallBack(flags),
                 flowDynamic: flowDynamic(flags),
                 endFlow: endFlow(flags),

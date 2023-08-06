@@ -9,7 +9,6 @@ suiteCase.before.each(setup)
 suiteCase.after.each(clear)
 
 suiteCase(`Debe retornar un mensaje resumen`, async ({ database, provider }) => {
-    let STATE_APP = {}
     const MOCK_VALUES = ['¿Cual es tu nombre?', '¿Cual es tu edad?', 'Tu datos son:']
 
     const flujoPrincipal = addKeyword(['hola'])
@@ -18,9 +17,8 @@ suiteCase(`Debe retornar un mensaje resumen`, async ({ database, provider }) => 
             {
                 capture: true,
             },
-            async (ctx, { flowDynamic }) => {
-                STATE_APP[ctx.from] = { ...STATE_APP[ctx.from], name: ctx.body }
-
+            async (ctx, { flowDynamic, state }) => {
+                state.update({ name: ctx.body })
                 flowDynamic('Gracias por tu nombre!')
             }
         )
@@ -29,14 +27,15 @@ suiteCase(`Debe retornar un mensaje resumen`, async ({ database, provider }) => 
             {
                 capture: true,
             },
-            async (ctx, { flowDynamic }) => {
-                STATE_APP[ctx.from] = { ...STATE_APP[ctx.from], age: ctx.body }
-
-                await flowDynamic(`Gracias por tu edad! ${STATE_APP[ctx.from].name}`)
+            async (ctx, { flowDynamic, state }) => {
+                state.update({ age: ctx.body })
+                const myState = state.getMyState()
+                await flowDynamic(`Gracias por tu edad! ${myState.name}`)
             }
         )
-        .addAnswer(MOCK_VALUES[2], null, async (ctx, { flowDynamic }) => {
-            flowDynamic(`Nombre: ${STATE_APP[ctx.from].name} Edad: ${STATE_APP[ctx.from].age}`)
+        .addAnswer(MOCK_VALUES[2], null, async (_, { flowDynamic, state }) => {
+            const myState = state.getMyState()
+            flowDynamic(`Nombre: ${myState.name} Edad: ${myState.age}`)
         })
         .addAnswer('🤖🤖 Gracias por tu participacion')
 
