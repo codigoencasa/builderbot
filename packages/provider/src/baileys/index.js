@@ -7,7 +7,7 @@ const { join } = require('path')
 const { createWriteStream, readFileSync } = require('fs')
 const { Console } = require('console')
 
-const { default: makeWASocket, useMultiFileAuthState, Browsers, DisconnectReason } = require('@adiwajshing/baileys')
+const { default: makeWASocket, useMultiFileAuthState, Browsers, DisconnectReason } = require('@whiskeysockets/baileys')
 
 const { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber } = require('./utils')
 
