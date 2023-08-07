@@ -1,0 +1,22 @@
+{
+    "name": "base-wweb-mysql",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "pre-copy": "cd .. && npm run  copy.lib base-wweb-mysql",
+        "start": "node app.js"
+    },
+    "keywords": [],
+    "dependencies": {
+        "whatsapp-web.js": "1.19.4",
+        "@bot-whatsapp/bot": "latest",
+        "@bot-whatsapp/cli": "latest",
+        "@bot-whatsapp/database": "latest",
+        "@bot-whatsapp/provider": "latest",
+        "@bot-whatsapp/portal": "latest",
+        "mysql2": "^2.3.3"
+    },
+    "author": "",
+    "license": "ISC"
+}

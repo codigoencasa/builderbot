@@ -12,13 +12,15 @@
     "dependencies": {
         "dotenv": "^16.0.3",
         "mongodb": "^4.11.0",
-        "mysql2": "^2.3.3"
+        "mysql2": "^2.3.3",
+        "pg": "^8.11.2"
     },
     "exports": {
         "./mock": "./lib/mock/index.cjs",
         "./mongo": "./lib/mongo/index.cjs",
         "./json": "./lib/json/index.cjs",
-        "./mysql": "./lib/mysql/index.cjs"
+        "./mysql": "./lib/mysql/index.cjs",
+        "./postgres": "./lib/postgres/index.cjs"
     },
     "repository": {
         "type": "git",
