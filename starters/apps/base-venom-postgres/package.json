@@ -1,22 +1,22 @@
 {
-    "name": "base-bailey-postgres",
+    "name": "base-venom-postgres",
     "version": "1.0.0",
     "description": "",
     "main": "app.js",
     "scripts": {
-        "pre-copy": "cd .. && npm run  copy.lib base-baileys-postgres",
+        "pre-copy": "cd .. && npm run  copy.lib base-venom-postgres",
         "start": "node app.js"
     },
     "keywords": [],
     "dependencies": {
+        "venom-bot": "4.3.7",
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",
         "@bot-whatsapp/provider": "latest",
         "@bot-whatsapp/portal": "latest",
-        "pg": "^8.11.2",
-        "@whiskeysockets/baileys": "^6.4.0",
-        "wa-sticker-formatter": "4.3.2"
+        "mime-types": "2.1.35",
+        "pg": "^8.11.2"
     },
     "author": "",
     "license": "ISC"

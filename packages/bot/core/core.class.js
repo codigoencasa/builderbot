@@ -237,10 +237,12 @@ class CoreClass {
             }
 
             const provider = this.providerClass
+            const database = this.databaseClass
 
             if (!this.flowClass.allCallbacks[inRef]) return Promise.resolve()
 
             const argsCb = {
+                database,
                 provider,
                 state,
                 fallBack: fallBack(flags),

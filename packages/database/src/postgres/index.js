@@ -77,7 +77,7 @@ class PostgreSQLAdapter {
                 UPDATE contact SET 
                 updated_in = current_timestamp,
                 last_interaction =  current_timestamp,
-                name = $1, 
+                name = $1
                 WHERE id = ${contact.id}`;
             try {
                 await this.db.query(query, values);
