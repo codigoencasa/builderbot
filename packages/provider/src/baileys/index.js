@@ -4,10 +4,19 @@ const pino = require('pino')
 const rimraf = require('rimraf')
 const mime = require('mime-types')
 const { join } = require('path')
-const { createWriteStream, readFileSync } = require('fs')
+const { createWriteStream, readFileSync, existsSync } = require('fs')
 const { Console } = require('console')
 
-const { default: makeWASocket, useMultiFileAuthState, Browsers, DisconnectReason } = require('@adiwajshing/baileys')
+const {
+    default: makeWASocket,
+    useMultiFileAuthState,
+    Browsers,
+    DisconnectReason,
+    proto,
+    makeInMemoryStore,
+    makeCacheableSignalKeyStore,
+    getAggregateVotesInPollMessage,
+} = require('@whiskeysockets/baileys')
 
 const { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber } = require('./utils')
 
@@ -25,11 +34,13 @@ const logger = new Console({
  * https://github.com/whiskeysockets/Baileys
  */
 class BaileysProvider extends ProviderClass {
-    globalVendorArgs = { name: `bot`, gifPlayback: false }
+    globalVendorArgs = { name: `bot`, gifPlayback: false, usePairingCode: false, phoneNumber: null }
     vendor
+    store
     saveCredsGlobal = null
     constructor(args) {
         super()
+        this.store = null
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
         this.initBailey().then()
     }
@@ -40,16 +51,56 @@ class BaileysProvider extends ProviderClass {
     initBailey = async () => {
         const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
         const { state, saveCreds } = await useMultiFileAuthState(NAME_DIR_SESSION)
+        const loggerBaileys = pino({ level: 'fatal' })
+
         this.saveCredsGlobal = saveCreds
+
+        this.store = makeInMemoryStore({ loggerBaileys })
+        this.store.readFromFile(`${NAME_DIR_SESSION}/baileys_store.json`)
+        setInterval(() => {
+            const path = `${this.NAME_DIR_SESSION}/baileys_store.json`
+            if (existsSync(path)) {
+                this.store.writeToFile(path)
+            }
+        }, 10_000)
 
         try {
             const sock = makeWASocket({
+                logger: loggerBaileys,
                 printQRInTerminal: false,
-                auth: state,
+                auth: {
+                    creds: state.creds,
+                    keys: makeCacheableSignalKeyStore(state.keys, loggerBaileys),
+                },
                 browser: Browsers.macOS('Desktop'),
                 syncFullHistory: false,
-                logger: pino({ level: 'fatal' }),
+                generateHighQualityLinkPreview: true,
+                getMessage: this.getMessage,
             })
+
+            this.store?.bind(sock.ev)
+
+            if (this.globalVendorArgs.usePairingCode && !sock.authState.creds.registered) {
+                if (this.globalVendorArgs.phoneNumber) {
+                    await sock.waitForConnectionUpdate((update) => !!update.qr)
+                    const code = await sock.requestPairingCode(this.globalVendorArgs.phoneNumber)
+                    this.emit('require_action', {
+                        instructions: [
+                            `Acepta la notificación del WhatsApp ${this.globalVendorArgs.phoneNumber} en tu celular 👌`,
+                            `El token para la vinculación es: ${code}`,
+                            `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
+                        ],
+                    })
+                } else {
+                    this.emit('auth_failure', [
+                        `No se ha definido el numero de telefono agregalo`,
+                        `Reinicia el BOT`,
+                        `Tambien puedes mirar un log que se ha creado baileys.log`,
+                        `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
+                        `(Puedes abrir un ISSUE) https://github.com/codigoencasa/bot-whatsapp/issues/new/choose`,
+                    ])
+                }
+            }
 
             sock.ev.on('connection.update', async (update) => {
                 const { connection, lastDisconnect, qr } = update
@@ -79,7 +130,7 @@ class BaileysProvider extends ProviderClass {
                 }
 
                 /** QR Code */
-                if (qr) {
+                if (qr && !this.globalVendorArgs.usePairingCode) {
                     this.emit('require_action', {
                         instructions: [
                             `Debes escanear el QR Code 👌 ${this.globalVendorArgs.name}.qr.png`,
@@ -165,6 +216,41 @@ class BaileysProvider extends ProviderClass {
                 this.emit('message', payload)
             },
         },
+        {
+            event: 'messages.update',
+            func: async (message) => {
+                for (const { key, update } of message) {
+                    if (update.pollUpdates) {
+                        const pollCreation = await this.getMessage(key)
+                        if (pollCreation) {
+                            const pollMessage = await getAggregateVotesInPollMessage({
+                                message: pollCreation,
+                                pollUpdates: update.pollUpdates,
+                            })
+                            const [messageCtx] = message
+
+                            const messageOriginalKey = messageCtx?.update?.pollUpdates[0]?.pollUpdateMessageKey
+                            const messageOriginal = await this.store.loadMessage(
+                                messageOriginalKey.remoteJid,
+                                messageOriginalKey.id
+                            )
+
+                            let payload = {
+                                ...messageCtx,
+                                body: pollMessage.find((poll) => poll.voters.length > 0)?.name || '',
+                                from: baileyCleanNumber(key.remoteJid),
+                                pushName: messageOriginal?.pushName,
+                                broadcast: messageOriginal?.broadcast,
+                                messageTimestamp: messageOriginal?.messageTimestamp,
+                                voters: pollCreation,
+                                type: 'poll',
+                            }
+                            this.emit('message', payload)
+                        }
+                    }
+                }
+            },
+        },
     ]
 
     initBusEvents = (_sock) => {
@@ -174,6 +260,15 @@ class BaileysProvider extends ProviderClass {
         for (const { event, func } of listEvents) {
             this.vendor.ev.on(event, func)
         }
+    }
+
+    getMessage = async (key) => {
+        if (this.store) {
+            const msg = await this.store.loadMessage(key.remoteJid, key.id)
+            return msg?.message || undefined
+        }
+        // only if store is present
+        return proto.Message.fromObject({})
     }
 
     /**
@@ -300,6 +395,29 @@ class BaileysProvider extends ProviderClass {
         }
 
         return this.vendor.sendMessage(numberClean, buttonMessage)
+    }
+
+    /**
+     *
+     * @param {string} number
+     * @param {string} text
+     * @param {string} footer
+     * @param {Array} poll
+     * @example await sendMessage("+XXXXXXXXXXX", { poll: { "name": "You accept terms", "values": [ "Yes", "Not"], "selectableCount": 1 })
+     */
+
+    sendPoll = async (numberIn, text, poll) => {
+        const numberClean = baileyCleanNumber(numberIn)
+
+        if (poll.options.length < 2) return false
+
+        const pollMessage = {
+            name: text,
+            values: poll.options,
+            selectableCount: poll?.multiselect === undefined ? 1 : poll?.multiselect ? 1 : 0,
+        }
+
+        return this.vendor.sendMessage(numberClean, { poll: pollMessage })
     }
 
     /**
