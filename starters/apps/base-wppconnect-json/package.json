@@ -1,9 +1,10 @@
 {
-    "name": "base-wppconnect-memory",
+    "name": "base-wppconnect-json",
     "version": "1.0.0",
     "description": "",
     "main": "app.js",
     "scripts": {
+        "pre-copy": "cd .. && npm run  copy.lib base-wppconnect-json",
         "start": "node app.js"
     },
     "keywords": [],
