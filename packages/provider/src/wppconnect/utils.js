@@ -2,8 +2,8 @@ const { writeFile } = require('fs')
 const { cleanImage } = require('../utils/cleanImage')
 
 const WppConnectCleanNumber = (number, full = false) => {
-    number = number.replace('@s.whatsapp.net', '')
-    number = !full ? `${number}@s.whatsapp.net` : `${number}`
+    number = number.replace('@c.us', '')
+    number = full ? `${number}@c.us` : `${number}`
     return number
 }
 
