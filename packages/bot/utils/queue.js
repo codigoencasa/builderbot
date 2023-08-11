@@ -1,11 +1,11 @@
 class Queue {
     queue = []
-    pendingPromise = false
+    workingOnPromise = false
 
-    enqueue(promise) {
+    enqueue(promiseFn) {
         return new Promise((resolve, reject) => {
             this.queue.push({
-                promise,
+                promiseFn,
                 resolve,
                 reject,
             })
@@ -23,7 +23,7 @@ class Queue {
         }
         try {
             this.workingOnPromise = true
-            item.promise()
+            item.promiseFn()
                 .then((value) => {
                     this.workingOnPromise = false
                     item.resolve(value)

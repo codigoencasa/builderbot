@@ -107,13 +107,14 @@ class CoreClass {
             const media = payload?.media ?? null
             const buttons = payload?.buttons ?? []
             const capture = payload?.capture ?? false
+            const delay = payload?.delay ?? 0
 
             return toCtx({
                 body,
                 from,
                 keyword: null,
                 index,
-                options: { media, buttons, capture },
+                options: { media, buttons, capture, delay },
             })
         }
 
@@ -142,6 +143,7 @@ class CoreClass {
                 if (endFlowFlag) return
                 const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
                 if (delayMs) await delay(delayMs)
+                logger.log(`[sendQueue]: `, ctxMessage)
                 await QueuePrincipal.enqueue(() =>
                     this.sendProviderAndSave(numberOrId, ctxMessage).then(() => resolveCbEveryCtx(ctxMessage))
                 )
@@ -282,6 +284,7 @@ class CoreClass {
         }
 
         msgToSend = this.flowClass.find(body) || []
+
         if (msgToSend.length) return sendFlow(msgToSend, from)
 
         if (!prevMsg?.options?.capture) {

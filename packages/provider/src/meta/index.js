@@ -1,5 +1,10 @@
 const { ProviderClass } = require('@bot-whatsapp/bot')
 const axios = require('axios')
+const FormData = require('form-data')
+const { createReadStream } = require('fs')
+const mime = require('mime-types')
+const { generalDownload } = require('../../common/download')
+const { convertAudio } = require('../utils/convertAudio')
 const MetaWebHookServer = require('./server')
 const URL = `https://graph.facebook.com`
 
@@ -90,7 +95,7 @@ class MetaProvider extends ProviderClass {
         return this.sendMessageMeta(body)
     }
 
-    sendMedia = async (number, _, mediaInput = null) => {
+    sendImage = async (number, mediaInput = null) => {
         if (!mediaInput) throw new Error(`MEDIA_INPUT_NULL_: ${mediaInput}`)
         const body = {
             messaging_product: 'whatsapp',
@@ -101,6 +106,64 @@ class MetaProvider extends ProviderClass {
             },
         }
         return this.sendMessageMeta(body)
+    }
+
+    /**
+     *
+     * @param {*} number
+     * @param {*} _
+     * @param {*} pathVideo
+     * @returns
+     */
+    sendVideo = async (number, pathVideo = null) => {
+        if (!pathVideo) throw new Error(`MEDIA_INPUT_NULL_: ${pathVideo}`)
+
+        const formData = new FormData()
+        const mimeType = mime.lookup(pathVideo)
+        formData.append('file', createReadStream(pathVideo), {
+            contentType: mimeType,
+        })
+        formData.append('messaging_product', 'whatsapp')
+
+        const {
+            data: { id: mediaId },
+        } = await axios.post(`${URL}/${this.version}/${this.numberId}/media`, formData, {
+            headers: {
+                Authorization: `Bearer ${this.jwtToken}`,
+                ...formData.getHeaders(),
+            },
+        })
+
+        const body = {
+            messaging_product: 'whatsapp',
+            to: number,
+            type: 'video',
+            video: {
+                id: mediaId,
+            },
+        }
+        return this.sendMessageMeta(body)
+    }
+
+    /**
+     * @alpha
+     * @param {string} number
+     * @param {string} message
+     * @example await sendMessage('+XXXXXXXXXXX', 'https://dominio.com/imagen.jpg' | 'img/imagen.jpg')
+     */
+
+    sendMedia = async (number, mediaInput, text = '') => {
+        const fileDownloaded = await generalDownload(mediaInput)
+        const mimeType = mime.lookup(fileDownloaded)
+
+        if (mimeType.includes('image')) return this.sendImage(number, mediaInput)
+        if (mimeType.includes('video')) return this.sendVideo(number, fileDownloaded)
+        if (mimeType.includes('audio')) {
+            const fileOpus = await convertAudio(fileDownloaded)
+            return this.sendAudio(number, fileOpus, text)
+        }
+
+        return this.sendFile(number, fileDownloaded)
     }
 
     /**
