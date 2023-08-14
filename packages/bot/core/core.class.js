@@ -5,14 +5,16 @@ const Queue = require('../utils/queue')
 const { Console } = require('console')
 const { createWriteStream } = require('fs')
 const { LIST_REGEX } = require('../io/events')
-const GlobalState = require('../context/state.class')
+const SingleState = require('../context/state.class')
+const GlobalState = require('../context/globalState.class')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
 })
 
 const QueuePrincipal = new Queue()
-const StateHandler = new GlobalState()
+const StateHandler = new SingleState()
+const GlobalStateHandler = new GlobalState()
 
 /**
  * [ ] Escuchar eventos del provider asegurarte que los provider emitan eventos
@@ -24,12 +26,16 @@ class CoreClass {
     flowClass
     databaseClass
     providerClass
-    generalArgs = { blackList: [], listEvents: {}, delay: 0 }
+    generalArgs = { blackList: [], listEvents: {}, delay: 0, globalState: {}, extensions: undefined }
     constructor(_flow, _database, _provider, _args) {
         this.flowClass = _flow
         this.databaseClass = _database
         this.providerClass = _provider
         this.generalArgs = { ...this.generalArgs, ..._args }
+
+        GlobalStateHandler.updateState(this.generalArgs.globalState)
+
+        if (this.generalArgs.extensions) GlobalStateHandler.RAW = this.generalArgs.extensions
 
         for (const { event, func } of this.listenerBusEvents()) {
             this.providerClass.on(event, func)
@@ -101,6 +107,16 @@ class CoreClass {
             clear: StateHandler.clear(messageCtxInComming.from),
         }
 
+        // 📄 Mantener estado global
+        const globalState = {
+            getMyState: GlobalStateHandler.getMyState(),
+            getAllState: GlobalStateHandler.getAllState,
+            update: GlobalStateHandler.updateState(messageCtxInComming),
+            clear: GlobalStateHandler.clear(),
+        }
+
+        const extensions = GlobalStateHandler.RAW
+
         // 📄 Crar CTX de mensaje (uso private)
         const createCtxMessage = (payload = {}, index = 0) => {
             const body = typeof payload === 'string' ? payload : payload?.body ?? payload?.answer
@@ -138,17 +154,19 @@ class CoreClass {
         // 📄 Esta funcion se encarga de enviar un array de mensajes dentro de este ctx
         const sendFlow = async (messageToSend, numberOrId, options = { prev: prevMsg }) => {
             if (options.prev?.options?.capture) await cbEveryCtx(options.prev?.ref)
-            const queue = []
             for (const ctxMessage of messageToSend) {
                 if (endFlowFlag) return
                 const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
                 if (delayMs) await delay(delayMs)
-                logger.log(`[sendQueue]: `, ctxMessage)
+                logger.log(`[sendQueue_A]: `, ctxMessage)
                 await QueuePrincipal.enqueue(() =>
-                    this.sendProviderAndSave(numberOrId, ctxMessage).then(() => resolveCbEveryCtx(ctxMessage))
-                )
+                    this.sendProviderAndSave(numberOrId, ctxMessage).then(() => {
+                        logger.log(`[QUEUE_SE_ENVIO]: `, ctxMessage)
+                        return resolveCbEveryCtx(ctxMessage)
+                    })
+                ).catch((err) => logger.log(`[Error Queue_A]: `, err))
             }
-            return Promise.all(queue)
+            return
         }
 
         const continueFlow = async () => {
@@ -245,6 +263,8 @@ class CoreClass {
             const argsCb = {
                 provider,
                 state,
+                globalState,
+                extensions,
                 fallBack: fallBack(flags),
                 flowDynamic: flowDynamic(flags),
                 endFlow: endFlow(flags),
