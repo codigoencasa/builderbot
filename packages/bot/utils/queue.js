@@ -1,46 +1,19 @@
-class Queue {
-    queue = []
-    workingOnPromise = false
+const Queue = require('queue-promise')
+const { Console } = require('console')
+const { createWriteStream } = require('fs')
+const logger = new Console({
+    stdout: createWriteStream(`${process.cwd()}/queue.class.log`),
+})
 
-    enqueue(promiseFn) {
-        return new Promise((resolve, reject) => {
-            this.queue.push({
-                promiseFn,
-                resolve,
-                reject,
-            })
-            this.dequeue()
-        })
-    }
+const queue = new Queue({
+    concurrent: 2,
+    interval: 0,
+})
 
-    dequeue() {
-        if (this.workingOnPromise) {
-            return false
-        }
-        const item = this.queue.shift()
-        if (!item) {
-            return false
-        }
-        try {
-            this.workingOnPromise = true
-            item.promiseFn()
-                .then((value) => {
-                    this.workingOnPromise = false
-                    item.resolve(value)
-                    this.dequeue()
-                })
-                .catch((err) => {
-                    this.workingOnPromise = false
-                    item.reject(err)
-                    this.dequeue()
-                })
-        } catch (err) {
-            this.workingOnPromise = false
-            item.reject(err)
-            this.dequeue()
-        }
-        return true
-    }
-}
+queue.on('start', () => logger.log('[Queue]:Start'))
+queue.on('stop', () => logger.log('[Queue]:Stop'))
+queue.on('end', () => logger.log('[Queue]:End'))
 
-module.exports = Queue
+queue.on('reject', (error) => logger.log(`[ERROR:QUEUE]:`, error))
+
+module.exports = queue

@@ -1,9 +1,10 @@
 const { toCtx } = require('../io/methods')
 const { printer } = require('../utils/interactive')
 const { delay } = require('../utils/delay')
-const Queue = require('../utils/queue')
 const { Console } = require('console')
 const { createWriteStream } = require('fs')
+const queuePromises = require('../utils/queue')
+
 const { LIST_REGEX } = require('../io/events')
 const SingleState = require('../context/state.class')
 const GlobalState = require('../context/globalState.class')
@@ -12,7 +13,7 @@ const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
 })
 
-const QueuePrincipal = new Queue()
+// const QueuePrincipal = new Queue()
 const StateHandler = new SingleState()
 const GlobalStateHandler = new GlobalState()
 
@@ -136,8 +137,8 @@ class CoreClass {
 
         // 📄 Limpiar cola de procesos
         const clearQueue = () => {
-            QueuePrincipal.pendingPromise = false
-            QueuePrincipal.queue = []
+            // QueuePrincipal.pendingPromise = false
+            // QueuePrincipal.queue = []
         }
 
         // 📄 Finalizar flujo
@@ -159,12 +160,14 @@ class CoreClass {
                 const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
                 if (delayMs) await delay(delayMs)
                 logger.log(`[sendQueue_A]: `, ctxMessage)
-                await QueuePrincipal.enqueue(() =>
+                queuePromises.enqueue(() =>
                     this.sendProviderAndSave(numberOrId, ctxMessage).then(() => {
                         logger.log(`[QUEUE_SE_ENVIO]: `, ctxMessage)
                         return resolveCbEveryCtx(ctxMessage)
                     })
-                ).catch((err) => logger.log(`[Error Queue_A]: `, err))
+                )
+
+                await queuePromises.dequeue()
             }
             return
         }
@@ -192,7 +195,7 @@ class CoreClass {
         const fallBack =
             (flag) =>
             async (message = null) => {
-                QueuePrincipal.queue = []
+                // QueuePrincipal.queue = []
                 flag.fallBack = true
                 await this.sendProviderAndSave(from, {
                     ...prevMsg,
@@ -336,14 +339,19 @@ class CoreClass {
      * @returns
      */
     sendProviderAndSave = async (numberOrId, ctxMessage) => {
-        const { answer } = ctxMessage
+        try {
+            const { answer } = ctxMessage
 
-        if (answer && answer.length && answer !== '__call_action__') {
-            await this.providerClass.sendMessage(numberOrId, answer, ctxMessage)
-            await this.databaseClass.save({ ...ctxMessage, from: numberOrId })
+            if (answer && answer.length && answer !== '__call_action__') {
+                await this.providerClass.sendMessage(numberOrId, answer, ctxMessage)
+                await this.databaseClass.save({ ...ctxMessage, from: numberOrId })
+            }
+
+            return Promise.resolve
+        } catch (err) {
+            console.log('ERROR:Enviando')
+            return Promise.reject
         }
-
-        return
     }
 
     /**
@@ -369,13 +377,13 @@ class CoreClass {
      * @returns
      */
     sendFlowSimple = async (messageToSend, numberOrId) => {
-        const queue = []
         for (const ctxMessage of messageToSend) {
             const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
             if (delayMs) await delay(delayMs)
-            QueuePrincipal.enqueue(() => this.sendProviderAndSave(numberOrId, ctxMessage))
+            queuePromises.enqueue(() => this.sendProviderAndSave(numberOrId, ctxMessage))
+            await queuePromises.dequeue()
         }
-        return Promise.all(queue)
+        return Promise.resolve
     }
 }
 module.exports = CoreClass

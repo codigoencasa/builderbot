@@ -25,7 +25,8 @@
         "kleur": "^4.1.5"
     },
     "dependencies": {
-        "dotenv": "^16.0.3"
+        "dotenv": "^16.0.3",
+        "queue-promise": "^2.2.1"
     },
     "repository": {
         "type": "git",
