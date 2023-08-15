@@ -34,7 +34,7 @@ class CoreClass {
         this.providerClass = _provider
         this.generalArgs = { ...this.generalArgs, ..._args }
 
-        GlobalStateHandler.updateState(this.generalArgs.globalState)
+        GlobalStateHandler.updateState()(this.generalArgs.globalState)
 
         if (this.generalArgs.extensions) GlobalStateHandler.RAW = this.generalArgs.extensions
 
