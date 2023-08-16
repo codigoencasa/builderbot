@@ -1,19 +1,43 @@
-const Queue = require('queue-promise')
-const { Console } = require('console')
-const { createWriteStream } = require('fs')
-const logger = new Console({
-    stdout: createWriteStream(`${process.cwd()}/queue.class.log`),
-})
+class Queue {
+    constructor(logger) {
+        this.queue = []
+        this.workingOnPromise = false
+        this.logger = logger
+    }
 
-const queue = new Queue({
-    concurrent: 2,
-    interval: 0,
-})
+    async enqueue(promise) {
+        this.logger.log(`QUEUE: Encolado`)
+        return new Promise((resolve, reject) => {
+            this.queue.push({
+                promise,
+                resolve,
+                reject,
+            })
+            this.dequeue()
+        })
+    }
 
-queue.on('start', () => logger.log('[Queue]:Start'))
-queue.on('stop', () => logger.log('[Queue]:Stop'))
-queue.on('end', () => logger.log('[Queue]:End'))
+    async dequeue() {
+        if (this.workingOnPromise || this.queue.length === 0) {
+            return
+        }
 
-queue.on('reject', (error) => logger.log(`[ERROR:QUEUE]:`, error))
+        this.workingOnPromise = true
 
-module.exports = queue
+        while (this.queue.length > 0) {
+            const item = this.queue.shift()
+
+            try {
+                const value = await item.promise()
+                item.resolve(value)
+            } catch (err) {
+                this.logger.error(`Error en cola: ${err.message}`)
+                item.reject(err)
+            }
+        }
+
+        this.workingOnPromise = false
+    }
+}
+
+module.exports = Queue

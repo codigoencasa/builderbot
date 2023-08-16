@@ -3,7 +3,7 @@ const { printer } = require('../utils/interactive')
 const { delay } = require('../utils/delay')
 const { Console } = require('console')
 const { createWriteStream } = require('fs')
-const queuePromises = require('../utils/queue')
+const Queue = require('../utils/queue')
 
 const { LIST_REGEX } = require('../io/events')
 const SingleState = require('../context/state.class')
@@ -13,7 +13,7 @@ const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
 })
 
-// const QueuePrincipal = new Queue()
+const QueuePrincipal = new Queue(logger)
 const StateHandler = new SingleState()
 const GlobalStateHandler = new GlobalState()
 
@@ -137,8 +137,8 @@ class CoreClass {
 
         // 📄 Limpiar cola de procesos
         const clearQueue = () => {
-            // QueuePrincipal.pendingPromise = false
-            // QueuePrincipal.queue = []
+            QueuePrincipal.pendingPromise = false
+            QueuePrincipal.queue = []
         }
 
         // 📄 Finalizar flujo
@@ -160,14 +160,14 @@ class CoreClass {
                 const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
                 if (delayMs) await delay(delayMs)
                 logger.log(`[sendQueue_A]: `, ctxMessage)
-                queuePromises.enqueue(() =>
+                await QueuePrincipal.enqueue(() =>
                     this.sendProviderAndSave(numberOrId, ctxMessage).then(() => {
                         logger.log(`[QUEUE_SE_ENVIO]: `, ctxMessage)
                         return resolveCbEveryCtx(ctxMessage)
                     })
                 )
 
-                await queuePromises.dequeue()
+                // await queuePromises.dequeue()
             }
             return
         }
@@ -195,7 +195,7 @@ class CoreClass {
         const fallBack =
             (flag) =>
             async (message = null) => {
-                // QueuePrincipal.queue = []
+                QueuePrincipal.queue = []
                 flag.fallBack = true
                 await this.sendProviderAndSave(from, {
                     ...prevMsg,
@@ -341,14 +341,17 @@ class CoreClass {
     sendProviderAndSave = async (numberOrId, ctxMessage) => {
         try {
             const { answer } = ctxMessage
-
+            logger.log(`[sendProviderAndSave]: `, ctxMessage)
             if (answer && answer.length && answer !== '__call_action__') {
                 await this.providerClass.sendMessage(numberOrId, answer, ctxMessage)
+                logger.log(`[providerClass.sendMessage]: `, ctxMessage)
                 await this.databaseClass.save({ ...ctxMessage, from: numberOrId })
+                logger.log(`[databaseClass.save]: `, ctxMessage)
             }
 
             return Promise.resolve
         } catch (err) {
+            logger.log(`[ERROR.save]: `, ctxMessage)
             console.log('ERROR:Enviando')
             return Promise.reject
         }
@@ -380,8 +383,8 @@ class CoreClass {
         for (const ctxMessage of messageToSend) {
             const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
             if (delayMs) await delay(delayMs)
-            queuePromises.enqueue(() => this.sendProviderAndSave(numberOrId, ctxMessage))
-            await queuePromises.dequeue()
+            await QueuePrincipal.enqueue(() => this.sendProviderAndSave(numberOrId, ctxMessage))
+            // await queuePromises.dequeue()
         }
         return Promise.resolve
     }
