@@ -154,22 +154,35 @@ class CoreClass {
 
         // 📄 Esta funcion se encarga de enviar un array de mensajes dentro de este ctx
         const sendFlow = async (messageToSend, numberOrId, options = { prev: prevMsg }) => {
-            if (options.prev?.options?.capture) await cbEveryCtx(options.prev?.ref)
-            for (const ctxMessage of messageToSend) {
-                if (endFlowFlag) return
-                const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
-                if (delayMs) await delay(delayMs)
-                logger.log(`[sendQueue_A]: `, ctxMessage)
-                await QueuePrincipal.enqueue(() =>
-                    this.sendProviderAndSave(numberOrId, ctxMessage).then(() => {
-                        logger.log(`[QUEUE_SE_ENVIO]: `, ctxMessage)
-                        return resolveCbEveryCtx(ctxMessage)
-                    })
-                )
-
-                // await queuePromises.dequeue()
+            if (options.prev?.options?.capture) {
+                await cbEveryCtx(options.prev?.ref)
             }
-            return
+
+            for (const ctxMessage of messageToSend) {
+                if (endFlowFlag) {
+                    return // Si endFlowFlag es verdadero, detener el flujo
+                }
+
+                const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
+                if (delayMs) {
+                    await delay(delayMs) // Esperar según el retraso configurado
+                }
+
+                logger.log(`[sendQueue_A]: `, ctxMessage)
+
+                try {
+                    await QueuePrincipal.enqueue(async () => {
+                        // Usar async en la función pasada a enqueue
+                        await this.sendProviderAndSave(numberOrId, ctxMessage)
+                        logger.log(`[QUEUE_SE_ENVIO]: `, ctxMessage)
+                        await resolveCbEveryCtx(ctxMessage)
+                    })
+                } catch (error) {
+                    logger.error(`Error al encolar: ${error.message}`)
+                    // Puedes considerar manejar el error aquí o rechazar la promesa
+                    // Pasada a resolveCbEveryCtx con el error correspondiente.
+                }
+            }
         }
 
         const continueFlow = async () => {

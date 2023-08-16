@@ -5,15 +5,18 @@ class Queue {
         this.logger = logger
     }
 
-    async enqueue(promise) {
-        this.logger.log(`QUEUE: Encolado`)
+    enqueue(promiseFunc) {
+        this.logger.log(`QUEUE: Enqueued`)
         return new Promise((resolve, reject) => {
             this.queue.push({
-                promise,
+                promiseFunc,
                 resolve,
                 reject,
             })
-            this.dequeue()
+
+            if (!this.workingOnPromise) {
+                this.dequeue()
+            }
         })
     }
 
@@ -25,19 +28,25 @@ class Queue {
 
         this.workingOnPromise = true
 
-        while (this.queue.length > 0) {
-            const item = this.queue.shift()
+        try {
+            while (this.queue.length > 0) {
+                const item = this.queue.shift()
 
-            try {
-                const value = await item.promise()
-                item.resolve(value)
-            } catch (err) {
-                this.logger.error(`Error en cola: ${err.message}`)
-                item.reject(err)
+                try {
+                    const value = await item.promiseFunc()
+                    item.resolve(value)
+                } catch (err) {
+                    this.logger.error(`Error en cola: ${err.message}`)
+                    item.reject(err)
+                }
+            }
+        } finally {
+            this.workingOnPromise = false
+            // Verifica si hay tareas pendientes y desencola si es necesario
+            if (this.queue.length > 0) {
+                this.dequeue()
             }
         }
-
-        this.workingOnPromise = false
     }
 }
 
