@@ -19,6 +19,7 @@ class Queue {
 
     async dequeue() {
         if (this.workingOnPromise || this.queue.length === 0) {
+            this.logger.log(`QUEUE: workingOnPromise:${this.workingOnPromise}, queue_length:${this.queue.length}`)
             return
         }
 
