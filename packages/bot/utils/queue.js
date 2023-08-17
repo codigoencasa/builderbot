@@ -1,50 +1,65 @@
 class Queue {
-    constructor(logger) {
-        this.queue = []
-        this.workingOnPromise = false
+    constructor(logger, concurrencyLimit = 1) {
+        this.queue = new Map()
+        this.workingOnPromise = new Map()
         this.logger = logger
+        this.concurrencyLimit = concurrencyLimit
     }
 
-    enqueue(promiseFunc) {
-        this.logger.log(`QUEUE: Enqueued`)
+    async enqueue(from, promiseFunc) {
+        this.logger.log(`QUEUE: Enqueued ${from}`)
+
+        if (!this.queue.has(from)) {
+            this.queue.set(from, [])
+            this.workingOnPromise.set(from, false)
+        }
+
+        const queueByFrom = this.queue.get(from)
+        const workingByFrom = this.workingOnPromise.get(from)
+
         return new Promise((resolve, reject) => {
-            this.queue.push({
+            queueByFrom.push({
                 promiseFunc,
                 resolve,
                 reject,
             })
 
-            if (!this.workingOnPromise) {
-                this.dequeue()
+            if (!workingByFrom) {
+                this.workingOnPromise.set(from, true)
+                this.processQueue(from)
             }
         })
     }
 
-    async dequeue() {
-        if (this.workingOnPromise || this.queue.length === 0) {
-            this.logger.log(`QUEUE: workingOnPromise:${this.workingOnPromise}, queue_length:${this.queue.length}`)
-            return
+    async processQueue(from) {
+        const queueByFrom = this.queue.get(from)
+
+        while (queueByFrom.length > 0) {
+            const tasksToProcess = queueByFrom.splice(0, this.concurrencyLimit)
+
+            await Promise.allSettled(
+                tasksToProcess.map(async (item) => {
+                    try {
+                        const value = await item.promiseFunc()
+                        item.resolve(value)
+                    } catch (err) {
+                        this.logger.error(`Error en cola: ${err.message}`)
+                        item.reject(err)
+                    }
+                })
+            )
         }
 
-        this.workingOnPromise = true
+        this.workingOnPromise.set(from, false)
+    }
 
-        try {
-            while (this.queue.length > 0) {
-                const item = this.queue.shift()
+    async clearQueue(from) {
+        if (this.queue.has(from)) {
+            this.queue.set(from, [])
+            const workingByFrom = this.workingOnPromise.get(from)
 
-                try {
-                    const value = await item.promiseFunc()
-                    item.resolve(value)
-                } catch (err) {
-                    this.logger.error(`Error en cola: ${err.message}`)
-                    item.reject(err)
-                }
-            }
-        } finally {
-            this.workingOnPromise = false
-            // Verifica si hay tareas pendientes y desencola si es necesario
-            if (this.queue.length > 0) {
-                this.dequeue()
+            if (workingByFrom) {
+                this.workingOnPromise.set(from, false)
             }
         }
     }

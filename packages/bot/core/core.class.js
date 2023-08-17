@@ -137,8 +137,7 @@ class CoreClass {
 
         // 📄 Limpiar cola de procesos
         const clearQueue = () => {
-            QueuePrincipal.pendingPromise = false
-            QueuePrincipal.queue = []
+            QueuePrincipal.clearQueue(from)
         }
 
         // 📄 Finalizar flujo
@@ -171,7 +170,7 @@ class CoreClass {
                 logger.log(`[sendQueue_A]: `, ctxMessage)
 
                 try {
-                    await QueuePrincipal.enqueue(async () => {
+                    await QueuePrincipal.enqueue(from, async () => {
                         // Usar async en la función pasada a enqueue
                         await this.sendProviderAndSave(numberOrId, ctxMessage)
                         logger.log(`[QUEUE_SE_ENVIO]: `, ctxMessage)
@@ -208,7 +207,7 @@ class CoreClass {
         const fallBack =
             (flag) =>
             async (message = null) => {
-                QueuePrincipal.queue = []
+                QueuePrincipal.clearQueue(from)
                 flag.fallBack = true
                 await this.sendProviderAndSave(from, {
                     ...prevMsg,
@@ -396,7 +395,7 @@ class CoreClass {
         for (const ctxMessage of messageToSend) {
             const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
             if (delayMs) await delay(delayMs)
-            await QueuePrincipal.enqueue(() => this.sendProviderAndSave(numberOrId, ctxMessage))
+            await QueuePrincipal.enqueue(numberOrId, () => this.sendProviderAndSave(numberOrId, ctxMessage))
             // await queuePromises.dequeue()
         }
         return Promise.resolve
