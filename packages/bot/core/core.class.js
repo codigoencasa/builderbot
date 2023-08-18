@@ -12,8 +12,11 @@ const GlobalState = require('../context/globalState.class')
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
 })
+const loggerQueue = new Console({
+    stdout: createWriteStream(`${process.cwd()}/queue.class.log`),
+})
 
-const QueuePrincipal = new Queue(logger)
+const QueuePrincipal = new Queue(loggerQueue)
 const StateHandler = new SingleState()
 const GlobalStateHandler = new GlobalState()
 
@@ -178,6 +181,7 @@ class CoreClass {
                     })
                 } catch (error) {
                     logger.error(`Error al encolar: ${error.message}`)
+                    return Promise.reject
                     // Puedes considerar manejar el error aquí o rechazar la promesa
                     // Pasada a resolveCbEveryCtx con el error correspondiente.
                 }

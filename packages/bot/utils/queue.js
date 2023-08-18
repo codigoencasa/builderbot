@@ -1,13 +1,19 @@
 class Queue {
-    constructor(logger, concurrencyLimit = 1) {
+    constructor(logger, concurrencyLimit = 15) {
         this.queue = new Map()
         this.workingOnPromise = new Map()
         this.logger = logger
         this.concurrencyLimit = concurrencyLimit
     }
 
+    /**
+     * Encola el proceso
+     * @param {*} from
+     * @param {*} promiseFunc
+     * @returns
+     */
     async enqueue(from, promiseFunc) {
-        this.logger.log(`QUEUE: Enqueued ${from}`)
+        this.logger.log(`${from}:ENCOLADO`)
 
         if (!this.queue.has(from)) {
             this.queue.set(from, [])
@@ -25,34 +31,46 @@ class Queue {
             })
 
             if (!workingByFrom) {
+                this.logger.log(`${from}:EJECUTANDO`)
                 this.workingOnPromise.set(from, true)
                 this.processQueue(from)
             }
         })
     }
 
+    /**
+     * Ejecuta el proceso encolado
+     * @param {*} from
+     */
     async processQueue(from) {
         const queueByFrom = this.queue.get(from)
+
+        const promise1 = () => new Promise((_, reject) => setTimeout(() => reject('timeout'), 20000))
 
         while (queueByFrom.length > 0) {
             const tasksToProcess = queueByFrom.splice(0, this.concurrencyLimit)
 
-            await Promise.allSettled(
-                tasksToProcess.map(async (item) => {
-                    try {
-                        const value = await item.promiseFunc()
-                        item.resolve(value)
-                    } catch (err) {
-                        this.logger.error(`Error en cola: ${err.message}`)
-                        item.reject(err)
-                    }
-                })
-            )
+            const promises = tasksToProcess.map(async (item) => {
+                try {
+                    const value = await Promise.race([promise1(), item.promiseFunc()])
+                    item.resolve(value)
+                    this.logger.log(`${from}:SUCCESS`)
+                } catch (err) {
+                    this.logger.error(`${from}:ERROR: ${JSON.stringify(err)}`)
+                    item.reject(err)
+                }
+            })
+
+            await Promise.allSettled(promises)
         }
 
         this.workingOnPromise.set(from, false)
     }
 
+    /**
+     * Limpia la cola de procesos
+     * @param {*} from
+     */
     async clearQueue(from) {
         if (this.queue.has(from)) {
             this.queue.set(from, [])
