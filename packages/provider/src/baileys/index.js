@@ -238,7 +238,7 @@ class BaileysProvider extends ProviderClass {
                             let payload = {
                                 ...messageCtx,
                                 body: pollMessage.find((poll) => poll.voters.length > 0)?.name || '',
-                                from: baileyCleanNumber(key.remoteJid),
+                                from: baileyCleanNumber(key.remoteJid, true),
                                 pushName: messageOriginal?.pushName,
                                 broadcast: messageOriginal?.broadcast,
                                 messageTimestamp: messageOriginal?.messageTimestamp,
