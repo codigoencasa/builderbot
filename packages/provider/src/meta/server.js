@@ -165,6 +165,23 @@ class MetaWebHookServer extends EventEmitter {
             this.emit('message', responseObj)
         }
 
+        if (message.type === 'order') {
+            const body = generateRefprovider('_event_order_');
+
+            const responseObj = {
+                type: message.type,
+                from: message.from,
+                to,
+                order: {
+                    catalog_id: message.order.catalog_id,
+                    product_items: message.order.product_items,
+                },
+                body,
+            };
+
+            this.emit('message', responseObj);
+        }
+
         const json = JSON.stringify({ body })
         res.end(json)
     }
