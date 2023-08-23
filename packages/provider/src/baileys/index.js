@@ -10,7 +10,6 @@ const { Console } = require('console')
 const {
     default: makeWASocket,
     useMultiFileAuthState,
-    Browsers,
     DisconnectReason,
     proto,
     makeInMemoryStore,
