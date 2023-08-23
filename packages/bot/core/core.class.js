@@ -16,7 +16,6 @@ const loggerQueue = new Console({
     stdout: createWriteStream(`${process.cwd()}/queue.class.log`),
 })
 
-const QueuePrincipal = new Queue(loggerQueue)
 const StateHandler = new SingleState()
 const GlobalStateHandler = new GlobalState()
 
@@ -30,12 +29,29 @@ class CoreClass {
     flowClass
     databaseClass
     providerClass
-    generalArgs = { blackList: [], listEvents: {}, delay: 0, globalState: {}, extensions: undefined }
+    queuePrincipal
+    generalArgs = {
+        blackList: [],
+        listEvents: {},
+        delay: 0,
+        globalState: {},
+        extensions: undefined,
+        queue: {
+            timeout: 20000,
+            concurrencyLimit: 15,
+        },
+    }
     constructor(_flow, _database, _provider, _args) {
         this.flowClass = _flow
         this.databaseClass = _database
         this.providerClass = _provider
         this.generalArgs = { ...this.generalArgs, ..._args }
+
+        this.queuePrincipal = new Queue(
+            loggerQueue,
+            this.generalArgs.queue.concurrencyLimit,
+            this.generalArgs.queue.timeout
+        )
 
         GlobalStateHandler.updateState()(this.generalArgs.globalState)
 
@@ -140,7 +156,7 @@ class CoreClass {
 
         // 📄 Limpiar cola de procesos
         const clearQueue = () => {
-            QueuePrincipal.clearQueue(from)
+            this.queuePrincipal.clearQueue(from)
         }
 
         // 📄 Finalizar flujo
@@ -173,7 +189,7 @@ class CoreClass {
                 logger.log(`[sendQueue_A]: `, ctxMessage)
 
                 try {
-                    await QueuePrincipal.enqueue(from, async () => {
+                    await this.queuePrincipal.enqueue(from, async () => {
                         // Usar async en la función pasada a enqueue
                         await this.sendProviderAndSave(numberOrId, ctxMessage)
                         logger.log(`[QUEUE_SE_ENVIO]: `, ctxMessage)
@@ -211,7 +227,7 @@ class CoreClass {
         const fallBack =
             (flag) =>
             async (message = null) => {
-                QueuePrincipal.clearQueue(from)
+                this.queuePrincipal.clearQueue(from)
                 flag.fallBack = true
                 await this.sendProviderAndSave(from, {
                     ...prevMsg,
@@ -399,7 +415,7 @@ class CoreClass {
         for (const ctxMessage of messageToSend) {
             const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
             if (delayMs) await delay(delayMs)
-            await QueuePrincipal.enqueue(numberOrId, () => this.sendProviderAndSave(numberOrId, ctxMessage))
+            await this.queuePrincipal.enqueue(numberOrId, () => this.sendProviderAndSave(numberOrId, ctxMessage))
             // await queuePromises.dequeue()
         }
         return Promise.resolve

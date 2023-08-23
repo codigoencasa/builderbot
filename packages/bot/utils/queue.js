@@ -1,8 +1,9 @@
 class Queue {
-    constructor(logger, concurrencyLimit = 15) {
+    constructor(logger, concurrencyLimit = 15, timeout = 20000) {
         this.queue = new Map()
         this.workingOnPromise = new Map()
         this.logger = logger
+        this.timeout = timeout
         this.concurrencyLimit = concurrencyLimit
     }
 
@@ -45,7 +46,7 @@ class Queue {
     async processQueue(from) {
         const queueByFrom = this.queue.get(from)
 
-        const promise1 = () => new Promise((_, reject) => setTimeout(() => reject('timeout'), 20000))
+        const promise1 = () => new Promise((_, reject) => setTimeout(() => reject('timeout'), this.timeout))
 
         while (queueByFrom.length > 0) {
             const tasksToProcess = queueByFrom.splice(0, this.concurrencyLimit)
