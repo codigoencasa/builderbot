@@ -283,6 +283,9 @@ class CoreClass {
 
         msgToSend = this.flowClass.find(body) || []
         if (msgToSend.length) return sendFlow(msgToSend, from)
+/**
+ **  TODO: COMPROBAR SI FALTA CREAR ALGO PARA EL EVENTO BUTTON
+ */
 
         if (!prevMsg?.options?.capture) {
             msgToSend = this.flowClass.find(this.generalArgs.listEvents.WELCOME) || []

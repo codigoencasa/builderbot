@@ -4,13 +4,18 @@ const { urlencoded, json } = require('body-parser')
 const { generateRefprovider } = require('../../common/hash')
 const { getMediaUrl } = require('./utils')
 
+/**
+ * 2023-08-23: 
+ *     ✨ Añadido emitButtonAsText para modificar el comportamiento de los botones y funcionen como si de un mensaje de texto se tratara y haga reaccionar un addKeyword
+ *     ♻️ agregados else if en los tipos de mensaje para aumentar un poco el performance
+ */
 class MetaWebHookServer extends EventEmitter {
-    constructor(jwtToken, numberId, version, token, metaPort = 3000) {
+    constructor(jwtToken, numberId, version, token, metaPort = 3000,emitButtonAsText=false) {
         super()
         this.metaServer = polka()
         this.metaPort = metaPort
         this.token = token
-
+        this.emitButtonAsText=emitButtonAsText
         this.jwtToken = jwtToken
         this.numberId = numberId
         this.version = version
@@ -46,8 +51,25 @@ class MetaWebHookServer extends EventEmitter {
             }
             this.emit('message', responseObj)
         }
+/**
+ * ✨ 2023-08-23: 
+ *     Añadida la lógica para tratar los mensajes de tipo button
+ */
+
+        else if (message.type==='button') {
+            const button=message.button;
+            const body=this.emitButtonAsText?message.button.text:generateRefprovider('_event_button_')
+            const responseObj ={
+                type: this.emitButtonAsText?'text':message.type,
+                from: message.from,
+                to,
+                button, //igualmente se enviará el botón con sus atributos payload y text sin importar el valor de emitButtonAsText
+                body
+            }
+            this.emit('message', responseObj);
+        }
         
-        if (message.type === 'interactive') {
+        else if (message.type === 'interactive') {
             const body = message.interactive?.button_reply?.title || message.interactive?.list_reply?.id;
             const title_list_reply = message.interactive?.list_reply?.title;
             const responseObj = {
@@ -60,7 +82,7 @@ class MetaWebHookServer extends EventEmitter {
             this.emit('message', responseObj);
         }
 
-        if (message.type === 'image') {
+        else if (message.type === 'image') {
             const body = generateRefprovider('_event_image_')
             const idUrl = message.image?.id
             const resolvedUrl = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
@@ -75,7 +97,7 @@ class MetaWebHookServer extends EventEmitter {
             this.emit('message', responseObj)
         }
 
-        if (message.type === 'document') {
+        else if (message.type === 'document') {
             const body = generateRefprovider('_event_document_')
             const idUrl = message.document?.id
             const resolvedUrl = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
@@ -90,7 +112,7 @@ class MetaWebHookServer extends EventEmitter {
             this.emit('message', responseObj)
         }
 
-        if (message.type === 'video') {
+        else if (message.type === 'video') {
             const body = generateRefprovider('_event_video_')
             const idUrl = message.video?.id
 
@@ -107,7 +129,7 @@ class MetaWebHookServer extends EventEmitter {
             this.emit('message', responseObj)
         }
 
-        if (message.type === 'location') {
+        else if (message.type === 'location') {
             const body = generateRefprovider('_event_location_')
 
             const responseObj = {
@@ -122,7 +144,7 @@ class MetaWebHookServer extends EventEmitter {
             this.emit('message', responseObj)
         }
 
-        if (message.type === 'audio') {
+        else if (message.type === 'audio') {
             const body = generateRefprovider('_event_audio_')
             const idUrl = message.audio?.id
             const resolvedUrl = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
@@ -137,7 +159,7 @@ class MetaWebHookServer extends EventEmitter {
             this.emit('message', responseObj)
         }
 
-        if (message.type === 'sticker') {
+        else if (message.type === 'sticker') {
             const body = generateRefprovider('_event_sticker_')
 
             const responseObj = {
@@ -151,7 +173,7 @@ class MetaWebHookServer extends EventEmitter {
             this.emit('message', responseObj)
         }
 
-        if (message.type === 'contacts') {
+        else if (message.type === 'contacts') {
             const body = generateRefprovider('_event_contacts_')
 
             const responseObj = {
