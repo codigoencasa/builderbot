@@ -1,21 +1,21 @@
 {
-    "name": "base-wweb-mysql",
+    "name": "base-wweb-postgres",
     "version": "1.0.0",
     "description": "",
     "main": "app.js",
     "scripts": {
-        "pre-copy": "cd .. && npm run  copy.lib base-wweb-mysql",
+        "pre-copy": "cd .. && npm run  copy.lib base-wweb-postgres",
         "start": "node app.js"
     },
     "keywords": [],
     "dependencies": {
-        "whatsapp-web.js": "^1.22.1",
+        "whatsapp-web.js": "1.19.4",
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",
         "@bot-whatsapp/provider": "latest",
         "@bot-whatsapp/portal": "latest",
-        "mysql2": "^2.3.3"
+        "pg": "^8.11.2"
     },
     "author": "",
     "license": "ISC"

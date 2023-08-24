@@ -265,6 +265,134 @@ class MetaProvider extends ProviderClass {
     }
 
     /**
+     * Enviar buttons only text
+     * @param {*} number
+     * @param {*} text
+     * @param {*} buttons
+     * @returns
+     */
+    sendButtonsText = async (number, text, buttons) => {
+        const parseButtons = buttons.map((btn) => ({
+            type: 'reply',
+            reply: {
+                id: btn.id,
+                title: btn.title,
+            },
+        }))
+        const body = {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to: number,
+            type: 'interactive',
+            interactive: {
+                type: 'button',
+                body: {
+                    text: text,
+                },
+                action: {
+                    buttons: parseButtons,
+                },
+            },
+        }
+        return this.sendMessageMeta(body)
+    }
+
+    /**
+     * Enviar buttons with image
+     * @param {*} number
+     * @param {*} text
+     * @param {*} buttons
+     * @param {*} url
+     * @returns
+     */
+    sendButtonsMedia = async (number, text, buttons, url) => {
+        const parseButtons = buttons.map((btn) => ({
+            type: 'reply',
+            reply: {
+                id: btn.id,
+                title: btn.title,
+            },
+        }))
+        const body = {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to: number,
+            type: 'interactive',
+            interactive: {
+                type: 'button',
+                header: {
+                    type: 'image',
+                    image: {
+                        link: url,
+                    },
+                },
+                body: {
+                    text: text,
+                },
+                action: {
+                    buttons: parseButtons,
+                },
+            },
+        }
+        return this.sendMessageMeta(body)
+    }
+
+    /**
+     * Enviar plantillas
+     * @param {*} number
+     * @param {*} template
+     * @param {*} languageCode
+     * @returns
+     */
+
+    sendTemplate = async (number, template, languageCode) => {
+        const body = {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to: number,
+            type: 'template',
+            template: {
+                name: template,
+                language: {
+                    code: languageCode, // examples: es_Mex, en_Us
+                },
+            },
+        }
+        return this.sendMessageMeta(body)
+    }
+
+    /**
+     * Enviar Contactos
+     * @param {*} number
+     * @param {*} contact
+     * @returns
+     */
+
+    sendContacts = async (number, contact) => {
+        const parseContacts = contact.map((contact) => ({
+            name: {
+                formatted_name: contact.name,
+            },
+            phone: [
+                {
+                    phone: contact.phone,
+                    wa_id: contact.phone,
+                    type: 'MOBILE',
+                },
+            ],
+        }))
+
+        const body = {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to: number,
+            type: 'contacts',
+            contacts: parseContacts,
+        }
+        return this.sendMessageMeta(body)
+    }
+
+    /**
      *
      * @param {*} userId
      * @param {*} message

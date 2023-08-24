@@ -34,13 +34,13 @@ const flowPrincipal = addKeyword(['hola', 'alo'])
 ## Provider (Proveedor)
 
 <Alert>
-    ⚡ Dependiendo del tipo de proveedor que utlices puede que necesites pasar algunas configuracion adicional como
+    ⚡ Dependiendo del tipo de proveedor que utlices puede que necesites pasar algunas configuraciones adicionales como
     **token, api, etc.** para esos casos te recomendamos guiarte de los
     **[starters](https://github.com/codigoencasa/bot-whatsapp/tree/dev/starters/apps)** o si gustas puedes editar esta
     documentación para ir agregando más info
 </Alert>
 
-Es la pieza que conectara tu flujo con Whatsapp. En este chatbot tenemos varios proveedores disponibles la mayoria gratis pero tambien tenemos integracion la api oficial de whatsapp o twilio
+Es la pieza que conectara tu flujo con WhatsApp. En este chatbot tenemos varios proveedores disponibles la mayoria gratis pero tambien tenemos integración con la api oficial de whatsapp o twilio
 
 ```js
 const WhatsappProvider = require('@bot-whatsapp/provider/web-whatsapp')
@@ -65,13 +65,13 @@ Los proveedores disponibles hasta el momento son los siguientes:
 ## DataBase (Base de datos)
 
 <Alert>
-    ⚡ Dependiendo del tipo de conector que utlices puede que necesites pasar algunas configuracion adicional como
+    ⚡ Dependiendo del tipo de conector que utlices puede que necesites pasar algunas configuraciones adicionales como
     **user, host, password** para esos casos te recomendamos guiarte de los
     **[starters](https://github.com/codigoencasa/bot-whatsapp/tree/dev/starters/apps)** o si gustas puedes editar esta
     documentación para ir agregando más info
 </Alert>
 
-Es la pieza encargada de mantener el **"estado"** de una conversación, para mayor facilidad la libreria te proporcia diferentes conectores que se de adapten mejor a tu desarrollo
+Es la pieza encargada de mantener el **"estado"** de una conversación, para mayor facilidad la libreria te proporciona diferentes conectores que se adapten mejor a tu desarrollo
 
 ```js
 const MongoAdapter = require('@bot-whatsapp/database/mongo')

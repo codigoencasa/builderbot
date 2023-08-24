@@ -10,7 +10,6 @@ const { Console } = require('console')
 const {
     default: makeWASocket,
     useMultiFileAuthState,
-    Browsers,
     DisconnectReason,
     proto,
     makeInMemoryStore,
@@ -72,7 +71,7 @@ class BaileysProvider extends ProviderClass {
                     creds: state.creds,
                     keys: makeCacheableSignalKeyStore(state.keys, loggerBaileys),
                 },
-                browser: Browsers.macOS('Desktop'),
+                browser: ['Chrome (Linux)', '', ''],
                 syncFullHistory: false,
                 generateHighQualityLinkPreview: true,
                 getMessage: this.getMessage,
