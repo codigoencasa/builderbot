@@ -1,4 +1,4 @@
-class GlobalState {
+class SingleState {
     STATE = new Map()
     constructor() {}
 
@@ -36,4 +36,4 @@ class GlobalState {
     }
 }
 
-module.exports = GlobalState
+module.exports = SingleState

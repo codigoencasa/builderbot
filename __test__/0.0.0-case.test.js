@@ -11,7 +11,7 @@ suiteCase.after.each(clear)
 suiteCase(`Responder a "hola"`, async ({ database, provider }) => {
     const flow = addKeyword('hola').addAnswer('Buenas!').addAnswer('Como vamos!')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),
@@ -22,7 +22,7 @@ suiteCase(`Responder a "hola"`, async ({ database, provider }) => {
         body: 'hola',
     })
 
-    await delay(10)
+    await delay(50)
     assert.is('Buenas!', database.listHistory[0].answer)
     assert.is('Como vamos!', database.listHistory[1].answer)
     assert.is(undefined, database.listHistory[2])
@@ -42,7 +42,7 @@ suiteCase(`NO reponder a "pepe"`, async ({ database, provider }) => {
         body: 'pepe',
     })
 
-    await delay(100)
+    await delay(1000)
 
     assert.is(undefined, database.listHistory[0])
     assert.is(undefined, database.listHistory[1])

@@ -12,6 +12,7 @@ const PROVIDER_DATA = [
     { value: 'json', label: 'Json' },
     { value: 'mongo', label: 'Mongo' },
     { value: 'mysql', label: 'MySQL' },
+    { value: 'postgres', label: 'PostgreSQL' },
 ]
 
 module.exports = { PROVIDER_LIST, PROVIDER_DATA }
