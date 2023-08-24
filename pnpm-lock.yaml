@@ -5055,7 +5055,7 @@ packages:
                 integrity: sha512-1ZX9fcN4Rvkvgv4E6PAY5WXUFWFcRWxZa3EW83UjycOB9ljJCedb2CupIP4RZMEwF/M3eTcCihbBRgwtGbg5Rg==,
             }
         dependencies:
-            '@types/node': 20.5.4
+            '@types/node': 18.11.18
             form-data: 3.0.1
         dev: true
 

@@ -33,7 +33,7 @@ jobs:
             - run: corepack enable
 
             - name: Install NPM Dependencies
-              run: pnpm install --no-frozen-lockfile
+              run: pnpm install --frozen-lockfile
 
             - name: Add netlify
               run: pnpm install netlify-cli -w
