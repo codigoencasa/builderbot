@@ -5,6 +5,8 @@ const { generateRefprovider } = require('../../common/hash')
 const { getMediaUrl } = require('./utils')
 
 /**
+ * 2023-08-24: 
+ *     🐛 Añadido atributo message_id al objeto responseObj
  * 2023-08-23: 
  *     ✨ Añadido emitButtonAsText para modificar el comportamiento de los botones y funcionen como si de un mensaje de texto se tratara y haga reaccionar un addKeyword
  *     ♻️ agregados else if en los tipos de mensaje para aumentar un poco el performance
@@ -39,11 +41,13 @@ class MetaWebHookServer extends EventEmitter {
         }
 
         const [message] = messages
+        const message_id=message.id
         const to = body.entry[0].changes[0].value?.metadata?.display_phone_number
 
         if (message.type === 'text') {
             const body = message.text?.body
             const responseObj = {
+                message_id,
                 type: message.type,
                 from: message.from,
                 to,
@@ -59,7 +63,8 @@ class MetaWebHookServer extends EventEmitter {
         else if (message.type==='button') {
             const button=message.button;
             const body=this.emitButtonAsText?message.button.text:generateRefprovider('_event_button_')
-            const responseObj ={
+            const responseObj = {
+                message_id,
                 type: this.emitButtonAsText?'text':message.type,
                 from: message.from,
                 to,
@@ -73,6 +78,7 @@ class MetaWebHookServer extends EventEmitter {
             const body = message.interactive?.button_reply?.title || message.interactive?.list_reply?.id;
             const title_list_reply = message.interactive?.list_reply?.title;
             const responseObj = {
+                message_id,
                 type: 'interactive',
                 from: message.from,
                 to,
@@ -87,6 +93,7 @@ class MetaWebHookServer extends EventEmitter {
             const idUrl = message.image?.id
             const resolvedUrl = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
             const responseObj = {
+                message_id,
                 type: message.type,
                 from: message.from,
                 url: resolvedUrl,
@@ -102,6 +109,7 @@ class MetaWebHookServer extends EventEmitter {
             const idUrl = message.document?.id
             const resolvedUrl = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
             const responseObj = {
+                message_id,
                 type: message.type,
                 from: message.from,
                 url: resolvedUrl, // Utilizar el valor resuelto de la promesa
@@ -119,6 +127,7 @@ class MetaWebHookServer extends EventEmitter {
             const resolvedUrl = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
 
             const responseObj = {
+                message_id,
                 type: message.type,
                 from: message.from,
                 url: resolvedUrl, // Utilizar el valor resuelto de la promesa
@@ -133,6 +142,7 @@ class MetaWebHookServer extends EventEmitter {
             const body = generateRefprovider('_event_location_')
 
             const responseObj = {
+                message_id,
                 type: message.type,
                 from: message.from,
                 to,
@@ -149,6 +159,7 @@ class MetaWebHookServer extends EventEmitter {
             const idUrl = message.audio?.id
             const resolvedUrl = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
             const responseObj = {
+                message_id,
                 type: message.type,
                 from: message.from,
                 url: resolvedUrl, // Utilizar el valor resuelto de la promesa
@@ -163,6 +174,7 @@ class MetaWebHookServer extends EventEmitter {
             const body = generateRefprovider('_event_sticker_')
 
             const responseObj = {
+                message_id,
                 type: message.type,
                 from: message.from,
                 to,
@@ -177,6 +189,7 @@ class MetaWebHookServer extends EventEmitter {
             const body = generateRefprovider('_event_contacts_')
 
             const responseObj = {
+                message_id,
                 type: message.type,
                 from: message.from,
                 contacts: [{ name: message.contacts[0].name, phones: message.contacts[0].phones }],
