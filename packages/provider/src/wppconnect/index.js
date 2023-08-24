@@ -78,7 +78,7 @@ class WPPConnectProviderClass extends ProviderClass {
                 if (!WppConnectValidNumber(payload.from)) {
                     return
                 }
-                payload.from = WppConnectCleanNumber(payload.from, true)
+                payload.from = WppConnectCleanNumber(payload.from, false)
 
                 if (payload.hasOwnProperty('type') && ['image', 'video'].includes(payload.type)) {
                     payload = { ...payload, body: generateRefprovider('_event_media_') }
@@ -96,6 +96,25 @@ class WPPConnectProviderClass extends ProviderClass {
                         payload = { ...payload, body: generateRefprovider('_event_location_') }
                     }
                 }
+
+                // Emitir el evento "message" con el payload modificado
+                this.emit('message', payload)
+            },
+        },
+        {
+            event: 'onPollResponse',
+            func: async (payload) => {
+                const selectedOption = payload.selectedOptions.find((option) => option && option.name)
+
+                payload.id = payload.msgId?._serialized ?? ''
+                payload.type = 'poll'
+                payload.body = selectedOption ? selectedOption.name : ''
+                payload.notifyName = payload.sender
+                payload.from = WppConnectCleanNumber(payload.sender, false)
+                payload.to = payload.sender
+                payload.sender = (await this.vendor.getContact(payload.chatId)) ?? {}
+                payload.notifyName = payload?.sender?.pushname ?? ''
+                payload.t = payload.timestamp
 
                 // Emitir el evento "message" con el payload modificado
                 this.emit('message', payload)
@@ -130,6 +149,21 @@ class WPPConnectProviderClass extends ProviderClass {
         }
 
         return this.vendor.sendText(number, text, buttonMessage)
+    }
+
+    /**
+     * Enviar mensaje con encuesta
+     * @param {string} number
+     * @param {string} text
+     * @param {Array} poll
+     * @example await sendPollMessage("+XXXXXXXXXXX", "You accept terms", [ "Yes", "Not"], {"selectableCount": 1})
+     */
+
+    sendPoll = async (number, text, poll) => {
+        if (poll.options.length < 2) return false
+
+        const selectableCount = poll.multiselect === undefined ? 1 : poll.multiselect ? 1 : 0
+        return this.vendor.sendPollMessage(number, text, poll.options, { selectableCount })
     }
 
     /**

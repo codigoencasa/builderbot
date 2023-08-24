@@ -4,6 +4,7 @@
     "description": "",
     "main": "app.js",
     "scripts": {
+        "pre-copy": "cd .. && npm run  copy.lib base-wppconnect-memory",
         "start": "node app.js"
     },
     "keywords": [],
@@ -13,7 +14,7 @@
         "@bot-whatsapp/database": "latest",
         "@bot-whatsapp/portal": "latest",
         "@bot-whatsapp/provider": "latest",
-        "@wppconnect-team/wppconnect": "1.22.0",
+        "@wppconnect-team/wppconnect": "^1.27.3",
         "mime-types": "2.1.35"
     },
     "author": "",
