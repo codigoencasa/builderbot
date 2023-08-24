@@ -270,6 +270,8 @@ class CoreClass {
 
                 if (endFlowFlag) return
                 for (const msg of parseListMsg) {
+                    const delayMs = msg?.options?.delay ?? this.generalArgs.delay ?? 0
+                    if (delayMs) await delay(delayMs)
                     await this.sendProviderAndSave(from, msg)
                 }
 
