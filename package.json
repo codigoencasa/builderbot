@@ -24,7 +24,7 @@
         "build": "pnpm run cli:rollup && pnpm run bot:rollup && pnpm run provider:rollup && pnpm run database:rollup && pnpm run contexts:rollup && pnpm run create-bot-whatsapp:rollup && pnpm run portal:rollup",
         "copy.lib": "node ./scripts/move.js",
         "test.unit": "node ./node_modules/uvu/bin.js packages test",
-        "test.e2e": "node ./node_modules/uvu/bin.js __test__",
+        "test.e2e": "node ./node_modules/uvu/bin.js __test__ ",
         "test.coverage": "node ./node_modules/c8/bin/c8.js npm run test.unit",
         "test": "npm run test.coverage",
         "cli": "node ./packages/cli/bin/cli.js",
@@ -84,12 +84,12 @@
         "standard-version": "^9.5.0",
         "uvu": "^0.5.6"
     },
-    "packageManager": "pnpm@8.5.0",
+    "packageManager": "pnpm@8.6.12",
     "engines": {
-        "node": ">=16",
+        "node": ">=18",
         "npm": "please-use-pnpm",
         "yarn": "please-use-pnpm",
-        "pnpm": ">=8.5.0"
+        "pnpm": ">=8.6.12"
     },
     "author": "Leifer Mendez <leifer.contacto@gmail.com>"
 }

@@ -1,4 +1,4 @@
-const { Pool } = require('pg');
+const { Pool } = require('pg')
 
 class PostgreSQLAdapter {
     db
@@ -25,47 +25,45 @@ class PostgreSQLAdapter {
     }
 
     getPrevByNumber = async (from) => {
-        const query = `SELECT * FROM public.history WHERE phone = $1 ORDER BY created_at DESC LIMIT 1`;
+        const query = `SELECT * FROM public.history WHERE phone = $1 ORDER BY created_at DESC LIMIT 1`
         try {
-            const result = await this.db.query(query, [from]);
+            const result = await this.db.query(query, [from])
             const row = result.rows[0]
 
             if (row) {
                 row['refSerialize'] = row.refserialize
                 delete row.refserialize
             }
-            
-            return row;
+
+            return row
         } catch (error) {
-            console.error('Error al obtener la entrada anterior por número:', error);
-            throw error;
+            console.error('Error al obtener la entrada anterior por número:', error)
+            throw error
         }
     }
 
     save = async (ctx) => {
-        const values = [
-            ctx.ref, ctx.keyword, ctx.answer, ctx.refSerialize, ctx.from, JSON.stringify(ctx.options)
-        ]
-        const query = `SELECT save_or_update_history_and_contact($1, $2, $3, $4, $5, $6)`;
+        const values = [ctx.ref, ctx.keyword, ctx.answer, ctx.refSerialize, ctx.from, JSON.stringify(ctx.options)]
+        const query = `SELECT save_or_update_history_and_contact($1, $2, $3, $4, $5, $6)`
 
         try {
-            await this.db.query(query, values);
-            console.log('🆗 Historico creado con exito');
+            await this.db.query(query, values)
+            console.log('🆗 Historico creado con exito')
         } catch (error) {
-            console.error('Error al registrar la entrada del historial:', error);
+            console.error('Error al registrar la entrada del historial:', error)
         }
         this.listHistory.push(ctx)
     }
 
     getContact = async (ctx) => {
         const from = ctx.from
-        const query = `SELECT * FROM public.contact WHERE phone = $1 LIMIT 1`;
+        const query = `SELECT * FROM public.contact WHERE phone = $1 LIMIT 1`
         try {
-            const result = await this.db.query(query, [from]);
-            return result.rows[0];
+            const result = await this.db.query(query, [from])
+            return result.rows[0]
         } catch (error) {
-            console.error('Error al obtener contacto por número:', error);
-            throw error;
+            console.error('Error al obtener contacto por número:', error)
+            throw error
         }
     }
 
@@ -75,25 +73,24 @@ class PostgreSQLAdapter {
         let jsValues = {}
 
         if ((ctx?.action ?? 'a') === 'a') {
-            jsValues = {..._contact.values, ...ctx?.values ?? {}}
+            jsValues = { ..._contact.values, ...(ctx?.values ?? {}) }
         } else {
             jsValues = ctx?.values ?? {}
         }
 
         const values = [ctx.from, JSON.stringify(jsValues)]
-        const query = `SELECT save_or_update_contact($1, $2)`;
+        const query = `SELECT save_or_update_contact($1, $2)`
 
         try {
-            await this.db.query(query, values);
-            console.log('🆗 Contacto guardado o actualizado con éxito');
+            await this.db.query(query, values)
+            console.log('🆗 Contacto guardado o actualizado con éxito')
         } catch (error) {
-            console.error('🚫 Error al guardar o actualizar contacto:', error);
-            throw error;
+            console.error('🚫 Error al guardar o actualizar contacto:', error)
+            throw error
         }
     }
 
     checkTableExistsAndSP = async () => {
-
         const contact = `
             CREATE TABLE IF NOT EXISTS contact (
                 id SERIAL PRIMARY KEY,
@@ -102,13 +99,13 @@ class PostgreSQLAdapter {
                 updated_in TIMESTAMP,
                 last_interaction TIMESTAMP,
                 values JSONB
-            )`;
+            )`
 
         try {
-            await this.db.query(contact);
-            console.log('🆗 Tabla contact existe o fue creada con éxito');
+            await this.db.query(contact)
+            console.log('🆗 Tabla contact existe o fue creada con éxito')
         } catch (error) {
-            console.error('🚫 Error al crear la tabla contact:', error);
+            console.error('🚫 Error al crear la tabla contact:', error)
         }
 
         const history = `
@@ -123,18 +120,18 @@ class PostgreSQLAdapter {
                 created_at TIMESTAMP DEFAULT current_timestamp,
                 updated_in TIMESTAMP,
                 contact_id INTEGER REFERENCES contact(id)
-            )`;
+            )`
         try {
-            await this.db.query(history);
-            console.log('🆗 Tabla history existe o fue creada con éxito');
+            await this.db.query(history)
+            console.log('🆗 Tabla history existe o fue creada con éxito')
         } catch (error) {
-            console.error('🚫 Error al crear la tabla de history:', error);
+            console.error('🚫 Error al crear la tabla de history:', error)
         }
 
         await this.createSP()
     }
 
-    createSP = async() => {
+    createSP = async () => {
         const sp_suc = `
         CREATE OR REPLACE FUNCTION save_or_update_contact(
             in_phone VARCHAR(255),
@@ -159,10 +156,10 @@ class PostgreSQLAdapter {
         $$ LANGUAGE plpgsql;`
 
         try {
-            await this.db.query(sp_suc);
-            console.log('🆗 Procedimiento almacenado de contacto existe o fue creada con éxito');
+            await this.db.query(sp_suc)
+            console.log('🆗 Procedimiento almacenado de contacto existe o fue creada con éxito')
         } catch (error) {
-            console.error('🚫 Error al crear el procedimiento almacenado de contacto:', error);
+            console.error('🚫 Error al crear el procedimiento almacenado de contacto:', error)
         }
 
         const sp_suhc = `
@@ -193,17 +190,14 @@ class PostgreSQLAdapter {
             VALUES (in_ref, in_keyword, in_answer, in_refserialize, in_phone, in_options, _contact_id, current_timestamp);
         
         END;
-        $$ LANGUAGE plpgsql;`;
+        $$ LANGUAGE plpgsql;`
 
         try {
-            await this.db.query(sp_suhc);
-            console.log('🆗 Procedimiento almacenado de historico existe o fue creada con éxito');
+            await this.db.query(sp_suhc)
+            console.log('🆗 Procedimiento almacenado de historico existe o fue creada con éxito')
         } catch (error) {
-            console.error('🚫 Error al crear el procedimiento almacenado de historico:', error);
+            console.error('🚫 Error al crear el procedimiento almacenado de historico:', error)
         }
-
-        
-
     }
 }
 

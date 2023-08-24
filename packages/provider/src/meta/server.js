@@ -46,10 +46,10 @@ class MetaWebHookServer extends EventEmitter {
             }
             this.emit('message', responseObj)
         }
-        
+
         if (message.type === 'interactive') {
-            const body = message.interactive?.button_reply?.title || message.interactive?.list_reply?.id;
-            const title_list_reply = message.interactive?.list_reply?.title;
+            const body = message.interactive?.button_reply?.title || message.interactive?.list_reply?.id
+            const title_list_reply = message.interactive?.list_reply?.title
             const responseObj = {
                 type: 'interactive',
                 from: message.from,
@@ -57,7 +57,7 @@ class MetaWebHookServer extends EventEmitter {
                 body,
                 title_list_reply,
             }
-            this.emit('message', responseObj);
+            this.emit('message', responseObj)
         }
 
         if (message.type === 'image') {
@@ -166,7 +166,7 @@ class MetaWebHookServer extends EventEmitter {
         }
 
         if (message.type === 'order') {
-            const body = generateRefprovider('_event_order_');
+            const body = generateRefprovider('_event_order_')
 
             const responseObj = {
                 type: message.type,
@@ -177,9 +177,9 @@ class MetaWebHookServer extends EventEmitter {
                     product_items: message.order.product_items,
                 },
                 body,
-            };
+            }
 
-            this.emit('message', responseObj);
+            this.emit('message', responseObj)
         }
 
         const json = JSON.stringify({ body })
