@@ -75,15 +75,20 @@ class MetaWebHookServer extends EventEmitter {
         }
         
         else if (message.type === 'interactive') {
-            const body = message.interactive?.button_reply?.title || message.interactive?.list_reply?.id;
+            let body_interactive=message.interactive?.button_reply?.title || message.interactive?.list_reply?.id;
+            if (message.interactive.type=="button_reply")
+            {
+                body_interactive=generateRefprovider('_event_button_');
+            }
             const title_list_reply = message.interactive?.list_reply?.title;
             const responseObj = {
                 message_id,
                 type: 'interactive',
                 from: message.from,
                 to,
-                body,
+                body:body_interactive,
                 title_list_reply,
+                interactive:message.interactive
             }
             this.emit('message', responseObj);
         }

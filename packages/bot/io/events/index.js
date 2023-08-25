@@ -2,7 +2,7 @@ const { eventDocument, REGEX_EVENT_DOCUMENT } = require('./eventDocument')
 const { eventLocation, REGEX_EVENT_LOCATION } = require('./eventLocation')
 const { eventMedia, REGEX_EVENT_MEDIA } = require('./eventMedia')
 const { eventVoiceNote, REGEX_EVENT_VOICE_NOTE } = require('./eventVoiceNote')
-const { eventButton } = require('./eventButton')
+const { eventButton, REGEX_EVENT_BUTTON } = require('./eventButton')
 const { eventWelcome } = require('./eventWelcome')
 const { eventAction } = require('./eventAction')
 /**
@@ -20,6 +20,7 @@ const LIST_ALL = {
 }
 
 const LIST_REGEX = {
+    REGEX_EVENT_BUTTON,
     REGEX_EVENT_DOCUMENT,
     REGEX_EVENT_LOCATION,
     REGEX_EVENT_MEDIA,
