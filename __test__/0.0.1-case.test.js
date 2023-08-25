@@ -67,7 +67,29 @@ suiteCase(`Responder a "EVENTS.WELCOME"`, async ({ database, provider }) => {
     assert.is('Bienvenido!', getHistory[0])
     assert.is(undefined, getHistory[1])
 })
+/**
+ * ✨ 2023-08-23: 
+ *     Añadido suiteCase para responder al evento EVENTS.BUTTON
+ */
+suiteCase(`Responder a "EVENTS.BUTTON"`, async ({ database, provider }) => {
+    const flow = addKeyword(EVENTS.BUTTON).addAnswer('gracias por responder!')
 
+    createBot({
+        database,
+        provider,
+        flow: createFlow([flow]),
+    })
+
+    await provider.delaySendMessage(0, 'message', {
+        from: '000',
+        body: '_event_button__f405d946-cf07-uutt-l7e0-b6d475bc7f81',
+    })
+
+    await delay(200)
+    const getHistory = database.listHistory.map((i) => i.answer)
+    assert.is('gracias por responder!', getHistory[0])
+    assert.is(undefined, getHistory[1])
+})
 suiteCase(`Responder a "EVENTS.MEDIA"`, async ({ database, provider }) => {
     const flow = addKeyword(EVENTS.MEDIA).addAnswer('gracias por la imagen o video!')
 

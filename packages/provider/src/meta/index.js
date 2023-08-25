@@ -11,6 +11,9 @@ const URL = `https://graph.facebook.com`
  *
  * Necesitas las siguientes tokens y valores
  * { jwtToken, numberId, vendorNumber, verifyToken }
+ *
+ * ✨ 2023-08-23: 
+ *     Añadido emitButtonAsText para modificar el comportamiento de los botones en MetaWebHookServer para que funcionen como si de un mensaje de texto se tratara y haga reaccionar un addKeyword
  */
 const PORT = process.env.PORT || 3000
 
@@ -18,14 +21,15 @@ class MetaProvider extends ProviderClass {
     metHook = undefined
     jwtToken = undefined
     numberId = undefined
+    emitButtonAsText = false
     version = 'v16.0'
 
-    constructor({ jwtToken, numberId, verifyToken, version, port = PORT }) {
+    constructor({ jwtToken, numberId, verifyToken, version, port = PORT, emitButtonAsText = false}) {
         super()
         this.jwtToken = jwtToken
         this.numberId = numberId
         this.version = version
-        this.metHook = new MetaWebHookServer(jwtToken, numberId, version, verifyToken, port)
+        this.metHook = new MetaWebHookServer(jwtToken, numberId, version, verifyToken, port, emitButtonAsText)
         this.metHook.start()
 
         const listEvents = this.busEvents()

@@ -287,19 +287,23 @@ class CoreClass {
         if (!prevMsg?.options?.capture) {
             msgToSend = this.flowClass.find(this.generalArgs.listEvents.WELCOME) || []
 
-            if (LIST_REGEX.REGEX_EVENT_LOCATION.test(body)) {
+            if (LIST_REGEX.REGEX_EVENT_BUTTON.test(body)) {
+                msgToSend = this.flowClass.find(this.generalArgs.listEvents.BUTTON) || []
+            }
+
+            else if (LIST_REGEX.REGEX_EVENT_LOCATION.test(body)) {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.LOCATION) || []
             }
 
-            if (LIST_REGEX.REGEX_EVENT_MEDIA.test(body)) {
+            else if (LIST_REGEX.REGEX_EVENT_MEDIA.test(body)) {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.MEDIA) || []
             }
 
-            if (LIST_REGEX.REGEX_EVENT_DOCUMENT.test(body)) {
+            else if (LIST_REGEX.REGEX_EVENT_DOCUMENT.test(body)) {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.DOCUMENT) || []
             }
 
-            if (LIST_REGEX.REGEX_EVENT_VOICE_NOTE.test(body)) {
+            else if (LIST_REGEX.REGEX_EVENT_VOICE_NOTE.test(body)) {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.VOICE_NOTE) || []
             }
         }
