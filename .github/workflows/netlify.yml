@@ -39,5 +39,4 @@ jobs:
 
             - name: Build and Deploy
               run: |
-                  cd packages/docs
-                  netlify deploy --prod --build --site ${{ secrets.NETLIFY_SITE_ID }} --auth ${{ secrets.NETLIFY_AUTH_TOKEN }}
+                  cd packages/docs && netlify deploy --prod --build --site ${{ secrets.NETLIFY_SITE_ID }} --auth ${{ secrets.NETLIFY_AUTH_TOKEN }}
