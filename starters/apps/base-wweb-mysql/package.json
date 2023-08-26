@@ -9,7 +9,7 @@
     },
     "keywords": [],
     "dependencies": {
-        "whatsapp-web.js": "1.19.4",
+        "whatsapp-web.js": "^1.22.1",
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",

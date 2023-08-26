@@ -1,0 +1,23 @@
+{
+    "name": "base-wppconnect-postgres",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "pre-copy": "cd .. && npm run  copy.lib base-wppconnect-postgres",
+        "start": "node app.js"
+    },
+    "keywords": [],
+    "dependencies": {
+        "@bot-whatsapp/bot": "latest",
+        "@bot-whatsapp/cli": "latest",
+        "@bot-whatsapp/database": "latest",
+        "@bot-whatsapp/portal": "latest",
+        "@bot-whatsapp/provider": "latest",
+        "@wppconnect-team/wppconnect": "1.22.0",
+        "mime-types": "2.1.35",
+        "pg": "^8.11.2"
+    },
+    "author": "",
+    "license": "ISC"
+}
