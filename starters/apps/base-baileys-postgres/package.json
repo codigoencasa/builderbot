@@ -1,0 +1,23 @@
+{
+    "name": "base-bailey-postgres",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "pre-copy": "cd .. && npm run  copy.lib base-baileys-postgres",
+        "start": "node app.js"
+    },
+    "keywords": [],
+    "dependencies": {
+        "@bot-whatsapp/bot": "latest",
+        "@bot-whatsapp/cli": "latest",
+        "@bot-whatsapp/database": "latest",
+        "@bot-whatsapp/provider": "latest",
+        "@bot-whatsapp/portal": "latest",
+        "@whiskeysockets/baileys": "^6.4.0",
+        "wa-sticker-formatter": "4.3.2",
+        "pg": "^8.11.2"
+    },
+    "author": "",
+    "license": "ISC"
+}
