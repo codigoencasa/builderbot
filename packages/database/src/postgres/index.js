@@ -3,7 +3,7 @@ const { Pool } = require('pg')
 class PostgreSQLAdapter {
     db
     listHistory = []
-    credentials = { host: 'localhost', user: 'postgres', database: 'postgres', password: null, port: 5432 }
+    credentials = { host: 'localhost', user: '', database: '', password: null, port: 5432 }
 
     constructor(_credentials) {
         this.credentials = _credentials
