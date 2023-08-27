@@ -158,6 +158,7 @@ class CoreClass {
         // 📄 Limpiar cola de procesos
         const clearQueue = () => {
             this.queuePrincipal.clearQueue(from)
+            return
         }
 
         // 📄 Finalizar flujo
@@ -236,10 +237,10 @@ class CoreClass {
                 const flowStandaloneChild = this.flowClass.getFlowsChild()
                 const nextChildMessages =
                     (await this.flowClass.find(refToContinueChild?.ref, true, flowStandaloneChild)) || []
-                if (nextChildMessages?.length) return await sendFlow(nextChildMessages, from, { prev: undefined })
+                if (nextChildMessages?.length)
+                    return exportFunctionsSend(() => sendFlow(nextChildMessages, from, { prev: undefined }))
 
-                await sendFlow(filterNextFlow, from, { prev: undefined })
-                return
+                return exportFunctionsSend(() => sendFlow(filterNextFlow, from, { prev: undefined }))
             }
         }
         // 📄 [options: fallBack]: esta funcion se encarga de repetir el ultimo mensaje
@@ -338,6 +339,22 @@ class CoreClass {
             return
         }
 
+        const exportFunctionsSend = async (cb = () => Promise.resolve()) => {
+            await cb()
+            return {
+                createCtxMessage,
+                clearQueue,
+                endFlow,
+                sendFlow,
+                continueFlow,
+                fallBack,
+                gotoFlow,
+                flowDynamic,
+                resolveCbEveryCtx,
+                cbEveryCtx,
+            }
+        }
+
         // 📄🤘(tiene return) [options: nested(array)]: Si se tiene flujos hijos los implementa
         if (!endFlowFlag && prevMsg?.options?.nested?.length) {
             const nestedRef = prevMsg.options.nested
@@ -347,8 +364,7 @@ class CoreClass {
 
             msgToSend = this.flowClass.find(body, false, flowStandalone) || []
 
-            await sendFlow(msgToSend, from)
-            return
+            return exportFunctionsSend(() => sendFlow(msgToSend, from))
         }
 
         // 📄🤘(tiene return) Si el mensaje previo implementa capture
@@ -357,14 +373,15 @@ class CoreClass {
 
             if (typeCapture === 'boolean' && fallBackFlag) {
                 msgToSend = this.flowClass.find(refToContinue?.ref, true) || []
-                await sendFlow(msgToSend, from)
-                return
+                return exportFunctionsSend(() => sendFlow(msgToSend, from, { forceQueue: true }))
             }
         }
 
         msgToSend = this.flowClass.find(body) || []
 
-        if (msgToSend.length) return sendFlow(msgToSend, from)
+        if (msgToSend.length) {
+            return exportFunctionsSend(() => sendFlow(msgToSend, from))
+        }
 
         if (!prevMsg?.options?.capture) {
             msgToSend = this.flowClass.find(this.generalArgs.listEvents.WELCOME) || []
@@ -385,7 +402,7 @@ class CoreClass {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.VOICE_NOTE) || []
             }
         }
-        return sendFlow(msgToSend, from, { forceQueue: true })
+        return exportFunctionsSend(() => sendFlow(msgToSend, from, { forceQueue: true }))
     }
 
     /**
