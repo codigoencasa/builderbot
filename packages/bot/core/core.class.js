@@ -8,6 +8,7 @@ const Queue = require('../utils/queue')
 const { LIST_REGEX } = require('../io/events')
 const SingleState = require('../context/state.class')
 const GlobalState = require('../context/globalState.class')
+const { generateTime } = require('../utils/hash')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
@@ -185,16 +186,20 @@ class CoreClass {
                 if (delayMs) {
                     await delay(delayMs) // Esperar según el retraso configurado
                 }
-
+                this.queuePrincipal.setFingerTime(from, generateTime())
                 logger.log(`[sendQueue_A]: `, ctxMessage)
 
                 try {
-                    await this.queuePrincipal.enqueue(from, async () => {
-                        // Usar async en la función pasada a enqueue
-                        await this.sendProviderAndSave(numberOrId, ctxMessage)
-                        logger.log(`[QUEUE_SE_ENVIO]: `, ctxMessage)
-                        await resolveCbEveryCtx(ctxMessage)
-                    })
+                    await this.queuePrincipal.enqueue(
+                        from,
+                        async () => {
+                            // Usar async en la función pasada a enqueue
+                            await this.sendProviderAndSave(numberOrId, ctxMessage)
+                            logger.log(`[QUEUE_SE_ENVIO]: `, ctxMessage)
+                            await resolveCbEveryCtx(ctxMessage)
+                        },
+                        generateTime()
+                    )
                 } catch (error) {
                     logger.error(`Error al encolar: ${error.message}`)
                     return Promise.reject
@@ -269,6 +274,7 @@ class CoreClass {
                 const parseListMsg = listMsg.map((opt, index) => createCtxMessage(opt, index))
 
                 if (endFlowFlag) return
+                this.queuePrincipal.setFingerTime(from, generateTime())
                 for (const msg of parseListMsg) {
                     const delayMs = msg?.options?.delay ?? this.generalArgs.delay ?? 0
                     if (delayMs) await delay(delayMs)
@@ -419,7 +425,11 @@ class CoreClass {
         for (const ctxMessage of messageToSend) {
             const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
             if (delayMs) await delay(delayMs)
-            await this.queuePrincipal.enqueue(numberOrId, () => this.sendProviderAndSave(numberOrId, ctxMessage))
+            await this.queuePrincipal.enqueue(
+                numberOrId,
+                () => this.sendProviderAndSave(numberOrId, ctxMessage),
+                generateTime()
+            )
             // await queuePromises.dequeue()
         }
         return Promise.resolve

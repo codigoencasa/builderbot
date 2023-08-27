@@ -11,6 +11,14 @@ const generateRef = (prefix = false) => {
 }
 
 /**
+ * Generar randon sin prefijos hex
+ * @returns
+ */
+const generateTime = () => {
+    return Date.now()
+}
+
+/**
  * Genera un HASH MD5
  * @param {*} param0
  * @returns
@@ -18,4 +26,4 @@ const generateRef = (prefix = false) => {
 const generateRefSerialize = ({ index, answer, keyword }) =>
     crypto.createHash('md5').update(JSON.stringify({ index, answer, keyword })).digest('hex')
 
-module.exports = { generateRef, generateRefSerialize }
+module.exports = { generateRef, generateRefSerialize, generateTime }
