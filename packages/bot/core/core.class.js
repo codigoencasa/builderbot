@@ -172,7 +172,9 @@ class CoreClass {
             }
 
         // 📄 Esta funcion se encarga de enviar un array de mensajes dentro de este ctx
-        const sendFlow = async (messageToSend, numberOrId, options = { prev: prevMsg }) => {
+        const sendFlow = async (messageToSend, numberOrId, options = {}) => {
+            options = { prev: prevMsg, forceQueue: false, ...options }
+
             if (options.prev?.options?.capture) {
                 await cbEveryCtx(options.prev?.ref)
             }
@@ -186,8 +188,22 @@ class CoreClass {
                 if (delayMs) {
                     await delay(delayMs) // Esperar según el retraso configurado
                 }
-                this.queuePrincipal.setFingerTime(from, generateTime())
-                logger.log(`[sendQueue_A]: `, ctxMessage)
+
+                //TODO el proceso de forzar cola de procsos
+                if (options?.forceQueue) {
+                    const listIdsRefCallbacks = messageToSend.map((i) => i.ref)
+
+                    const listProcessWait = this.queuePrincipal.getIdsCallbacs(from)
+                    if (!listProcessWait.length) {
+                        this.queuePrincipal.setIdsCallbacks(from, listIdsRefCallbacks)
+                    } else {
+                        const lastMessage = messageToSend[messageToSend.length - 1]
+                        await this.databaseClass.save({ ...lastMessage, from: numberOrId })
+                        if (listProcessWait.includes(lastMessage.ref)) {
+                            this.queuePrincipal.clearQueue(from)
+                        }
+                    }
+                }
 
                 try {
                     await this.queuePrincipal.enqueue(
@@ -198,7 +214,7 @@ class CoreClass {
                             logger.log(`[QUEUE_SE_ENVIO]: `, ctxMessage)
                             await resolveCbEveryCtx(ctxMessage)
                         },
-                        generateTime()
+                        ctxMessage.ref
                     )
                 } catch (error) {
                     logger.error(`Error al encolar: ${error.message}`)
@@ -209,7 +225,7 @@ class CoreClass {
             }
         }
 
-        const continueFlow = async () => {
+        const continueFlow = async (_) => {
             const currentPrev = await this.databaseClass.getPrevByNumber(from)
             const nextFlow = (await this.flowClass.find(refToContinue?.ref, true)) ?? []
             const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
@@ -221,9 +237,7 @@ class CoreClass {
                 const nextChildMessages =
                     (await this.flowClass.find(refToContinueChild?.ref, true, flowStandaloneChild)) || []
                 if (nextChildMessages?.length) return await sendFlow(nextChildMessages, from, { prev: undefined })
-            }
 
-            if (!isContinueFlow) {
                 await sendFlow(filterNextFlow, from, { prev: undefined })
                 return
             }
@@ -274,14 +288,14 @@ class CoreClass {
                 const parseListMsg = listMsg.map((opt, index) => createCtxMessage(opt, index))
 
                 if (endFlowFlag) return
-                this.queuePrincipal.setFingerTime(from, generateTime())
+                this.queuePrincipal.setFingerTime(from, generateTime()) //aqui debeo decirle al sistema como que finalizo el flujo
                 for (const msg of parseListMsg) {
                     const delayMs = msg?.options?.delay ?? this.generalArgs.delay ?? 0
                     if (delayMs) await delay(delayMs)
                     await this.sendProviderAndSave(from, msg)
                 }
 
-                if (options?.continue) await continueFlow()
+                if (options?.continue) await continueFlow(generateTime())
                 return
             }
 
@@ -319,7 +333,7 @@ class CoreClass {
             await this.flowClass.allCallbacks[inRef](messageCtxInComming, argsCb)
             //Si no hay llamado de fallaback y no hay llamado de flowDynamic y no hay llamado de enflow EL flujo continua
             const ifContinue = !flags.endFlow && !flags.fallBack && !flags.flowDynamic
-            if (ifContinue) await continueFlow()
+            if (ifContinue) await continueFlow(prevMsg?.options?.nested?.length)
 
             return
         }
@@ -371,7 +385,7 @@ class CoreClass {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.VOICE_NOTE) || []
             }
         }
-        return sendFlow(msgToSend, from)
+        return sendFlow(msgToSend, from, { forceQueue: true })
     }
 
     /**

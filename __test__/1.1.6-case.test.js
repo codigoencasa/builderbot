@@ -87,7 +87,7 @@ suiteCase(`Debe retornar un mensaje resumen`, async ({ database, provider }) => 
     assert.is('Tu datos son:', getHistory[7])
     assert.is('Nombre: Leifer Edad: 90', getHistory[8])
     assert.is('🤖🤖 Gracias por tu participacion', getHistory[9])
-    assert.is('Maria', getHistory)
+    assert.is('Maria', getHistory[10])
     assert.is('Gracias por tu nombre!', getHistory[11])
     assert.is('¿Cual es tu edad?', getHistory[12])
     assert.is('100', getHistory[13])

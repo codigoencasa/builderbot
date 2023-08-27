@@ -2,8 +2,8 @@ class Queue {
     constructor(logger, concurrencyLimit = 15, timeout = 20000) {
         this.queue = new Map()
         this.queueTime = new Map()
+        this.idsCallbacks = new Map()
         this.workingOnPromise = new Map()
-        this.listFingers = new Map()
         this.logger = logger
         this.timeout = timeout
         this.concurrencyLimit = concurrencyLimit
@@ -15,8 +15,8 @@ class Queue {
      * @param {*} promiseFunc
      * @returns
      */
-    async enqueue(from, promiseFunc, fingerTime) {
-        this.logger.log(`${from}:ENCOLADO ${fingerTime}`)
+    async enqueue(from, promiseFunc, fingerIdRef) {
+        this.logger.log(`${from}:ENCOLADO ${fingerIdRef}`)
 
         if (!this.queue.has(from)) {
             this.queue.set(from, [])
@@ -29,7 +29,7 @@ class Queue {
         return new Promise((resolve, reject) => {
             queueByFrom.push({
                 promiseFunc,
-                fingerTime,
+                fingerIdRef,
                 cancelled: false,
                 resolve,
                 reject,
@@ -56,11 +56,11 @@ class Queue {
                     reject('cancelled')
                 }
 
-                const fingerTimeByFrom = this.queueTime.get(from)
-
-                if (fingerTimeByFrom > item.fingerTime) {
-                    reject('overtime')
-                }
+                // const fingerTimeByFrom = this.queueTime.get(from)
+                // if (fingerTimeByFrom > item.fingerTime) {
+                //     console.log(`🚀🚀 ${fingerTimeByFrom}------${item.fingerTime}`)
+                //     reject('overtime')
+                // }
 
                 setTimeout(() => reject('timeout'), this.timeout)
             })
@@ -78,7 +78,7 @@ class Queue {
                     this.logger.error(`${from}:ERROR: ${JSON.stringify(err)}`)
                     item.reject(err)
                 }
-                await this.clearQueue(from)
+                this.clearIdFromCallback(from, item.fingerIdRef)
             })
 
             await Promise.allSettled(promises)
@@ -104,6 +104,7 @@ class Queue {
             })
 
             // Limpia la cola
+
             this.queue.set(from, [])
 
             // Si hay un proceso en ejecución, también deberías cancelarlo
@@ -120,8 +121,30 @@ class Queue {
      * @param {*} fingerTime
      */
     setFingerTime = (from, fingerTime) => {
-        console.log(`Se seteo ${fingerTime}`)
         this.queueTime.set(from, fingerTime)
+    }
+
+    setIdsCallbacks = (from, ids = []) => {
+        this.idsCallbacks.set(from, ids)
+    }
+
+    getIdsCallbacs = (from) => {
+        if (this.idsCallbacks.has(from)) {
+            return this.idsCallbacks.get(from)
+        } else {
+            return []
+        }
+    }
+
+    clearIdFromCallback = (from, id) => {
+        if (this.idsCallbacks.has(from)) {
+            const ids = this.idsCallbacks.get(from)
+            const index = ids.indexOf(id)
+
+            if (index !== -1) {
+                ids.splice(index, 1)
+            }
+        }
     }
 }
 
