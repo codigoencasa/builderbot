@@ -35,151 +35,118 @@ class MetaWebHookServer extends EventEmitter {
 
         const [message] = messages
         const to = body.entry[0].changes[0].value?.metadata?.display_phone_number
+        const message_id=message.id
+        const responseObj = {
+            message_id,
+            type: message.type,
+            from: message.from,
+            to,
+        }
 
         if (message.type === 'text') {
             const body = message.text?.body
-            const responseObj = {
-                type: message.type,
-                from: message.from,
-                to,
-                body,
-            }
+            Object.assign(responseObj,{
+                body
+            })
+
             this.emit('message', responseObj)
         }
-
-        if (message.type === 'interactive') {
+        else if (message.type === 'interactive') {
             const body = message.interactive?.button_reply?.title || message.interactive?.list_reply?.id
             const title_list_reply = message.interactive?.list_reply?.title
-            const responseObj = {
-                type: 'interactive',
-                from: message.from,
-                to,
-                body,
+            Object.assign(responseObj,{
                 title_list_reply,
-            }
+                body,
+            })
             this.emit('message', responseObj)
         }
-
-        if (message.type === 'image') {
+        else if (message.type === 'image') {
             const body = generateRefprovider('_event_image_')
             const idUrl = message.image?.id
-            const resolvedUrl = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
-            const responseObj = {
-                type: message.type,
-                from: message.from,
-                url: resolvedUrl,
-                to,
+            const url = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
+            Object.assign(responseObj,{
+                url,
                 body,
-            }
+            })
 
             this.emit('message', responseObj)
         }
-
-        if (message.type === 'document') {
+        else if (message.type === 'document') {
             const body = generateRefprovider('_event_document_')
             const idUrl = message.document?.id
-            const resolvedUrl = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
-            const responseObj = {
-                type: message.type,
-                from: message.from,
-                url: resolvedUrl, // Utilizar el valor resuelto de la promesa
-                to,
+            const url = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
+            Object.assign(responseObj,{
+                url, // Utilizar el valor resuelto de la promesa
                 body,
-            }
+            })
 
             this.emit('message', responseObj)
         }
-
-        if (message.type === 'video') {
+        else if (message.type === 'video') {
             const body = generateRefprovider('_event_video_')
             const idUrl = message.video?.id
-
-            const resolvedUrl = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
-
-            const responseObj = {
-                type: message.type,
-                from: message.from,
-                url: resolvedUrl, // Utilizar el valor resuelto de la promesa
-                to,
+            const url = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
+            Object.assign(responseObj,{
+                url, // Utilizar el valor resuelto de la promesa
                 body,
-            }
+            })
 
             this.emit('message', responseObj)
         }
-
-        if (message.type === 'location') {
+        else if (message.type === 'location') {
             const body = generateRefprovider('_event_location_')
-
-            const responseObj = {
-                type: message.type,
-                from: message.from,
-                to,
+            Object.assign(responseObj,{
                 latitude: message.location.latitude,
                 longitude: message.location.longitude,
                 body,
-            }
+            })
 
             this.emit('message', responseObj)
         }
-
-        if (message.type === 'audio') {
-            const body = generateRefprovider('_event_audio_')
+        else if (message.type === 'audio') {
+            const body = generateRefprovider('_event_voice_note_')
             const idUrl = message.audio?.id
-            const resolvedUrl = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
-            const responseObj = {
-                type: message.type,
-                from: message.from,
-                url: resolvedUrl, // Utilizar el valor resuelto de la promesa
-                to,
+            const url = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
+            Object.assign(responseObj,{
+                url, // Utilizar el valor resuelto de la promesa
                 body,
-            }
+            })
 
             this.emit('message', responseObj)
         }
-
-        if (message.type === 'sticker') {
+        else if (message.type === 'sticker') {
             const body = generateRefprovider('_event_sticker_')
-
-            const responseObj = {
-                type: message.type,
-                from: message.from,
-                to,
+            Object.assign(responseObj,{
                 id: message.sticker.id,
                 body,
-            }
+            })
 
             this.emit('message', responseObj)
         }
-
-        if (message.type === 'contacts') {
+        else if (message.type === 'contacts') {
             const body = generateRefprovider('_event_contacts_')
-
-            const responseObj = {
-                type: message.type,
-                from: message.from,
+            Object.assign(responseObj,{
                 contacts: [{ name: message.contacts[0].name, phones: message.contacts[0].phones }],
-                to,
                 body,
-            }
+            })
 
             this.emit('message', responseObj)
         }
-
-        if (message.type === 'order') {
+        else if (message.type === 'order') {
             const body = generateRefprovider('_event_order_')
-
-            const responseObj = {
-                type: message.type,
-                from: message.from,
-                to,
+            Object.assign(responseObj,{
                 order: {
                     catalog_id: message.order.catalog_id,
                     product_items: message.order.product_items,
                 },
                 body,
-            }
+            })
 
             this.emit('message', responseObj)
+        }
+        else
+        {
+            console.log(`Tipo de mensaje «${message.type}» no controlado en incomingMsg`)
         }
 
         const json = JSON.stringify({ body })
