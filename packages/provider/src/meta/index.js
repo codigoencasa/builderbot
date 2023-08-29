@@ -393,7 +393,28 @@ class MetaProvider extends ProviderClass {
         }
         return this.sendMessageMeta(body)
     }
+    /**
+     *
+     * @param {*} number
+     * @param {*} message_id
+     * @param {*} message
+     * @param {*} preview_url
+     */
+    sendReply = async (number, message_id, message, preview_url=false) => {
+        const body ={
+            messaging_product: "whatsapp",
+            recipient_type: "individual",
+            to: number,
+            context: {message_id},
+            type: "text",
+            text: {
+                preview_url,
+                body: message,
+            }
+        }
 
+        return this.sendMessageMeta(body)
+    }
     /**
      *
      * @param {*} userId
