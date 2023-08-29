@@ -342,20 +342,22 @@ class MetaProvider extends ProviderClass {
      * @param {*} number
      * @param {*} template
      * @param {*} languageCode
+     * @param {*} components
      * @returns
      */
 
-    sendTemplate = async (number, template, languageCode) => {
+    sendTemplate = async (number, templateName, languageCode, components=[]) => {
         const body = {
             messaging_product: 'whatsapp',
             recipient_type: 'individual',
             to: number,
             type: 'template',
             template: {
-                name: template,
+                name: templateName,
                 language: {
                     code: languageCode, // examples: es_Mex, en_Us
                 },
+                components,
             },
         }
         return this.sendMessageMeta(body)
