@@ -23,14 +23,16 @@ class MetaProvider extends ProviderClass {
     metHook = undefined
     jwtToken = undefined
     numberId = undefined
+    emitButtonAsText = false
     version = 'v16.0'
 
-    constructor({ jwtToken, numberId, verifyToken, version, port = PORT }) {
+    constructor({ jwtToken, numberId, verifyToken, version, port = PORT , emitButtonAsText=false}) {
         super()
         this.jwtToken = jwtToken
         this.numberId = numberId
         this.version = version
-        this.metHook = new MetaWebHookServer(jwtToken, numberId, version, verifyToken, port)
+        this.emitButtonAsText =emitButtonAsText
+        this.metHook = new MetaWebHookServer(jwtToken, numberId, version, verifyToken, port, emitButtonAsText)
         this.metHook.start()
 
         const listEvents = this.busEvents()
