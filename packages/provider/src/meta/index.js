@@ -394,7 +394,20 @@ class MetaProvider extends ProviderClass {
         return this.sendMessageMeta(body)
     }
     /**
-     *
+     * Marcar mensajes como leído, marca el mensaje pasado por id (y todos los anteriores) como leído
+     * @param {*} message_id
+     */
+    markAsRead= async (message_id)=>{
+        const body ={
+            messaging_product: "whatsapp",
+            status: "read",
+            message_id
+        }
+        return this.sendMessageMeta(body)
+    }
+    
+    /**
+     * Enviar respuesta a un mensaje recibido
      * @param {*} number
      * @param {*} message_id
      * @param {*} message
