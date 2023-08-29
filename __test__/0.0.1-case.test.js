@@ -88,6 +88,27 @@ suiteCase(`Responder a "EVENTS.MEDIA"`, async ({ database, provider }) => {
     assert.is(undefined, getHistory[1])
 })
 
+suiteCase(`Responder a "EVENTS.BUTTON"`, async ({ database, provider }) => {
+    const flow = addKeyword(EVENTS.BUTTON).addAnswer('gracias por pulsar el botón!')
+
+    createBot({
+        database,
+        provider,
+        flow: createFlow([flow]),
+    })
+
+    await provider.delaySendMessage(0, 'message', {
+        from: '000',
+        body: '_event_button__f405d946-cf07-uutt-l7e0-b6d475bc7f81',
+    })
+
+    await delay(200)
+    const getHistory = database.listHistory.map((i) => i.answer)
+    assert.is('gracias por pulsar el botón!', getHistory[0])
+    assert.is(undefined, getHistory[1])
+})
+
+
 suiteCase(`Responder a "EVENTS.VOICE_NOTE"`, async ({ database, provider }) => {
     const flow = addKeyword(EVENTS.VOICE_NOTE).addAnswer('gracias por la nota de voz!')
 
