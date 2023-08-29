@@ -81,7 +81,7 @@ class MetaProvider extends ProviderClass {
         }
     }
 
-    sendtext = async (number, message) => {
+    sendText = async (number, message) => {
         const body = {
             messaging_product: 'whatsapp',
             recipient_type: 'individual',
