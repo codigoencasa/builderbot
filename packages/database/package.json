@@ -11,7 +11,7 @@
     ],
     "dependencies": {
         "dotenv": "^16.0.3",
-        "mongodb": "^4.11.0",
+        "mongodb": "^4.17.0",
         "mysql2": "^2.3.3",
         "pg": "^8.11.2"
     },
