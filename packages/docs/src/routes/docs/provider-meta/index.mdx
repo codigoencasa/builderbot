@@ -45,7 +45,7 @@ const flowMensaje = addKeyword('hola')
             capture: true,
         },
         async (ctx, {provider}) => {
-            await sendMedia = async (ctx.from, 'mensaje', 'url de la media')
+            await provider.sendMedia(ctx.from, 'url de la media', 'mensaje')
         }
     )
 ```
