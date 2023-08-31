@@ -1,0 +1,45 @@
+import Navigation from '../../../components/widgets/Navigation'
+
+# ctx
+
+Esta funcion se encuentra dentro de `addAnswer` o `addAction`  
+
+Se encarga de responder al usuario, puedes responder un texto o archivo adjunto.
+
+```js
+    const { addKeyword } = require('@bot-whatsapp/bot')
+
+    const flowWelcome = addKeyword('hola').addAnswer('¿Como es tu mail?',null, async (ctx) => {
+        console.log(ctx)
+    })
+
+```
+
+### ¿Que cosas tiene el ctx?
+
+Dentro del ctx puedes conseguir algunas de las siguientes propiedades
+
+```js
+    const { addKeyword } = require('@bot-whatsapp/bot')
+
+    const flowWelcome = addKeyword('hola').addAnswer('¿Como es tu mail?',null, async (ctx) => {
+        console.log(ctx)
+
+        const numeroDeWhatsapp = ctx.from 
+        const mensajeRecibido = ctx.body 
+
+    })
+
+```
+
+Tambien recomiendao que con `console.log(ctx)` puedes ver todas las propiedades que vienen incluidas, muchas de ellas pueden ser propiedades propias del `provider`
+
+
+---
+
+<Navigation
+    pages={[
+        { name: 'Instalación', link: '/docs/install' },
+        { name: 'Conceptos', link: '/docs/essential' },
+    ]}
+/>

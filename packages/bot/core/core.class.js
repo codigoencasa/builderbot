@@ -8,6 +8,7 @@ const Queue = require('../utils/queue')
 const { LIST_REGEX } = require('../io/events')
 const SingleState = require('../context/state.class')
 const GlobalState = require('../context/globalState.class')
+const { generateTime } = require('../utils/hash')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
@@ -157,6 +158,7 @@ class CoreClass {
         // 📄 Limpiar cola de procesos
         const clearQueue = () => {
             this.queuePrincipal.clearQueue(from)
+            return
         }
 
         // 📄 Finalizar flujo
@@ -171,7 +173,9 @@ class CoreClass {
             }
 
         // 📄 Esta funcion se encarga de enviar un array de mensajes dentro de este ctx
-        const sendFlow = async (messageToSend, numberOrId, options = { prev: prevMsg }) => {
+        const sendFlow = async (messageToSend, numberOrId, options = {}) => {
+            options = { prev: prevMsg, forceQueue: false, ...options }
+
             if (options.prev?.options?.capture) {
                 await cbEveryCtx(options.prev?.ref)
             }
@@ -186,15 +190,33 @@ class CoreClass {
                     await delay(delayMs) // Esperar según el retraso configurado
                 }
 
-                logger.log(`[sendQueue_A]: `, ctxMessage)
+                //TODO el proceso de forzar cola de procsos
+                if (options?.forceQueue) {
+                    const listIdsRefCallbacks = messageToSend.map((i) => i.ref)
+
+                    const listProcessWait = this.queuePrincipal.getIdsCallbacs(from)
+                    if (!listProcessWait.length) {
+                        this.queuePrincipal.setIdsCallbacks(from, listIdsRefCallbacks)
+                    } else {
+                        const lastMessage = messageToSend[messageToSend.length - 1]
+                        await this.databaseClass.save({ ...lastMessage, from: numberOrId })
+                        if (listProcessWait.includes(lastMessage.ref)) {
+                            this.queuePrincipal.clearQueue(from)
+                        }
+                    }
+                }
 
                 try {
-                    await this.queuePrincipal.enqueue(from, async () => {
-                        // Usar async en la función pasada a enqueue
-                        await this.sendProviderAndSave(numberOrId, ctxMessage)
-                        logger.log(`[QUEUE_SE_ENVIO]: `, ctxMessage)
-                        await resolveCbEveryCtx(ctxMessage)
-                    })
+                    await this.queuePrincipal.enqueue(
+                        from,
+                        async () => {
+                            // Usar async en la función pasada a enqueue
+                            await this.sendProviderAndSave(numberOrId, ctxMessage)
+                            logger.log(`[QUEUE_SE_ENVIO]: `, ctxMessage)
+                            await resolveCbEveryCtx(ctxMessage)
+                        },
+                        ctxMessage.ref
+                    )
                 } catch (error) {
                     logger.error(`Error al encolar: ${error.message}`)
                     return Promise.reject
@@ -215,12 +237,10 @@ class CoreClass {
                 const flowStandaloneChild = this.flowClass.getFlowsChild()
                 const nextChildMessages =
                     (await this.flowClass.find(refToContinueChild?.ref, true, flowStandaloneChild)) || []
-                if (nextChildMessages?.length) return await sendFlow(nextChildMessages, from, { prev: undefined })
-            }
+                if (nextChildMessages?.length)
+                    return exportFunctionsSend(() => sendFlow(nextChildMessages, from, { prev: undefined }))
 
-            if (!isContinueFlow) {
-                await sendFlow(filterNextFlow, from, { prev: undefined })
-                return
+                return exportFunctionsSend(() => sendFlow(filterNextFlow, from, { prev: undefined }))
             }
         }
         // 📄 [options: fallBack]: esta funcion se encarga de repetir el ultimo mensaje
@@ -269,13 +289,14 @@ class CoreClass {
                 const parseListMsg = listMsg.map((opt, index) => createCtxMessage(opt, index))
 
                 if (endFlowFlag) return
+                this.queuePrincipal.setFingerTime(from, generateTime()) //aqui debeo decirle al sistema como que finalizo el flujo
                 for (const msg of parseListMsg) {
                     const delayMs = msg?.options?.delay ?? this.generalArgs.delay ?? 0
                     if (delayMs) await delay(delayMs)
                     await this.sendProviderAndSave(from, msg)
                 }
 
-                if (options?.continue) await continueFlow()
+                if (options?.continue) await continueFlow(generateTime())
                 return
             }
 
@@ -313,9 +334,25 @@ class CoreClass {
             await this.flowClass.allCallbacks[inRef](messageCtxInComming, argsCb)
             //Si no hay llamado de fallaback y no hay llamado de flowDynamic y no hay llamado de enflow EL flujo continua
             const ifContinue = !flags.endFlow && !flags.fallBack && !flags.flowDynamic
-            if (ifContinue) await continueFlow()
+            if (ifContinue) await continueFlow(prevMsg?.options?.nested?.length)
 
             return
+        }
+
+        const exportFunctionsSend = async (cb = () => Promise.resolve()) => {
+            await cb()
+            return {
+                createCtxMessage,
+                clearQueue,
+                endFlow,
+                sendFlow,
+                continueFlow,
+                fallBack,
+                gotoFlow,
+                flowDynamic,
+                resolveCbEveryCtx,
+                cbEveryCtx,
+            }
         }
 
         // 📄🤘(tiene return) [options: nested(array)]: Si se tiene flujos hijos los implementa
@@ -327,8 +364,7 @@ class CoreClass {
 
             msgToSend = this.flowClass.find(body, false, flowStandalone) || []
 
-            await sendFlow(msgToSend, from)
-            return
+            return exportFunctionsSend(() => sendFlow(msgToSend, from))
         }
 
         // 📄🤘(tiene return) Si el mensaje previo implementa capture
@@ -337,14 +373,15 @@ class CoreClass {
 
             if (typeCapture === 'boolean' && fallBackFlag) {
                 msgToSend = this.flowClass.find(refToContinue?.ref, true) || []
-                await sendFlow(msgToSend, from)
-                return
+                return exportFunctionsSend(() => sendFlow(msgToSend, from, { forceQueue: true }))
             }
         }
 
         msgToSend = this.flowClass.find(body) || []
 
-        if (msgToSend.length) return sendFlow(msgToSend, from)
+        if (msgToSend.length) {
+            return exportFunctionsSend(() => sendFlow(msgToSend, from))
+        }
 
         if (!prevMsg?.options?.capture) {
             msgToSend = this.flowClass.find(this.generalArgs.listEvents.WELCOME) || []
@@ -365,7 +402,7 @@ class CoreClass {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.VOICE_NOTE) || []
             }
         }
-        return sendFlow(msgToSend, from)
+        return exportFunctionsSend(() => sendFlow(msgToSend, from, { forceQueue: true }))
     }
 
     /**
@@ -377,18 +414,16 @@ class CoreClass {
     sendProviderAndSave = async (numberOrId, ctxMessage) => {
         try {
             const { answer } = ctxMessage
-            logger.log(`[sendProviderAndSave]: `, ctxMessage)
             if (answer && answer.length && answer !== '__call_action__') {
-                await this.providerClass.sendMessage(numberOrId, answer, ctxMessage)
-                logger.log(`[providerClass.sendMessage]: `, ctxMessage)
+                if (answer !== '__capture_only_intended__') {
+                    await this.providerClass.sendMessage(numberOrId, answer, ctxMessage)
+                }
                 await this.databaseClass.save({ ...ctxMessage, from: numberOrId })
-                logger.log(`[databaseClass.save]: `, ctxMessage)
             }
 
             return Promise.resolve
         } catch (err) {
             logger.log(`[ERROR.save]: `, ctxMessage)
-            console.log('ERROR:Enviando')
             return Promise.reject
         }
     }
@@ -419,7 +454,11 @@ class CoreClass {
         for (const ctxMessage of messageToSend) {
             const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
             if (delayMs) await delay(delayMs)
-            await this.queuePrincipal.enqueue(numberOrId, () => this.sendProviderAndSave(numberOrId, ctxMessage))
+            await this.queuePrincipal.enqueue(
+                numberOrId,
+                () => this.sendProviderAndSave(numberOrId, ctxMessage),
+                generateTime()
+            )
             // await queuePromises.dequeue()
         }
         return Promise.resolve

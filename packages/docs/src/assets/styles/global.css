@@ -48,7 +48,7 @@
     }
 
     .slot pre code {
-        @apply p-3 rounded md:w-full max-w-screen-md overflow-x-auto w-fit bg-gray-800 dark:bg-slate-800 ease-in duration-75 text-gray-100 text-xs shadow-xl;
+        @apply p-3 rounded md:w-full max-w-screen-lg overflow-x-auto w-fit bg-gray-800 dark:bg-slate-800 ease-in duration-75 text-gray-100 text-xs shadow-xl;
     }
 
     .slot iframe {

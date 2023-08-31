@@ -1,0 +1,28 @@
+import Navigation from '../../../components/widgets/Navigation'
+
+# fallBack
+
+La función **fallBack()** es una función que se utiliza para repetir el último mensaje del flujo en caso de que el usuario no proporcione una respuesta válida. Es decir, si el usuario ingresa un mensaje que no coincide con ninguna palabra clave o respuesta esperada, el Bot puede llamar a la función **fallBack()** para volver a enviar el último mensaje y esperar una respuesta válida.
+
+La función **fallBack()** se puede llamar dentro del método **addAnswer()** del flujo. Para ello, simplemente se llama a la función **fallBack()** dentro de una condición que comprueba si la respuesta del usuario es válida o no. Por ejemplo:
+```js
+const { addKeyword } = require('@bot-whatsapp/bot')
+
+const flowString = addKeyword('hola')
+  .addAnswer('Indica cual es tu email', null, (ctx, { fallBack }) => {
+    if (!ctx.body.includes('@')) {
+      return fallBack()
+    } else {
+      // Lógica para procesar el correo electrónico del usuario
+    }
+  })
+```
+
+---
+
+<Navigation
+    pages={[
+        { name: 'Instalación', link: '/docs/install' },
+        { name: 'Conceptos', link: '/docs/essential' },
+    ]}
+/>
