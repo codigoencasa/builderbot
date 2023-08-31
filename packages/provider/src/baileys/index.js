@@ -167,6 +167,9 @@ class BaileysProvider extends ProviderClass {
             func: ({ messages, type }) => {
                 if (type !== 'notify') return
                 const [messageCtx] = messages
+
+                if (messageCtx?.message?.protocolMessage?.type === 'EPHEMERAL_SETTING') return
+
                 let payload = {
                     ...messageCtx,
                     body: messageCtx?.message?.extendedTextMessage?.text ?? messageCtx?.message?.conversation,
