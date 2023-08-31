@@ -27,7 +27,7 @@ class MyslAdapter {
 
     getPrevByNumber = (from) =>
         new Promise((resolve, reject) => {
-            const sql = `SELECT * FROM history WHERE phone=${from} ORDER BY id DESC`
+            const sql = `SELECT * FROM history WHERE phone='${from}' ORDER BY id DESC`
             this.db.query(sql, (error, rows) => {
                 if (error) {
                     reject(error)
@@ -64,7 +64,7 @@ class MyslAdapter {
             const sql = `CREATE TABLE ${tableName} 
             (id INT AUTO_INCREMENT PRIMARY KEY, 
             ref varchar(255) NOT NULL,
-            keyword varchar(255) NOT NULL,
+            keyword varchar(255) NULL,
             answer longtext NOT NULL,
             refSerialize varchar(255) NOT NULL,
             phone varchar(255) NOT NULL,

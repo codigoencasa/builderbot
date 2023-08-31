@@ -220,6 +220,77 @@ test(`[Bot] Probando Flujos Nested`, async () => {
     assert.is(JSON.stringify(responseEvents.message), JSON.stringify(MOCK_EVENTS.message))
 })
 
+test(`[Bot] Probando createCtxMessage `, async () => {
+    const mockProvider = new MockProvider()
+
+    const setting = {
+        flow: new MockFlow(),
+        database: new MockDBB(),
+        provider: mockProvider,
+    }
+
+    const bot = await createBot(setting)
+
+    const messageCtxInComming = {
+        body: 'Hola',
+        from: '123456789',
+    }
+
+    const botHandler = await bot.handleMsg(messageCtxInComming)
+    const result = botHandler.createCtxMessage(`Hola`)
+
+    assert.is(result.answer, 'Hola')
+    assert.is(result.options.media, null)
+    assert.is(result.options.buttons.length, 0)
+    assert.is(result.options.capture, false)
+    assert.is(result.options.delay, 0)
+    assert.is(result.from, '123456789')
+})
+
+test(`[Bot] Probando clearQueue `, async () => {
+    const mockProvider = new MockProvider()
+
+    const setting = {
+        flow: new MockFlow(),
+        database: new MockDBB(),
+        provider: mockProvider,
+    }
+
+    const bot = await createBot(setting)
+
+    const messageCtxInComming = {
+        body: 'Hola',
+        from: '123456789',
+    }
+
+    const botHandler = await bot.handleMsg(messageCtxInComming)
+    const result = botHandler.clearQueue()
+
+    assert.is(result, undefined)
+})
+
+test(`[Bot] Probando endFlow `, async () => {
+    const mockProvider = new MockProvider()
+
+    const setting = {
+        flow: new MockFlow(),
+        database: new MockDBB(),
+        provider: mockProvider,
+    }
+
+    const bot = await createBot(setting)
+
+    const messageCtxInComming = {
+        body: 'Hola',
+        from: '123456789',
+    }
+
+    const botHandler = await bot.handleMsg(messageCtxInComming)
+    const result = botHandler.endFlow({ endFlow: false })('hola')
+
+    assert.is(Object.values(result).length, 0)
+})
+
 test.run()
 
 function delay(ms) {

@@ -1,0 +1,132 @@
+import Navigation from '../../../components/widgets/Navigation'
+
+# addAnswer
+
+Esta funcion se importa desde `@bot-whatsapp/bot`
+
+Se encarga de responder al usuario, puedes responder un texto o archivo adjunto.
+
+```js
+    const { addKeyword } = require('@bot-whatsapp/bot')
+
+    const flowWelcome = addKeyword('hola').addAnswer('Hola y bievendido! como puedo ayudarte')
+
+```
+El mensaje`'Hola y bievendido! como puedo ayudarte'` se enviara como un mensaje de whatsapp
+
+
+### Enviar más de un mensaje
+
+```js
+    const { addKeyword } = require('@bot-whatsapp/bot')
+
+    const flowWelcome = addKeyword('hola')
+    .addAnswer('Hola!')
+    .addAnswer('Bienvenido')
+    .addAnswer('¿Como puedo ayudarte?')
+
+```
+Se enviaran (3) tres mensajes por separados consecutivamente. `Hola` , `Bienvenido`, `¿Como puedo ayudarte?`
+
+---
+
+### Enviar mensaje con salto de linea
+
+```js
+    const { addKeyword } = require('@bot-whatsapp/bot')
+
+    const flowWelcome = addKeyword('hola')
+    .addAnswer(['Hola!','Bienvenido','¿Como puedo ayudarte?'])
+
+
+```
+Se enviara (1) un mensaje pero con saltos de linea
+
+---
+
+### Retardo
+
+Enviar un mensaje con `1000ms = 1segundo` de espera
+
+```js
+    const { addKeyword } = require('@bot-whatsapp/bot')
+
+  const flowString = addKeyword('hola').addAnswer('Este mensaje se enviara 1 segundo despues', {
+        delay: 1000,
+    })
+
+
+```
+
+---
+
+### Enviar imagen, video, pdf: Url externa
+
+Puedes enviar archivos desde url externas publicas o desde archivos locales.
+
+```js
+    const { addKeyword } = require('@bot-whatsapp/bot')
+
+    const flowString = addKeyword('hola').addAnswer('Este mensaje envia una imagen', {
+            media: 'https://i.imgur.com/0HpzsEm.png',
+    })
+
+
+```
+Esta imagen `https://i.imgur.com/0HpzsEm.png` se envia desde una URL externa.
+
+---
+
+### Enviar imagen, video, pdf: locales
+
+Dependiendo de tus sistema operativo asegurate de colocar bien la ruta absoluta
+
+```js
+    const { addKeyword } = require('@bot-whatsapp/bot')
+
+    const flowString = addKeyword('hola').addAnswer('Este mensaje envia una imagen', {
+            media: 'c:/ruta/imagen.png', //'c:\ruta\imagen.png'
+    })
+
+
+```
+
+---
+
+### Botones
+
+**NOTA** Los botones funcionan bien en Meta o Twilio. **En los proveedores gratuitos son inestables.**
+
+```js
+    const { addKeyword } = require('@bot-whatsapp/bot')
+
+    const flowString = addKeyword('hola').addAnswer('Este mensaje envia tres botones', {
+        buttons: [{ body: 'Boton 1' }, { body: 'Boton 2' }, { body: 'Boton 3' }],
+    })
+
+```
+
+---
+
+### Capture
+
+En algunas ocaciones necesitamos esperar por la respuesta del usuario para ello usamos `capture`
+
+```js
+    const { addKeyword } = require('@bot-whatsapp/bot')
+
+  const flowString = addKeyword('hola').addAnswer('¿Cual es tu email?', {
+        capture: true,
+    })
+
+```
+
+
+---
+
+<Navigation
+    pages={[
+        { name: 'Instalación', link: '/docs/install' },
+        { name: 'Conceptos', link: '/docs/essential' },
+    ]}
+/>

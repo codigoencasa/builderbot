@@ -1,0 +1,94 @@
+import Navigation from '../../../components/widgets/Navigation'
+
+# State
+
+Algunas veces queremos mantener un `state` o `contexto` por usuario que nos escribe y poder compartir esta informacion con todos nuestros flujos.
+Esto tambien funcion si usas `gotoFlow`
+
+
+```js
+  const flujoPrincipal = addKeyword(['hola'])
+        .addAnswer(
+            '¿Cual es tu nombre?',
+            {
+                capture: true,
+            },
+            async (ctx, { flowDynamic, state }) => {
+                state.update({ name: ctx.body })
+                flowDynamic('Gracias por tu nombre!')
+            }
+        )
+        .addAnswer(
+            '¿Cual es tu edad?',
+            {
+                capture: true,
+            },
+            async (ctx, { flowDynamic, state }) => {
+                state.update({ age: ctx.body })
+                const myState = state.getMyState()
+                await flowDynamic(`Gracias por tu edad! ${myState.name}`)
+            }
+        )
+        .addAnswer('Tus datos son:', null, async (_, { flowDynamic, state }) => {
+            const myState = state.getMyState()
+            flowDynamic(`Nombre: ${myState.name} Edad: ${myState.age}`)
+        })
+        .addAnswer('🤖🤖 Gracias por tu participacion')
+
+```
+
+## GlobalState
+
+De igual manera que el `state` anterior nosotros podemos usar `globalState` para tener un esta general de la app (NO es por usuario), esto es muy util si quieres ejemplo apagar o prener el bot
+
+
+```js
+
+    const flowOnOff = addKeyword(['onoff'])
+    .addAction(async (_, { flowDynamic, globalState }) => {
+        const currentGlobalState = globalState.getMyState();
+        if(currentGlobalState.encendido){
+            globalState.update({encendido:false})
+        }else{
+            globalState.update({encendido:true})
+        }
+    })
+    .addAnswer('🤖🤖 Gracias por tu participacion')
+
+    ...
+
+
+    const flowWelcome = addKeyword(EVENTS.WELCOME)
+    .addAction((_, { endFlow, globalState }) => {
+
+        const currentGlobalState = globalState.getMyState();
+        if (!currentGlobalState.encendido) {
+            return endFlow();
+        }
+    })
+
+    ...
+
+  createBot(
+    {
+      flow: adapterFlow,
+      provider: adapterProvider,
+      database: adapterDB,
+    },
+    {
+      globalState: {
+        encendido: true,
+      }
+    }
+  );
+
+```
+
+---
+
+<Navigation
+    pages={[
+        { name: 'Instalación', link: '/docs/install' },
+        { name: 'Conceptos', link: '/docs/essential' },
+    ]}
+/>

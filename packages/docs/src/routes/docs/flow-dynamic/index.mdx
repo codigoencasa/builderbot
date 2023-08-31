@@ -1,0 +1,60 @@
+import Navigation from '../../../components/widgets/Navigation'
+
+# flowDynamic
+
+La función flowDynamic
+ se utiliza para devolver mensajes dinámicos que pueden venir de una API o Base de datos. La función recibe un array que debe contener la siguiente estructura:
+
+```js
+const { addKeyword } = require('@bot-whatsapp/bot')
+
+const flowString = addKeyword('ver categorias')
+    .addAnswer('Estas son las categorías disponibles:', null, async (ctx, {flowDynamic}) => {
+        const categories = await db.getCategories()
+        const messages = categories.map((c) => ({body: c.name}))
+        await flowDynamic(messages)
+    })
+```
+
+### Más ejemplos de flowDynamic
+
+```js
+const { addKeyword } = require('@bot-whatsapp/bot')
+
+const flowString = addKeyword('ver categorias')
+    .addAnswer('Estas son las categorías disponibles:', null, async (ctx, {flowDynamic}) => {
+        await flowDynamic('Enviar un mensaje text')
+
+        const listaDeArticulos = [
+            {
+                name:'Item 1'
+            },
+            {
+                name:'Item 2'
+            },
+            {
+                name:'Item 3'
+            }
+        ]
+
+        const mapeoDeLista = listaDeArticulos.map((item) => item.name).join(', ') //Item 1, Item 2, Item 3
+
+        await flowDynamic(mapeoDeLista)
+
+        await flowDynamic({body:'Tambien puedes enviar un mensaje de esta manera'})
+
+        // Enviar una imagen o pdf o etc
+
+        await flowDynamic({media:'https://i.imgur.com/0HpzsEm.png'}) 
+        
+    })
+```
+
+---
+
+<Navigation
+    pages={[
+        { name: 'Instalación', link: '/docs/install' },
+        { name: 'Conceptos', link: '/docs/essential' },
+    ]}
+/>
