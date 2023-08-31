@@ -3,17 +3,17 @@ import Navigation from '../../../../components/widgets/Navigation'
 
 # Entorno Local
 
-Si deseas tener tu chatbot en ejecución en un servidor local (computadora personal, etc.) esta, guía te ayudará.
-El servidor local deberá cumplir con los requisitos mínimos, puedes ver en [este enlace.](/docs/requirements)
+Si deseas tener tu chatbot en ejecución en un servidor local (computadora personal, etc.) esta guía te ayudará.
+El servidor local deberá cumplir con los requisitos mínimos, puedes verlos en [este enlace.](/docs/requirements)
 
 ---
 
-<Alert>Si deseas instalar pm2 puedes ejecutar `npm install pm2 --global`</Alert>
-
-Debes ubicarte en el directorio donde tienes el codigo fuente de tu chatbot.
-
 Independientemente de tu sistema operativo deberás ejecutar el chatbot con el comando atrevés de un sistema que mantenga el proceso en ejecución.
 Recomendamos [Pm2](https://pm2.keymetrics.io/)
+
+<Alert>Si deseas instalar Pm2 puedes ejecutar `npm install pm2 --global`</Alert>
+
+Para iniciar el bot con pm2 debes ubicarte en el directorio donde tienes el codigo fuente de tu chatbot y ejecutar la siguiente instrucción.
 
 ```shell
 pm2 start app.js --name=bot1
@@ -21,6 +21,8 @@ pm2 start app.js --name=bot1
 
 ![](https://i.imgur.com/ilPS75H.png)
 
-La consola de devolver un mensaje con una lista de procesos, en el ejemplo puedes observar, que tenemos un proceso llamado `bot1`
+Tras ejecutar dicha instrucción aparecerá un un mensaje con una lista de procesos que se encuentran en ejecución a través de Pm2, en el ejemplo puedes observar que tenemos un proceso llamado `bot1`.
 
-De esta manera ya puedes cerrar la terminal y tu bot seguirá en ejecución sin problema
+Una vez obtienes dicho mensaje puedes cerrar la terminal y tu bot seguirá en ejecución sin problemas.
+
+> Puedes obtener más información sobre Pm2 en su [documentación](https://pm2.keymetrics.io/docs/usage/quick-start/)
