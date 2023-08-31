@@ -414,20 +414,16 @@ class CoreClass {
     sendProviderAndSave = async (numberOrId, ctxMessage) => {
         try {
             const { answer } = ctxMessage
-            logger.log(`[sendProviderAndSave]: `, ctxMessage)
             if (answer && answer.length && answer !== '__call_action__') {
                 if (answer !== '__capture_only_intended__') {
                     await this.providerClass.sendMessage(numberOrId, answer, ctxMessage)
-                    logger.log(`[providerClass.sendMessage]: `, ctxMessage)
                 }
                 await this.databaseClass.save({ ...ctxMessage, from: numberOrId })
-                logger.log(`[databaseClass.save]: `, ctxMessage)
             }
 
             return Promise.resolve
         } catch (err) {
             logger.log(`[ERROR.save]: `, ctxMessage)
-            console.log('ERROR:Enviando')
             return Promise.reject
         }
     }
