@@ -379,8 +379,10 @@ class CoreClass {
             const { answer } = ctxMessage
             logger.log(`[sendProviderAndSave]: `, ctxMessage)
             if (answer && answer.length && answer !== '__call_action__') {
-                await this.providerClass.sendMessage(numberOrId, answer, ctxMessage)
-                logger.log(`[providerClass.sendMessage]: `, ctxMessage)
+                if (answer !== '__capture_only_intended__') {
+                    await this.providerClass.sendMessage(numberOrId, answer, ctxMessage)
+                    logger.log(`[providerClass.sendMessage]: `, ctxMessage)
+                }
                 await this.databaseClass.save({ ...ctxMessage, from: numberOrId })
                 logger.log(`[databaseClass.save]: `, ctxMessage)
             }
