@@ -1,0 +1,202 @@
+import Alert from '../../../components/widgets/Alert'
+import Navigation from '../../../components/widgets/Navigation'
+
+# Meta
+
+<Alert>
+    ⚡ Para poder usar la API oficial de Meta de manera profesional debes tener en cuenta lo siguiente:
+
+    - Deberas verificar tu negocio y tu aplicación con documentos oficiales dependiendo de tu pais.
+    - Deberas registrar un número de teléfono oficial de tu negocio que no este vinculado con ninguna cuenta de WhatsApp ya se normal o Bussines (Meta proporciona un número de pruebas gratuito).
+    - Meta brinda 1000 conversaciones gratis iniciadas por el cliente hacia el bot y 250 conversaciones gratis iniciadas por el bot hacia el cliente, después de eso deberás pagar por cada conversación (los costos varian según tu país o region).
+</Alert>
+
+---
+## Meta: Configuración
+
+En este apartado esta una guía de como iniciar la configuración de Meta. Puedes encontrar los [detalles aquí](/docs/providers/meta)
+
+---
+## Funciones usando el provider
+
+### Meta: Enviar mensaje
+
+```js
+const flowMensaje = addKeyword('hola')
+    .addAnswer(
+        'Aqui va un mensaje',
+        {
+            capture: true,
+        },
+        async (ctx, {provider}) => {
+            await provider.sendtext(ctx.from, 'mensaje')
+            //==> ctx.from puede ser reemplazado por un número de teléfono
+            //ej: 59170000000, donde el 591 es el código de país y el 70000000 es el número de teléfono
+        }
+    )
+```
+### Meta: Enviar media (imagen, pdf, audio, video)
+
+```js
+const flowMensaje = addKeyword('hola')
+    .addAnswer(
+        'Aqui va un mensaje',
+        {
+            capture: true,
+        },
+        async (ctx, {provider}) => {
+            await sendMedia = async (ctx.from, 'mensaje', 'url de la media')
+        }
+    )
+```
+### Meta: Enviar botones sin provider (maximo de 3 botones)
+
+```js
+// metodo sin uso del provider
+const flowMensaje = addKeyword('hola')
+    .addAnswer(
+        'Aqui va un mensaje',
+        {
+            capture: true,
+            buttons: [
+                {body: 'opcion 1'},
+                {body: 'opcion 2'},
+                {body: 'opcion 3'},
+            ]
+        },
+    )
+```
+Para casos específicos donde se necesite enviar botones desde el provider revisar la ruta "node_modules/@bot-whatsapp/provider/meta/index.cjs", dentro el proyecto.
+
+### Meta: Enviar lista metodo 1
+```js
+const flowMensaje = addKeyword('hola')
+    .addAnswer(
+        'Aqui va un mensaje',
+        {
+            capture: true
+        },
+        async (ctx, {provider}) => {
+            const list = {
+                "header": {
+                    "type": "text",
+                    "text": "<HEADER_TEXT>"
+                },
+                "body": {
+                    "text": "<BODY_TEXT>"
+                },
+                "footer": {
+                    "text": "<FOOTER_TEXT>"
+                },
+                "action": {
+                    "button": "<BUTTON_TEXT>",
+                    "sections": [
+                        {
+                            "title": "<LIST_SECTION_1_TITLE>",
+                            "rows": [
+                                {
+                                    "id": "<LIST_SECTION_1_ROW_1_ID>",
+                                    "title": "<SECTION_1_ROW_1_TITLE>",
+                                    "description": "<SECTION_1_ROW_1_DESC>"
+                                },
+                                {
+                                    "id": "<LIST_SECTION_1_ROW_2_ID>",
+                                    "title": "<SECTION_1_ROW_2_TITLE>",
+                                    "description": "<SECTION_1_ROW_2_DESC>"
+                                }
+                            ]
+                        },
+                        {
+                            "title": "<LIST_SECTION_2_TITLE>",
+                            "rows": [
+                                {
+                                    "id": "<LIST_SECTION_2_ROW_1_ID>",
+                                    "title": "<SECTION_2_ROW_1_TITLE>",
+                                    "description": "<SECTION_2_ROW_1_DESC>"
+                                },
+                                {
+                                    "id": "<LIST_SECTION_2_ROW_2_ID>",
+                                    "title": "<SECTION_2_ROW_2_TITLE>",
+                                    "description": "<SECTION_2_ROW_2_DESC>"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+            await provider.sendLists(ctx.from, list)
+        }
+    )
+```
+### Meta: Enviar lista metodo 2
+```js
+const flowServices = addKeyword('hola')
+    .addAnswer(
+        'Aqui va un mensaje',
+        {
+            capture: true
+        },
+        async (ctx, {provider}) => {
+            const headerText = 'HEADER_TEXT
+            const bodyText = 'BODY_TEXT'
+            const footerText = 'FOOTER_TEXT'
+            const buttonList = 'BUTTON_LIST'
+            const listParams = [
+                {
+                    title: 'TITLE_1',
+                    rows: [
+                        {
+                            id: 'ID_1',
+                            title: 'TITLE_1',
+                            description: 'DESCRIPTION_1'
+                        },
+                        {
+                            id: 'ID_2',
+                            title: 'TITLE_2',
+                            description: 'DESCRIPTION_2'
+                        },
+                        {
+                            id: 'ID_3',
+                            title: 'TITLE_3',
+                            description: 'DESCRIPTION_3'
+                        }
+                    ]
+                },
+                {
+                    title: 'TITLE_2',
+                    rows: [
+                        {
+                            id: 'ID_1',
+                            title: 'TITLE_1',
+                            description: 'DESCRIPTION_1'
+                        },
+                        {
+                            id: 'ID_2',
+                            title: 'TITLE_2',
+                            description: 'DESCRIPTION_2'
+                        },
+                        {
+                            id: 'ID_3',
+                            title: 'TITLE_3',
+                            description: 'DESCRIPTION_3'
+                        }
+                    ]
+                }
+            ]
+            await provider.sendList(ctx.from, headerText, bodyText, footerText, buttonList ,listParams)
+        }
+    )
+```
+---
+## Meta Deploy
+
+En este apartado esta una guía de como iniciar el deploy de Meta. Puedes encontrar los [detalles aquí](https://crhistianriverin.notion.site/Deploy-de-tu-chatbot-con-la-API-de-Meta-9ba0f1a800aa4df381c87a79dbf5a42a?pvs=4)
+
+---
+
+<Navigation
+    pages={[
+        { name: 'gotoFlow', link: '/docs/goto-flow' },
+        { name: 'Twilio', link: '/docs/provider-twilio' },
+    ]}
+/>

@@ -1,0 +1,43 @@
+import Navigation from '../../../components/widgets/Navigation'
+
+# addAction
+
+Es una función útil para definir acciones que se activan cuando se recibe un mensaje de WhatsApp específico. 
+La función action puede realizar diversas tareas y acceder a los métodos y propiedades. En general, **addAction()** te permite crear Chat Bots de WhatsApp personalizados que pueden interactuar con los usuarios de una manera programática. 
+Puedes definir acciones específicas que se activan cuando se recibe un mensaje específico, lo que te permite crear una variedad de flujos de conversación y respuestas automatizadas. 
+
+```js
+const { addKeyword } = require('@bot-whatsapp/bot')
+const flowPrincipal = addKeyword(['hola', 'alo'])
+    .addAnswer(['Hola, bienvenido a mi tienda', '¿Como puedo ayudarte?'])
+    .addAction(async(ctx) => {
+
+        console.log(`Enviar un mail con el con el numero de la persona: ${ctx.from}`)
+        
+    })
+    .addAnswer(['Tengo:', 'Zapatos', 'Bolsos', 'etc ...'])
+```
+
+Tambien puedes tener un addAction con `capture`
+
+```js
+const { addKeyword } = require('@bot-whatsapp/bot')
+    const flujoPrincipal = addKeyword(['hola'])
+        .addAction(async (_, { flowDynamic }) => {
+            return flowDynamic('Buenas! ¿Cual es tu nombre?')
+        })
+        .addAction({ capture: true }, async (ctx, { flowDynamic, state }) => {
+            state.update({ name: ctx.body })
+            return flowDynamic(`Gracias por tu nombre!: ${ctx.body}`)
+        })
+        .addAnswer('Chao!')
+```
+
+---
+
+<Navigation
+    pages={[
+        { name: 'Instalación', link: '/docs/install' },
+        { name: 'Conceptos', link: '/docs/essential' },
+    ]}
+/>

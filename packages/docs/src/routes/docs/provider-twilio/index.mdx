@@ -1,0 +1,142 @@
+import Alert from '../../../components/widgets/Alert'
+import Navigation from '../../../components/widgets/Navigation'
+
+# Twilio
+
+<Alert>
+    ⚡ Twilio te brinda un número de teléfono y funciona en base a créditos en su plataforma, ten en consideración que Twilio al ser un partner de Meta supondra costos un poco mas elevados en comparación.
+</Alert>
+
+---
+
+## Twilio: Configuración
+
+En este apartado esta una guía de como iniciar la configuración de Twilio. Puedes encontrar los [detalles aquí](/docs/providers/twilio)
+
+---
+
+## Funciones usando el provider
+
+### Twilio: Enviar mensaje
+
+```js
+const flowMensaje = addKeyword('hola')
+    .addAnswer(
+        'Aqui va un mensaje',
+        {
+            capture: true,
+        },
+        async (ctx, {provider}) => {
+            await provider.sendtext(ctx.from, 'mensaje')
+            //==> ctx.from puede ser reemplazado por un número de teléfono
+            //ej: 59170000000, donde el 591 es el código de país y el 70000000 es el número de teléfono
+        }
+    )
+```
+### Twilio: Enviar media (imagen, pdf, audio, video)
+
+```js
+const flowMensaje = addKeyword('hola')
+    .addAnswer(
+        'Aqui va un mensaje',
+        {
+            capture: true,
+        },
+        async (ctx, {provider}) => {
+            await sendMedia = async (ctx.from, 'mensaje', 'url de la media')
+        }
+    )
+```
+### Twilio: Enviar botones sin provider (maximo de 3 botones)
+
+```js
+// metodo sin uso del provider
+const flowMensaje = addKeyword('hola')
+    .addAnswer(
+        'Aqui va un mensaje',
+        {
+            capture: true,
+            buttons: [
+                {body: 'opcion 1'},
+                {body: 'opcion 2'},
+                {body: 'opcion 3'},
+            ]
+        },
+    )
+```
+Para casos específicos donde se necesite enviar botones desde el provider revisar la ruta "node_modules/@bot-whatsapp/provider/meta/index.cjs", dentro el proyecto.
+
+### Twilio: Enviar lista metodo 1
+```js
+const flowMensaje = addKeyword('hola')
+    .addAnswer(
+        'Aqui va un mensaje',
+        {
+            capture: true
+        },
+        async (ctx, {provider}) => {
+            const list = {
+                "header": {
+                    "type": "text",
+                    "text": "<HEADER_TEXT>"
+                },
+                "body": {
+                    "text": "<BODY_TEXT>"
+                },
+                "footer": {
+                    "text": "<FOOTER_TEXT>"
+                },
+                "action": {
+                    "button": "<BUTTON_TEXT>",
+                    "sections": [
+                        {
+                            "title": "<LIST_SECTION_1_TITLE>",
+                            "rows": [
+                                {
+                                    "id": "<LIST_SECTION_1_ROW_1_ID>",
+                                    "title": "<SECTION_1_ROW_1_TITLE>",
+                                    "description": "<SECTION_1_ROW_1_DESC>"
+                                },
+                                {
+                                    "id": "<LIST_SECTION_1_ROW_2_ID>",
+                                    "title": "<SECTION_1_ROW_2_TITLE>",
+                                    "description": "<SECTION_1_ROW_2_DESC>"
+                                }
+                            ]
+                        },
+                        {
+                            "title": "<LIST_SECTION_2_TITLE>",
+                            "rows": [
+                                {
+                                    "id": "<LIST_SECTION_2_ROW_1_ID>",
+                                    "title": "<SECTION_2_ROW_1_TITLE>",
+                                    "description": "<SECTION_2_ROW_1_DESC>"
+                                },
+                                {
+                                    "id": "<LIST_SECTION_2_ROW_2_ID>",
+                                    "title": "<SECTION_2_ROW_2_TITLE>",
+                                    "description": "<SECTION_2_ROW_2_DESC>"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+            await provider.sendLists(ctx.from, list)
+        }
+    )
+```
+---
+
+## Funciones de la librería
+
+Puede usarse las mismas funciones que usan los proveedores [gratuitos](/docs/provider-baileys).
+
+---
+
+<Navigation
+    pages={[
+        { name: 'Meta', link: '/docs/provider-meta' },
+        { name: 'Baileys', link: '/docs/provider-baileys' },
+    ]}
+/>
