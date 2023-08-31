@@ -1,0 +1,62 @@
+import Navigation from '../../../components/widgets/Navigation'
+
+# gotoFlow
+
+Se utiliza para poder saltar de un flujo a otro. Utila cuando tenemos logica separada en diferentes flujos.
+
+```js
+const { addKeyword } = require('@bot-whatsapp/bot')
+
+const flujoUsuariosRegistrados = addKeyword('USUARIOS_REGISTRADOS')
+.addAction(async(ctx, {flowDynamic}) => {
+
+    const numero = ctx.from
+
+    console.log('consultando en base de datos nombre gracias al numero...')
+    const ejemploDB = {
+        name:'Leifer'
+    }
+
+    await flowDynamic(`Como estas ${ejemploDB.name}, un gusto tenerte nuvamente`)
+})
+
+const flujoUsuariosNORegistrados = addKeyword('USUARIOS_NO_REGISTRADOS')
+.addAnswer('Veo que es tu primera vez por aqui')
+.addAnswer('¿Cual es tu email?',{capture:true},async(ctx, {flowDynamic, gotoFlow}) => {
+
+    const numero = ctx.from
+
+    console.log('registramos en base de datos el numero...')
+
+    await flowDynamic(`Ya te registramos..`)
+    await gotoFlow(flujoUsuariosRegistrados)
+})
+
+const flowBienvenida = addKeyword('hola')
+.addAnswer('Bievenido!', null, async (ctx,{gotoFlow}) => {
+
+    const numero = ctx.from
+    console.log('consultando en base de datos si existe el numero registrado....')
+
+    const ifExist = true
+    if(ifExist){
+        // Si existe lo enviamos al flujo de regostrados..
+        gotoFlow(flujoUsuariosRegistrados)
+    }else{
+        // Si NO existe lo enviamos al flujo de NO registrados..
+        gotoFlow(flujoUsuariosNORegistrados)
+    }
+
+})
+
+
+```
+
+---
+
+<Navigation
+    pages={[
+        { name: 'Instalación', link: '/docs/install' },
+        { name: 'Conceptos', link: '/docs/essential' },
+    ]}
+/>

@@ -1,0 +1,61 @@
+import Alert from '../../../components/widgets/Alert'
+import Navigation from '../../../components/widgets/Navigation'
+
+# Venom
+
+<Alert>
+    ⚡ Venom es un proveedor gratuito de WhatsApp que se ejecuta mediante Whatsapp Web. No es necesario un registro para usarlo, pero tiene algunas limitaciones.
+    - El uso de botones y listas no es compatible (en algunos dispositivos puede llegar a visualizarse pero en general falla).
+    - En el caso de mensajeria masiva debe utilizarse con precaución ya que puede ser bloqueado por WhatsApp.
+    - Venom tiene una capa de pago que cuesta $ 50 USD por mes, entre algunas de las opciones mas llamativas esta la multisesión, es decir, poder levantar varias instancias del bot, la capa de pago tiene funciones que no estan contempladas en esta librería.
+    - ⚠️ Venom hace uso de puppeter para levantar instancias de WhatsApp Web, por lo que es necesario tener instalado Google Chrome en el servidor donde se ejecutará el bot en caso de hacer deploy del proyecto.
+</Alert>
+
+---
+
+## Documentación Venom
+
+`require('@bot-whatsapp/provider/venom')`
+
+Aca encontrarás la documentación en el repositorio oficial de [Venom](https://github.com/orkestral/venom).
+
+---
+
+## Funciones usando el proveedor Venom
+
+### Venom:
+### Enviar mensaje de texto
+
+```js
+const flowPrincipal = addKeyword('hola')
+    .addAnswer(
+        'Aqui va un mensaje',
+        { capture: true},
+        async (ctx, {provider}) => {
+            await provider.sendText(ctx.from@c.us, 'mensaje de texto')
+            // el número de telefono se envía en este formato 12345678901@c.us
+        }
+    )
+```
+---
+
+### Venom:
+### Enviar encuesta (poll)
+
+Pendiente de implementación, puedes ver el ejemplo de la documentación de Venom e implementar la función por ti mismo [click aqui](https://github.com/orkestral/venom#here-chatid-could-be-phonenumbercus-or-phonenumber-groupidgus).
+
+<Alert>
+    ⚠️ Venom tiene una gran variedad de funciones que aún no estan implementadas en la librería, puedes realizar tu aporte al proyecto mapeando las funciones que aún no estan implementadas.
+</Alert>
+
+---
+## Funciones usando la librería
+
+Puede usarse las mismas funciones que se usan con el proveedor de [Baileys](/docs/provider-baileys).
+
+<Navigation
+    pages={[
+        { name: 'Baileys', link: '/docs/provider-baileys' },
+        { name: 'WPPConnect', link: '/docs/provider-wppconnect' },
+    ]}
+/>
