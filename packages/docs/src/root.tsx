@@ -40,8 +40,9 @@ export default component$(() => {
             list: [
                 { name: 'addKeyword', link: '/docs/add-keyword' },
                 { name: 'addAnswers', link: '/docs/add-answers' },
-                { name: 'ctx', link: '/docs/ctx' },
                 { name: 'addAction', link: '/docs/add-action' },
+                { name: 'ctx', link: '/docs/ctx' },
+                { name: 'state', link: '/docs/state' },
                 { name: 'flowDynamic', link: '/docs/flow-dynamic' },
                 { name: 'fallBack', link: '/docs/fall-back' },
                 { name: 'endFlow', link: '/docs/end-flow' },
@@ -59,28 +60,21 @@ export default component$(() => {
                 { name: 'Whatsapp-web.js', link: '/docs/provider-wweb' }
             ],
         },
-        {
-            title: '@bot/database',
-            list: [
-                { name: 'Memory', link: '/docs/database-memory' },
-                { name: 'Json', link: '/docs/database-json' },
-                { name: 'Mongo', link: '/docs/database-mongo' },
-                { name: 'MySQL', link: '/docs/database-mysql' }
-            ],
-        },
+        // {
+        //     title: '@bot/database',
+        //     list: [
+        //         { name: 'Memory', link: '/docs/database-memory' },
+        //         { name: 'Json', link: '/docs/database-json' },
+        //         { name: 'Mongo', link: '/docs/database-mongo' },
+        //         { name: 'MySQL', link: '/docs/database-mysql' }
+        //     ],
+        // },
         {
             title: 'Despliegue',
             list: [
                 { name: 'Local', link: '/docs/deploy/local' },
                 { name: 'Docker', link: '/docs/deploy/docker' },
                 { name: 'Cloud', link: '/docs/deploy/cloud' },
-            ],
-        },
-        {
-            title: 'Casos de Uso',
-            list: [
-                { name: 'Manejo de estado', link: '/docs/migration' },
-                { name: 'API', link: '/docs/api' },
             ],
         },
         {
