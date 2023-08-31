@@ -57,8 +57,8 @@ class BaileysProvider extends ProviderClass {
         this.store = makeInMemoryStore({ loggerBaileys })
         this.store.readFromFile(`${NAME_DIR_SESSION}/baileys_store.json`)
         setInterval(() => {
-            const path = `${this.NAME_DIR_SESSION}/baileys_store.json`
-            if (existsSync(path)) {
+            const path = `${NAME_DIR_SESSION}/baileys_store.json`
+            if (existsSync(NAME_DIR_SESSION)) {
                 this.store.writeToFile(path)
             }
         }, 10_000)
@@ -240,7 +240,7 @@ class BaileysProvider extends ProviderClass {
                             let payload = {
                                 ...messageCtx,
                                 body: pollMessage.find((poll) => poll.voters.length > 0)?.name || '',
-                                from: baileyCleanNumber(key.remoteJid),
+                                from: baileyCleanNumber(key.remoteJid, true),
                                 pushName: messageOriginal?.pushName,
                                 broadcast: messageOriginal?.broadcast,
                                 messageTimestamp: messageOriginal?.messageTimestamp,
