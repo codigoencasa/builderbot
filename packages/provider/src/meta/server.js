@@ -61,7 +61,7 @@ class MetaWebHookServer extends EventEmitter {
         }
 
         if (message.type === 'image') {
-            const body = generateRefprovider('_event_image_')
+            const body = generateRefprovider('_event_media_')
             const idUrl = message.image?.id
             const resolvedUrl = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
             const responseObj = {
@@ -91,7 +91,7 @@ class MetaWebHookServer extends EventEmitter {
         }
 
         if (message.type === 'video') {
-            const body = generateRefprovider('_event_video_')
+            const body = generateRefprovider('_event_media_')
             const idUrl = message.video?.id
 
             const resolvedUrl = await getMediaUrl(this.version, idUrl, this.numberId, this.jwtToken)
@@ -138,7 +138,7 @@ class MetaWebHookServer extends EventEmitter {
         }
 
         if (message.type === 'sticker') {
-            const body = generateRefprovider('_event_sticker_')
+            const body = generateRefprovider('_event_media_')
 
             const responseObj = {
                 type: message.type,
