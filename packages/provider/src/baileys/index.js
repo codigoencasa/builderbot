@@ -185,6 +185,16 @@ class BaileysProvider extends ProviderClass {
                     }
                 }
 
+                //Detectar video
+                if (messageCtx.message?.videoMessage) {
+                    payload = { ...payload, body: generateRefprovider('_event_media_') }
+                }
+
+                //Detectar Sticker
+                if (messageCtx.message?.stickerMessage) {
+                    payload = { ...payload, body: generateRefprovider('_event_media_') }
+                }
+
                 //Detectar media
                 if (messageCtx.message?.imageMessage) {
                     payload = { ...payload, body: generateRefprovider('_event_media_') }
