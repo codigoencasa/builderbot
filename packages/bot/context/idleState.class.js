@@ -17,16 +17,13 @@ class IdleState extends EventEmitter {
             if (currentTime > this.endTime) {
                 this.stop()
                 this.emit('idle')
-            } else if (this.debug) {
-                return this.emit('debug', () => console.info(this.debugTime()))
             } else {
-                return
+                this.debugTime()
             }
         }, 1000)
     }
 
     start = () => {
-        this.stop()
         if (!this.timer) {
             this.reset()
             this.startTimer()
