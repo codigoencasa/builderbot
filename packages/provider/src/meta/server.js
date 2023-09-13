@@ -26,6 +26,7 @@ class MetaWebHookServer extends EventEmitter {
     incomingMsg = async (req, res) => {
         const { body } = req
         const messages = body?.entry?.[0]?.changes?.[0]?.value?.messages
+        const contacts = req?.body?.entry?.[0]?.changes?.[0]?.value?.contacts
 
         if (!messages) {
             res.statusCode = 200
@@ -34,7 +35,9 @@ class MetaWebHookServer extends EventEmitter {
         }
 
         const [message] = messages
+        const [contact] = contacts
         const to = body.entry[0].changes[0].value?.metadata?.display_phone_number
+        const pushName = contact?.profile?.name
 
         if (message.type === 'text') {
             const body = message.text?.body
@@ -43,6 +46,7 @@ class MetaWebHookServer extends EventEmitter {
                 from: message.from,
                 to,
                 body,
+                pushName,
             }
             this.emit('message', responseObj)
         }
@@ -56,6 +60,7 @@ class MetaWebHookServer extends EventEmitter {
                 to,
                 body,
                 title_list_reply,
+                pushName,
             }
             this.emit('message', responseObj)
         }
@@ -70,6 +75,7 @@ class MetaWebHookServer extends EventEmitter {
                 url: resolvedUrl,
                 to,
                 body,
+                pushName,
             }
 
             this.emit('message', responseObj)
@@ -85,6 +91,7 @@ class MetaWebHookServer extends EventEmitter {
                 url: resolvedUrl, // Utilizar el valor resuelto de la promesa
                 to,
                 body,
+                pushName,
             }
 
             this.emit('message', responseObj)
@@ -102,6 +109,7 @@ class MetaWebHookServer extends EventEmitter {
                 url: resolvedUrl, // Utilizar el valor resuelto de la promesa
                 to,
                 body,
+                pushName,
             }
 
             this.emit('message', responseObj)
@@ -117,6 +125,7 @@ class MetaWebHookServer extends EventEmitter {
                 latitude: message.location.latitude,
                 longitude: message.location.longitude,
                 body,
+                pushName,
             }
 
             this.emit('message', responseObj)
@@ -132,6 +141,7 @@ class MetaWebHookServer extends EventEmitter {
                 url: resolvedUrl, // Utilizar el valor resuelto de la promesa
                 to,
                 body,
+                pushName,
             }
 
             this.emit('message', responseObj)
@@ -146,6 +156,7 @@ class MetaWebHookServer extends EventEmitter {
                 to,
                 id: message.sticker.id,
                 body,
+                pushName,
             }
 
             this.emit('message', responseObj)
@@ -160,6 +171,7 @@ class MetaWebHookServer extends EventEmitter {
                 contacts: [{ name: message.contacts[0].name, phones: message.contacts[0].phones }],
                 to,
                 body,
+                pushName,
             }
 
             this.emit('message', responseObj)
@@ -177,6 +189,7 @@ class MetaWebHookServer extends EventEmitter {
                     product_items: message.order.product_items,
                 },
                 body,
+                pushName,
             }
 
             this.emit('message', responseObj)
