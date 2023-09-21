@@ -17,7 +17,7 @@ const { parseNumber } = require('./utils')
 const PORT = process.env.PORT || 3000
 
 class TwilioProvider extends ProviderClass {
-    twilioHook
+    twilioServer
     vendor
     vendorNumber
     publicUrl
@@ -25,14 +25,14 @@ class TwilioProvider extends ProviderClass {
         super()
         this.publicUrl = publicUrl
         this.vendor = new twilio(accountSid, authToken)
-        this.twilioHook = new TwilioWebHookServer(port)
+        this.twilioServer = new TwilioWebHookServer(port)
         this.vendorNumber = parseNumber(vendorNumber)
 
-        this.twilioHook.start()
+        this.twilioServer.start()
         const listEvents = this.busEvents()
 
         for (const { event, func } of listEvents) {
-            this.twilioHook.on(event, func)
+            this.twilioServer.on(event, func)
         }
     }
 
@@ -75,6 +75,7 @@ class TwilioProvider extends ProviderClass {
             `[NOTA]: Estas intentando enviar una fichero que esta en local.`,
             `[NOTA]: Para que esto funcione con Twilio necesitas que el fichero este en una URL publica`,
             `[NOTA]: más informacion aqui https://bot-whatsapp.netlify.app/docs/provider-twilio/`,
+            `[NOTA]: Esta es la url que se enviara a twilio (debe ser publica) ${urlEncode}`,
         ].join('\n')
 
         if (
@@ -117,12 +118,12 @@ class TwilioProvider extends ProviderClass {
 
     /**
      *
-     * @param {*} userId
+     * @param {*} number
      * @param {*} message
      * @param {*} param2
      * @returns
      */
-    sendMessage = async (number, message, { options }) => {
+    sendMessage = async (number, message, { options } = { options: {} }) => {
         number = parseNumber(number)
         if (options?.buttons?.length) this.sendButtons(number, message, options.buttons)
         if (options?.media) return this.sendMedia(number, message, options.media)

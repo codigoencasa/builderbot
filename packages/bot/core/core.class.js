@@ -17,9 +17,6 @@ const loggerQueue = new Console({
     stdout: createWriteStream(`${process.cwd()}/queue.class.log`),
 })
 
-const StateHandler = new SingleState()
-const GlobalStateHandler = new GlobalState()
-
 /**
  * [ ] Escuchar eventos del provider asegurarte que los provider emitan eventos
  * [ ] Guardar historial en db
@@ -31,6 +28,8 @@ class CoreClass {
     databaseClass
     providerClass
     queuePrincipal
+    stateHandler = new SingleState()
+    globalStateHandler = new GlobalState()
     generalArgs = {
         blackList: [],
         listEvents: {},
@@ -54,9 +53,9 @@ class CoreClass {
             this.generalArgs.queue.timeout
         )
 
-        GlobalStateHandler.updateState()(this.generalArgs.globalState)
+        this.globalStateHandler.updateState()(this.generalArgs.globalState)
 
-        if (this.generalArgs.extensions) GlobalStateHandler.RAW = this.generalArgs.extensions
+        if (this.generalArgs.extensions) this.globalStateHandler.RAW = this.generalArgs.extensions
 
         for (const { event, func } of this.listenerBusEvents()) {
             this.providerClass.on(event, func)
@@ -122,21 +121,21 @@ class CoreClass {
 
         // 📄 Mantener estado de conversacion por numero
         const state = {
-            getMyState: StateHandler.getMyState(messageCtxInComming.from),
-            getAllState: StateHandler.getAllState,
-            update: StateHandler.updateState(messageCtxInComming),
-            clear: StateHandler.clear(messageCtxInComming.from),
+            getMyState: this.stateHandler.getMyState(messageCtxInComming.from),
+            getAllState: this.stateHandler.getAllState,
+            update: this.stateHandler.updateState(messageCtxInComming),
+            clear: this.stateHandler.clear(messageCtxInComming.from),
         }
 
         // 📄 Mantener estado global
         const globalState = {
-            getMyState: GlobalStateHandler.getMyState(),
-            getAllState: GlobalStateHandler.getAllState,
-            update: GlobalStateHandler.updateState(messageCtxInComming),
-            clear: GlobalStateHandler.clear(),
+            getMyState: this.globalStateHandler.getMyState(),
+            getAllState: this.globalStateHandler.getAllState,
+            update: this.globalStateHandler.updateState(messageCtxInComming),
+            clear: this.globalStateHandler.clear(),
         }
 
-        const extensions = GlobalStateHandler.RAW
+        const extensions = this.globalStateHandler.RAW
 
         // 📄 Crar CTX de mensaje (uso private)
         const createCtxMessage = (payload = {}, index = 0) => {

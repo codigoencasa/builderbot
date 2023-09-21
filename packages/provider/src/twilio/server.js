@@ -27,6 +27,7 @@ class TwilioWebHookServer extends EventEmitter {
     incomingMsg = (req, res) => {
         const { body } = req
         this.emit('message', {
+            ...body,
             from: parseNumber(body.From),
             to: parseNumber(body.To),
             body: body.Body,

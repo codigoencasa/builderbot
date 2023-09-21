@@ -7,14 +7,13 @@ const { getMediaUrl } = require('./utils')
 class MetaWebHookServer extends EventEmitter {
     constructor(jwtToken, numberId, version, token, metaPort = 3000) {
         super()
-        this.metaServer = polka()
         this.metaPort = metaPort
         this.token = token
 
         this.jwtToken = jwtToken
         this.numberId = numberId
         this.version = version
-        this.buildHTTPServer()
+        this.metaServer = this.buildHTTPServer()
     }
 
     /**
@@ -232,7 +231,7 @@ class MetaWebHookServer extends EventEmitter {
      * Contruir HTTP Server
      */
     buildHTTPServer() {
-        this.metaServer
+        return polka()
             .use(urlencoded({ extended: true }))
             .use(json())
             .get('/', this.emptyCtrl)
