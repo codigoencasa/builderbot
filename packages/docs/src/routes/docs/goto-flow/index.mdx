@@ -2,30 +2,27 @@ import Navigation from '../../../components/widgets/Navigation'
 
 # gotoFlow
 
-Se utiliza para poder saltar de un flujo a otro. Utila cuando tenemos logica separada en diferentes flujos.
+La función `goToFlow` nos permite redirigir el flujo de la conversación actual a otro flujo. Esta función es muy útil para redirigir dinámicamente el flujo de la conversación a otro flujo dependiendo de las respuestas del usuario.
 
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
 
 const flujoUsuariosRegistrados = addKeyword('USUARIOS_REGISTRADOS')
-.addAction(async(ctx, {flowDynamic}) => {
-
+.addAction(async (ctx, {flowDynamic}) => {
     const numero = ctx.from
 
-    console.log('consultando en base de datos nombre gracias al numero...')
+    console.log('Consultando la base de datos para obtener el nombre del usuario con base en el número de contacto')
     const ejemploDB = {
         name:'Leifer'
     }
 
-    await flowDynamic(`Como estas ${ejemploDB.name}, un gusto tenerte nuvamente`)
+    await flowDynamic(`Como estas ${ejemploDB.name}, un gusto tenerte nuevamente`)
 })
 
 const flujoUsuariosNORegistrados = addKeyword('USUARIOS_NO_REGISTRADOS')
 .addAnswer('Veo que es tu primera vez por aqui')
 .addAnswer('¿Cual es tu email?',{capture:true},async(ctx, {flowDynamic, gotoFlow}) => {
-
     const numero = ctx.from
-
     console.log('registramos en base de datos el numero...')
 
     await flowDynamic(`Ya te registramos..`)
@@ -34,9 +31,8 @@ const flujoUsuariosNORegistrados = addKeyword('USUARIOS_NO_REGISTRADOS')
 
 const flowBienvenida = addKeyword('hola')
 .addAnswer('Bievenido!', null, async (ctx,{gotoFlow}) => {
-
     const numero = ctx.from
-    console.log('consultando en base de datos si existe el numero registrado....')
+    console.log('consultando en base de datos si existe el numero registrado...')
 
     const ifExist = true
     if(ifExist){
@@ -46,10 +42,7 @@ const flowBienvenida = addKeyword('hola')
         // Si NO existe lo enviamos al flujo de NO registrados..
         gotoFlow(flujoUsuariosNORegistrados)
     }
-
 })
-
-
 ```
 
 ---

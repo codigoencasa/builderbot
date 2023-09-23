@@ -2,13 +2,14 @@ import Navigation from '../../../components/widgets/Navigation'
 
 # addKeyword
 
-Esta funcion se importa desde `@bot-whatsapp/bot`
+Esta función se importa desde `@bot-whatsapp/bot`
 
-Se encarga de iniciar un [flow](/docs/essential/) dependiendo de la configuracio que se le ha indicado.  
+Se encarga de iniciar un [flow](/docs/essential/) dependiendo de una o más palabras claves.
 
 --- 
 
-En este ejemplo puedes ver como definimos un conversacion que el bot va a responder cuando alguien escribe `hola` o `alo` .
+En este ejemplo puedes ver como definimos una conversación que el bot va a responder cuándo alguien escribe `hola` o `alo`.
+
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
 
@@ -17,23 +18,24 @@ const flowPrincipal = addKeyword(['hola', 'alo'])
     .addAnswer(['Tengo:', 'Zapatos', 'Bolsos', 'etc ...'])
 ```
 
+**NOTA**: Es importante que una vez se reciban alguna de as palabras claves indicadas, añadir la función `addAnswer` para enviar mensajes al usuario.
+
 ---
 
-Tambien puedes definir solo una palabra ejemplo si alguien escribe `comprar`
+También es posible indicar una única palabra clave. A continuación, se presenta un ejemplo:
+
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
 
 const flowPrincipal = addKeyword('comprar')
     .addAnswer(['¿Como puedo ayudarte?'])
-
 ```
 
 ---
 
 ### Regex
 
-En algunos casos necesitaras activar un flujo basado en una expression regular para esas situaciones tenemos.
-
+Podemos iniciar un flujo con base en una Expresión Regular (`regex`), esto lo podemos hacer indicando la expresión regular como primer argumento e indicando en el objeto de configuración que se trata de una expresión regular con la propiedad `regex`.
 
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
@@ -41,40 +43,38 @@ const { addKeyword } = require('@bot-whatsapp/bot')
 const REGEX_CREDIT_NUMBER = `/(^4[0-9]{12}(?:[0-9]{3})?$)|(^(?:5[1-5][0-9]{2}|222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)[0-9]{12}$)|(3[47][0-9]{13})|(^3(?:0[0-5]|[68][0-9])[0-9]{11}$)|(^6(?:011|5[0-9]{2})[0-9]{12}$)|(^(?:2131|1800|35\d{3})\d{11}$)/gm`
 
 const flow = addKeyword(REGEX_CREDIT_NUMBER, { regex: true })
-    .addAnswer(`Gracias por proporcionar un numero de tarjeta valido`)
+    .addAnswer(`Gracias por proporcionar un número de tarjeta valido`)
     .addAnswer('Fin!')
-
 ```
 
 ---
 
 ### Sensitive
 
-El comportamiento del addKeyword por defecto detecta un palabra entre el mensaje ejemplo si alguien escribe `hola como estas` y tienes `addKeyword('hola')` el flow se activara. 
-Si no quieres este comportamiento y quieres afinar solo a que la persona escriba `hola`
+Por defecto, el bot es sensible a mayúsculas y minúsculas. Por lo que si le indicamos que esperamos `hola` y el usuario responde `Hola`, el flujo no se disparará.
 
+Para ignorar mayúsculas y minúsculas podemos cambiar el valor de la propiedad `sensitive` a `false`.
 
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
 
 const flowBienvenida = addKeyword('hola', { sensitive: true })
     .addAnswer('Bienvenido a este chatbot')
-
 ```
+
 ---
 
 ### Eventos
 
-En muchos casos necesitamos responder cuando no es una palabra exactamente. 
-Ejemplo que pasa si alguien envia una nota de voz, imagen, ubicacion, imagen o video.
+En algunos casos esperaremos otro tipo de entrada por parte del usuario que no sea texto, tales como archivos, videos, imágenes o una ubicación.
 
-En este caso puedes usar los **eventos** 
+En este caso puedes usar los **eventos** . Los eventos puedes importarlos desde `@bot-whatsapp/bot`.
 
-- **WELCOME**: Se dispara cuando una persona escribe un palabra que no esta en ningun flow. Util para mensajes de bienvenida
-- **MEDIA**: Util para detectar cuando la persona te envia imagen o video
-- **LOCATION**: Util para detectar cuando la persona te envia coordenadas de ubicacion
-- **VOICE_NOTE**: Util para detectar cuando la persona te envia nota de voz
-- **DOCUMENT**: Util para detectar cuando la persona te envia alguno archivo como pdf, html o otro tipo que no sea los anteriores
+- **WELCOME**: Se dispara cuándo una persona escribe una palabra que no está en ningún flow. Útil para mensajes de bienvenida
+- **MEDIA**: Útil para detectar cuando el usuario envía una imagen o video
+- **LOCATION**: Útil para detectar cuando el usuario envía coordenadas de ubicación
+- **VOICE_NOTE**: Útil para detectar cuando el usuario envía una nota de voz
+- **DOCUMENT**: Útil para detectar cuando el usuario envía algún archivo como PDF, HTML u otro tipo de archivo que no se haya mencionado anteriormente
 
 ---
 
@@ -88,14 +88,13 @@ const flowRecibirMedia = addKeyword(EVENTS.MEDIA)
     .addAnswer('He recibido tu foto o video')
     
 const flowLocation = addKeyword(EVENTS.LOCATION)
-    .addAnswer('Ohh ya veo donde estas')
+    .addAnswer('Ohh, ya veo dónde estás')
 
 const flowNotaDeVoz = addKeyword(EVENTS.VOICE_NOTE)
     .addAnswer('Dame un momento para escuchar la nota de voz')
 
 const flowDocumento = addKeyword(EVENTS.DOCUMENT)
     .addAnswer('Documento PDF recibido')
-
 ```
 
 ---

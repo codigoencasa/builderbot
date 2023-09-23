@@ -9,11 +9,10 @@ Se encarga de responder al usuario, puedes responder un texto o archivo adjunto.
 ```js
     const { addKeyword } = require('@bot-whatsapp/bot')
 
-    const flowWelcome = addKeyword('hola').addAnswer('Hola y bievendido! como puedo ayudarte')
-
+    const flowWelcome = addKeyword('hola').addAnswer('¡Hola y bienvenido! ¿Cómo puedo ayudarte?')
 ```
-El mensaje`'Hola y bievendido! como puedo ayudarte'` se enviara como un mensaje de whatsapp
 
+El mensaje`'¡Hola y bienvenido! ¿Cómo puedo ayudarte?'` se enviara como un mensaje de whatsapp
 
 ### Enviar más de un mensaje
 
@@ -21,12 +20,12 @@ El mensaje`'Hola y bievendido! como puedo ayudarte'` se enviara como un mensaje 
     const { addKeyword } = require('@bot-whatsapp/bot')
 
     const flowWelcome = addKeyword('hola')
-    .addAnswer('Hola!')
+    .addAnswer('¡Hola!')
     .addAnswer('Bienvenido')
-    .addAnswer('¿Como puedo ayudarte?')
-
+    .addAnswer('¿Cómo puedo ayudarte?')
 ```
-Se enviaran (3) tres mensajes por separados consecutivamente. `Hola` , `Bienvenido`, `¿Como puedo ayudarte?`
+
+Se enviaran (3) tres mensajes por separados consecutivamente. `Hola` , `Bienvenido`, `¿Cómo puedo ayudarte?`
 
 ---
 
@@ -37,16 +36,17 @@ Se enviaran (3) tres mensajes por separados consecutivamente. `Hola` , `Bienveni
 
     const flowWelcome = addKeyword('hola')
     .addAnswer(['Hola!','Bienvenido','¿Como puedo ayudarte?'])
-
-
 ```
+
 Se enviara (1) un mensaje pero con saltos de linea
 
 ---
 
 ### Retardo
 
-Enviar un mensaje con `1000ms = 1segundo` de espera
+Con la propiedad `delay` se puede configurar un tiempo de retraso para un mensaje. En el siguiente ejemplo se define un retraso de un segundo )1000 milisegundos).
+
+**NOTA**: Es importante denotar que está expresado siempre en milisegundos, por lo que asegúrate de realizar la conversión correspondiente.
 
 ```js
     const { addKeyword } = require('@bot-whatsapp/bot')
@@ -54,15 +54,13 @@ Enviar un mensaje con `1000ms = 1segundo` de espera
   const flowString = addKeyword('hola').addAnswer('Este mensaje se enviara 1 segundo despues', {
         delay: 1000,
     })
-
-
 ```
 
 ---
 
-### Enviar imagen, video, pdf: Url externa
+### Enviar imagen, video, archivo mediante una URL externa
 
-Puedes enviar archivos desde url externas publicas o desde archivos locales.
+Con la propiedad `media` puedes enviar archivos desde URLs externas públicas.
 
 ```js
     const { addKeyword } = require('@bot-whatsapp/bot')
@@ -70,14 +68,15 @@ Puedes enviar archivos desde url externas publicas o desde archivos locales.
     const flowString = addKeyword('hola').addAnswer('Este mensaje envia una imagen', {
             media: 'https://i.imgur.com/0HpzsEm.png',
     })
-
-
 ```
+
 Esta imagen `https://i.imgur.com/0HpzsEm.png` se envia desde una URL externa.
 
 ---
 
 ### Enviar imagen, video, pdf: locales
+
+También con la propiedad `media` es posible definir una ruta local para adjuntar un archivo como imágenes, video u otro tipo de archivo local.
 
 Dependiendo de tus sistema operativo asegurate de colocar bien la ruta absoluta
 
@@ -85,32 +84,29 @@ Dependiendo de tus sistema operativo asegurate de colocar bien la ruta absoluta
     const { addKeyword } = require('@bot-whatsapp/bot')
 
     const flowString = addKeyword('hola').addAnswer('Este mensaje envia una imagen', {
-            media: 'c:/ruta/imagen.png', //'c:\ruta\imagen.png'
+            media: 'c:/ruta/imagen.png', // 'c:\ruta\imagen.png'
     })
-
-
 ```
 
 ---
 
 ### Botones
 
-**NOTA** Los botones funcionan bien en Meta o Twilio. **En los proveedores gratuitos son inestables.**
+**NOTA**: Los botones funcionan bien en Meta o Twilio. **En los proveedores gratuitos el funcionamiento puede ser inestable**.
 
 ```js
     const { addKeyword } = require('@bot-whatsapp/bot')
 
     const flowString = addKeyword('hola').addAnswer('Este mensaje envia tres botones', {
-        buttons: [{ body: 'Boton 1' }, { body: 'Boton 2' }, { body: 'Boton 3' }],
+        buttons: [{ body: 'Botón 1' }, { body: 'Botón 2' }, { body: 'Botón 3' }],
     })
-
 ```
 
 ---
 
 ### Capture
 
-En algunas ocaciones necesitamos esperar por la respuesta del usuario para ello usamos `capture`
+Con la propiedad `capture` podemos esperar la respuesta del usuario. Ésta respuesta se guardará en la propiedad `body` de `ctx`.
 
 ```js
     const { addKeyword } = require('@bot-whatsapp/bot')
@@ -118,9 +114,7 @@ En algunas ocaciones necesitamos esperar por la respuesta del usuario para ello 
   const flowString = addKeyword('hola').addAnswer('¿Cual es tu email?', {
         capture: true,
     })
-
 ```
-
 
 ---
 

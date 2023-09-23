@@ -3,29 +3,29 @@ import Navigation from '../../../components/widgets/Navigation'
 
 # Conceptos
 
-El desarrollo de la librería se base en tres (3) piezas claves para su correcto funcionamiento:
+El desarrollo de la librería se basa en tres (3) piezas claves para su correcto funcionamiento:
 
 -   **Flow:** Encargado de construir todo el contexto de la conversación, finalmente su objetivo es brindar una capa amigable al desarrollador.
 -   **Provider:** Como si de un [conector](https://www.dignited.com/wp-content/uploads/2019/06/Plug-type-768x432.jpg) se tratara el objetivo es poder cambiar facilmente de proveedor de Whatsapp en minutos
     sin el riesgo de dañar otras partes del bot
--   **Database:** Siguiendo la linea de pensamiento de conectores, de igual manera que el provider nos brinda la capacidad de poder cambiar de capa de persistencia de datos (guardar datos) sin invertir tiempo en
+-   **Database:** Siguiendo la linea de pensamiento de conectores, de igual manera que el provider nos brinda la capacidad de poder cambiar la capa de persistencia de datos (guardar datos) sin invertir tiempo en
     reescribir nuestro flujo.
 
 ---
 
 ## Flow
 
-Los flujos hace referencia al hecho de construir un flujo de conversion. Esto es un flow podemos observar que estan presente dos metodos importantes **[addKeyword](/docs/add-keyword)** y el **[addAnswer](/docs/add-answers)**.
+Podemos representar el contexto de una conversación entre el bot y el usuario mediante flujos. Los flujos cuentan con dos métodos importantes: **[addKeyword](/docs/add-keyword)** y el **[addAnswer](/docs/add-answers)**.
 
-Tan sencillo como decir **palabra/s clave** y **mensaje a responder**
+La función `addKeyword` representa la o las palabras clave que espera el bot para empezar con el flujo de la conversación. Mientras que la función `addAnswer` define las respuestas del bot durante el flujo de la conversación con el usuario.
 
-Ambos metodos **[addKeyword](/docs/add-keyword)** y el **[addAnswer](/docs/add-answers)** tienen una serie opciones disponibles
+Ambos metodos **[addKeyword](/docs/add-keyword)** y el **[addAnswer](/docs/add-answers)** tienen opciones que nos pueden ayudar a personalizar el comportamiento del bot durante las respuestas y disparadores del flujo de la conversación.
 
 ```js
 const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
 
 const flowPrincipal = addKeyword(['hola', 'alo'])
-    .addAnswer(['Hola, bienvenido a mi tienda', '¿Como puedo ayudarte?'])
+    .addAnswer(['Hola, bienvenido a mi tienda', '¿Cómo puedo ayudarte?'])
     .addAnswer(['Tengo:', 'Zapatos', 'Bolsos', 'etc ...'])
 ```
 
@@ -34,13 +34,10 @@ const flowPrincipal = addKeyword(['hola', 'alo'])
 ## Provider
 
 <Alert>
-    ⚡ Dependiendo del tipo de proveedor que utlices puede que necesites pasar algunas configuraciones adicionales como
-    **token, api, etc.** para esos casos te recomendamos guiarte de los
-    **[starters](https://github.com/codigoencasa/bot-whatsapp/tree/dev/starters/apps)** o si gustas puedes editar esta
-    documentación para ir agregando más info
+    ⚡ Dependiendo del tipo de proveedor que utilices, es posible que necesites definir algunas configuraciones adicionales como: **token, api, etc**. Para esos casos te recomendamos utilizar las plantillas de los **[starters](https://github.com/codigoencasa/bot-whatsapp/tree/dev/starters/apps)**. También puedes editar esta configuración para mejorarla.
 </Alert>
 
-Es la pieza que conectara tu flujo con WhatsApp. En este chatbot tenemos varios proveedores disponibles la mayoria gratis pero tambien tenemos integración con la api oficial de whatsapp o twilio
+El proveedor (`provider`) es la pieza que conecta tu flujo con WhatsApp. En este chatbot tenemos varios proveedores disponibles la mayoría gratis, pero también tenemos integración con la API oficial de WhatsApp o Twilio.
 
 ```js
 const WhatsappProvider = require('@bot-whatsapp/provider/web-whatsapp')
@@ -50,28 +47,22 @@ const adapterProvider = createProvider(WhatsappProvider)
 
 Los proveedores disponibles hasta el momento son los siguientes:
 
-[whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) `require('@bot-whatsapp/provider/web-whatsapp')`
-
-[Venom](https://github.com/orkestral/venom) `require('@bot-whatsapp/provider/venom')`
-
-[Baileys](https://github.com/whiskeysockets/Baileys) `require('@bot-whatsapp/provider/baileys')`
-
-[Meta Official](https://developers.facebook.com/docs/whatsapp/cloud-api/reference/messages) `require('@bot-whatsapp/provider/meta')`
-
-[Twilio Official](https://www.twilio.com/es-mx/messaging/whatsapp) `require('@bot-whatsapp/provider/twilio')`
+- [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) `require('@bot-whatsapp/provider/web-whatsapp')`
+- [Venom](https://github.com/orkestral/venom) `require('@bot-whatsapp/provider/venom')`
+- [Baileys](https://github.com/whiskeysockets/Baileys) `require('@bot-whatsapp/provider/baileys')`
+- [Meta Official](https://developers.facebook.com/docs/whatsapp/cloud-api/reference/messages) `require('@bot-whatsapp/provider/meta')`
+- [Twilio Official](https://www.twilio.com/es-mx/messaging/whatsapp) `require('@bot-whatsapp/provider/twilio')`
 
 ---
 
 ## DataBase (Base de datos)
 
 <Alert>
-    ⚡ Dependiendo del tipo de conector que utlices puede que necesites pasar algunas configuraciones adicionales como
-    **user, host, password** para esos casos te recomendamos guiarte de los
-    **[starters](https://github.com/codigoencasa/bot-whatsapp/tree/dev/starters/apps)** o si gustas puedes editar esta
-    documentación para ir agregando más info
+    ⚡ Dependiendo del tipo de conector que utilices, es posible que necesites pasar algunas configuraciones adicionales como: **user, host, password**. Para esos casos te recomendamos guiarte de los
+    **[starters](https://github.com/codigoencasa/bot-whatsapp/tree/dev/starters/apps)**. También puedes editar esta documentación para mejorarla.
 </Alert>
 
-Es la pieza encargada de mantener el **"historial"** de una conversación, para mayor facilidad la libreria te proporcia diferentes conectores que se de adapten mejor a tu desarrollo
+Es la pieza encargada de mantener el **"historial"** de una conversación, para mayor facilidad la libreria te proporciona diferentes conectores que se adapten mejor a tu proyecto.
 
 ```js
 const MongoAdapter = require('@bot-whatsapp/database/mongo')
@@ -84,19 +75,16 @@ const adapterDB = new MongoAdapter({
 
 Los conectores disponibles hasta el momento son los siguientes:
 
-`require('@bot-whatsapp/database/mock')`
-
-`require('@bot-whatsapp/database/mongo')`
-
-`require('@bot-whatsapp/database/mysql')`
-
-`require('@bot-whatsapp/database/json')`
+- `require('@bot-whatsapp/database/mock')`
+- `require('@bot-whatsapp/database/mongo')`
+- `require('@bot-whatsapp/database/mysql')`
+- `require('@bot-whatsapp/database/json')`
 
 ---
 
 <Navigation
     pages={[
-        { name: 'Pruebalo', link: '/docs/example' },
+        { name: 'Pruébalo', link: '/docs/example' },
         { name: 'Conversaciones', link: '/docs/flows' },
     ]}
 />

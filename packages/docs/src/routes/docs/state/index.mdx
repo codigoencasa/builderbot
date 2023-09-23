@@ -2,14 +2,12 @@ import Navigation from '../../../components/widgets/Navigation'
 
 # State
 
-Algunas veces queremos mantener un `state` o `contexto` por usuario que nos escribe y poder compartir esta informacion con todos nuestros flujos.
-Esto tambien funcion si usas `gotoFlow`
-
+`state` nos permite mantener un estado en común entre flujos para compartir información relevante entre ellos. Esto tambien funciona si usas `goToFlow`.
 
 ```js
   const flujoPrincipal = addKeyword(['hola'])
         .addAnswer(
-            '¿Cual es tu nombre?',
+            '¿Cuál es tu nombre?',
             {
                 capture: true,
             },
@@ -31,23 +29,65 @@ Esto tambien funcion si usas `gotoFlow`
         )
         .addAnswer('Tus datos son:', null, async (_, { flowDynamic, state }) => {
             const myState = state.getMyState()
-            flowDynamic(`Nombre: ${myState.name} Edad: ${myState.age}`)
+            await flowDynamic(`Nombre: ${myState.name} - Edad: ${myState.age}`)
         })
-        .addAnswer('🤖🤖 Gracias por tu participacion')
-
+        .addAnswer('🤖🤖 Gracias por tu participación')
 ```
+
+---
+
+### update
+
+El método `update` nos permite actualizar el estado para compartir información entre flujos.
+**NOTA**: Es importante considerar que se debe pasar un objeto para que pueda ser actualizado en el estado. Si al actualizar encuentra que la propiedad ya existe, se actualizará el valor, de lo contrario se agregará la propiedad al estado.
+
+```js
+const flujoPrincipal = addKeyword('Hola')
+	.addAnswer('¿Cómo te llamas?', { capture: true }, ({ body }, { state }) =>
+		state.update({ nombre: body }))
+```
+
+---
+
+### getMyState
+
+El método `getMyState` retorna el objeto con las propiedades que hemos actualizado en el estado de la conversación.
+
+```js
+const flujoPrincipal = addKeyword)'Hola')
+	.addAnswer('¿Cuál es tu nombre?', { capture: true}, ({ body }, { state }) =>
+		state.update({ nombre: body }))
+	.addAction(async (_, { fowDynamic }) => {
+		await flowDynamic(`Mucho gusto ${ state.getMyState().nombre }`)
+	})
+```
+
+Como se puede observar en el ejemplo, la propiedad `nombre` es la misma que actualizamos con el método `update` del `state`.
+
+---
+
+### clear
+
+El método `clear` nos permite reiniciar el estado a un valor `undefined`.
+
+```js
+const flujoPrincipal = addKeyword)'Hola')
+	.addAnswer('¿Cuál es tu nombre?', { capture: true}, ({ body }, { state }) =>
+		state.update({ nombre: body }))
+	.addAction((_, { state }) => state.clear())
+```
+
+---
 
 ## GlobalState
 
-De igual manera que el `state` anterior nosotros podemos usar `globalState` para tener un esta general de la app (NO es por usuario), esto es muy util si quieres ejemplo apagar o prener el bot
-
+De igual manera que el `state` anterior, podemos usar `globalState` para tener un estado general de la app (NO es por usuario). Esto es muy útil si quieres apagar o prender el bot.
 
 ```js
-
     const flowOnOff = addKeyword(['onoff'])
     .addAction(async (_, { flowDynamic, globalState }) => {
         const currentGlobalState = globalState.getMyState();
-        if(currentGlobalState.encendido){
+        if(currentGlobalState.encendido) {
             globalState.update({encendido:false})
         }else{
             globalState.update({encendido:true})
@@ -57,10 +97,8 @@ De igual manera que el `state` anterior nosotros podemos usar `globalState` para
 
     ...
 
-
     const flowWelcome = addKeyword(EVENTS.WELCOME)
     .addAction((_, { endFlow, globalState }) => {
-
         const currentGlobalState = globalState.getMyState();
         if (!currentGlobalState.encendido) {
             return endFlow();
@@ -81,7 +119,6 @@ De igual manera que el `state` anterior nosotros podemos usar `globalState` para
       }
     }
   );
-
 ```
 
 ---
