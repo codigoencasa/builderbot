@@ -1,3 +1,4 @@
+const { EventEmitter } = require('node:events')
 const { toCtx } = require('../io/methods')
 const { printer } = require('../utils/interactive')
 const { delay } = require('../utils/delay')
@@ -23,7 +24,7 @@ const loggerQueue = new Console({
  * [ ] Buscar mensaje en flow
  *
  */
-class CoreClass {
+class CoreClass extends EventEmitter {
     flowClass
     databaseClass
     providerClass
@@ -42,6 +43,7 @@ class CoreClass {
         },
     }
     constructor(_flow, _database, _provider, _args) {
+        super()
         this.flowClass = _flow
         this.databaseClass = _database
         this.providerClass = _provider
@@ -417,6 +419,7 @@ class CoreClass {
             if (answer && answer.length && answer !== '__call_action__') {
                 if (answer !== '__capture_only_intended__') {
                     await this.providerClass.sendMessage(numberOrId, answer, ctxMessage)
+                    this.emit('send_message', { numberOrId, answer, ctxMessage })
                 }
                 await this.databaseClass.save({ ...ctxMessage, from: numberOrId })
             }
