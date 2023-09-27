@@ -282,9 +282,10 @@ class CoreClass {
         const flowDynamic =
             (flag) =>
             async (listMsg = [], options = { continue: true }) => {
-                flag.flowDynamic = true
-                if (!Array.isArray(listMsg)) listMsg = [listMsg]
+                if (!options.hasOwnProperty('continue')) options = { ...options, continue: true }
 
+                flag.flowDynamic = true
+                if (!Array.isArray(listMsg)) listMsg = [{ body: listMsg, ...options }]
                 const parseListMsg = listMsg.map((opt, index) => createCtxMessage(opt, index))
 
                 if (endFlowFlag) return
