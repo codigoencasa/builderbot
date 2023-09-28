@@ -3,21 +3,11 @@ import Navigation from '../../../components/widgets/Navigation'
 
 # Twilio
 
-<Alert>
-    ⚡ Twilio te brinda un número de teléfono y funciona en base a créditos en su plataforma, ten en consideración que Twilio al ser un partner de Meta supondra costos un poco mas elevados en comparación.
-</Alert>
+Más detalles de configuración puedes consultarlos [__aquí__](/docs/providers/twilio)
 
 ---
 
-## Twilio: Configuración
-
-En este apartado esta una guía de como iniciar la configuración de Twilio. Puedes encontrar los [detalles aquí](/docs/providers/twilio)
-
----
-
-## Funciones usando el provider
-
-### Twilio: Enviar mensaje
+### Enviar mensaje
 
 ```js
 const flowMensaje = addKeyword('hola')
@@ -33,7 +23,10 @@ const flowMensaje = addKeyword('hola')
         }
     )
 ```
-### Twilio: Enviar media (imagen, pdf, audio, video)
+
+---
+
+### Enviar media (imagen, pdf, audio, video)
 
 ```js
 const flowMensaje = addKeyword('hola')
@@ -47,7 +40,10 @@ const flowMensaje = addKeyword('hola')
         }
     )
 ```
-### Twilio: Enviar botones sin provider (maximo de 3 botones)
+
+---
+
+### Enviar botones (maximo de 3 botones)
 
 ```js
 // metodo sin uso del provider
@@ -66,7 +62,8 @@ const flowMensaje = addKeyword('hola')
 ```
 Para casos específicos donde se necesite enviar botones desde el provider revisar la ruta "node_modules/@bot-whatsapp/provider/meta/index.cjs", dentro el proyecto.
 
-### Twilio: Enviar lista metodo 1
+### Enviar lista
+
 ```js
 const flowMensaje = addKeyword('hola')
     .addAnswer(
@@ -126,6 +123,7 @@ const flowMensaje = addKeyword('hola')
         }
     )
 ```
+
 ---
 
 ## Funciones de la librería
