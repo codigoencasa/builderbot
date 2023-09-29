@@ -8,8 +8,14 @@ class SingleState {
      * @returns
      */
     updateState = (ctx = {}) => {
-        const currentStateByFrom = this.STATE.get(ctx.from)
-        return (keyValue) => this.STATE.set(ctx.from, { ...currentStateByFrom, ...keyValue })
+        return (keyValue) => {
+            return new Promise((resolve) => {
+                const currentStateByFrom = this.STATE.get(ctx.from)
+                const updatedState = { ...currentStateByFrom, ...keyValue }
+                this.STATE.set(ctx.from, updatedState)
+                resolve()
+            })
+        }
     }
 
     /**

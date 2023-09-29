@@ -17,20 +17,22 @@ const { parseNumber } = require('./utils')
 const PORT = process.env.PORT || 3000
 
 class TwilioProvider extends ProviderClass {
-    twilioHook
+    twilioServer
     vendor
     vendorNumber
-    constructor({ accountSid, authToken, vendorNumber, port = PORT }) {
+    publicUrl
+    constructor({ accountSid, authToken, vendorNumber, port = PORT, publicUrl = '' }) {
         super()
+        this.publicUrl = publicUrl
         this.vendor = new twilio(accountSid, authToken)
-        this.twilioHook = new TwilioWebHookServer(port)
+        this.twilioServer = new TwilioWebHookServer(port)
         this.vendorNumber = parseNumber(vendorNumber)
 
-        this.twilioHook.start()
+        this.twilioServer.start()
         const listEvents = this.busEvents()
 
         for (const { event, func } of listEvents) {
-            this.twilioHook.on(event, func)
+            this.twilioServer.on(event, func)
         }
     }
 
@@ -66,6 +68,26 @@ class TwilioProvider extends ProviderClass {
      */
     sendMedia = async (number, message, mediaInput = null) => {
         if (!mediaInput) throw new Error(`MEDIA_INPUT_NULL_: ${mediaInput}`)
+        const urlEncode = `${this.publicUrl}/tmp?path=${encodeURIComponent(mediaInput)}`
+        const regexUrl = /^(?!https?:\/\/)[^\s]+$/
+
+        const urlNotice = [
+            `[NOTA]: Estas intentando enviar una fichero que esta en local.`,
+            `[NOTA]: Para que esto funcione con Twilio necesitas que el fichero este en una URL publica`,
+            `[NOTA]: más informacion aqui https://bot-whatsapp.netlify.app/docs/provider-twilio/`,
+            `[NOTA]: Esta es la url que se enviara a twilio (debe ser publica) ${urlEncode}`,
+        ].join('\n')
+
+        if (
+            mediaInput.includes('localhost') ||
+            mediaInput.includes('127.0.0.1') ||
+            mediaInput.includes('0.0.0.0') ||
+            regexUrl.test(mediaInput)
+        ) {
+            console.log(urlNotice)
+            mediaInput = urlEncode
+        }
+
         number = parseNumber(number)
         return this.vendor.messages.create({
             mediaUrl: [`${mediaInput}`],
@@ -96,12 +118,12 @@ class TwilioProvider extends ProviderClass {
 
     /**
      *
-     * @param {*} userId
+     * @param {*} number
      * @param {*} message
      * @param {*} param2
      * @returns
      */
-    sendMessage = async (number, message, { options }) => {
+    sendMessage = async (number, message, { options } = { options: {} }) => {
         number = parseNumber(number)
         if (options?.buttons?.length) this.sendButtons(number, message, options.buttons)
         if (options?.media) return this.sendMedia(number, message, options.media)

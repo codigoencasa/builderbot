@@ -1,6 +1,8 @@
 const { EventEmitter } = require('node:events')
+const { existsSync, createReadStream } = require('node:fs')
+const mime = require('mime-types')
 const polka = require('polka')
-const { urlencoded } = require('body-parser')
+const { urlencoded, json } = require('body-parser')
 const { parseNumber } = require('./utils')
 
 /**
@@ -25,6 +27,7 @@ class TwilioWebHookServer extends EventEmitter {
     incomingMsg = (req, res) => {
         const { body } = req
         this.emit('message', {
+            ...body,
             from: parseNumber(body.From),
             to: parseNumber(body.To),
             body: body.Body,
@@ -34,13 +37,34 @@ class TwilioWebHookServer extends EventEmitter {
     }
 
     /**
+     * Manejar los local media como
+     * C\\Projects\\bot-restaurante\\tmp\\menu.png
+     * para que puedas ser llevar a una url online
+     * @param {*} req
+     * @param {*} res
+     */
+    handlerLocalMedia = (req, res) => {
+        const { query } = req
+        const file = query?.path
+        if (!file) return res.end(`path: invalid`)
+        const decodeFile = decodeURIComponent(file)
+        if (!existsSync(decodeFile)) return res.end(`not exits: ${decodeFile}`)
+        const fileStream = createReadStream(decodeFile)
+        const mimeType = mime.lookup(decodeFile)
+        res.writeHead(200, { 'Content-Type': mimeType })
+        fileStream.pipe(res)
+    }
+
+    /**
      * Contruir HTTP Server
      * @returns
      */
     buildHTTPServer = () => {
         return polka()
             .use(urlencoded({ extended: true }))
+            .use(json())
             .post('/twilio-hook', this.incomingMsg)
+            .get('/tmp', this.handlerLocalMedia)
     }
 
     /**

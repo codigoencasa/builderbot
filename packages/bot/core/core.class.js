@@ -1,3 +1,4 @@
+const { EventEmitter } = require('node:events')
 const { toCtx } = require('../io/methods')
 const { printer } = require('../utils/interactive')
 const { delay } = require('../utils/delay')
@@ -17,20 +18,19 @@ const loggerQueue = new Console({
     stdout: createWriteStream(`${process.cwd()}/queue.class.log`),
 })
 
-const StateHandler = new SingleState()
-const GlobalStateHandler = new GlobalState()
-
 /**
  * [ ] Escuchar eventos del provider asegurarte que los provider emitan eventos
  * [ ] Guardar historial en db
  * [ ] Buscar mensaje en flow
  *
  */
-class CoreClass {
+class CoreClass extends EventEmitter {
     flowClass
     databaseClass
     providerClass
     queuePrincipal
+    stateHandler = new SingleState()
+    globalStateHandler = new GlobalState()
     generalArgs = {
         blackList: [],
         listEvents: {},
@@ -43,6 +43,7 @@ class CoreClass {
         },
     }
     constructor(_flow, _database, _provider, _args) {
+        super()
         this.flowClass = _flow
         this.databaseClass = _database
         this.providerClass = _provider
@@ -54,9 +55,9 @@ class CoreClass {
             this.generalArgs.queue.timeout
         )
 
-        GlobalStateHandler.updateState()(this.generalArgs.globalState)
+        this.globalStateHandler.updateState()(this.generalArgs.globalState)
 
-        if (this.generalArgs.extensions) GlobalStateHandler.RAW = this.generalArgs.extensions
+        if (this.generalArgs.extensions) this.globalStateHandler.RAW = this.generalArgs.extensions
 
         for (const { event, func } of this.listenerBusEvents()) {
             this.providerClass.on(event, func)
@@ -122,21 +123,21 @@ class CoreClass {
 
         // 📄 Mantener estado de conversacion por numero
         const state = {
-            getMyState: StateHandler.getMyState(messageCtxInComming.from),
-            getAllState: StateHandler.getAllState,
-            update: StateHandler.updateState(messageCtxInComming),
-            clear: StateHandler.clear(messageCtxInComming.from),
+            getMyState: this.stateHandler.getMyState(messageCtxInComming.from),
+            getAllState: this.stateHandler.getAllState,
+            update: this.stateHandler.updateState(messageCtxInComming),
+            clear: this.stateHandler.clear(messageCtxInComming.from),
         }
 
         // 📄 Mantener estado global
         const globalState = {
-            getMyState: GlobalStateHandler.getMyState(),
-            getAllState: GlobalStateHandler.getAllState,
-            update: GlobalStateHandler.updateState(messageCtxInComming),
-            clear: GlobalStateHandler.clear(),
+            getMyState: this.globalStateHandler.getMyState(),
+            getAllState: this.globalStateHandler.getAllState,
+            update: this.globalStateHandler.updateState(messageCtxInComming),
+            clear: this.globalStateHandler.clear(),
         }
 
-        const extensions = GlobalStateHandler.RAW
+        const extensions = this.globalStateHandler.RAW
 
         // 📄 Crar CTX de mensaje (uso private)
         const createCtxMessage = (payload = {}, index = 0) => {
@@ -218,7 +219,7 @@ class CoreClass {
                         ctxMessage.ref
                     )
                 } catch (error) {
-                    logger.error(`Error al encolar: ${error.message}`)
+                    logger.error(`Error al encolar (ID ${ctxMessage.ref}):`, error)
                     return Promise.reject
                     // Puedes considerar manejar el error aquí o rechazar la promesa
                     // Pasada a resolveCbEveryCtx con el error correspondiente.
@@ -283,9 +284,10 @@ class CoreClass {
         const flowDynamic =
             (flag) =>
             async (listMsg = [], options = { continue: true }) => {
-                flag.flowDynamic = true
-                if (!Array.isArray(listMsg)) listMsg = [listMsg]
+                if (!options.hasOwnProperty('continue')) options = { ...options, continue: true }
 
+                flag.flowDynamic = true
+                if (!Array.isArray(listMsg)) listMsg = [{ body: listMsg, ...options }]
                 const parseListMsg = listMsg.map((opt, index) => createCtxMessage(opt, index))
 
                 if (endFlowFlag) return
@@ -417,13 +419,14 @@ class CoreClass {
             if (answer && answer.length && answer !== '__call_action__') {
                 if (answer !== '__capture_only_intended__') {
                     await this.providerClass.sendMessage(numberOrId, answer, ctxMessage)
+                    this.emit('send_message', { numberOrId, answer, ctxMessage })
                 }
-                await this.databaseClass.save({ ...ctxMessage, from: numberOrId })
             }
+            await this.databaseClass.save({ ...ctxMessage, from: numberOrId })
 
             return Promise.resolve
         } catch (err) {
-            logger.log(`[ERROR.save]: `, ctxMessage)
+            logger.log(`[ERROR ID (${ctxMessage.ref})]: `, err)
             return Promise.reject
         }
     }
@@ -457,7 +460,7 @@ class CoreClass {
             await this.queuePrincipal.enqueue(
                 numberOrId,
                 () => this.sendProviderAndSave(numberOrId, ctxMessage),
-                generateTime()
+                ctxMessage.ref
             )
             // await queuePromises.dequeue()
         }
