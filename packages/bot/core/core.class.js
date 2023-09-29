@@ -219,7 +219,7 @@ class CoreClass extends EventEmitter {
                         ctxMessage.ref
                     )
                 } catch (error) {
-                    logger.error(`Error al encolar: ${error.message}`)
+                    logger.error(`Error al encolar (ID ${ctxMessage.ref}):`, error)
                     return Promise.reject
                     // Puedes considerar manejar el error aquí o rechazar la promesa
                     // Pasada a resolveCbEveryCtx con el error correspondiente.
@@ -421,12 +421,12 @@ class CoreClass extends EventEmitter {
                     await this.providerClass.sendMessage(numberOrId, answer, ctxMessage)
                     this.emit('send_message', { numberOrId, answer, ctxMessage })
                 }
-                await this.databaseClass.save({ ...ctxMessage, from: numberOrId })
             }
+            await this.databaseClass.save({ ...ctxMessage, from: numberOrId })
 
             return Promise.resolve
         } catch (err) {
-            logger.log(`[ERROR.save]: `, ctxMessage)
+            logger.log(`[ERROR ID (${ctxMessage.ref})]: `, err)
             return Promise.reject
         }
     }
@@ -460,7 +460,7 @@ class CoreClass extends EventEmitter {
             await this.queuePrincipal.enqueue(
                 numberOrId,
                 () => this.sendProviderAndSave(numberOrId, ctxMessage),
-                generateTime()
+                ctxMessage.ref
             )
             // await queuePromises.dequeue()
         }

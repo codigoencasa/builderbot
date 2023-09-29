@@ -3,7 +3,7 @@ const assert = require('uvu/assert')
 const { addKeyword, createBot, createFlow } = require('../packages/bot/index')
 const { setup, clear, delay } = require('../__mocks__/env')
 
-const suiteCase = suite('Flujo: addAction (capture)')
+const suiteCase = suite('Flujo: flowDynamic (delay)')
 
 suiteCase.before.each(setup)
 suiteCase.after.each(clear)
@@ -30,14 +30,15 @@ suiteCase(`Delay en los flowDynamic`, async ({ database, provider }) => {
         body: 'hola',
     })
 
-    await delay(5000)
+    await delay(2000)
     const getHistory = database.listHistory.map((i) => i.answer)
-    assert.is('Buenas! ¿Cual es tu nombre? este mensaje debe tener delay 1000', getHistory[0])
-    assert.is('Todo bien?', getHistory[1])
-    assert.is('Bien!', getHistory[2])
-    assert.is('si nada', getHistory[3])
-    assert.is('Chao!', getHistory[4])
-    assert.is(undefined, getHistory[5])
+    assert.is('__call_action__', getHistory[0])
+    assert.is('Buenas! ¿Cual es tu nombre? este mensaje debe tener delay 1000', getHistory[1])
+    assert.is('Todo bien?', getHistory[2])
+    assert.is('Bien!', getHistory[3])
+    assert.is('si nada', getHistory[4])
+    assert.is('Chao!', getHistory[5])
+    assert.is(undefined, getHistory[6])
 })
 
 suiteCase.run()

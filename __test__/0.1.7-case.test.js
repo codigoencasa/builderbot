@@ -18,8 +18,8 @@ suiteCase(`Debe retornar un mensaje resumen`, async ({ database, provider }) => 
                 capture: true,
             },
             async (ctx, { flowDynamic, state }) => {
-                state.update({ name: ctx.body })
-                flowDynamic('Gracias por tu nombre!')
+                await state.update({ name: ctx.body })
+                await flowDynamic('Gracias por tu nombre!')
             }
         )
         .addAnswer(
@@ -28,14 +28,14 @@ suiteCase(`Debe retornar un mensaje resumen`, async ({ database, provider }) => 
                 capture: true,
             },
             async (ctx, { flowDynamic, state }) => {
-                state.update({ age: ctx.body })
+                await state.update({ age: ctx.body })
                 const myState = state.getMyState()
                 await flowDynamic(`Gracias por tu edad! ${myState.name}`)
             }
         )
         .addAnswer(MOCK_VALUES[2], null, async (_, { flowDynamic, state }) => {
             const myState = state.getMyState()
-            flowDynamic(`Nombre: ${myState.name} Edad: ${myState.age}`)
+            await flowDynamic(`Nombre: ${myState.name} Edad: ${myState.age}`)
         })
         .addAnswer('🤖🤖 Gracias por tu participacion')
 
