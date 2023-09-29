@@ -67,15 +67,6 @@ class FlowClass {
 
     findSerializeByKeyword = (keyword) => this.flowSerialize.find((r) => r.keyword === keyword)
 
-    findNextSerializeByRef = (ref) => {
-        try {
-            const index = this.flowSerialize.findIndex((r) => r.ref === ref)
-            return this.flowSerialize[index + 1]
-        } catch (err) {
-            return undefined
-        }
-    }
-
     getRefToContinueChild = (keyword) => {
         try {
             const flowChilds = this.flowSerialize
