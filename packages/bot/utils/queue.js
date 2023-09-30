@@ -54,6 +54,7 @@ class Queue {
 
             const cancel = () => {
                 clearTimeout(this.timers.get(fingerIdRef))
+                this.timers.delete(fingerIdRef)
             }
             return { promiseInFunc, timer, timerPromise, cancel }
         }
