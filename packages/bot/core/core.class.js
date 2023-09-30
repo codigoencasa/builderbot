@@ -9,6 +9,7 @@ const { LIST_REGEX } = require('../io/events')
 const SingleState = require('../context/state.class')
 const GlobalState = require('../context/globalState.class')
 const { generateTime } = require('../utils/hash')
+const IdleState = require('../context/idleState.class')
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
@@ -19,6 +20,7 @@ const loggerQueue = new Console({
 
 const StateHandler = new SingleState()
 const GlobalStateHandler = new GlobalState()
+const idle = new IdleState()
 
 /**
  * [ ] Escuchar eventos del provider asegurarte que los provider emitan eventos
@@ -325,6 +327,7 @@ class CoreClass {
                 state,
                 globalState,
                 extensions,
+                idleState: idle,
                 fallBack: fallBack(flags),
                 flowDynamic: flowDynamic(flags),
                 endFlow: endFlow(flags),
