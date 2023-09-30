@@ -1,50 +1,46 @@
 const { EventEmitter } = require('node:events')
 
 class IdleState extends EventEmitter {
+    index = new Map()
+    indexInterval = new Map()
     timer = null
     startTime = 0
     endTime = 0
 
-    setIdleTime = (timeInSeconds) => {
-        this.startTime = timeInSeconds
-        return this.reset()
+    setIdleTime = (inRef, timeInSeconds) => {
+        if (!this.index.has(inRef)) {
+            this.index.set(inRef, timeInSeconds)
+            this.indexInterval.set(inRef, null)
+        }
     }
 
-    startTimer = () => {
-        this.timer = setInterval(() => {
+    startTimer = (inRef) => {
+        const interval = setInterval(() => {
             const currentTime = new Date().getTime()
-
             if (currentTime > this.endTime) {
-                this.stop()
-                this.emit('idle')
-            } else {
-                this.debugTime()
+                this.stop(inRef)
+                this.emit(`timeout_${inRef}`)
             }
         }, 1000)
+
+        this.indexInterval.set(inRef, interval)
     }
 
-    start = () => {
-        if (!this.timer) {
-            this.reset()
-            this.startTimer()
+    start = (inRef) => {
+        const refTimer = this.index.get(inRef) ?? undefined
+        if (refTimer) {
+            this.startTimer(inRef)
         }
     }
 
-    reset = () => {
-        const currentTime = new Date().getTime()
-        this.endTime = currentTime + this.startTime * 1000
-    }
-
-    stop = () => {
-        if (this.timer) {
-            clearInterval(this.timer)
-            this.timer = null
+    stop = (inRef) => {
+        try {
+            this.index.delete(inRef)
+            clearInterval(this.indexInterval.get(inRef))
+            this.indexInterval.delete(inRef)
+        } catch (err) {
+            return null
         }
-    }
-
-    debugTime = () => {
-        const currentTime = new Date().getTime()
-        return `Tiempo restante: ${((this.endTime - currentTime) / 1000).toFixed(0)} segundos`
     }
 }
 

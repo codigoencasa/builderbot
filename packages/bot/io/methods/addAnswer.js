@@ -22,6 +22,7 @@ const addAnswer =
             capture: typeof options?.capture === 'boolean' ? options?.capture : false,
             child: typeof options?.child === 'string' ? `${options?.child}` : null,
             delay: typeof options?.delay === 'number' ? options?.delay : 0,
+            idle: typeof options?.idle === 'number' ? options?.idle : null,
         })
 
         const getNested = () => {

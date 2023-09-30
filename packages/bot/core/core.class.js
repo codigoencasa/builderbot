@@ -19,7 +19,7 @@ const loggerQueue = new Console({
     stdout: createWriteStream(`${process.cwd()}/queue.class.log`),
 })
 
-const idle = new IdleState()
+const idleForCallback = new IdleState()
 
 /**
  * [ ] Escuchar eventos del provider asegurarte que los provider emitan eventos
@@ -305,13 +305,19 @@ class CoreClass extends EventEmitter {
                 return
             }
 
-        // 📄 Se encarga de revisar si el contexto del mensaje tiene callback o fallback
+        // 📄 Se encarga de revisar si el contexto del mensaje tiene callback o idle
         const resolveCbEveryCtx = async (ctxMessage) => {
+            if (!!ctxMessage?.options?.idle && !ctxMessage?.options?.capture) {
+                printer(
+                    `[ATENCION IDLE]: La función "idle" no tendrá efecto a menos que habilites la opción "capture:true". Por favor, asegúrate de configurar "capture:true" o elimina la función "idle"`
+                )
+            }
+            if (ctxMessage?.options?.idle) return await cbEveryCtx(ctxMessage?.ref, ctxMessage?.options?.idle)
             if (!ctxMessage?.options?.capture) return await cbEveryCtx(ctxMessage?.ref)
         }
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback y ejecutarlo
-        const cbEveryCtx = async (inRef) => {
+        const cbEveryCtx = async (inRef, startIdleMs = 0) => {
             let flags = {
                 endFlow: false,
                 fallBack: false,
@@ -323,25 +329,39 @@ class CoreClass extends EventEmitter {
             const database = this.databaseClass
 
             if (!this.flowClass.allCallbacks[inRef]) return Promise.resolve()
-
             const argsCb = {
                 database,
                 provider,
                 state,
                 globalState,
                 extensions,
-                idleState: idle,
+                idle: idleForCallback,
+                inRef,
                 fallBack: fallBack(flags),
                 flowDynamic: flowDynamic(flags),
                 endFlow: endFlow(flags),
                 gotoFlow: gotoFlow(flags),
             }
 
-            await this.flowClass.allCallbacks[inRef](messageCtxInComming, argsCb)
-            //Si no hay llamado de fallaback y no hay llamado de flowDynamic y no hay llamado de enflow EL flujo continua
-            const ifContinue = !flags.endFlow && !flags.fallBack && !flags.flowDynamic
-            if (ifContinue) await continueFlow(prevMsg?.options?.nested?.length)
+            const runContext = async (continueAfterIdle = true, overCtx = {}) => {
+                messageCtxInComming = { ...messageCtxInComming, ...overCtx }
+                await this.flowClass.allCallbacks[inRef](messageCtxInComming, argsCb)
+                idleForCallback.stop(inRef)
+                //Si no hay llamado de fallaback y no hay llamado de flowDynamic y no hay llamado de enflow EL flujo continua
+                const ifContinue = !flags.endFlow && !flags.fallBack && !flags.flowDynamic
+                if (ifContinue && continueAfterIdle) await continueFlow(prevMsg?.options?.nested?.length)
+            }
 
+            if (startIdleMs > 0) {
+                idleForCallback.setIdleTime(inRef, startIdleMs / 1000)
+                idleForCallback.start(inRef)
+                idleForCallback.on(`timeout_${inRef}`, async () => {
+                    await runContext(false, { idleFallBack: !!startIdleMs, from: null, body: null })
+                })
+                return
+            }
+
+            await runContext()
             return
         }
 
