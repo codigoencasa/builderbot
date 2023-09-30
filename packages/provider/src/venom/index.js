@@ -47,6 +47,7 @@ class VenomProvider extends ProviderClass {
                 undefined
             )
             this.vendor = client
+            this.emit('ready', true)
         } catch (e) {
             logger.log(e)
             this.emit('auth_failure', {

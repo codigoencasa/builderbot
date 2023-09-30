@@ -124,7 +124,10 @@ class BaileysProvider extends ProviderClass {
 
                 /** Conexion abierta correctamente */
                 if (connection === 'open') {
+                    const parseNumber = `${sock?.user?.id}`.split(':').shift()
+                    const host = { ...sock?.user, phone: parseNumber }
                     this.emit('ready', true)
+                    this.emit('host', host)
                     this.initBusEvents(sock)
                 }
 
