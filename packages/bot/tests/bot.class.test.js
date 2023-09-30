@@ -2,7 +2,7 @@ const { test } = require('uvu')
 const assert = require('uvu/assert')
 const FlowClass = require('../io/flow.class')
 const MockProvider = require('../../../__mocks__/mock.provider')
-const { createBot, CoreClass, createFlow, createProvider, ProviderClass } = require('../index')
+const { createBot, CoreClass, createFlow, createProvider, ProviderClass, addKeyword } = require('../index')
 
 class MockFlow {
     allCallbacks = { ref: () => 1 }
@@ -287,6 +287,88 @@ test(`[Bot] Probando endFlow `, async () => {
 
     const botHandler = await bot.handleMsg(messageCtxInComming)
     const result = botHandler.endFlow({ endFlow: false })('hola')
+
+    assert.is(Object.values(result).length, 0)
+})
+
+test(`[Bot] Probando sendFlow  `, async () => {
+    const mockProvider = new MockProvider()
+
+    const setting = {
+        flow: new MockFlow(),
+        database: new MockDBB(),
+        provider: mockProvider,
+    }
+
+    const bot = await createBot(setting)
+
+    const messageCtxInComming = {
+        body: 'Hola',
+        from: '123456789',
+    }
+
+    const botHandler = await bot.handleMsg(messageCtxInComming)
+    const messages = [
+        {
+            body: 'Hola',
+            from: '123456789',
+        },
+    ]
+    const resultA = await botHandler.sendFlow(messages, '00000', {})
+    const resultB = await botHandler.sendFlow(messages, '00000', {
+        prev: {
+            options: {
+                capture: true,
+            },
+        },
+    })
+    const resultC = await botHandler.sendFlow(messages, '00000', { forceQueue: true })
+    assert.is(undefined, resultA)
+    assert.is(undefined, resultB)
+    assert.is(undefined, resultC)
+})
+
+test(`[Bot] Probando fallBack  `, async () => {
+    const mockProvider = new MockProvider()
+
+    const setting = {
+        flow: new MockFlow(),
+        database: new MockDBB(),
+        provider: mockProvider,
+    }
+
+    const bot = await createBot(setting)
+
+    const messageCtxInComming = {
+        body: 'Hola',
+        from: '123456789',
+    }
+
+    const botHandler = await bot.handleMsg(messageCtxInComming)
+    const result = botHandler.fallBack({ fallBack: true })('hola')
+
+    assert.is(Object.values(result).length, 0)
+})
+
+test(`[Bot] Probando gotoFlow  `, async () => {
+    const mockProvider = new MockProvider()
+    const flowWelcome = addKeyword('hola').addAnswer('chao')
+    const flow = createFlow([flowWelcome])
+    const setting = {
+        flow,
+        database: new MockDBB(),
+        provider: mockProvider,
+    }
+
+    const bot = await createBot(setting)
+
+    const messageCtxInComming = {
+        body: 'Hola',
+        from: '123456789',
+    }
+
+    const botHandler = await bot.handleMsg(messageCtxInComming)
+    const result = botHandler.gotoFlow({ gotoFlow: true })(flowWelcome)
 
     assert.is(Object.values(result).length, 0)
 })
