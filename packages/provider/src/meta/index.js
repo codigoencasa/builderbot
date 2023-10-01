@@ -97,12 +97,29 @@ class MetaProvider extends ProviderClass {
 
     sendImage = async (number, mediaInput = null) => {
         if (!mediaInput) throw new Error(`MEDIA_INPUT_NULL_: ${mediaInput}`)
+
+        const formData = new FormData()
+        const mimeType = mime.lookup(mediaInput)
+        formData.append('file', createReadStream(mediaInput), {
+            contentType: mimeType,
+        })
+        formData.append('messaging_product', 'whatsapp')
+
+        const {
+            data: { id: mediaId },
+        } = await axios.post(`${URL}/${this.version}/${this.numberId}/media`, formData, {
+            headers: {
+                Authorization: `Bearer ${this.jwtToken}`,
+                ...formData.getHeaders(),
+            },
+        })
+
         const body = {
             messaging_product: 'whatsapp',
             to: number,
             type: 'image',
             image: {
-                link: mediaInput,
+                id: mediaId,
             },
         }
         return this.sendMessageMeta(body)
