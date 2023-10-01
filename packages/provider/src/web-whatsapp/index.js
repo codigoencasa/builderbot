@@ -79,7 +79,11 @@ class WebWhatsappProvider extends ProviderClass {
         },
         {
             event: 'ready',
-            func: () => this.emit('ready', true),
+            func: () => {
+                const host = { ...this.vendor?.info?.wid, phone: this.vendor?.info?.wid?.user }
+                this.emit('ready', true)
+                this.emit('host', host)
+            },
         },
         {
             event: 'message',
