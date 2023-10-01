@@ -343,10 +343,10 @@ class CoreClass extends EventEmitter {
                 gotoFlow: gotoFlow(flags),
             }
 
+            idleForCallback.stop(inRef)
             const runContext = async (continueAfterIdle = true, overCtx = {}) => {
                 messageCtxInComming = { ...messageCtxInComming, ...overCtx }
                 await this.flowClass.allCallbacks[inRef](messageCtxInComming, argsCb)
-                idleForCallback.stop(inRef)
                 //Si no hay llamado de fallaback y no hay llamado de flowDynamic y no hay llamado de enflow EL flujo continua
                 const ifContinue = !flags.endFlow && !flags.fallBack && !flags.flowDynamic
                 if (ifContinue && continueAfterIdle) await continueFlow(prevMsg?.options?.nested?.length)
@@ -354,8 +354,7 @@ class CoreClass extends EventEmitter {
 
             if (startIdleMs > 0) {
                 idleForCallback.setIdleTime(inRef, startIdleMs / 1000)
-                idleForCallback.start(inRef)
-                idleForCallback.on(`timeout_${inRef}`, async () => {
+                idleForCallback.start(inRef, async () => {
                     await runContext(false, { idleFallBack: !!startIdleMs, from: null, body: null })
                 })
                 return

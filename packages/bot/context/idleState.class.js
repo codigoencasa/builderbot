@@ -1,43 +1,39 @@
-const { EventEmitter } = require('node:events')
-
-class IdleState extends EventEmitter {
+class IdleState {
     index = new Map()
     indexInterval = new Map()
-    timer = null
-    startTime = 0
-    endTime = 0
+    indexEnd = new Map()
 
     setIdleTime = (inRef, timeInSeconds) => {
-        if (!this.index.has(inRef)) {
-            this.index.set(inRef, timeInSeconds)
-            this.indexInterval.set(inRef, null)
-        }
+        this.stop(inRef)
+        const currentTime = new Date().getTime()
+        const endTime = currentTime + timeInSeconds * 1000
+        if (!this.index.has(inRef)) this.index.set(inRef, timeInSeconds)
+        if (!this.indexInterval.has(inRef)) this.indexInterval.set(inRef, null)
+        if (!this.indexEnd.has(inRef)) this.indexEnd.set(inRef, endTime)
     }
 
-    startTimer = (inRef) => {
-        const interval = setInterval(() => {
-            const currentTime = new Date().getTime()
-            if (currentTime > this.endTime) {
-                this.stop(inRef)
-                this.emit(`timeout_${inRef}`)
-            }
-        }, 1000)
-
-        this.indexInterval.set(inRef, interval)
-    }
-
-    start = (inRef) => {
+    start = (inRef, cb = () => null) => {
         const refTimer = this.index.get(inRef) ?? undefined
         if (refTimer) {
-            this.startTimer(inRef)
+            const interval = setInterval(() => {
+                const currentTime = new Date().getTime()
+                const endTime = this.indexEnd.get(inRef)
+                if (currentTime > endTime) {
+                    this.stop(inRef)
+                    cb()
+                }
+            }, 1000)
+
+            this.indexInterval.set(inRef, interval)
         }
     }
 
     stop = (inRef) => {
         try {
-            this.index.delete(inRef)
             clearInterval(this.indexInterval.get(inRef))
+            this.index.delete(inRef)
             this.indexInterval.delete(inRef)
+            this.indexEnd.delete(inRef)
         } catch (err) {
             return null
         }
