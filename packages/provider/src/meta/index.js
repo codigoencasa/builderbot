@@ -169,18 +169,18 @@ class MetaProvider extends ProviderClass {
      * @example await sendMessage('+XXXXXXXXXXX', 'https://dominio.com/imagen.jpg' | 'img/imagen.jpg')
      */
 
-    sendMedia = async (number, mediaInput, text = '') => {
+    sendMedia = async (number, text = '', mediaInput) => {
         const fileDownloaded = await generalDownload(mediaInput)
         const mimeType = mime.lookup(fileDownloaded)
-
+        mediaInput = fileDownloaded
         if (mimeType.includes('image')) return this.sendImage(number, mediaInput)
         if (mimeType.includes('video')) return this.sendVideo(number, fileDownloaded)
         if (mimeType.includes('audio')) {
-            const fileOpus = await convertAudio(fileDownloaded)
+            const fileOpus = await convertAudio(mediaInput)
             return this.sendAudio(number, fileOpus, text)
         }
 
-        return this.sendFile(number, fileDownloaded)
+        return this.sendFile(number, mediaInput)
     }
 
     /**

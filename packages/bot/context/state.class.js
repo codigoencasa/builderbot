@@ -28,6 +28,15 @@ class SingleState {
 
     /**
      *
+     * @param {*} prop
+     * @returns
+     */
+    get = (from) => {
+        return (prop) => this.STATE.get(from)[prop]
+    }
+
+    /**
+     *
      * @returns
      */
     getAllState = () => this.STATE.values()

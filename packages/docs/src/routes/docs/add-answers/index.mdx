@@ -88,7 +88,6 @@ Dependiendo de tus sistema operativo asegurate de colocar bien la ruta absoluta
             media: 'c:/ruta/imagen.png', //'c:\ruta\imagen.png'
     })
 
-
 ```
 
 ---
@@ -118,6 +117,48 @@ En algunas ocaciones necesitamos esperar por la respuesta del usuario para ello 
   const flowString = addKeyword('hola').addAnswer('¿Cual es tu email?', {
         capture: true,
     })
+
+```
+
+---
+
+### Ejemplos
+
+En este ejemplo, se crean dos flujos de conversación: uno para saludar al usuario cuando escribe "hola" y otro para despedirse cuando escribe "adios". 
+
+Cada flujo tiene una respuesta predefinida que se mostrará al usuario. Puedes personalizar las respuestas según tus necesidades.
+
+```js
+    const { addKeyword } = require('@bot-whatsapp/bot')
+
+    const flowSaludo = addKeyword('hola')
+        .addAnswer('¡Hola! ¿En qué puedo ayudarte?')
+
+    const flowDespedida = addKeyword('adios')
+        .addAnswer('¡Hasta luego! Espero haberte sido de ayuda. ¡Vuelve pronto!')
+
+```
+
+---
+
+En este ejemplo, se crean dos flujos de conversación: uno para el saludo y otro para la despedida. 
+
+Además, se agrega un flujo adicional para enviar una imagen cuando se recibe el mensaje 'imagen'.
+
+```js
+const flowSaludo = addKeyword('hola').addAnswer('¡Hola! ¿En qué puedo ayudarte?');
+const flowDespedida = addKeyword('adios').addAnswer('¡Hasta luego! Espero haberte sido de ayuda.');
+
+const flowImagen = addKeyword('imagen').addAnswer('¡Aquí tienes una imagen!', { media: 'https://ruta/a/imagen.jpg' });
+
+const adapterFlow = createFlow([flowSaludo, flowDespedida, flowImagen]);
+
+const adapterProvider = createProvider(WebWhatsappProvider);
+createBot({
+    flow: adapterFlow,
+    provider: adapterProvider,
+    database: adapterDB,
+});
 
 ```
 

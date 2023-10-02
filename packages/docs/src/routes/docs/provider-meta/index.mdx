@@ -7,6 +7,36 @@ Más detalles de configuración puedes consultarlos [__aquí__](/docs/providers/
 
 ---
 
+### Configuracion inicial
+
+Referencia completa: [aqui](https://github.com/codigoencasa/bot-whatsapp/blob/main/starters/apps/base-meta-memory/app.js)
+
+```js
+const MetaProvider = require('@bot-whatsapp/provider/meta')
+
+const main = async () => {
+    const adapterDB = new MockAdapter()
+    const adapterFlow = createFlow([flowPrincipal])
+
+    const adapterProvider = createProvider(MetaProvider, {
+        jwtToken: 'jwtToken',
+        numberId: 'numberId',
+        verifyToken: 'verifyToken',
+        version: 'v16.0',
+    })
+
+    createBot({
+        flow: adapterFlow,
+        provider: adapterProvider,
+        database: adapterDB,
+    })
+}
+
+main()
+```
+
+---
+
 ### Enviar texto
 
 Te presentamos aquí un ejemplo de cómo puedes enviar un mensaje con Meta.
@@ -32,16 +62,20 @@ const flowMensaje = addKeyword('hola')
 Aquí te mostramos un ejemplo de cómo puedes enviar archivos multimedia con Meta
 
 ```js
-const flowMensaje = addKeyword('hola')
-    .addAnswer(
-        'Aqui va un mensaje',
+const flujoFinal = addKeyword('hola').addAnswer('Hola!', null, async (ctx, { flowDynamic}) => {
+    await flowDynamic([
         {
-            capture: true,
-        },
-        async (ctx, {provider}) => {
-            await sendMedia = async (ctx.from, 'mensaje', 'url de la media')
+            body:'imagen',
+            media:"https://i.imgur.com/1XEiIGq.png"
         }
-    )
+    ])
+    await flowDynamic([
+        {
+            body:'video',
+            media:"https://bot-whatsapp.netlify.app/videos/console.mp4"
+        }
+    ])
+})
 ```
 
 ---

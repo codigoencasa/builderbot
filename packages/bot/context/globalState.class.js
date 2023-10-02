@@ -21,6 +21,9 @@ class GlobalState {
         return () => this.STATE.get('__global__')
     }
 
+    get = () => {
+        return (prop) => this.STATE.get('__global__')[prop]
+    }
     /**
      *
      * @returns
