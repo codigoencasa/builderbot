@@ -320,7 +320,7 @@ class CoreClass extends EventEmitter {
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback y ejecutarlo
         const cbEveryCtx = async (inRef, startIdleMs = 0) => {
-            let flags = {
+            const flags = {
                 endFlow: false,
                 fallBack: false,
                 flowDynamic: false,
@@ -357,7 +357,8 @@ class CoreClass extends EventEmitter {
             if (startIdleMs > 0) {
                 idleForCallback.setIdleTime(inRef, startIdleMs / 1000)
                 idleForCallback.start(inRef, async () => {
-                    await runContext(false, { idleFallBack: !!startIdleMs, from: null, body: null })
+                    endFlowFlag = false
+                    await runContext(false, { idleFallBack: !!startIdleMs })
                 })
                 return
             }

@@ -137,4 +137,47 @@ suiteCase(`Enviar mensajes con ambos casos de idle`, async ({ database, provider
     assert.is(undefined, getHistory[9])
 })
 
+suiteCase(`Enviar mensaje con gotoFlow anidados`, async ({ database, provider }) => {
+    const flujoA = addKeyword(EVENTS.WELCOME)
+        .addAnswer('Bievenido!')
+        .addAction(async (_, { gotoFlow }) => {
+            return gotoFlow(flujoB)
+        })
+
+    const flujoB = addKeyword(EVENTS.ACTION)
+        .addAnswer(
+            'Esto debe responderse en menos de 2 seg',
+            { idle: 2000, capture: true },
+            async (ctx, { gotoFlow }) => {
+                if (ctx?.idleFallBack) {
+                    return gotoFlow(flujoC)
+                }
+            }
+        )
+        .addAnswer('Respondiste!!')
+
+    const flujoC = addKeyword(EVENTS.ACTION).addAnswer('Chaooo paso el tiempo')
+
+    await createBot({
+        database,
+        flow: createFlow([flujoA, flujoB, flujoC]),
+        provider,
+    })
+
+    await provider.delaySendMessage(0, 'message', {
+        from: '000',
+        body: 'hola',
+    })
+
+    await delay(5000)
+
+    const getHistory = database.listHistory.map((i) => i.answer)
+    assert.is('Bievenido!', getHistory[0])
+    assert.is('__call_action__', getHistory[1])
+    assert.is('__call_action__', getHistory[2])
+    assert.is('Esto debe responderse en menos de 2 seg', getHistory[3])
+    assert.is('Chaooo paso el tiempo', getHistory[4])
+    assert.is(undefined, getHistory[5])
+})
+
 suiteCase.run()
