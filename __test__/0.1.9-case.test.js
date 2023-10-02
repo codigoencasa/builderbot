@@ -3,19 +3,19 @@ const assert = require('uvu/assert')
 const { addKeyword, createBot, createFlow } = require('../packages/bot/index')
 const { setup, clear, delay } = require('../__mocks__/env')
 
-const suiteCase = suite('Flujo: addAction (capture)')
+const suiteCase = suite('Flujo: flowDynamic (delay)')
 
 suiteCase.before.each(setup)
 suiteCase.after.each(clear)
 
-suiteCase(`Debe ejecutar accion con captura`, async ({ database, provider }) => {
+suiteCase(`Delay en los flowDynamic`, async ({ database, provider }) => {
     const flujoPrincipal = addKeyword(['hola'])
         .addAction(async (_, { flowDynamic }) => {
-            return flowDynamic('Buenas! ¿Cual es tu nombre?')
+            await flowDynamic('Buenas! ¿Cual es tu nombre? este mensaje debe tener delay 1000', { delay: 1000 })
+            await flowDynamic([{ body: 'Todo bien?', delay: 850 }])
         })
-        .addAction({ capture: true }, async (ctx, { flowDynamic, state }) => {
-            state.update({ name: ctx.body })
-            return flowDynamic(`Gracias por tu nombre!: ${ctx.body}`)
+        .addAnswer('Bien!', null, async (_, { flowDynamic }) => {
+            await flowDynamic('si nada')
         })
         .addAnswer('Chao!')
 
@@ -30,18 +30,13 @@ suiteCase(`Debe ejecutar accion con captura`, async ({ database, provider }) => 
         body: 'hola',
     })
 
-    await provider.delaySendMessage(50, 'message', {
-        from: '000',
-        body: 'Leifer',
-    })
-
-    await delay(1000)
+    await delay(2000)
     const getHistory = database.listHistory.map((i) => i.answer)
     assert.is('__call_action__', getHistory[0])
-    assert.is('Buenas! ¿Cual es tu nombre?', getHistory[1])
-    assert.is('__capture_only_intended__', getHistory[2])
-    assert.is('Leifer', getHistory[3])
-    assert.is('Gracias por tu nombre!: Leifer', getHistory[4])
+    assert.is('Buenas! ¿Cual es tu nombre? este mensaje debe tener delay 1000', getHistory[1])
+    assert.is('Todo bien?', getHistory[2])
+    assert.is('Bien!', getHistory[3])
+    assert.is('si nada', getHistory[4])
     assert.is('Chao!', getHistory[5])
     assert.is(undefined, getHistory[6])
 })

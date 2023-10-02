@@ -2,13 +2,14 @@ import Navigation from '../../../components/widgets/Navigation'
 
 # addKeyword
 
-Esta funcion se importa desde `@bot-whatsapp/bot`
+Esta función, que se importa desde `@bot-whatsapp/bot`, inicia un [flujo](/docs/essential/) de chat en base a la configuración proporcionada.
 
-Se encarga de iniciar un [flow](/docs/essential/) dependiendo de la configuracio que se le ha indicado.  
+La función `addKeyword` es como un punto de partida para la conversación. Le das a `addKeyword` una palabra o frase clave, y cuando alguien envía ese término al chatbot, la función desencadena un flujo de diálogo que has predefinido.
 
---- 
+---
 
-En este ejemplo puedes ver como definimos un conversacion que el bot va a responder cuando alguien escribe `hola` o `alo` .
+En este ejemplo vemos cómo establecer un flujo que el bot seguirá al recibir un `hola` o `alo`. Las respuestas del bot se establecen con `.addAnswer()`
+
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
 
@@ -19,7 +20,8 @@ const flowPrincipal = addKeyword(['hola', 'alo'])
 
 ---
 
-Tambien puedes definir solo una palabra ejemplo si alguien escribe `comprar`
+Podemos limitar el flujo a una sola palabra, como en el caso de `comprar`.
+
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
 
@@ -30,10 +32,9 @@ const flowPrincipal = addKeyword('comprar')
 
 ---
 
-### Regex
+## Regex
 
-En algunos casos necesitaras activar un flujo basado en una expression regular para esas situaciones tenemos.
-
+Para iniciarse en base a una expresión regular, utilice el código a continuación. En este caso detectará cuando el mensaje contiene algún número de tarjeta válido.
 
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
@@ -48,11 +49,9 @@ const flow = addKeyword(REGEX_CREDIT_NUMBER, { regex: true })
 
 ---
 
-### Sensitive
+## Sensitive
 
-El comportamiento del addKeyword por defecto detecta un palabra entre el mensaje ejemplo si alguien escribe `hola como estas` y tienes `addKeyword('hola')` el flow se activara. 
-Si no quieres este comportamiento y quieres afinar solo a que la persona escriba `hola`
-
+Por defecto, addKeyword detecta la palabra indicada en cualquier parte del mensaje, pero con `{ sensitive: true }` hará que solo se active el flujo si la persona escribe exactamente la palabra en cuestión. Vea el ejemplo de "hola" a continuación:
 
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
@@ -63,20 +62,20 @@ const flowBienvenida = addKeyword('hola', { sensitive: true })
 ```
 ---
 
-### Eventos
+## Eventos
 
-En muchos casos necesitamos responder cuando no es una palabra exactamente. 
-Ejemplo que pasa si alguien envia una nota de voz, imagen, ubicacion, imagen o video.
+Para los casos donde necesitamos responder ante acciones que no son palabras, podemos usar eventos. 
 
-En este caso puedes usar los **eventos** 
+Los eventos disponibles son:
 
-- **WELCOME**: Se dispara cuando una persona escribe un palabra que no esta en ningun flow. Util para mensajes de bienvenida
-- **MEDIA**: Util para detectar cuando la persona te envia imagen o video
-- **LOCATION**: Util para detectar cuando la persona te envia coordenadas de ubicacion
-- **VOICE_NOTE**: Util para detectar cuando la persona te envia nota de voz
-- **DOCUMENT**: Util para detectar cuando la persona te envia alguno archivo como pdf, html o otro tipo que no sea los anteriores
+- **WELCOME**: Activa el flujo cuando la persona escribe una palabra que no está en ningún flujo. Útil para mensajes de bienvenida
+- **MEDIA**: Se activa cuando la persona envía una imagen o video
+- **LOCATION**: Útil para detectar cuando la persona envía coordenadas de ubicación
+- **VOICE_NOTE**: Activa el flujo cuando la persona envía una nota de voz
+- **DOCUMENT**: Activa el flujo cuando la persona envía algún archivo como pdf, html u otro tipo además de los anteriores
+- **ACTION**: Se utiliza como un "placebo" para no colocar una palabra clave. Esto es util cuando quiere un flujo pero que no se activa con ninguna palabra clave. (util para llamar desde gotoFlow)
 
----
+A continuación, vea algunos ejemplos de uso de estos eventos.
 
 ```js
 const { EVENTS } = require('@bot-whatsapp/bot')
@@ -96,6 +95,9 @@ const flowNotaDeVoz = addKeyword(EVENTS.VOICE_NOTE)
 const flowDocumento = addKeyword(EVENTS.DOCUMENT)
     .addAnswer('Documento PDF recibido')
 
+const flowAction = addKeyword(EVENTS.ACTION)
+    .addAnswer('Documento PDF recibido')
+
 ```
 
 ---
@@ -103,6 +105,6 @@ const flowDocumento = addKeyword(EVENTS.DOCUMENT)
 <Navigation
     pages={[
         { name: 'Instalación', link: '/docs/install' },
-        { name: 'Conceptos', link: '/docs/essential' },
+        { name: 'Conceptos Esenciales', link: '/docs/essential' },
     ]}
 />

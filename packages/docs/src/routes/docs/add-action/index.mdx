@@ -2,10 +2,9 @@ import Navigation from '../../../components/widgets/Navigation'
 
 # addAction
 
-Es una función útil para definir acciones que se activan cuando se recibe un mensaje de WhatsApp específico. 
-La función action puede realizar diversas tareas y acceder a los métodos y propiedades. En general, **addAction()** te permite crear Chat Bots de WhatsApp personalizados que pueden interactuar con los usuarios de una manera programática. 
-Puedes definir acciones específicas que se activan cuando se recibe un mensaje específico, lo que te permite crear una variedad de flujos de conversación y respuestas automatizadas. 
+El addAction es una función que se utiliza en la librería bot-whatsapp para definir acciones específicas en respuesta a los mensajes de WhatsApp recibidos. Esta función te permite crear flujos de conversación y definir cómo el bot debe responder a ciertos mensajes o palabras clave.
 
+Aquí tienes un ejemplo de cómo se utiliza el addAction:
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
 const flowPrincipal = addKeyword(['hola', 'alo'])
@@ -27,10 +26,99 @@ const { addKeyword } = require('@bot-whatsapp/bot')
             return flowDynamic('Buenas! ¿Cual es tu nombre?')
         })
         .addAction({ capture: true }, async (ctx, { flowDynamic, state }) => {
-            state.update({ name: ctx.body })
+            await state.update({ name: ctx.body })
             return flowDynamic(`Gracias por tu nombre!: ${ctx.body}`)
         })
         .addAnswer('Chao!')
+```
+
+---
+
+## Ejemplos
+
+En este ejemplo, hemos creado un flujo de conversación utilizando la palabra clave "hola" y "alo". 
+
+Cuando el usuario envía un mensaje con alguna de estas palabras clave, el bot responde con un saludo. Luego, el bot captura el siguiente mensaje del usuario y lo muestra en la respuesta.
+
+Puedes agregar tantas acciones como desees en tu flujo de conversación, y cada acción puede tener su propia lógica y respuesta personalizada.
+
+Espero que esto te ayude a entender cómo utilizar el addAction en la creación de tu bot de WhatsApp. Si tienes alguna otra pregunta, no dudes en hacerla.
+
+```js
+const { addKeyword } = require('@bot-whatsapp/bot')
+
+const flowPrincipal = addKeyword(['hola', 'alo'])
+  .addAction(async (_, { flowDynamic }) => {
+    return flowDynamic('¡Hola! ¿En qué puedo ayudarte?')
+  })
+  .addAction({ capture: true }, async (ctx, { flowDynamic }) => {
+    const mensaje = ctx.body
+    return flowDynamic(`Has dicho: ${mensaje}`)
+  })
+```
+
+---
+
+En este ejemplo, hemos creado varios flujos de conversación utilizando la función addKeyword y la función addAction. Cada flujo se activará cuando se envíe un mensaje que contenga una palabra clave específica. Dentro de cada flujo, definimos acciones que se ejecutarán en respuesta al mensaje recibido.
+
+El flujo principal se activará cuando se envíe un mensaje que contenga las palabras clave "hola" o "alo". La acción asociada simplemente devuelve un mensaje de bienvenida.
+
+Los flujos de consulta de producto, soporte técnico y otras consultas se activarán cuando se envíen mensajes que contengan las palabras clave "producto", "soporte" y "consultas", respectivamente. Cada acción asociada devuelve un mensaje solicitando más información sobre el tema específico.
+
+El flujo de ayuda se activará cuando se envíe un mensaje que contenga la palabra clave "ayuda". La primera acción asociada devuelve un mensaje que enumera los temas de ayuda disponibles. La segunda acción, con la opción capture: true, captura la respuesta del usuario y la utiliza para determinar qué acción ejecutar a continuación.
+
+Finalmente, creamos el bot utilizando la función createBot y agregamos todos los flujos creados. Luego, iniciamos el bot con bot.start().
+
+Este ejemplo muestra cómo utilizar addAction para definir acciones específicas en respuesta a mensajes de WhatsApp y cómo crear flujos de conversación utilizando addKeyword. Puedes adaptar este ejemplo a tus necesidades y agregar más flujos y acciones según sea necesario.
+
+```js
+const { addKeyword } = require('@bot-whatsapp/bot');
+
+// Crear flujo principal
+const flowPrincipal = addKeyword(['hola', 'alo'])
+  .addAction(async (_, { flowDynamic }) => {
+    return flowDynamic('¡Hola! ¿En qué puedo ayudarte?');
+  });
+
+// Crear flujo de consulta de producto
+const flowConsultaProducto = addKeyword(['producto'])
+  .addAction(async (_, { flowDynamic }) => {
+    return flowDynamic('Por favor, especifica qué producto te interesa.');
+  });
+
+// Crear flujo de soporte técnico
+const flowSoporteTecnico = addKeyword(['soporte'])
+  .addAction(async (_, { flowDynamic }) => {
+    return flowDynamic('Por favor, describe el problema que estás experimentando.');
+  });
+
+// Crear flujo de otras consultas
+const flowOtrasConsultas = addKeyword(['consultas'])
+  .addAction(async (_, { flowDynamic }) => {
+    return flowDynamic('Por favor, proporciona más detalles sobre tu consulta.');
+  });
+
+// Crear flujo de ayuda
+const flowAyuda = addKeyword(['ayuda'])
+  .addAction(async (_, { flowDynamic }) => {
+    return flowDynamic('¡Estoy aquí para ayudarte! ¿Necesitas ayuda con alguno de los siguientes temas?:\n 1. Información de producto.\n 2. Soporte técnico.\n 3. Otras consultas.');
+  })
+  .addAction({ capture: true }, async (ctx, { flowDynamic }) => {
+    const opcion = parseInt(ctx.body);
+    switch (opcion) {
+      case 1: return flowDynamic('Especifica qué producto te interesa.');
+      case 2: return flowDynamic('Describe el problema que tienes.');
+      case 3: return flowDynamic('Proporciona más detalles sobre tu consulta.');
+    }
+  });
+
+// Crear bot y agregar flujos
+const bot = createBot({
+  flows: [flowPrincipal, flowConsultaProducto, flowSoporteTecnico, flowOtrasConsultas, flowAyuda],
+});
+
+
+
 ```
 
 ---

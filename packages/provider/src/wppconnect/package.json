@@ -1,5 +1,5 @@
 {
     "dependencies": {
-        "@wppconnect-team/wppconnect": "^1.27.3"
+        "@wppconnect-team/wppconnect": "^1.28.0"
     }
 }

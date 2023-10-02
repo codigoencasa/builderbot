@@ -1,5 +1,5 @@
 {
     "dependencies": {
-        "whatsapp-web.js": "^1.22.1"
+        "whatsapp-web.js": "^1.22.2-alpha.1"
     }
 }
