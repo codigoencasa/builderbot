@@ -14,7 +14,7 @@ Esto tambien funcion si usas `gotoFlow`
                 capture: true,
             },
             async (ctx, { flowDynamic, state }) => {
-                state.update({ name: ctx.body })
+                await state.update({ name: ctx.body })
                 flowDynamic('Gracias por tu nombre!')
             }
         )
@@ -24,7 +24,7 @@ Esto tambien funcion si usas `gotoFlow`
                 capture: true,
             },
             async (ctx, { flowDynamic, state }) => {
-                state.update({ age: ctx.body })
+                await state.update({ age: ctx.body })
                 const myState = state.getMyState()
                 await flowDynamic(`Gracias por tu edad! ${myState.name}`)
             }
@@ -35,6 +35,23 @@ Esto tambien funcion si usas `gotoFlow`
         })
         .addAnswer('🤖🤖 Gracias por tu participacion')
 
+```
+
+## state.get('prop')
+
+De esta manera puedes recuperar el valor de una propiedad del estado
+
+```js
+...
+      .addAnswer(
+            'Tu edad es',
+            null,
+            async (ctx, { flowDynamic, state }) => {
+                const age = state.get('age')
+                await flowDynamic(`Edad: ${age}`)
+            }
+        )
+...
 ```
 
 ## GlobalState
@@ -48,9 +65,9 @@ De igual manera que el `state` anterior nosotros podemos usar `globalState` para
     .addAction(async (_, { flowDynamic, globalState }) => {
         const currentGlobalState = globalState.getMyState();
         if(currentGlobalState.encendido){
-            globalState.update({encendido:false})
+            await globalState.update({encendido:false})
         }else{
-            globalState.update({encendido:true})
+            await globalState.update({encendido:true})
         }
     })
     .addAnswer('🤖🤖 Gracias por tu participacion')
@@ -82,6 +99,58 @@ De igual manera que el `state` anterior nosotros podemos usar `globalState` para
     }
   );
 
+```
+
+## globalState.get('prop')
+
+De esta manera puedes recuperar el valor de una propiedad del estado global
+
+```js
+...
+      .addAnswer(
+            'La version del bot es',
+            null,
+            async (ctx, { flowDynamic, globalState }) => {
+                const version = globalState.get('version')
+                await flowDynamic(`Version: ${version}`)
+            }
+        )
+...
+```
+
+## Ejemplos
+
+En este ejemplo, se utiliza el contexto para capturar y almacenar información proporcionada por el usuario en diferentes etapas del flujo de conversación. El método addAnswer se utiliza para hacer preguntas al usuario y capturar sus respuestas utilizando `{capture: true}`. Luego, se utiliza state.update para actualizar el estado con la información capturada.
+
+En la última respuesta, se utiliza state.get para obtener los valores almacenados en el estado y mostrarlos en la consola. Esto demuestra cómo se puede acceder a la información almacenada en el estado en diferentes partes del flujo de conversación.
+
+Recuerda que estos son solo ejemplos básicos y puedes adaptarlos según tus necesidades específicas.
+
+```js
+const flujo = addKeyword(['hola'])
+    .addAnswer('¿Cual es tu nombre?', {capture: true}, async (ctx, { state }) => {
+        await state.update({ name: ctx.body }) 
+    })
+    .addAnswer('¿Cual es tu edad?', {capture: true}, async (ctx, { state }) => {
+        await state.update({ age: ctx.body })  
+    })
+    .addAnswer('¿Prefieres inglés o español?', {capture: true}, async (ctx, { state }) => {
+        await state.update({ language: ctx.body }) 
+    })
+    .addAnswer('¿Cuál es tu comida favorita?', {capture: true}, async (ctx, { state }) => {
+        await state.update({ favoriteFood: ctx.body }) 
+    })
+    .addAnswer('¡Gracias por la información!',null, async ({ state }) => {
+        const name = state.get('name');
+        const age = state.get('age');
+        const language = state.get('language');
+        const favoriteFood = state.get('favoriteFood');
+        
+        console.log(`Nombre: ${name}`);
+        console.log(`Edad: ${age}`);
+        console.log(`Lenguaje preferido: ${language}`);
+        console.log(`Comida favorita: ${favoriteFood}`);
+    });
 ```
 
 ---

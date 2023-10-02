@@ -41,11 +41,18 @@ const flowString = addKeyword('ver categorias')
 
         await flowDynamic(mapeoDeLista)
 
-        await flowDynamic({body:'Tambien puedes enviar un mensaje de esta manera'})
+        await flowDynamic([
+            {body:'Tambien puedes enviar un mensaje de esta manera'}
+        ])
 
         // Enviar una imagen o pdf o etc
 
-        await flowDynamic({media:'https://i.imgur.com/0HpzsEm.png'}) 
+        await flowDynamic([
+            {
+                body:"soy una imagen",
+                media:'https://i.imgur.com/0HpzsEm.png'
+            }
+        ]) 
         
     })
 ```

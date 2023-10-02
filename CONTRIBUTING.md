@@ -93,7 +93,7 @@ En la consola encontraras los pasos a seguir -->
 ![](https://i.imgur.com/dC6lEwy.png)
 
 
-> __NOTA:__ [Eres libre de aportar informacion a este documento o arreglar ortografia 🤣](
+> __NOTA:__ [Eres libre de aportar informacion inexacta a este documento o arreglar horrores de ortografia que dificultan la comprensión. 🤣](
 https://github.com/codigoencasa/bot-whatsapp/edit/dev/CONTRIBUTING.md)
 
 ------

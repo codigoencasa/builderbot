@@ -124,7 +124,10 @@ class BaileysProvider extends ProviderClass {
 
                 /** Conexion abierta correctamente */
                 if (connection === 'open') {
+                    const parseNumber = `${sock?.user?.id}`.split(':').shift()
+                    const host = { ...sock?.user, phone: parseNumber }
                     this.emit('ready', true)
+                    this.emit('host', host)
                     this.initBusEvents(sock)
                 }
 
@@ -183,6 +186,16 @@ class BaileysProvider extends ProviderClass {
                     if (typeof degreesLatitude === 'number' && typeof degreesLongitude === 'number') {
                         payload = { ...payload, body: generateRefprovider('_event_location_') }
                     }
+                }
+
+                //Detectar video
+                if (messageCtx.message?.videoMessage) {
+                    payload = { ...payload, body: generateRefprovider('_event_media_') }
+                }
+
+                //Detectar Sticker
+                if (messageCtx.message?.stickerMessage) {
+                    payload = { ...payload, body: generateRefprovider('_event_media_') }
                 }
 
                 //Detectar media
