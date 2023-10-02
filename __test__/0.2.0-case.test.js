@@ -13,16 +13,19 @@ suiteCase(`Encadenanos addAction con captures`, async ({ database, provider }) =
         .addAction(async (ctx, { flowDynamic }) => {
             await flowDynamic(`Hola! primer flow dynamic. respondeme algo`)
         })
-        .addAction({ capture: true }, async (ctx, { flowDynamic }) => {
-            respuesta = ctx.body
-            await flowDynamic(`Esto me respondieste ${respuesta}`)
+        .addAction({ capture: true }, async (ctx, { flowDynamic, state }) => {
+            const reply = ctx.body
+            await state.update({ reply })
+            await flowDynamic(`Esto me respondieste ${reply}`)
         })
         .addAction(async (ctx, { flowDynamic }) => {
             await flowDynamic(`Hola! segundo flow dynamic. respondeme algo`)
         })
-        .addAction({ capture: true }, async (ctx, { flowDynamic }) => {
-            respuesta = ctx.body
-            await flowDynamic(`Esto me respondieste ${respuesta}`)
+        .addAction({ capture: true }, async (ctx, { flowDynamic, state }) => {
+            const currentState = state.getMyState()?.reply
+            const reply = ctx.body
+            await state.update({ reply: currentState + ' ' + reply })
+            await flowDynamic(`Esto me respondieste ${reply}`)
         })
         .addAnswer('Chao')
 

@@ -21,12 +21,12 @@ export default component$(() => {
                         playsInline
                     >
                         <source
-                            src="https://leifer-landing-page.s3.us-east-2.amazonaws.com/xbmcc-kx99h.webm"
+                            src="/videos/xbmcc-kx99h.webm"
                             type='video/mp4; codecs="hvc1"'
                         />
 
                         <source
-                            src="https://leifer-landing-page.s3.us-east-2.amazonaws.com/xbmcc-kx99h.webm"
+                            src="/videos/xbmcc-kx99h.webm"
                             type="video/webm"
                         />
                     </video>

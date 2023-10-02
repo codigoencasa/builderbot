@@ -127,6 +127,7 @@ class CoreClass extends EventEmitter {
         // 📄 Mantener estado de conversacion por numero
         const state = {
             getMyState: this.stateHandler.getMyState(messageCtxInComming.from),
+            get: this.stateHandler.get(messageCtxInComming.from),
             getAllState: this.stateHandler.getAllState,
             update: this.stateHandler.updateState(messageCtxInComming),
             clear: this.stateHandler.clear(messageCtxInComming.from),
@@ -135,6 +136,7 @@ class CoreClass extends EventEmitter {
         // 📄 Mantener estado global
         const globalState = {
             getMyState: this.globalStateHandler.getMyState(),
+            get: this.globalStateHandler.get(),
             getAllState: this.globalStateHandler.getAllState,
             update: this.globalStateHandler.updateState(messageCtxInComming),
             clear: this.globalStateHandler.clear(),
