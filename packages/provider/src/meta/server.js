@@ -52,13 +52,31 @@ class MetaWebHookServer extends EventEmitter {
 
         if (message.type === 'interactive') {
             const body = message.interactive?.button_reply?.title || message.interactive?.list_reply?.id
+            const title_button_reply = message.interactive?.button_reply?.title
             const title_list_reply = message.interactive?.list_reply?.title
             const responseObj = {
                 type: 'interactive',
                 from: message.from,
                 to,
                 body,
+                title_button_reply,
                 title_list_reply,
+                pushName,
+            }
+            this.emit('message', responseObj)
+        }
+
+        if (message.type === 'button') {
+            const body = message.button?.text
+            const payload = message.button?.payload
+            const title_button_reply = message.button?.payload
+            const responseObj = {
+                type: 'button',
+                from: message.from,
+                to,
+                body,
+                payload,
+                title_button_reply,
                 pushName,
             }
             this.emit('message', responseObj)
