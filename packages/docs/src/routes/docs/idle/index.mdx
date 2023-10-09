@@ -1,0 +1,45 @@
+import Navigation from '../../../components/widgets/Navigation'
+
+# idle
+
+Esta funcionalidad te permite dada una cantidad de tiempo de inactividad en el chat, ejecutar una acción.
+
+## Ejemplo
+
+En el siguiente ejemplo, si el usuario no responde en 2 segundos, se ejecutará la acción de cancelar el flujo.
+
+```js
+const { addKeyword } = require('@bot-whatsapp/bot')
+
+const flujoFinal = addKeyword(EVENTS.ACTION).addAnswer('Se canceló por inactividad')
+
+const flujoPrincipal = addKeyword(['hola'])
+    .addAnswer(
+        'Debes de responder antes de que transcurran 2 segundos',
+        { capture: true, idle: 2000 }, // idle: 2000 = 2 segundos
+        async (ctx, { gotoFlow, inRef }) => {
+            if (ctx?.idleFallBack) {
+                return gotoFlow(flujoFinal)
+            }
+        }
+    )
+    .addAnswer('gracias!')
+
+```
+
+## API
+
+### Propiedades
+
+- **idle** - Tiempo de inactividad en milisegundos
+- **idleFallBack** - Si se ejecutó la acción por inactividad
+
+
+---
+
+<Navigation
+    pages={[
+        { name: 'Instalación', link: '/docs/install' },
+        { name: 'Conceptos', link: '/docs/essential' },
+    ]}
+/>
