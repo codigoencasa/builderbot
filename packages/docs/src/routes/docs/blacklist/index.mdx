@@ -1,0 +1,32 @@
+import Navigation from '../../../components/widgets/Navigation'
+
+# blackList
+
+Se utiliza para bloquear usuarios que no esten en la lista de usuarios permitidos.
+
+Para implementar esta caracteristica deberás hacerlo al momento de crear la instancia del bot.
+
+## Ejemplo
+
+```js
+createBot({
+    flow: adapterFlow,
+    provider: adapterProvider,
+    database: adapterDB,
+},{
+    blackList:['34XXXXXXXX']
+})
+```
+
+## Propiedades
+
+- **blackList** (array): Lista de usuarios que no podran interactuar con el bot.
+
+---
+
+<Navigation
+    pages={[
+        { name: 'Instalación', link: '/docs/install' },
+        { name: 'Conceptos', link: '/docs/essential' },
+    ]}
+/>
