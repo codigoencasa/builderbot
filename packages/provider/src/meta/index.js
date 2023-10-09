@@ -359,6 +359,7 @@ class MetaProvider extends ProviderClass {
      * @param {*} number
      * @param {*} template
      * @param {*} languageCode
+     * Usarse de acuerdo a cada plantilla en particular, esto solo es un mapeo de como funciona.
      * @returns
      */
 
@@ -373,8 +374,49 @@ class MetaProvider extends ProviderClass {
                 language: {
                     code: languageCode, // examples: es_Mex, en_Us
                 },
+                components: [
+                    {
+                        type: 'header',
+                        parameters: [
+                            {
+                                type: 'image',
+                                image: {
+                                    link: 'https://i.imgur.com/3xUQq0U.png',
+                                },
+                            },
+                        ],
+                    },
+                    {
+                        type: 'body',
+                        parameters: [
+                            {
+                                type: 'text', // currency, date_time, etc
+                                text: 'text-string',
+                            },
+                            {
+                                type: "currency",
+                                currency: {
+                                    fallback_value: "$100.99",
+                                    code: "USD",
+                                    amount_1000: 100990
+                                }
+                            },
+                        ]
+                    },
+                    {
+                        type: 'button',
+                        subtype: 'quick_reply',
+                        index: 0,
+                        parameters: [
+                            {
+                                type: 'payload',
+                                payload: 'aGlzIHRoaXMgaXMgY29v'
+                            },
+                        ],
+                    },
+                ]
             },
-        }
+        };
         return this.sendMessageMeta(body)
     }
 
