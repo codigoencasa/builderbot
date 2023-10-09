@@ -81,7 +81,7 @@ class MetaProvider extends ProviderClass {
         }
     }
 
-    sendtext = async (number, message) => {
+    sendText = async (number, message) => {
         const body = {
             messaging_product: 'whatsapp',
             recipient_type: 'individual',
@@ -493,7 +493,7 @@ class MetaProvider extends ProviderClass {
         if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
         if (options?.media) return this.sendMedia(number, message, options.media)
 
-        this.sendtext(number, message)
+        this.sendText(number, message)
     }
 }
 
