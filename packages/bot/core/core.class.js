@@ -428,6 +428,14 @@ class CoreClass extends EventEmitter {
             if (LIST_REGEX.REGEX_EVENT_VOICE_NOTE.test(body)) {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.VOICE_NOTE) || []
             }
+
+            if (LIST_REGEX.REGEX_EVENT_ORDER.test(body)) {
+                msgToSend = this.flowClass.find(this.generalArgs.listEvents.ORDER) || []
+            }
+
+            if (LIST_REGEX.REGEX_EVENT_TEMPLATE.test(body)) {
+                msgToSend = this.flowClass.find(this.generalArgs.listEvents.TEMPLATE) || []
+            }
         }
         return exportFunctionsSend(() => sendFlow(msgToSend, from, { forceQueue: true }))
     }

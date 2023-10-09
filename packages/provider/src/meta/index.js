@@ -452,6 +452,37 @@ class MetaProvider extends ProviderClass {
     }
 
     /**
+     * Enviar catálogo
+     * @param {*} number
+     * @param {*} bodyText
+     * @param {*} itemCatalogId
+     * @param {*} footerText
+     * @returns
+     */
+
+    sendCatalog = async (number, bodyText, itemCatalogId) => {
+        const body = {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to: number,
+            type: 'interactive',
+            interactive: {
+                type: 'catalog_message',
+                body: {
+                    text: bodyText,
+                },
+                action: {
+                    name: 'catalog_message',
+                    parameters: {
+                        "thumbnail_product_retailer_id": itemCatalogId,
+                    }
+                }
+            }
+        }
+        return this.sendMessageMeta(body)
+    }
+
+    /**
      *
      * @param {*} userId
      * @param {*} message
