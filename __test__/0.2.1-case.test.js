@@ -87,23 +87,27 @@ suiteCase(`Enviar mensajes con ambos casos de idle`, async ({ database, provider
             await flowDynamic(`Empezemos de nuevo.`)
             await flowDynamic(`Cual es el numero de orden? tienes dos segundos para responder...`)
         })
-        .addAction({ capture: true, idle: 2000 }, async (ctx, { flowDynamic }) => {
+        .addAction({ capture: true, idle: 2000, ref: '🙉🙉🙉🙉🙉🙉🙉🙉' }, async (ctx, { flowDynamic }) => {
             if (ctx?.idleFallBack) {
+                console.log(`[seundo desvio]`)
+                console.log(`[idleFallBack]:`, ctx)
                 return flowDynamic(`BYE!`)
             }
             await flowDynamic(`Ok el numero que escribiste es ${ctx.body}`)
         })
         .addAnswer('gracias!')
 
-    const flujoPrincipal = addKeyword(['hola']).addAnswer(
-        'Hola tienes 2 segundos para responder si no te pedire de nuevo otro dato',
-        { idle: 2000, capture: true },
-        async (ctx, { gotoFlow }) => {
-            if (ctx?.idleFallBack) {
-                return gotoFlow(flujoFinal)
+    const flujoPrincipal = addKeyword(['hola'])
+        .addAnswer(
+            'Hola tienes 2 segundos para responder si no te pedire de nuevo otro dato',
+            { idle: 2000, capture: true, ref: '😪😪😪😪😪😪' },
+            async (ctx, { gotoFlow }) => {
+                if (ctx?.idleFallBack) {
+                    return gotoFlow(flujoFinal)
+                }
             }
-        }
-    )
+        )
+        .addAnswer('Esto no debe de existir')
 
     await createBot({
         database,
@@ -115,8 +119,7 @@ suiteCase(`Enviar mensajes con ambos casos de idle`, async ({ database, provider
         from: '000',
         body: 'hola',
     })
-
-    await delay(2100)
+    await delay(3000)
     await provider.delaySendMessage(0, 'message', {
         from: '000',
         body: 'el numero es 444',
@@ -126,11 +129,11 @@ suiteCase(`Enviar mensajes con ambos casos de idle`, async ({ database, provider
 
     const getHistory = database.listHistory.map((i) => i.answer)
     assert.is('Hola tienes 2 segundos para responder si no te pedire de nuevo otro dato', getHistory[0])
-    assert.is('Se cancelo por inactividad', getHistory[1])
-    assert.is('__call_action__', getHistory[2])
-    assert.is('Empezemos de nuevo.', getHistory[3])
-    assert.is('Cual es el numero de orden? tienes dos segundos para responder...', getHistory[4])
-    assert.is('__capture_only_intended__', getHistory[5])
+    assert.is('__call_action__', getHistory[1])
+    assert.is('__capture_only_intended__', getHistory[2])
+    assert.is('Se cancelo por inactividad', getHistory[3])
+    assert.is('Empezemos de nuevo.', getHistory[4])
+    assert.is('Cual es el numero de orden? tienes dos segundos para responder...', getHistory[5])
     assert.is('el numero es 444', getHistory[6])
     assert.is('Ok el numero que escribiste es el numero es 444', getHistory[7])
     assert.is('gracias!', getHistory[8])

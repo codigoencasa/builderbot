@@ -9,7 +9,6 @@ const Queue = require('../utils/queue')
 const { LIST_REGEX } = require('../io/events')
 const SingleState = require('../context/state.class')
 const GlobalState = require('../context/globalState.class')
-const { generateTime } = require('../utils/hash')
 const IdleState = require('../context/idleState.class')
 
 const logger = new Console({
@@ -104,6 +103,7 @@ class CoreClass extends EventEmitter {
      */
     handleMsg = async (messageCtxInComming) => {
         logger.log(`[handleMsg]: `, messageCtxInComming)
+        idleForCallback.stop(messageCtxInComming)
         const { body, from } = messageCtxInComming
         let msgToSend = []
         let endFlowFlag = false
@@ -151,11 +151,12 @@ class CoreClass extends EventEmitter {
             const buttons = payload?.buttons ?? []
             const capture = payload?.capture ?? false
             const delay = payload?.delay ?? 0
+            const keyword = payload?.keyword ?? null
 
             return toCtx({
                 body,
                 from,
-                keyword: null,
+                keyword,
                 index,
                 options: { media, buttons, capture, delay },
             })
@@ -232,9 +233,12 @@ class CoreClass extends EventEmitter {
             }
         }
 
-        const continueFlow = async () => {
+        const continueFlow = async (initRef = undefined) => {
             const currentPrev = await this.databaseClass.getPrevByNumber(from)
-            const nextFlow = (await this.flowClass.find(refToContinue?.ref, true)) ?? []
+            let nextFlow = (await this.flowClass.find(refToContinue?.ref, true)) ?? []
+            if (initRef && !initRef?.idleFallBack) {
+                nextFlow = (await this.flowClass.find(initRef?.ref, true)) ?? []
+            }
             const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
             const isContinueFlow = filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)
 
@@ -269,16 +273,19 @@ class CoreClass extends EventEmitter {
         const gotoFlow =
             (flag) =>
             async (flowInstance, step = 0) => {
+                const promises = []
                 flag.gotoFlow = true
                 const flowTree = flowInstance.toJson()
                 const flowParentId = flowTree[step]
                 const parseListMsg = await this.flowClass.find(flowParentId?.ref, true, flowTree)
                 if (endFlowFlag) return
+                // this.sendProviderAndSave(from, createCtxMessage({answer:'__goto_flow__',keyword:flowParentId?.ref}))
                 for (const msg of parseListMsg) {
                     const msgParse = this.flowClass.findSerializeByRef(msg?.ref)
                     const ctxMessage = { ...msgParse, ...msg }
-                    await this.sendProviderAndSave(from, ctxMessage).then(() => resolveCbEveryCtx(ctxMessage))
+                    promises.push(this.sendProviderAndSave(from, ctxMessage).then(() => resolveCbEveryCtx(ctxMessage)))
                 }
+                await Promise.all(promises)
                 await endFlow(flag)()
                 return
             }
@@ -287,7 +294,7 @@ class CoreClass extends EventEmitter {
         // para evitar bloque de whatsapp
 
         const flowDynamic =
-            (flag) =>
+            (flag, inRef) =>
             async (listMsg = [], options = { continue: true }) => {
                 if (!options.hasOwnProperty('continue')) options = { ...options, continue: true }
 
@@ -296,14 +303,14 @@ class CoreClass extends EventEmitter {
                 const parseListMsg = listMsg.map((opt, index) => createCtxMessage(opt, index))
 
                 if (endFlowFlag) return
-                this.queuePrincipal.setFingerTime(from, generateTime()) //aqui debeo decirle al sistema como que finalizo el flujo
+                this.queuePrincipal.setFingerTime(from, inRef) //aqui debeo decirle al sistema como que finalizo el flujo
                 for (const msg of parseListMsg) {
                     const delayMs = msg?.options?.delay ?? this.generalArgs.delay ?? 0
                     if (delayMs) await delay(delayMs)
                     await this.sendProviderAndSave(from, msg)
                 }
 
-                if (options?.continue) await continueFlow(generateTime())
+                if (options?.continue) await continueFlow()
                 return
             }
 
@@ -340,25 +347,31 @@ class CoreClass extends EventEmitter {
                 idle: idleForCallback,
                 inRef,
                 fallBack: fallBack(flags),
-                flowDynamic: flowDynamic(flags),
+                flowDynamic: flowDynamic(flags, inRef),
                 endFlow: endFlow(flags),
                 gotoFlow: gotoFlow(flags),
             }
 
-            idleForCallback.stop(inRef)
-            const runContext = async (continueAfterIdle = true, overCtx = {}) => {
+            const runContext = async (continueAfterIdle = false, overCtx = {}) => {
                 messageCtxInComming = { ...messageCtxInComming, ...overCtx }
                 await this.flowClass.allCallbacks[inRef](messageCtxInComming, argsCb)
                 //Si no hay llamado de fallaback y no hay llamado de flowDynamic y no hay llamado de enflow EL flujo continua
+                if (continueAfterIdle) {
+                    return await continueFlow(overCtx)
+                }
                 const ifContinue = !flags.endFlow && !flags.fallBack && !flags.flowDynamic
-                if (ifContinue && continueAfterIdle) await continueFlow(prevMsg?.options?.nested?.length)
+                if (ifContinue) return await continueFlow()
             }
 
             if (startIdleMs > 0) {
-                idleForCallback.setIdleTime(inRef, startIdleMs / 1000)
-                idleForCallback.start(inRef, async () => {
-                    endFlowFlag = false
-                    await runContext(false, { idleFallBack: !!startIdleMs })
+                idleForCallback.setIdleTime({
+                    from,
+                    inRef,
+                    timeInSeconds: startIdleMs / 1000,
+                    cb: async (opts) => {
+                        endFlowFlag = false
+                        await runContext(true, { idleFallBack: opts.next, ref: opts.inRef, body: opts.body })
+                    },
                 })
                 return
             }

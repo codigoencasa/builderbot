@@ -58,7 +58,7 @@ suiteCase(`Encadenanos addAction con captures`, async ({ database, provider }) =
     assert.is(undefined, getHistory[8])
 })
 
-suiteCase.skip(`Encadenanos addAction con captures and gotoFlow`, async ({ database, provider }) => {
+suiteCase(`Encadenanos addAction con captures and gotoFlow`, async ({ database, provider }) => {
     const flujoPrincipal = addKeyword(['hola'])
         .addAction({ ref: `AAAA1111111111111111111` }, async (ctx, { flowDynamic }) => {
             await flowDynamic(`Bienvenido a mi tienda`)
@@ -133,7 +133,7 @@ suiteCase.skip(`Encadenanos addAction con captures and gotoFlow`, async ({ datab
     assert.is('escribe "ver ofertas"', getHistory[3])
     assert.is('ofertas', getHistory[4])
     assert.is('__capture_only_intended__', getHistory[5])
-    assert.is('Oferta A', getHistory)
+    assert.is('Oferta A', getHistory[6])
     assert.is('__capture_only_intended__', getHistory[7])
     assert.is('Oferta B', getHistory[8])
     assert.is('__capture_only_intended__', getHistory[9])
@@ -148,8 +148,8 @@ suiteCase.skip(`Encadenanos addAction con captures and gotoFlow`, async ({ datab
     assert.is('Perfecto te desvio', getHistory[18])
     assert.is('__capture_only_intended__', getHistory[19])
     assert.is('__capture_only_intended__', getHistory[20])
-    assert.is('Gracias por el interes', getHistory[21])
-    assert.is('__capture_only_intended__', getHistory[22])
+    assert.is('__capture_only_intended__', getHistory[21])
+    assert.is('Gracias por el interes', getHistory[22])
     assert.is('Chao!', getHistory[23])
     assert.is(undefined, getHistory[24])
 })
