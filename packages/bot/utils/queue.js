@@ -1,5 +1,5 @@
 class Queue {
-    constructor(logger, concurrencyLimit = 15, timeout = 20000) {
+    constructor(logger, concurrencyLimit = 15, timeout = 50000) {
         this.queue = new Map()
         this.queueTime = new Map()
         this.timers = new Map()
@@ -46,6 +46,7 @@ class Queue {
                     const refIdTimeOut = timer({ reject, resolve })
                     clearTimeout(this.timers.get(fingerIdRef))
                     this.timers.set(fingerIdRef, refIdTimeOut)
+                    this.clearQueue(from)
                     return refIdTimeOut
                 }
 
