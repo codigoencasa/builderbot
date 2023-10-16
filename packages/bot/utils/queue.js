@@ -61,6 +61,12 @@ class Queue {
         }
 
         return new Promise((resolve, reject) => {
+            const pid = queueByFrom.findIndex((i) => i.fingerIdRef === fingerIdRef)
+            if (pid !== -1) {
+                console.log(`🔥🔥🔥🔥`)
+                this.clearQueue(from)
+            }
+
             queueByFrom.push({
                 promiseFunc,
                 fingerIdRef,
@@ -70,7 +76,7 @@ class Queue {
             })
 
             if (!workingByFrom) {
-                this.logger.log(`${from}:EJECUTANDO`)
+                this.logger.log(`EJECUTANDO:${fingerIdRef}`)
                 this.workingOnPromise.set(from, true)
                 this.processQueue(from)
             }
@@ -122,7 +128,7 @@ class Queue {
             // Marca todas las promesas como canceladas
             queueByFrom.forEach((item) => {
                 item.cancelled = true
-                item.reject('Queue cleared')
+                item.resolve('Queue cleared')
             })
 
             // Limpia la cola

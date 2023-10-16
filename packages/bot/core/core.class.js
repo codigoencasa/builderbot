@@ -171,10 +171,23 @@ class CoreClass extends EventEmitter {
         // 📄 Finalizar flujo
         const endFlow =
             (flag) =>
-            async (message = null) => {
+            async (messages = null) => {
                 flag.endFlow = true
                 endFlowFlag = true
-                if (message) this.sendProviderAndSave(from, createCtxMessage(message))
+                if (typeof messages === 'string') {
+                    await this.sendProviderAndSave(from, createCtxMessage(messages))
+                }
+
+                // Procesos de callback que se deben execute como exepciones
+                if (Array.isArray(messages)) {
+                    for (const iteratorCtxMessage of messages) {
+                        await resolveCbEveryCtx(iteratorCtxMessage, {
+                            omitEndFlow: true,
+                            idleCtx: !!iteratorCtxMessage?.options?.idle,
+                            triggerKey: iteratorCtxMessage.keyword.startsWith('key_'),
+                        })
+                    }
+                }
                 clearQueue()
                 return
             }
@@ -193,9 +206,7 @@ class CoreClass extends EventEmitter {
                 }
 
                 const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
-                if (delayMs) {
-                    await delay(delayMs) // Esperar según el retraso configurado
-                }
+                await delay(delayMs)
 
                 //TODO el proceso de forzar cola de procsos
                 if (options?.forceQueue) {
@@ -275,18 +286,28 @@ class CoreClass extends EventEmitter {
             async (flowInstance, step = 0) => {
                 const promises = []
                 flag.gotoFlow = true
+
                 const flowTree = flowInstance.toJson()
+
                 const flowParentId = flowTree[step]
+
+                if (endFlowFlag) {
+                    return
+                }
+
                 const parseListMsg = await this.flowClass.find(flowParentId?.ref, true, flowTree)
-                if (endFlowFlag) return
-                // this.sendProviderAndSave(from, createCtxMessage({answer:'__goto_flow__',keyword:flowParentId?.ref}))
+
                 for (const msg of parseListMsg) {
                     const msgParse = this.flowClass.findSerializeByRef(msg?.ref)
+
                     const ctxMessage = { ...msgParse, ...msg }
-                    promises.push(this.sendProviderAndSave(from, ctxMessage).then(() => resolveCbEveryCtx(ctxMessage)))
+
+                    // Enviar el mensaje al proveedor y guardarlo
+                    await this.sendProviderAndSave(from, ctxMessage).then(() => promises.push(ctxMessage))
                 }
-                await Promise.all(promises)
-                await endFlow(flag)()
+
+                await endFlow(flag)(promises)
+
                 return
             }
 
@@ -294,39 +315,69 @@ class CoreClass extends EventEmitter {
         // para evitar bloque de whatsapp
 
         const flowDynamic =
-            (flag, inRef) =>
+            (flag, inRef, privateOptions) =>
             async (listMsg = [], options = { continue: true }) => {
-                if (!options.hasOwnProperty('continue')) options = { ...options, continue: true }
+                if (!options.hasOwnProperty('continue')) {
+                    options = { ...options, continue: true }
+                }
 
                 flag.flowDynamic = true
-                if (!Array.isArray(listMsg)) listMsg = [{ body: listMsg, ...options }]
+
+                if (!Array.isArray(listMsg)) {
+                    listMsg = [{ body: listMsg, ...options }]
+                }
+
                 const parseListMsg = listMsg.map((opt, index) => createCtxMessage(opt, index))
 
-                if (endFlowFlag) return
-                this.queuePrincipal.setFingerTime(from, inRef) //aqui debeo decirle al sistema como que finalizo el flujo
+                // Si endFlowFlag existe y no se omite la finalización del flujo, no hacer nada.
+                if (endFlowFlag && !privateOptions?.omitEndFlow) {
+                    return
+                }
+
+                this.queuePrincipal.setFingerTime(from, inRef) // Debe decirle al sistema que finalizó el flujo aquí.
+
                 for (const msg of parseListMsg) {
+                    if (privateOptions?.idleCtx) {
+                        continue // Saltar al siguiente mensaje si se está en modo idleCtx.
+                    }
+
                     const delayMs = msg?.options?.delay ?? this.generalArgs.delay ?? 0
-                    if (delayMs) await delay(delayMs)
+                    await delay(delayMs)
                     await this.sendProviderAndSave(from, msg)
                 }
 
-                if (options?.continue) await continueFlow()
+                if (options?.continue) {
+                    await continueFlow()
+                    return
+                }
                 return
             }
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback o idle
-        const resolveCbEveryCtx = async (ctxMessage) => {
+        const resolveCbEveryCtx = async (
+            ctxMessage,
+            options = { omitEndFlow: false, idleCtx: false, triggerKey: false }
+        ) => {
             if (!!ctxMessage?.options?.idle && !ctxMessage?.options?.capture) {
                 printer(
                     `[ATENCION IDLE]: La función "idle" no tendrá efecto a menos que habilites la opción "capture:true". Por favor, asegúrate de configurar "capture:true" o elimina la función "idle"`
                 )
             }
-            if (ctxMessage?.options?.idle) return await cbEveryCtx(ctxMessage?.ref, ctxMessage?.options?.idle)
-            if (!ctxMessage?.options?.capture) return await cbEveryCtx(ctxMessage?.ref)
+            if (ctxMessage?.options?.idle) {
+                await cbEveryCtx(ctxMessage?.ref, { ...options, startIdleMs: ctxMessage?.options?.idle })
+                return
+            }
+            if (!ctxMessage?.options?.capture) {
+                await cbEveryCtx(ctxMessage?.ref, options)
+                return
+            }
         }
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback y ejecutarlo
-        const cbEveryCtx = async (inRef, startIdleMs = 0) => {
+        const cbEveryCtx = async (
+            inRef,
+            options = { startIdleMs: 0, omitEndFlow: false, idleCtx: false, triggerKey: false }
+        ) => {
             const flags = {
                 endFlow: false,
                 fallBack: false,
@@ -347,27 +398,36 @@ class CoreClass extends EventEmitter {
                 idle: idleForCallback,
                 inRef,
                 fallBack: fallBack(flags),
-                flowDynamic: flowDynamic(flags, inRef),
+                flowDynamic: flowDynamic(flags, inRef, options),
                 endFlow: endFlow(flags),
                 gotoFlow: gotoFlow(flags),
             }
 
             const runContext = async (continueAfterIdle = false, overCtx = {}) => {
                 messageCtxInComming = { ...messageCtxInComming, ...overCtx }
+
+                if (options?.idleCtx && !options?.triggerKey) {
+                    return
+                }
+
                 await this.flowClass.allCallbacks[inRef](messageCtxInComming, argsCb)
                 //Si no hay llamado de fallaback y no hay llamado de flowDynamic y no hay llamado de enflow EL flujo continua
                 if (continueAfterIdle) {
-                    return await continueFlow(overCtx)
+                    await continueFlow(overCtx)
+                    return
                 }
                 const ifContinue = !flags.endFlow && !flags.fallBack && !flags.flowDynamic
-                if (ifContinue) return await continueFlow()
+                if (ifContinue) {
+                    await continueFlow()
+                    return
+                }
             }
 
-            if (startIdleMs > 0) {
+            if (options.startIdleMs > 0) {
                 idleForCallback.setIdleTime({
                     from,
                     inRef,
-                    timeInSeconds: startIdleMs / 1000,
+                    timeInSeconds: options.startIdleMs / 1000,
                     cb: async (opts) => {
                         endFlowFlag = false
                         await runContext(true, { idleFallBack: opts.next, ref: opts.inRef, body: opts.body })
@@ -463,7 +523,7 @@ class CoreClass extends EventEmitter {
     sendProviderAndSave = async (numberOrId, ctxMessage) => {
         try {
             const { answer } = ctxMessage
-            if (answer && answer.length && answer !== '__call_action__') {
+            if (answer && answer.length && answer !== '__call_action__' && answer !== '__goto_flow__') {
                 if (answer !== '__capture_only_intended__') {
                     await this.providerClass.sendMessage(numberOrId, answer, ctxMessage)
                     this.emit('send_message', { numberOrId, answer, ctxMessage })
@@ -503,7 +563,7 @@ class CoreClass extends EventEmitter {
     sendFlowSimple = async (messageToSend, numberOrId) => {
         for (const ctxMessage of messageToSend) {
             const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
-            if (delayMs) await delay(delayMs)
+            await delay(delayMs)
             await this.queuePrincipal.enqueue(
                 numberOrId,
                 () => this.sendProviderAndSave(numberOrId, ctxMessage),

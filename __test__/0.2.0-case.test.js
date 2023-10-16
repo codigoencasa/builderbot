@@ -35,12 +35,12 @@ suiteCase(`Encadenanos addAction con captures`, async ({ database, provider }) =
         provider,
     })
 
-    await provider.delaySendMessage(0, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'hola',
     })
 
-    await provider.delaySendMessage(10, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'ping',
     })
@@ -104,28 +104,33 @@ suiteCase(`Encadenanos addAction con captures and gotoFlow`, async ({ database, 
         flow: createFlow([flujoPrincipal, flujoSegundario, flujoTercero]),
         provider,
     })
-    await delay(0)
-    await provider.delaySendMessage(0, 'message', {
+
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'hola',
     })
-    await delay(20)
-    await provider.delaySendMessage(0, 'message', {
+
+    await provider.delaySendMessage(150, 'message', {
         from: '000',
         body: 'ofertas',
     })
-    await delay(20)
-    await provider.delaySendMessage(0, 'message', {
+
+    await provider.delaySendMessage(200, 'message', {
         from: '000',
         body: 'Ibiza',
     })
-    await delay(20)
-    await provider.delaySendMessage(0, 'message', {
+
+    await provider.delaySendMessage(250, 'message', {
         from: '000',
         body: 'test@test.com',
     })
 
-    await delay(2000)
+    await provider.delaySendMessage(300, 'message', {
+        from: '000',
+        body: 'hola',
+    })
+
+    await delay(8000)
     const getHistory = database.listHistory.map((i) => i.answer)
     assert.is('__capture_only_intended__', getHistory[0])
     assert.is('Bienvenido a mi tienda', getHistory[1])
@@ -151,7 +156,108 @@ suiteCase(`Encadenanos addAction con captures and gotoFlow`, async ({ database, 
     assert.is('__capture_only_intended__', getHistory[21])
     assert.is('Gracias por el interes', getHistory[22])
     assert.is('Chao!', getHistory[23])
-    assert.is(undefined, getHistory[24])
+    assert.is('hola', getHistory[24])
+    assert.is('__capture_only_intended__', getHistory[25])
+    assert.is('Bienvenido a mi tienda', getHistory[26])
+    assert.is('__capture_only_intended__', getHistory[27])
+    assert.is('escribe "ver ofertas"', getHistory[28])
+    assert.is(undefined, getHistory[29])
 })
 
+suiteCase(`Encadenanos addAction con captures (infinity)`, async ({ database, provider }) => {
+    const flujoPrincipal = addKeyword(['hola'])
+        .addAction(async (ctx, { flowDynamic }) => {
+            await flowDynamic(`¡Bienvenido a ViajesExtemos!`)
+        })
+        .addAction(async (ctx, { flowDynamic }) => {
+            await flowDynamic(`ver ofertas: Descubre las promociones que tengo para ti`)
+        })
+
+    const flujoSegundario = addKeyword(['ofertas'])
+        .addAction(async (ctx, { flowDynamic }) => {
+            await flowDynamic(`Perfecto te voy enviar los toures con imagenes`)
+        })
+        .addAction(async (ctx, { flowDynamic }) => {
+            await flowDynamic([{ body: `Tour1`, media: 'http://image.img' }])
+        })
+        .addAction(async (ctx, { flowDynamic }) => {
+            await flowDynamic([{ body: `Tour2`, media: 'http://image.img' }])
+        })
+        .addAction(async (ctx, { flowDynamic }) => {
+            await flowDynamic([{ body: `¿Cual de estos tours te interesa?` }])
+        })
+        .addAction({ capture: true }, async (ctx, { flowDynamic }) => {
+            await flowDynamic([{ body: `¿Cual es tu email?` }])
+        })
+        .addAction({ capture: true }, async (ctx, { flowDynamic, gotoFlow }) => {
+            await flowDynamic([{ body: `Perfecto en pocoas minutos un agente se contactar contigo..` }])
+            return gotoFlow(flujoTercero)
+        })
+
+    const flujoTercero = addKeyword('ordenar')
+        .addAction(async (ctx, { flowDynamic }) => {
+            await flowDynamic(`También me gustaria mencionar`)
+        })
+        .addAction(async (ctx, { flowDynamic }) => {
+            await flowDynamic(`ping`)
+        })
+        .addAction(async (ctx, { flowDynamic }) => {
+            await flowDynamic(`chao`)
+        })
+
+    await createBot({
+        database,
+        flow: createFlow([flujoPrincipal, flujoSegundario, flujoTercero]),
+        provider,
+    })
+
+    await provider.delaySendMessage(100, 'message', {
+        from: '000',
+        body: 'hola',
+    })
+
+    await provider.delaySendMessage(150, 'message', {
+        from: '000',
+        body: 'ofertas',
+    })
+
+    await provider.delaySendMessage(200, 'message', {
+        from: '000',
+        body: 'ibiza',
+    })
+
+    await provider.delaySendMessage(250, 'message', {
+        from: '000',
+        body: 'test@test.com',
+    })
+
+    await delay(2000)
+    const getHistory = database.listHistory.map((i) => i.answer)
+    assert.is('__call_action__', getHistory[0])
+    assert.is('¡Bienvenido a ViajesExtemos!', getHistory[1])
+    assert.is('__call_action__', getHistory[2])
+    assert.is('ver ofertas: Descubre las promociones que tengo para ti', getHistory[3])
+    assert.is('ofertas', getHistory[4])
+    assert.is('__call_action__', getHistory[5])
+    assert.is('Perfecto te voy enviar los toures con imagenes', getHistory[6])
+    assert.is('__call_action__', getHistory[7])
+    assert.is('Tour1', getHistory[8])
+    assert.is('__call_action__', getHistory[9])
+    assert.is('Tour2', getHistory[10])
+    assert.is('__call_action__', getHistory[11])
+    assert.is('¿Cual de estos tours te interesa?', getHistory[12])
+    assert.is('__capture_only_intended__', getHistory[13])
+    assert.is('ibiza', getHistory[14])
+    assert.is('¿Cual es tu email?', getHistory[15])
+    assert.is('__capture_only_intended__', getHistory[16])
+    assert.is('test@test.com', getHistory[17])
+    assert.is('Perfecto en pocoas minutos un agente se contactar contigo..', getHistory[18])
+    assert.is('__call_action__', getHistory[19])
+    assert.is('__call_action__', getHistory[20])
+    assert.is('__call_action__', getHistory[21])
+    assert.is('También me gustaria mencionar', getHistory[22])
+    assert.is('ping', getHistory[23])
+    assert.is('chao', getHistory[24])
+    assert.is(undefined, getHistory[25])
+})
 suiteCase.run()

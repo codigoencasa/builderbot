@@ -29,12 +29,12 @@ suiteCase(`Prevenir enviar mensaje luego de inactividad (2seg)`, async ({ databa
         provider,
     })
 
-    await provider.delaySendMessage(0, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'hola',
     })
 
-    await provider.delaySendMessage(50, 'message', {
+    await provider.delaySendMessage(150, 'message', {
         from: '000',
         body: 'mensaje al segundo',
     })
@@ -68,7 +68,7 @@ suiteCase(`Enviar mensaje luego de inactividad (2seg)`, async ({ database, provi
         provider,
     })
 
-    await provider.delaySendMessage(0, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'hola',
     })
@@ -115,12 +115,12 @@ suiteCase(`Enviar mensajes con ambos casos de idle`, async ({ database, provider
         provider,
     })
 
-    await provider.delaySendMessage(0, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'hola',
     })
-    await delay(3000)
-    await provider.delaySendMessage(0, 'message', {
+
+    await provider.delaySendMessage(3000, 'message', {
         from: '000',
         body: 'el numero es 444',
     })
@@ -129,9 +129,9 @@ suiteCase(`Enviar mensajes con ambos casos de idle`, async ({ database, provider
 
     const getHistory = database.listHistory.map((i) => i.answer)
     assert.is('Hola tienes 2 segundos para responder si no te pedire de nuevo otro dato', getHistory[0])
-    assert.is('__call_action__', getHistory[1])
-    assert.is('__capture_only_intended__', getHistory[2])
-    assert.is('Se cancelo por inactividad', getHistory[3])
+    assert.is('Se cancelo por inactividad', getHistory[1])
+    assert.is('__call_action__', getHistory[2])
+    assert.is('__capture_only_intended__', getHistory[3])
     assert.is('Empezemos de nuevo.', getHistory[4])
     assert.is('Cual es el numero de orden? tienes dos segundos para responder...', getHistory[5])
     assert.is('el numero es 444', getHistory[6])
@@ -167,7 +167,7 @@ suiteCase(`Enviar mensaje con gotoFlow anidados`, async ({ database, provider })
         provider,
     })
 
-    await provider.delaySendMessage(0, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'hola',
     })

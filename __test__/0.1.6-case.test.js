@@ -18,7 +18,7 @@ suiteCase.after.each(clear)
 suiteCase(`WELCOME`, async ({ database, provider }) => {
     const flow = addKeyword(EVENTS.WELCOME).addAnswer('Bievenido')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),
@@ -38,7 +38,7 @@ suiteCase(`WELCOME`, async ({ database, provider }) => {
 suiteCase(`MEDIA`, async ({ database, provider }) => {
     const flow = addKeyword(EVENTS.MEDIA).addAnswer('media recibido')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),
@@ -57,7 +57,7 @@ suiteCase(`MEDIA`, async ({ database, provider }) => {
 suiteCase(`LOCATION`, async ({ database, provider }) => {
     const flow = addKeyword(EVENTS.LOCATION).addAnswer('location recibido')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),
@@ -76,7 +76,7 @@ suiteCase(`LOCATION`, async ({ database, provider }) => {
 suiteCase(`DOCUMENT`, async ({ database, provider }) => {
     const flow = addKeyword(EVENTS.DOCUMENT).addAnswer('document recibido')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),
@@ -95,7 +95,7 @@ suiteCase(`DOCUMENT`, async ({ database, provider }) => {
 suiteCase(`VOICE_NOTE`, async ({ database, provider }) => {
     const flow = addKeyword(EVENTS.VOICE_NOTE).addAnswer('voice recibido')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),
