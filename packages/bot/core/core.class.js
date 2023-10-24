@@ -52,8 +52,7 @@ class CoreClass extends EventEmitter {
         this.databaseClass = _database
         this.providerClass = _provider
         this.generalArgs = { ...this.generalArgs, ..._args }
-
-        this.dynamicBlacklist.addToBlacklist(this.generalArgs.blackList)
+        this.dynamicBlacklist.add(this.generalArgs.blackList)
 
         this.queuePrincipal = new Queue(
             loggerQueue,
@@ -112,7 +111,7 @@ class CoreClass extends EventEmitter {
         let msgToSend = []
         let endFlowFlag = false
         let fallBackFlag = false
-        if (this.dynamicBlacklist.isInBlacklist(from)) return
+        if (this.dynamicBlacklist.checkIf(from)) return
         if (!body) return
 
         let prevMsg = await this.databaseClass.getPrevByNumber(from)

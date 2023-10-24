@@ -6,7 +6,7 @@ class BlackListClass {
      * @param {Array<string>} initialNumbers - Lista inicial de números a bloquear.
      */
     constructor(initialNumbers = []) {
-        this.addToBlacklist(initialNumbers)
+        this.add(initialNumbers)
     }
 
     /**
@@ -34,7 +34,7 @@ class BlackListClass {
      * @param {string | Array<string>} phoneNumbers - Número o números a añadir.
      * @returns {Array<string>} - Devuelve una lista de mensajes indicando el resultado de añadir cada número.
      */
-    addToBlacklist(...phoneNumbers) {
+    add(...phoneNumbers) {
         const responseMessages = []
 
         phoneNumbers.flat().forEach((number) => {
@@ -53,7 +53,7 @@ class BlackListClass {
      * Elimina un número de teléfono de la lista negra.
      * @param {string} phoneNumber - El número a eliminar.
      */
-    removeFromBlacklist(phoneNumber) {
+    remove(phoneNumber) {
         if (!this.#blacklist.has(phoneNumber)) {
             throw new BlackListClass.PhoneNumberNotFoundError(phoneNumber)
         }
@@ -65,7 +65,7 @@ class BlackListClass {
      * @param {string} phoneNumber - El número a verificar.
      * @returns {boolean} - Verdadero si está en la lista, falso en caso contrario.
      */
-    isInBlacklist(phoneNumber) {
+    checkIf(phoneNumber) {
         return this.#blacklist.has(phoneNumber)
     }
 
@@ -73,7 +73,7 @@ class BlackListClass {
      * Proporciona una copia de la lista negra actual.
      * @returns {Array<string>} - Los números de teléfono en la lista negra.
      */
-    getBlacklistSnapshot() {
+    getList() {
         return [...this.#blacklist]
     }
 }
