@@ -1,4 +1,4 @@
-class DynamicBlacklist {
+class BlackListClass {
     #blacklist = new Set()
 
     /**
@@ -55,7 +55,7 @@ class DynamicBlacklist {
      */
     removeFromBlacklist(phoneNumber) {
         if (!this.#blacklist.has(phoneNumber)) {
-            throw new DynamicBlacklist.PhoneNumberNotFoundError(phoneNumber)
+            throw new BlackListClass.PhoneNumberNotFoundError(phoneNumber)
         }
         this.#blacklist.delete(phoneNumber)
     }
@@ -77,4 +77,4 @@ class DynamicBlacklist {
         return [...this.#blacklist]
     }
 }
-module.exports = DynamicBlacklist
+module.exports = BlackListClass

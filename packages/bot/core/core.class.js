@@ -19,7 +19,7 @@ const loggerQueue = new Console({
 })
 
 const idleForCallback = new IdleState()
-const DynamicBlacklist = require('../utils/BlacklistDynamic')
+const DynamicBlacklist = require('../utils/blacklist.class')
 
 /**
  * [ ] Escuchar eventos del provider asegurarte que los provider emitan eventos
