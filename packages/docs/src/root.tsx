@@ -47,6 +47,7 @@ export default component$(() => {
                 { name: 'fallBack', link: '/docs/fall-back' },
                 { name: 'endFlow', link: '/docs/end-flow' },
                 { name: 'gotoFlow', link: '/docs/goto-flow' },
+                { name: 'idle', link: '/docs/idle' },
                 { name: 'blacklist', link: '/docs/blacklist' },
             ],
         },
