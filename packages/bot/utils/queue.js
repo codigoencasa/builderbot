@@ -1,5 +1,5 @@
 class Queue {
-    constructor(logger, concurrencyLimit = 15, timeout = 20000) {
+    constructor(logger, concurrencyLimit = 15, timeout = 50000) {
         this.queue = new Map()
         this.queueTime = new Map()
         this.timers = new Map()
@@ -46,6 +46,7 @@ class Queue {
                     const refIdTimeOut = timer({ reject, resolve })
                     clearTimeout(this.timers.get(fingerIdRef))
                     this.timers.set(fingerIdRef, refIdTimeOut)
+                    this.clearQueue(from)
                     return refIdTimeOut
                 }
 
@@ -60,6 +61,12 @@ class Queue {
         }
 
         return new Promise((resolve, reject) => {
+            const pid = queueByFrom.findIndex((i) => i.fingerIdRef === fingerIdRef)
+            if (pid !== -1) {
+                console.log(`🔥🔥🔥🔥`)
+                this.clearQueue(from)
+            }
+
             queueByFrom.push({
                 promiseFunc,
                 fingerIdRef,
@@ -69,7 +76,7 @@ class Queue {
             })
 
             if (!workingByFrom) {
-                this.logger.log(`${from}:EJECUTANDO`)
+                this.logger.log(`EJECUTANDO:${fingerIdRef}`)
                 this.workingOnPromise.set(from, true)
                 this.processQueue(from)
             }
@@ -121,7 +128,7 @@ class Queue {
             // Marca todas las promesas como canceladas
             queueByFrom.forEach((item) => {
                 item.cancelled = true
-                item.reject('Queue cleared')
+                item.resolve('Queue cleared')
             })
 
             // Limpia la cola

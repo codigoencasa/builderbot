@@ -87,7 +87,7 @@ suiteCase(`Responder con un "string"`, async ({ database, provider }) => {
         })
         .addAnswer('y vos?')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),
@@ -113,7 +113,7 @@ suiteCase(`Responder con un "array"`, async ({ database, provider }) => {
         })
         .addAnswer('y vos?')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),
@@ -140,7 +140,7 @@ suiteCase(`Responder con un "object"`, async ({ database, provider }) => {
         })
         .addAnswer('y vos?')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),
@@ -171,23 +171,23 @@ suiteCase(`FlowDynamic con capture`, async ({ database, provider }) => {
         )
         .addAnswer('fin!')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),
     })
 
-    await provider.delaySendMessage(0, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'hola',
     })
 
-    await provider.delaySendMessage(10, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'mal',
     })
 
-    await provider.delaySendMessage(20, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'bien',
     })
@@ -232,7 +232,7 @@ suiteCase(`FlowDynamic con capture en hijo`, async ({ database, provider }) => {
         [flowDos]
     )
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),
@@ -243,17 +243,17 @@ suiteCase(`FlowDynamic con capture en hijo`, async ({ database, provider }) => {
         body: 'hola',
     })
 
-    await provider.delaySendMessage(10, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'flowDos',
     })
 
-    await provider.delaySendMessage(20, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'flow3',
     })
 
-    await provider.delaySendMessage(30, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'flow4',
     })

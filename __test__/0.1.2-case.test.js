@@ -15,7 +15,7 @@ suiteCase(`Responder a una expresion regular`, async ({ database, provider }) =>
         .addAnswer(`Gracias por proporcionar un numero de tarjeta valido`)
         .addAnswer('Fin!')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),
@@ -39,7 +39,7 @@ suiteCase(`NO Responder a una expresion regular`, async ({ database, provider })
         .addAnswer(`Gracias por proporcionar un numero de tarjeta valido`)
         .addAnswer('Fin!')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),

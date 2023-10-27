@@ -44,7 +44,10 @@ const addKeyword = (keyword, options) => {
         ctx,
         ref: ctx.ref,
         addAnswer: addAnswer(ctx),
-        addAction: (cb = () => null) => addAnswer(ctx)('__call_action__', null, cb),
+        addAction: (cb = () => null, flagCb = () => null) => {
+            if (typeof cb === 'object') return addAnswer(ctx)('__capture_only_intended__', cb, flagCb)
+            return addAnswer(ctx)('__call_action__', null, cb)
+        },
         toJson: toJson(ctx),
     }
 }

@@ -373,6 +373,33 @@ test(`[Bot] Probando gotoFlow  `, async () => {
     assert.is(Object.values(result).length, 0)
 })
 
+test(`[Bot] Probando flowDynamic  `, async () => {
+    const mockProvider = new MockProvider()
+    const flowWelcome = addKeyword('hola').addAnswer('chao')
+    const flow = createFlow([flowWelcome])
+    const setting = {
+        flow,
+        database: new MockDBB(),
+        provider: mockProvider,
+    }
+
+    const bot = await createBot(setting)
+
+    const messageCtxInComming = {
+        body: 'Hola',
+        from: '123456789',
+    }
+
+    const botHandler = await bot.handleMsg(messageCtxInComming)
+    const result = botHandler.flowDynamic([
+        {
+            body: 'Message',
+        },
+    ])(flowWelcome)
+
+    assert.is(Object.values(result).length, 0)
+})
+
 test.run()
 
 function delay(ms) {

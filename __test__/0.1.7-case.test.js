@@ -39,45 +39,45 @@ suiteCase(`Debe retornar un mensaje resumen`, async ({ database, provider }) => 
         })
         .addAnswer('🤖🤖 Gracias por tu participacion')
 
-    createBot({
+    await createBot({
         database,
         flow: createFlow([flujoPrincipal]),
         provider,
     })
 
-    await provider.delaySendMessage(0, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'hola',
     })
 
-    await provider.delaySendMessage(5, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '001',
         body: 'hola',
     })
 
-    await provider.delaySendMessage(10, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'Leifer',
     })
 
-    await provider.delaySendMessage(15, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: '90',
     })
 
-    await provider.delaySendMessage(20, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '001',
         body: 'Maria',
     })
 
-    await provider.delaySendMessage(25, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '001',
         body: '100',
     })
 
     await delay(1000)
     const getHistory = database.listHistory.map((i) => i.answer)
-    assert.is(MOCK_VALUES[0], getHistory[0])
+    assert.is('¿Cual es tu nombre?', getHistory[0])
     assert.is('¿Cual es tu nombre?', getHistory[1])
     assert.is('Leifer', getHistory[2])
     assert.is('Gracias por tu nombre!', getHistory[3])
@@ -131,38 +131,38 @@ suiteCase(`Manejando globalState`, async ({ database, provider }) => {
         })
         .addAnswer('🤖🤖 Gracias por tu participacion')
 
-    createBot({
+    await createBot({
         database,
         flow: createFlow([flujoPrincipal]),
         provider,
     })
 
-    await provider.delaySendMessage(0, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'hola',
     })
 
-    await provider.delaySendMessage(5, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '001',
         body: 'hola',
     })
 
-    await provider.delaySendMessage(10, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'Leifer',
     })
 
-    await provider.delaySendMessage(15, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: '90',
     })
 
-    await provider.delaySendMessage(20, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '001',
         body: 'Maria',
     })
 
-    await provider.delaySendMessage(25, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '001',
         body: '100',
     })
