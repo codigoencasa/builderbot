@@ -17,6 +17,10 @@
         "@wppconnect-team/wppconnect": "^1.27.3",
         "mime-types": "2.1.35"
     },
+    "devDependencies": {
+        "eslint-plugin-bot-whatsapp": "latest",
+        "eslint": "^8.52.0"
+    },
     "author": "",
     "license": "ISC"
 }

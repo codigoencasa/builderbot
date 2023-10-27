@@ -18,6 +18,10 @@
         "@whiskeysockets/baileys": "^6.4.0",
         "wa-sticker-formatter": "4.3.2"
     },
+    "devDependencies": {
+        "eslint-plugin-bot-whatsapp": "latest",
+        "eslint": "^8.52.0"
+    },
     "author": "",
     "license": "ISC"
 }
