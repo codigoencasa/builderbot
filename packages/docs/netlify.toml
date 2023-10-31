@@ -1,6 +1,6 @@
 [build]
-publish = "dist"
-command = "npm run build"
+publish = "packages/docs/dist"
+command = "cd packages/docs && npm run build"
 
 [[edge_functions]]
 path = "/*"
