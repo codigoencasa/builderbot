@@ -77,8 +77,8 @@ class Queue {
 
             if (!workingByFrom) {
                 this.logger.log(`EJECUTANDO:${fingerIdRef}`)
-                this.workingOnPromise.set(from, true)
                 this.processQueue(from)
+                this.workingOnPromise.set(from, true)
             }
         })
     }
@@ -98,15 +98,21 @@ class Queue {
                     const refToPromise = item.promiseFunc(item)
                     const value = await Promise.race([
                         refToPromise.timerPromise,
-                        refToPromise.promiseInFunc().then(() => refToPromise.cancel()),
+                        refToPromise.promiseInFunc().then(() => {
+                            console.log('---', item.fingerIdRef)
+                            return refToPromise.cancel()
+                        }),
                     ])
-                    item.resolve(value)
+
+                    this.clearIdFromCallback(from, item.fingerIdRef)
                     this.logger.log(`${from}:SUCCESS`)
+                    return item.resolve(value)
                 } catch (err) {
+                    this.clearIdFromCallback(from, item.fingerIdRef)
+
                     this.logger.error(`${from}:ERROR: ${JSON.stringify(err)}`)
-                    item.reject(err)
+                    return item.reject(err)
                 }
-                this.clearIdFromCallback(from, item.fingerIdRef)
             })
 
             await Promise.allSettled(promises)
@@ -125,15 +131,14 @@ class Queue {
             const queueByFrom = this.queue.get(from)
             const workingByFrom = this.workingOnPromise.get(from)
 
-            // Marca todas las promesas como canceladas
-            queueByFrom.forEach((item) => {
-                item.cancelled = true
-                item.resolve('Queue cleared')
-            })
-
-            // Limpia la cola
-
-            this.queue.set(from, [])
+            try {
+                for (const item of queueByFrom) {
+                    item.cancelled = true
+                    item.resolve('Queue cleared')
+                }
+            } finally {
+                this.queue.set(from, [])
+            }
 
             // Si hay un proceso en ejecución, también deberías cancelarlo
             if (workingByFrom) {
@@ -156,7 +161,7 @@ class Queue {
         this.idsCallbacks.set(from, ids)
     }
 
-    getIdsCallbacs = (from) => {
+    getIdsCallback = (from) => {
         if (this.idsCallbacks.has(from)) {
             return this.idsCallbacks.get(from)
         } else {

@@ -215,7 +215,7 @@ class CoreClass extends EventEmitter {
                 if (options?.forceQueue) {
                     const listIdsRefCallbacks = messageToSend.map((i) => i.ref)
 
-                    const listProcessWait = this.queuePrincipal.getIdsCallbacs(from)
+                    const listProcessWait = this.queuePrincipal.getIdsCallback(from)
                     if (!listProcessWait.length) {
                         this.queuePrincipal.setIdsCallbacks(from, listIdsRefCallbacks)
                     } else {
@@ -228,19 +228,22 @@ class CoreClass extends EventEmitter {
                 }
 
                 try {
+                    // this.queuePrincipal.clearQueue(from);
                     await this.queuePrincipal.enqueue(
                         from,
                         async () => {
                             // Usar async en la función pasada a enqueue
-                            await this.sendProviderAndSave(numberOrId, ctxMessage)
+                            await this.sendProviderAndSave(numberOrId, ctxMessage).then(() =>
+                                resolveCbEveryCtx(ctxMessage)
+                            )
                             logger.log(`[QUEUE_SE_ENVIO]: `, ctxMessage)
-                            await resolveCbEveryCtx(ctxMessage)
+                            // await resolveCbEveryCtx(ctxMessage)
                         },
                         ctxMessage.ref
                     )
                 } catch (error) {
                     logger.error(`Error al encolar (ID ${ctxMessage.ref}):`, error)
-                    return Promise.reject
+                    return Promise.reject()
                     // Puedes considerar manejar el error aquí o rechazar la promesa
                     // Pasada a resolveCbEveryCtx con el error correspondiente.
                 }
@@ -289,6 +292,16 @@ class CoreClass extends EventEmitter {
             async (flowInstance, step = 0) => {
                 const promises = []
                 flag.gotoFlow = true
+
+                if (!flowInstance?.toJson) {
+                    printer([
+                        `[CIRCULAR_DEPENDENCY]: Se ha detectado una dependencia circular.`,
+                        `Para evitar problemas, te recomendamos utilizar 'require'('./ruta_del_flow')`,
+                        `Ejemplo:  gotoFlow(helloFlow) -->  gotoFlow(require('./flows/helloFlow.js'))`,
+                        `[INFO]: https://bot-whatsapp.netlify.app/docs/goto-flow/`,
+                    ])
+                    return
+                }
 
                 const flowTree = flowInstance.toJson()
 
@@ -398,6 +411,7 @@ class CoreClass extends EventEmitter {
                 state,
                 globalState,
                 extensions,
+                queue: this.queuePrincipal,
                 idle: idleForCallback,
                 inRef,
                 fallBack: fallBack(flags),
@@ -534,10 +548,10 @@ class CoreClass extends EventEmitter {
             }
             await this.databaseClass.save({ ...ctxMessage, from: numberOrId })
 
-            return Promise.resolve
+            return Promise.resolve()
         } catch (err) {
             logger.log(`[ERROR ID (${ctxMessage.ref})]: `, err)
-            return Promise.reject
+            return Promise.reject()
         }
     }
 
