@@ -18,7 +18,7 @@
         "format:check": "prettier --check ./packages",
         "format:write": "prettier --write ./packages",
         "fmt.staged": "pretty-quick --staged",
-        "lint:check": "eslint ./packages",
+        "lint:check": "eslint .",
         "lint:fix": "eslint --fix ./packages",
         "build:portal-web": "cd ./packages/portal/ && pnpm run build.types && pnpm run build.client && pnpm run build.server && pnpm run lint --fix",
         "build:full": "pnpm run build:portal-web && pnpm run cli:rollup && pnpm run bot:rollup && pnpm run provider:rollup && pnpm run database:rollup && pnpm run contexts:rollup && pnpm run create-bot-whatsapp:rollup && pnpm run portal:rollup",
