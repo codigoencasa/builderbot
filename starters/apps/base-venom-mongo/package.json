@@ -18,6 +18,10 @@
         "mime-types": "2.1.35",
         "mongodb": "^4.12.1"
     },
+    "devDependencies": {
+        "eslint-plugin-bot-whatsapp": "latest",
+        "eslint": "^8.52.0"
+    },
     "author": "",
     "license": "ISC"
 }

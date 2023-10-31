@@ -18,6 +18,10 @@
         "axios": "^1.2.1",
         "mysql2": "^2.3.3"
     },
+    "devDependencies": {
+        "eslint-plugin-bot-whatsapp": "latest",
+        "eslint": "^8.52.0"
+    },
     "author": "",
     "license": "ISC"
 }

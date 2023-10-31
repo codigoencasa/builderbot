@@ -21,35 +21,34 @@ El lenguaje principal que se utilizó para desarrollar este proyecto fue __JavaS
 
 
 __Requerimientos:__
-- Node v16 o superior __[descargar node](https://nodejs.org/es/download/)__
-- __[Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable)__ como gestor de paquetes. En el link conseguirás las intrucciones para instalar yarn.
+- Node v18 o superior __[descargar node](https://nodejs.org/es/download/)__
+- __[pnpm](https://pnpm.io/cli/install)__ como gestor de paquetes. En el link conseguirás las intrucciones para instalar `pnmp`.
 - __[VSCode](https://code.visualstudio.com/download)__ (recomendado): Editor de código con plugins.
 - __[Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits&ssr=false#overview)__ (plugin-vscode) este plugin te ayudará a crear commit semántico.
-- Se usará la rama __dev__ *(https://github.com/leifermendez/bot-whatsapp/tree/dev)* como rama principal hasta que se haga oficialmente el lanzamiento de la V2.
 
 ### 🚀 Iniciando
 
-__Clonar repo rama dev__
+__Clona repositorio (desde tu fork)__
 ```
-git clone --branch dev https://github.com/codigoencasa/bot-whatsapp
+git clone https://github.com/codigoencasa/bot-whatsapp
 ```
 __Instalar dependencias__
 ``` 
 cd bot-whatsapp
-yarn install
+pnpm install
 ```
 
 __Compilar (build)__
 Para compilar la aplicación es necesario ejecutar este comando, el cual genera un directorio `lib` dentro de los paquetes del monorepo.
 
 ```
-yarn build
+pnpm run build
 ```
 
 __Example-app__
 Se ejecuta el CLI (Command Line Interface) para ayudarte a crear un app-bot de ejemplo.
 ```
-yarn run cli
+pnpm run cli
 ```
 
 Selecionas (mediante las flechas arriba y abajo) el proveedor que quieras usar y cuando estes sobre el presiona la barra de espacio, igualmente selecciona la base de datos que quieras usar.
