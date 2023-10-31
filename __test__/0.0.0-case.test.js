@@ -31,7 +31,7 @@ suiteCase(`Responder a "hola"`, async ({ database, provider }) => {
 suiteCase(`NO reponder a "pepe"`, async ({ database, provider }) => {
     const flow = addKeyword('hola').addAnswer('Buenas!').addAnswer('Como vamos!')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),

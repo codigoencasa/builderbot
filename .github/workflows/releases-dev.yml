@@ -57,3 +57,6 @@ jobs:
 
             - name: Release @bot-whatsapp/portal
               run: node ./scripts/release.js --name=portal --version=  --token="${{ secrets.NPM_TOKEN }}"
+
+            - name: Release eslint-plugin-bot-whatsapp
+              run: node ./scripts/release.js --name=eslint-plugin-bot-whatsapp --version=  --token="${{ secrets.NPM_TOKEN }}"

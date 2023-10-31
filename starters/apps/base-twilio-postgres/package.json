@@ -18,6 +18,10 @@
         "@bot-whatsapp/provider": "latest",
         "pg": "^8.11.2"
     },
+    "devDependencies": {
+        "eslint-plugin-bot-whatsapp": "latest",
+        "eslint": "^8.52.0"
+    },
     "author": "",
     "license": "ISC"
 }
