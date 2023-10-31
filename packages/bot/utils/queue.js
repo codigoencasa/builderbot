@@ -99,7 +99,6 @@ class Queue {
                     const value = await Promise.race([
                         refToPromise.timerPromise,
                         refToPromise.promiseInFunc().then(() => {
-                            console.log('---', item.fingerIdRef)
                             return refToPromise.cancel()
                         }),
                     ])
