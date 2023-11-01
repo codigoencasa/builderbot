@@ -1,13 +1,18 @@
 const { toSerialize } = require('./methods/toSerialize')
 const { flatObject } = require('../utils/flattener')
 
+/**
+ * Esta clas se encarga de manera la manipulacion de los flows
+ * y la creaciones de indices donde almacenar los callbacks
+ */
 class FlowClass {
     allCallbacks = []
     flowSerialize = []
     flowRaw = []
+
     constructor(_flow) {
         if (!Array.isArray(_flow)) throw new Error('Esto debe ser un ARRAY')
-        this.flowRaw = _flow
+        this.flowRaw = this.addEndsFlows(_flow)
 
         this.allCallbacks = flatObject(_flow)
 
@@ -18,6 +23,28 @@ class FlowClass {
         this.flowSerialize = toSerialize(mergeToJsonSerialize)
     }
 
+    /**
+     * Agregamos un addAcion con un endFlow
+     * al finalizar el flow para limpiar rendimiento, colas, etc
+     * @param {*} _flows
+     * @returns
+     */
+    addEndsFlows = (_flows) => {
+        return _flows.map((flow) =>
+            flow.addAction(async (_, { endFlow }) => {
+                return endFlow()
+            })
+        )
+    }
+
+    /**
+     * Funcion principal encargada de devolver un array de mensajes a continuar
+     * la idea es basado en un ref o id devolver la lista de mensaes a enviar
+     * @param {*} keyOrWord
+     * @param {*} symbol
+     * @param {*} overFlow
+     * @returns
+     */
     find = (keyOrWord, symbol = false, overFlow = null) => {
         keyOrWord = `${keyOrWord}`
         let capture = false
@@ -83,6 +110,11 @@ class FlowClass {
         }
     }
 
+    /**
+     * El proposito es cargar los flows y la serializacion de los callbacks
+     * a los flows qu son hijos
+     * @returns
+     */
     getFlowsChild = () => {
         try {
             const flowChilds = this.flowSerialize

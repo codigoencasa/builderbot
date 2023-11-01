@@ -13,7 +13,7 @@ suiteCase(`Responder a "pregunta"`, async ({ database, provider }) => {
         .addAnswer(['Hola como estas?', '¿Cual es tu edad?'], { capture: true })
         .addAnswer('Gracias por tu respuesta')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),

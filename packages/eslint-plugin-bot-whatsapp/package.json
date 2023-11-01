@@ -1,0 +1,11 @@
+{
+    "name": "eslint-plugin-bot-whatsapp",
+    "version": "0.0.4-alpha.0",
+    "description": "",
+    "main": "./lib/eslint-plugin-bot-whatsapp.cjs",
+    "files": [
+        "./lib/*"
+    ],
+    "author": "",
+    "license": "ISC"
+}

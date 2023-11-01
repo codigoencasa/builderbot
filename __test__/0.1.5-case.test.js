@@ -35,7 +35,7 @@ suiteCase(`Detener el flujo`, async ({ database, provider }) => {
             return flowDynamic(data)
         })
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),
@@ -70,7 +70,7 @@ suiteCase(`Detener el flujo flowDynamic`, async ({ database, provider }) => {
         })
         .addAnswer('Como estas!')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),
@@ -117,33 +117,33 @@ suiteCase(`flowDynamic con capture`, async ({ database, provider }) => {
         })
         .addAnswer('Puedes pasar')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),
     })
 
-    await provider.delaySendMessage(0, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'hola',
     })
 
-    await provider.delaySendMessage(10, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'this is not email value',
     })
 
-    await provider.delaySendMessage(20, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'test@test.com',
     })
 
-    await provider.delaySendMessage(90, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: '20',
     })
 
-    await provider.delaySendMessage(200, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: '18',
     })
