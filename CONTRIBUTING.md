@@ -1,61 +1,68 @@
 # CONTRIBUTING
 
-### 📄 Bienvenido/a
-Si deseas colaborar con el proyecto existen varias maneras, la primera de ellas es aportando conocimiento y mejorando el repositorio (actualizando documentación, mejorando código, revisando __[issues](https://github.com/codigoencasa/bot-whatsapp/issues)__, etc). 
+### 👋 Bienvenido/a
+Nos alegra que estés interesado en colaborar en nuestro proyecto. Para hacerlo, puedes contribuir de diversas maneras, la principal es aportando tu conocimiento y habilidades para mejorar el repositorio, ya sea actualizando la documentación, mejorando el código o revisando problemas pendientes en los __[issues](https://github.com/codigoencasa/bot-whatsapp/issues)__. 
 
- También es bien recibido los aportes económicos que se utilizaran para diferentes fines __[ver más](https://opencollective.com/bot-whatsapp)__
+También agradecemos los aportes económicos, que utilizaremos para diversos fines relacionados con el desarrollo y mantenimiento del proyecto. Puedes ver más detalles aquí: __[ver más](https://opencollective.com/bot-whatsapp)__
 
-El lenguaje principal que se utilizó para desarrollar este proyecto fue __JavaScript__ con el fin de qué personas que están iniciando en el mundo de la programación puedan entender fácilmente.
+El lenguaje principal que usamos en este proyecto es __JavaScript__, para que las personas que están comenzando a programar puedan entenderlo más fácilmente.
 
-
-### 🤔 Preguntas frecuentes
-- ¿Como puedo hacer aportaciones de código en el proyecto?: [Ver Video](https://youtu.be/Lxt8Acob6aU)
-- ¿Como ejecutar el entorno de pruebas?: [Ver Video](https://youtu.be/Mf9V-dloBfk)
-- ¿Como crear un nuevo proveedor?: [Ver Video](https://youtu.be/cahK9zH3SI8)
-- ¿Que son los GithubActions?: [Ver Video](https://youtu.be/nYBEBFKLiqw)
+### 💡 Preguntas frecuentes
+- ¿Cómo puedo hacer aportaciones de código en el proyecto?: [Ver Video](https://youtu.be/Lxt8Acob6aU)
+- ¿Cómo ejecutar el entorno de pruebas?: [Ver Video](https://youtu.be/Mf9V-dloBfk)
+- ¿Cómo crear un nuevo proveedor?: [Ver Video](https://youtu.be/cahK9zH3SI8)
+- ¿Qué son los GithubActions?: [Ver Video](https://youtu.be/nYBEBFKLiqw)
 - ¿Canales de comunicación?: [Discord](https://link.codigoencasa.com/DISCORD)
 
------
+------
 
-![](https://i.giphy.com/media/ntMt6TvalpstTIx7Ak/giphy.webp)
+__Requisitos:__
+Para poder aportar al proyecto necesitarás tener:
+- Node v18 o superior. Puedes descargar Node aquí: __[descargar node](https://nodejs.org/es/download/)__
+- __[pnpm](https://pnpm.io/cli/install)__ como administrador de paquetes. Puedes seguir el enlace para saber cómo instalarlo.
+- __[VSCode](https://code.visualstudio.com/download)__ es el editor de código que recomendamos, ya que cuenta con plugins útiles.
+- __[Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits&ssr=false#overview)__ es un plugin de VSCode que te ayudará a crear commits semánticos, siguiendo buenas prácticas.
 
+### 🚀 Empezando
 
-__Requerimientos:__
-- Node v18 o superior __[descargar node](https://nodejs.org/es/download/)__
-- __[pnpm](https://pnpm.io/cli/install)__ como gestor de paquetes. En el link conseguirás las intrucciones para instalar `pnmp`.
-- __[VSCode](https://code.visualstudio.com/download)__ (recomendado): Editor de código con plugins.
-- __[Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits&ssr=false#overview)__ (plugin-vscode) este plugin te ayudará a crear commit semántico.
+__Hacer Fork del Proyecto__
 
-### 🚀 Iniciando
+Antes de comenzar, es necesario que hagas un fork del proyecto en tu propia cuenta de GitHub. Esto te permitirá trabajar en tu propia copia del repositorio. Haz clic en el siguiente enlace para realizar el fork: [aquí](https://github.com/codigoencasa/bot-whatsapp/fork)
 
 __Clona repositorio (desde tu fork)__
 ```
-git clone https://github.com/codigoencasa/bot-whatsapp
+git clone https://github.com/TU_USERNAME/bot-whatsapp
 ```
 __Instalar dependencias__
+Entra a la carpeta del proyecto y ejecuta el siguiente comando para instalar las dependencias necesarias.
 ``` 
 cd bot-whatsapp
 pnpm install
 ```
 
 __Compilar (build)__
-Para compilar la aplicación es necesario ejecutar este comando, el cual genera un directorio `lib` dentro de los paquetes del monorepo.
-
+Para compilar la aplicación, debes ejecutar el siguiente comando, el cual generará un directorio `lib` dentro de los paquetes del monorepo.
 ```
 pnpm run build
 ```
 
-__Example-app__
-Se ejecuta el CLI (Command Line Interface) para ayudarte a crear un app-bot de ejemplo.
+__Aplicación de ejemplo__
+Se ejecuta el CLI (Command Line Interface) para ayudarte a crear un bot de ejemplo.
 ```
 pnpm run cli
 ```
 
-Selecionas (mediante las flechas arriba y abajo) el proveedor que quieras usar y cuando estes sobre el presiona la barra de espacio, igualmente selecciona la base de datos que quieras usar.
+__Test e2e__
+Todos los cambios realizados deben de pasar las pruebas end-to-end
+```
+pnpm run test.e2e
+```
 
-Se creó un subdirecorio con el nombre del proveedor y base de datos que seleccionaste, ejemplo: `base-bailey-mysql`
+Selecciona el proveedor y la base de datos que quieras usar usando las flechas arriba y abajo de tu teclado y marcándolas con la barra de espacio.
 
-Dentro de ese directorio necesitas editar el archivo package.json y borrar las siguientes lineas:
+Este proceso creará un subdirectorio con el nombre del proveedor y la base de datos que seleccionaste, por ejemplo: `base-bailey-mysql`
+
+Dentro de ese directorio, tendrás que editar el archivo package.json y borrar las siguientes líneas:
 ```
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
@@ -63,17 +70,17 @@ Dentro de ese directorio necesitas editar el archivo package.json y borrar las s
         "@bot-whatsapp/provider": "latest",
 ```
 
-Cambiate al directorio creado ejemplo: `base-bailey-mysql`
+A continuación, debes desplazarte al directorio que acabas de crear, por ejemplo: `base-baileys-mysql`
 ```
 cd base-baileys-mysql
 ```
-Ejecuta los comandos:
+Y ejecuta los siguientes comandos:
 ```
 npm install
 npm run pre-copy
 npm start
 ```
-En el caso de MySql y Mongo es necesario especificar en app.js los datos de la conexión, ejemplo de MySql:
+En el caso de MySql y Mongo, necesitarás especificar en el archivo app.js los datos de la conexión, por ejemplo, para MySql:
 ```
 const BaileysProvider = require('@bot-whatsapp/provider/baileys')
 const MySQLAdapter = require('@bot-whatsapp/database/mysql')
@@ -86,14 +93,8 @@ const MYSQL_DB_USER = 'usr'
 const MYSQL_DB_PASSWORD = 'pass'
 const MYSQL_DB_NAME = 'bot'
 ```
-<!-- __Seguir instrucciones__
-En la consola encontraras los pasos a seguir -->
 
-![](https://i.imgur.com/dC6lEwy.png)
-
-
-> __NOTA:__ [Eres libre de aportar informacion inexacta a este documento o arreglar horrores de ortografia que dificultan la comprensión. 🤣](
-https://github.com/codigoencasa/bot-whatsapp/edit/dev/CONTRIBUTING.md)
+> __NOTA:__ Si encuentras información que podría mejorarse en este documento o algún error ortográfico que dificulte la comprensión, eres libre de corregirlo.([edita aqui](https://github.com/codigoencasa/bot-whatsapp/edit/dev/CONTRIBUTING.md))
 
 ------
 -   [Discord](https://link.codigoencasa.com/DISCORD)
