@@ -81,7 +81,7 @@ const checkExistVersion = async (packageName = null, version = null) => {
     try {
         const pkgJson = join(PATH_PACKAGES, packageName)
         const pkgJsonObject = readPackage(packageName)
-        const { stdout } = await cmd(NPM_COMMAND, ['view', `${pkgJsonObject.name}@${version}`], {
+        await cmd(NPM_COMMAND, ['view', `${pkgJsonObject.name}@${version}`], {
             stdio: 'inherit',
             cwd: pkgJson,
         })

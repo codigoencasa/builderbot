@@ -5,10 +5,10 @@ const { generateRef, generateRefSerialize } = require('../../utils/hash')
  * @param options {media:string, buttons:[], capture:true default false}
  * @returns
  */
-const toCtx = ({ body, from, prevRef, options = {}, index }) => {
+const toCtx = ({ body, from, prevRef, keyword, options = {}, index }) => {
     return {
         ref: generateRef(),
-        keyword: prevRef,
+        keyword: prevRef ?? keyword,
         answer: body,
         options: options ?? {},
         from,

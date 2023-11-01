@@ -1,4 +1,5 @@
 import Navigation from '../../../components/widgets/Navigation'
+import Alert from '../../../components/widgets/Alert'
 
 # gotoFlow
 
@@ -51,6 +52,39 @@ const flowBienvenida = addKeyword('hola')
 
 
 ```
+
+<Alert>
+   Evitar dependencias circular: Si te encuentras en este situación algunas de las recomendaciones son:
+   - Divide la logica en flows más simples
+   - Implementa `require` o importacion dinamicas. (ejemplos abajo)
+
+</Alert>
+
+
+```js
+const { addKeyword } = require('@bot-whatsapp/bot')
+
+
+const flujoUsuariosNORegistrados = addKeyword('USUARIOS_NO_REGISTRADOS')
+.addAnswer('Veo que es tu primera vez por aqui')
+.addAnswer('¿Cual es tu email?',{capture:true},async(ctx, {flowDynamic, gotoFlow}) => {
+
+    const numero = ctx.from
+    console.log('registramos en base de datos el numero...')
+
+
+    /** La importacion del require se hace dentro de la funcion**/
+
+    await flowDynamic(`Ya te registramos..`)
+    await gotoFlow(require('./flows/flujoUsuariosRegistrados')) 
+    -- o --
+    const flowRegistrados = require('./flows/flujoUsuariosRegistrados')
+    await gotoFlow(flowRegistrados) 
+})
+
+
+```
+
 
 ---
 

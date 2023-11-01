@@ -11,7 +11,7 @@ suiteCase.after.each(clear)
 suiteCase(`Responder a "ole" en minuscula`, async ({ database, provider }) => {
     const flow = addKeyword(['ola', 'ole'], { sensitive: true }).addAnswer('Bienvenido a la OLA')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),
@@ -31,7 +31,7 @@ suiteCase(`Responder a "ole" en minuscula`, async ({ database, provider }) => {
 suiteCase(`NO Responder a "ole" en minuscula`, async ({ database, provider }) => {
     const flow = addKeyword(['ola', 'ole'], { sensitive: true }).addAnswer('Bienvenido a la OLA')
 
-    createBot({
+    await createBot({
         database,
         provider,
         flow: createFlow([flow]),

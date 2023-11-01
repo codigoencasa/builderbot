@@ -1,5 +1,5 @@
 class Queue {
-    constructor(logger, concurrencyLimit = 15, timeout = 20000) {
+    constructor(logger, concurrencyLimit = 15, timeout = 50000) {
         this.queue = new Map()
         this.queueTime = new Map()
         this.timers = new Map()
@@ -46,6 +46,7 @@ class Queue {
                     const refIdTimeOut = timer({ reject, resolve })
                     clearTimeout(this.timers.get(fingerIdRef))
                     this.timers.set(fingerIdRef, refIdTimeOut)
+                    this.clearQueue(from)
                     return refIdTimeOut
                 }
 
@@ -60,6 +61,12 @@ class Queue {
         }
 
         return new Promise((resolve, reject) => {
+            const pid = queueByFrom.findIndex((i) => i.fingerIdRef === fingerIdRef)
+            if (pid !== -1) {
+                console.log(`🔥🔥🔥🔥`)
+                this.clearQueue(from)
+            }
+
             queueByFrom.push({
                 promiseFunc,
                 fingerIdRef,
@@ -69,9 +76,9 @@ class Queue {
             })
 
             if (!workingByFrom) {
-                this.logger.log(`${from}:EJECUTANDO`)
-                this.workingOnPromise.set(from, true)
+                this.logger.log(`EJECUTANDO:${fingerIdRef}`)
                 this.processQueue(from)
+                this.workingOnPromise.set(from, true)
             }
         })
     }
@@ -91,15 +98,20 @@ class Queue {
                     const refToPromise = item.promiseFunc(item)
                     const value = await Promise.race([
                         refToPromise.timerPromise,
-                        refToPromise.promiseInFunc().then(() => refToPromise.cancel()),
+                        refToPromise.promiseInFunc().then(() => {
+                            return refToPromise.cancel()
+                        }),
                     ])
-                    item.resolve(value)
+
+                    this.clearIdFromCallback(from, item.fingerIdRef)
                     this.logger.log(`${from}:SUCCESS`)
+                    return item.resolve(value)
                 } catch (err) {
+                    this.clearIdFromCallback(from, item.fingerIdRef)
+
                     this.logger.error(`${from}:ERROR: ${JSON.stringify(err)}`)
-                    item.reject(err)
+                    return item.reject(err)
                 }
-                this.clearIdFromCallback(from, item.fingerIdRef)
             })
 
             await Promise.allSettled(promises)
@@ -118,15 +130,14 @@ class Queue {
             const queueByFrom = this.queue.get(from)
             const workingByFrom = this.workingOnPromise.get(from)
 
-            // Marca todas las promesas como canceladas
-            queueByFrom.forEach((item) => {
-                item.cancelled = true
-                item.reject('Queue cleared')
-            })
-
-            // Limpia la cola
-
-            this.queue.set(from, [])
+            try {
+                for (const item of queueByFrom) {
+                    item.cancelled = true
+                    item.resolve('Queue cleared')
+                }
+            } finally {
+                this.queue.set(from, [])
+            }
 
             // Si hay un proceso en ejecución, también deberías cancelarlo
             if (workingByFrom) {
@@ -149,7 +160,7 @@ class Queue {
         this.idsCallbacks.set(from, ids)
     }
 
-    getIdsCallbacs = (from) => {
+    getIdsCallback = (from) => {
         if (this.idsCallbacks.has(from)) {
             return this.idsCallbacks.get(from)
         } else {
