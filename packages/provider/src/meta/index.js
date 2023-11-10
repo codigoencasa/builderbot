@@ -521,6 +521,24 @@ class MetaProvider extends ProviderClass {
 
         this.sendtext(number, message)
     }
+
+    /**
+     * @param {*} number
+     * @param {*} react
+     */
+    sendReaction = async (number, react) => {
+        const body = {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to: number,
+            type: 'reaction',
+            reaction: {
+                message_id: react.message_id,
+                emoji: react.emoji,
+            },
+        }
+        return this.sendMessageMeta(body)
+    }
 }
 
 module.exports = MetaProvider
