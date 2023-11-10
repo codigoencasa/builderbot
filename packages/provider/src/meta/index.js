@@ -394,14 +394,14 @@ class MetaProvider extends ProviderClass {
                                 text: 'text-string',
                             },
                             {
-                                type: "currency",
+                                type: 'currency',
                                 currency: {
-                                    fallback_value: "$100.99",
-                                    code: "USD",
-                                    amount_1000: 100990
-                                }
+                                    fallback_value: '$100.99',
+                                    code: 'USD',
+                                    amount_1000: 100990,
+                                },
                             },
-                        ]
+                        ],
                     },
                     {
                         type: 'button',
@@ -410,13 +410,13 @@ class MetaProvider extends ProviderClass {
                         parameters: [
                             {
                                 type: 'payload',
-                                payload: 'aGlzIHRoaXMgaXMgY29v'
+                                payload: 'aGlzIHRoaXMgaXMgY29v',
                             },
                         ],
                     },
-                ]
+                ],
             },
-        };
+        }
         return this.sendMessageMeta(body)
     }
 
@@ -431,14 +431,40 @@ class MetaProvider extends ProviderClass {
         const parseContacts = contact.map((contact) => ({
             name: {
                 formatted_name: contact.name,
+                first_name: contact.first_name,
+                last_name: contact.last_name,
+                middle_name: contact.middle_name,
+                suffix: contact.suffix,
+                prefix: contact.prefix,
             },
-            phone: [
-                {
-                    phone: contact.phone,
-                    wa_id: contact.phone,
-                    type: 'MOBILE',
-                },
-            ],
+            birthday: contact.birthday,
+            phones: contact.phones.map((phone) => ({
+                phone: phone.phone,
+                wa_id: phone.wa_id,
+                type: phone.type,
+            })),
+            emails: contact.emails.map((email) => ({
+                email: email.email,
+                type: email.type,
+            })),
+            org: {
+                company: contact.company,
+                department: contact.department,
+                title: contact.title,
+            },
+            urls: contact.urls.map((url) => ({
+                url: url.url,
+                type: url.type,
+            })),
+            addresses: contact.addresses.map((address) => ({
+                street: address.street,
+                city: address.city,
+                state: address.state,
+                zip: address.zip,
+                country: address.country,
+                country_code: address.counry_code,
+                type: address.type,
+            })),
         }))
 
         const body = {
@@ -474,10 +500,10 @@ class MetaProvider extends ProviderClass {
                 action: {
                     name: 'catalog_message',
                     parameters: {
-                        "thumbnail_product_retailer_id": itemCatalogId,
-                    }
-                }
-            }
+                        thumbnail_product_retailer_id: itemCatalogId,
+                    },
+                },
+            },
         }
         return this.sendMessageMeta(body)
     }
