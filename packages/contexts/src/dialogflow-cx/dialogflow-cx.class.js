@@ -7,8 +7,12 @@ const { join } = require('path')
  * Necesita extender de core.class
  * handleMsg(messageInComming) //   const { body, from } = messageInComming
  */
+//Darle al usuario la opcion de no publicar sus claves de Google y pasarlas como variable de entorno
+let GOOGLE_ACCOUNT_PATH = join(process.cwd(), 'google-key.json');
 
-const GOOGLE_ACCOUNT_PATH = join(process.cwd(), 'google-key.json')
+if (!fs.existsSync(googleKeyFilePath)) {
+    GOOGLE_ACCOUNT_PATH = JSON.parse(process.env.GOOGLE_KEY_JSON);
+}
 
 class DialogFlowCXContext extends CoreClass {
     // Opciones del usuario
