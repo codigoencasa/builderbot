@@ -557,8 +557,8 @@ class MetaProvider extends ProviderClass {
             location: {
                 longitude: localization.long_number,
                 latitude: localization.lat_number,
-                name: localization.location_name,
-                address: localization.location_address,
+                name: localization.name,
+                address: localization.address,
             },
         }
         return this.sendMessageMeta(body)
