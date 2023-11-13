@@ -7,6 +7,7 @@ const { generalDownload } = require('../../common/download')
 const { convertAudio } = require('../utils/convertAudio')
 const MetaWebHookServer = require('./server')
 const URL = `https://graph.facebook.com`
+const Queue = require('queue-promise')
 
 /**
  * ⚙️MetaProvider: Es un provedor que te ofrece enviar
@@ -38,6 +39,12 @@ class MetaProvider extends ProviderClass {
         for (const { event, func } of listEvents) {
             this.metHook.on(event, func)
         }
+
+        this.queue = new Queue({
+            concurrent: 1, // Cantidad de tareas que se ejecutarán en paralelo
+            interval: 100, // Intervalo entre tareas
+            start: true, // Iniciar la cola automáticamente
+        })
     }
 
     /**
@@ -63,11 +70,22 @@ class MetaProvider extends ProviderClass {
     ]
 
     /**
-     * Enviar directo a META
-     * @param {*} body
-     * @returns
+     * Sends a message with metadata to the API.
+     *
+     * @param {Object} body - The body of the message.
+     * @return {Promise} A Promise that resolves when the message is sent.
      */
-    sendMessageMeta = async (body) => {
+    sendMessageMeta(body) {
+        return this.queue.add(() => this.sendMessageToApi(body))
+    }
+
+    /**
+     * Sends a message to the API.
+     *
+     * @param {Object} body - The body of the message.
+     * @return {Object} The response data from the API.
+     */
+    async sendMessageToApi(body) {
         try {
             const response = await axios.post(`${URL}/${this.version}/${this.numberId}/messages`, body, {
                 headers: {
@@ -76,8 +94,8 @@ class MetaProvider extends ProviderClass {
             })
             return response.data
         } catch (error) {
-            console.log(error)
-            return Promise.resolve(error)
+            console.error(error)
+            throw error
         }
     }
 
