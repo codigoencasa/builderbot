@@ -521,6 +521,48 @@ class MetaProvider extends ProviderClass {
 
         this.sendtext(number, message)
     }
+
+    /**
+     * Enviar reacción a un mensaje
+     * @param {*} number
+     * @param {*} react
+     */
+    sendReaction = async (number, react) => {
+        const body = {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to: number,
+            type: 'reaction',
+            reaction: {
+                message_id: react.message_id,
+                emoji: react.emoji,
+            },
+        }
+        return this.sendMessageMeta(body)
+    }
+
+    /**
+     * Enviar Ubicación
+     * @param {*} longitude
+     * @param {*} latitude
+     * @param {*} name
+     * @param {*} address
+     * @returns
+     */
+    sendLocation = async (number, localization) => {
+        const body = {
+            messaging_product: 'whatsapp',
+            to: number,
+            type: 'location',
+            location: {
+                longitude: localization.long_number,
+                latitude: localization.lat_number,
+                name: localization.location_name,
+                address: localization.location_address,
+            },
+        }
+        return this.sendMessageMeta(body)
+    }
 }
 
 module.exports = MetaProvider
