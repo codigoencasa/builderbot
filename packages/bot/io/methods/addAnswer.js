@@ -23,6 +23,7 @@ const addAnswer =
             child: typeof options?.child === 'string' ? `${options?.child}` : null,
             delay: typeof options?.delay === 'number' ? options?.delay : 0,
             idle: typeof options?.idle === 'number' ? options?.idle : null,
+            ref: typeof options?.ref === 'string' ? options?.ref : null,
         })
 
         const getNested = () => {
@@ -57,14 +58,13 @@ const addAnswer =
          * @returns
          */
         const ctxAnswer = () => {
-            const ref = `ans_${generateRef()}`
-
             const options = {
                 ...getAnswerOptions(),
                 ...getNested(),
                 keyword: {},
                 callback: !!cb,
             }
+            const ref = options?.ref ?? `ans_${generateRef()}`
 
             const json = [].concat(inCtx.json).concat([
                 {

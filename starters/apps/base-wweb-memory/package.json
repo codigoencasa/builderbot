@@ -16,6 +16,10 @@
         "@bot-whatsapp/portal": "latest",
         "whatsapp-web.js": "^1.22.1"
     },
+    "devDependencies": {
+        "eslint-plugin-bot-whatsapp": "latest",
+        "eslint": "^8.52.0"
+    },
     "author": "",
     "license": "ISC"
 }

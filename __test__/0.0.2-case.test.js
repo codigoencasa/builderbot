@@ -21,13 +21,13 @@ suiteCase(`Debe saltar de flujo`, async ({ database, provider }) => {
         })
         .addAnswer('este mensaje no deberia existir')
 
-    createBot({
+    await createBot({
         database,
         flow: createFlow([flujoBienvenida]),
         provider,
     })
 
-    await provider.delaySendMessage(0, 'message', {
+    await provider.delaySendMessage(50, 'message', {
         from: '000',
         body: 'hola',
     })
@@ -52,7 +52,7 @@ suiteCase(`Debe saltar de flujo con capture sin flowDynamic`, async ({ database,
         })
         .addAnswer('este mensaje no deberia existir')
 
-    createBot({
+    await createBot({
         database,
         flow: createFlow([flujoBienvenida]),
         provider,
@@ -90,7 +90,7 @@ suiteCase(`Debe saltar de flujo con capture con flowDynamic`, async ({ database,
         })
         .addAnswer('este mensaje no deberia existir')
 
-    createBot({
+    await createBot({
         database,
         flow: createFlow([flujoBienvenida]),
         provider,

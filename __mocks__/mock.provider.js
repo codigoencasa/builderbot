@@ -1,16 +1,14 @@
 const ProviderClass = require('../packages/bot/provider/provider.class')
+const { delay } = require('./env')
 class MockProvider extends ProviderClass {
     constructor() {
         super()
     }
 
-    delaySendMessage = (miliseconds, eventName, payload) =>
-        new Promise((res) =>
-            setTimeout(() => {
-                this.emit(eventName, payload)
-                res
-            }, miliseconds)
-        )
+    delaySendMessage = async (miliseconds, eventName, payload) => {
+        await delay(miliseconds)
+        this.emit(eventName, payload)
+    }
 
     sendMessage = async (userId, message) => {
         console.log(`Enviando... ${userId}, ${message}`)

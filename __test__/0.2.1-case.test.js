@@ -29,12 +29,12 @@ suiteCase(`Prevenir enviar mensaje luego de inactividad (2seg)`, async ({ databa
         provider,
     })
 
-    await provider.delaySendMessage(0, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'hola',
     })
 
-    await provider.delaySendMessage(50, 'message', {
+    await provider.delaySendMessage(150, 'message', {
         from: '000',
         body: 'mensaje al segundo',
     })
@@ -68,7 +68,7 @@ suiteCase(`Enviar mensaje luego de inactividad (2seg)`, async ({ database, provi
         provider,
     })
 
-    await provider.delaySendMessage(0, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'hola',
     })
@@ -87,23 +87,27 @@ suiteCase(`Enviar mensajes con ambos casos de idle`, async ({ database, provider
             await flowDynamic(`Empezemos de nuevo.`)
             await flowDynamic(`Cual es el numero de orden? tienes dos segundos para responder...`)
         })
-        .addAction({ capture: true, idle: 2000 }, async (ctx, { flowDynamic }) => {
+        .addAction({ capture: true, idle: 2000, ref: '🙉🙉🙉🙉🙉🙉🙉🙉' }, async (ctx, { flowDynamic }) => {
             if (ctx?.idleFallBack) {
+                console.log(`[seundo desvio]`)
+                console.log(`[idleFallBack]:`, ctx)
                 return flowDynamic(`BYE!`)
             }
             await flowDynamic(`Ok el numero que escribiste es ${ctx.body}`)
         })
         .addAnswer('gracias!')
 
-    const flujoPrincipal = addKeyword(['hola']).addAnswer(
-        'Hola tienes 2 segundos para responder si no te pedire de nuevo otro dato',
-        { idle: 2000, capture: true },
-        async (ctx, { gotoFlow }) => {
-            if (ctx?.idleFallBack) {
-                return gotoFlow(flujoFinal)
+    const flujoPrincipal = addKeyword(['hola'])
+        .addAnswer(
+            'Hola tienes 2 segundos para responder si no te pedire de nuevo otro dato',
+            { idle: 2000, capture: true, ref: '😪😪😪😪😪😪' },
+            async (ctx, { gotoFlow }) => {
+                if (ctx?.idleFallBack) {
+                    return gotoFlow(flujoFinal)
+                }
             }
-        }
-    )
+        )
+        .addAnswer('Esto no debe de existir')
 
     await createBot({
         database,
@@ -111,13 +115,12 @@ suiteCase(`Enviar mensajes con ambos casos de idle`, async ({ database, provider
         provider,
     })
 
-    await provider.delaySendMessage(0, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'hola',
     })
 
-    await delay(2100)
-    await provider.delaySendMessage(0, 'message', {
+    await provider.delaySendMessage(3000, 'message', {
         from: '000',
         body: 'el numero es 444',
     })
@@ -128,13 +131,56 @@ suiteCase(`Enviar mensajes con ambos casos de idle`, async ({ database, provider
     assert.is('Hola tienes 2 segundos para responder si no te pedire de nuevo otro dato', getHistory[0])
     assert.is('Se cancelo por inactividad', getHistory[1])
     assert.is('__call_action__', getHistory[2])
-    assert.is('Empezemos de nuevo.', getHistory[3])
-    assert.is('Cual es el numero de orden? tienes dos segundos para responder...', getHistory[4])
-    assert.is('__capture_only_intended__', getHistory[5])
+    assert.is('__capture_only_intended__', getHistory[3])
+    assert.is('Empezemos de nuevo.', getHistory[4])
+    assert.is('Cual es el numero de orden? tienes dos segundos para responder...', getHistory[5])
     assert.is('el numero es 444', getHistory[6])
     assert.is('Ok el numero que escribiste es el numero es 444', getHistory[7])
     assert.is('gracias!', getHistory[8])
     assert.is(undefined, getHistory[9])
+})
+
+suiteCase(`Enviar mensaje con gotoFlow anidados`, async ({ database, provider }) => {
+    const flujoA = addKeyword(EVENTS.WELCOME)
+        .addAnswer('Bievenido!')
+        .addAction(async (_, { gotoFlow }) => {
+            return gotoFlow(flujoB)
+        })
+
+    const flujoB = addKeyword(EVENTS.ACTION)
+        .addAnswer(
+            'Esto debe responderse en menos de 2 seg',
+            { idle: 2000, capture: true },
+            async (ctx, { gotoFlow }) => {
+                if (ctx?.idleFallBack) {
+                    return gotoFlow(flujoC)
+                }
+            }
+        )
+        .addAnswer('Respondiste!!')
+
+    const flujoC = addKeyword(EVENTS.ACTION).addAnswer('Chaooo paso el tiempo')
+
+    await createBot({
+        database,
+        flow: createFlow([flujoA, flujoB, flujoC]),
+        provider,
+    })
+
+    await provider.delaySendMessage(100, 'message', {
+        from: '000',
+        body: 'hola',
+    })
+
+    await delay(5000)
+
+    const getHistory = database.listHistory.map((i) => i.answer)
+    assert.is('Bievenido!', getHistory[0])
+    assert.is('__call_action__', getHistory[1])
+    assert.is('__call_action__', getHistory[2])
+    assert.is('Esto debe responderse en menos de 2 seg', getHistory[3])
+    assert.is('Chaooo paso el tiempo', getHistory[4])
+    assert.is(undefined, getHistory[5])
 })
 
 suiteCase.run()
