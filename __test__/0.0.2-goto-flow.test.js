@@ -8,7 +8,7 @@ const testSuite = suite('Flujo: manejo de goto')
 testSuite.before.each(setup)
 testSuite.after.each(clear)
 
-testSuite.skip(`Debe saltar de flujo siguiente`, async ({ database, provider }) => {
+testSuite(`Debe saltar de flujo siguiente`, async ({ database, provider }) => {
     const userRegisteredFlow = addKeyword(['user_register'])
         .addAnswer('Hola usuario registrado')
         .addAnswer('como estas usuario registrado')
@@ -41,7 +41,7 @@ testSuite.skip(`Debe saltar de flujo siguiente`, async ({ database, provider }) 
     assert.is(undefined, history[4])
 })
 
-testSuite.skip(`Debe saltar de flujo con capture sin flowDynamic`, async ({ database, provider }) => {
+testSuite(`Debe saltar de flujo con capture sin flowDynamic`, async ({ database, provider }) => {
     const userRegisteredFlow = addKeyword(['user_register'])
         .addAnswer('Hola usuario registrado')
         .addAnswer('como estas usuario registrado')
@@ -77,7 +77,7 @@ testSuite.skip(`Debe saltar de flujo con capture sin flowDynamic`, async ({ data
     assert.is(undefined, history[4])
 })
 
-testSuite.skip(`Debe saltar de flujo con capture con flowDynamic`, async ({ database, provider }) => {
+testSuite(`Debe saltar de flujo con capture con flowDynamic`, async ({ database, provider }) => {
     const userRegisteredFlow = addKeyword(['user_register'])
         .addAnswer('Hola usuario registrado')
         .addAnswer('como estas usuario registrado')
