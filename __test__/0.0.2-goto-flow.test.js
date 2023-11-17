@@ -238,4 +238,32 @@ testSuite(`Debe de continuar el el encadenamiento con procesos async`, async ({ 
     assert.is(undefined, history[96])
 })
 
+//Issue https://github.com/codigoencasa/bot-whatsapp/issues/877
+testSuite(`Debe respectar el delay del node previo`, async ({ database, provider }) => {
+    const flowPing = addKeyword(['hi']).addAction(async (_, { flowDynamic, gotoFlow }) => {
+        await flowDynamic('Buenas ping debe espera 1segundo')
+        return gotoFlow(flowBye)
+    })
+
+    const flowBye = addKeyword('ping').addAnswer(`Pong con delay 1 segundo`, { delay: 1000 })
+
+    await createBot({
+        database,
+        flow: createFlow([flowPing, flowBye]),
+        provider,
+    })
+
+    await provider.delaySendMessage(0, 'message', {
+        from: '000',
+        body: 'hi',
+    })
+
+    await delay(2000)
+    const history = database.listHistory.map((item) => item.answer)
+    assert.is('__call_action__', history[0])
+    assert.is('Buenas ping debe espera 1segundo', history[1])
+    assert.is('Pong con delay 1 segundo', history[2])
+    assert.is(undefined, history[3])
+})
+
 testSuite.run()
