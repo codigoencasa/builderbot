@@ -25,7 +25,7 @@
         "build": "pnpm run cli:rollup && pnpm run bot:rollup && pnpm run provider:rollup && pnpm run database:rollup && pnpm run contexts:rollup && pnpm run create-bot-whatsapp:rollup && pnpm run portal:rollup && pnpm run eslint-plugin:rollup",
         "copy.lib": "node ./scripts/move.js",
         "test.unit": "node ./node_modules/uvu/bin.js packages test",
-        "test.e2e": "node ./node_modules/uvu/bin.js __test__",
+        "test.e2e": "node ./node_modules/uvu/bin.js __test__ 0.0.2-case.test.js",
         "test.coverage": "node ./node_modules/c8/bin/c8.js npm run test.unit",
         "test": "npm run test.coverage",
         "cli": "node ./packages/cli/bin/cli.js",
