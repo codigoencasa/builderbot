@@ -3,13 +3,6 @@ const { SessionsClient } = require('@google-cloud/dialogflow-cx').v3beta1
 const { existsSync, readFileSync } = require('fs')
 const { join } = require('path')
 
-/**
- * Necesita extender de core.class
- * handleMsg(messageInComming) //   const { body, from } = messageInComming
- */
-
-const GOOGLE_ACCOUNT_PATH = join(process.cwd(), 'google-key.json')
-
 class DialogFlowCXContext extends CoreClass {
     // Opciones del usuario
     optionsDX = {
@@ -18,7 +11,6 @@ class DialogFlowCXContext extends CoreClass {
         agentId: '',
     }
     projectId = null
-    configuration = null
     sessionClient = null
 
     constructor(_database, _provider, _optionsDX = {}) {
@@ -31,26 +23,32 @@ class DialogFlowCXContext extends CoreClass {
      * Verificar conexión con servicio de DialogFlow
      */
     init = () => {
-        if (!existsSync(GOOGLE_ACCOUNT_PATH)) {
-            console.log(`[ERROR]: No se encontro ${GOOGLE_ACCOUNT_PATH}`)
-            /**
-             * Emitir evento de error para que se mueste por consola dicinedo que no tiene el json
-             *  */
+        let credentials;
+        const googleKeyFilePath = join(process.cwd(), 'google-key.json');
+
+        if (existsSync(googleKeyFilePath)) {
+            const rawJson = readFileSync(googleKeyFilePath, 'utf-8');
+            credentials = JSON.parse(rawJson);
+        } else if (process.env.GOOGLE_KEY_JSON) {
+            credentials = JSON.parse(process.env.GOOGLE_KEY_JSON);
+        } else {
+            throw new Error('Google key configuration not found');
         }
 
-        if (!this.optionsDX.location.length) throw new Error('LOCATION_NO_ENCONTRADO')
-        if (!this.optionsDX.agentId.length) throw new Error('AGENTID_NO_ENCONTRADO')
+        if (!this.optionsDX.location.length) throw new Error('LOCATION_NO_ENCONTRADO');
+        if (!this.optionsDX.agentId.length) throw new Error('AGENTID_NO_ENCONTRADO');
 
-        const rawJson = readFileSync(GOOGLE_ACCOUNT_PATH, 'utf-8')
-        const { project_id, private_key, client_email } = JSON.parse(rawJson)
+        const { project_id, private_key, client_email } = credentials;
 
-        this.projectId = project_id
+        this.projectId = project_id;
 
         this.sessionClient = new SessionsClient({
             credentials: { private_key, client_email },
             apiEndpoint: `${this.optionsDX.location}-dialogflow.googleapis.com`,
-        })
+        });
     }
+
+
 
     /**
      * GLOSSARY.md

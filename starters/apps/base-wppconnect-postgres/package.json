@@ -4,6 +4,7 @@
     "description": "",
     "main": "app.js",
     "scripts": {
+        "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-wppconnect-postgres",
         "start": "node app.js"
     },
@@ -14,7 +15,7 @@
         "@bot-whatsapp/database": "latest",
         "@bot-whatsapp/portal": "latest",
         "@bot-whatsapp/provider": "latest",
-        "@wppconnect-team/wppconnect": "1.22.0",
+        "@wppconnect-team/wppconnect": "1.28.3",
         "mime-types": "2.1.35",
         "pg": "^8.11.2"
     },

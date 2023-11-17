@@ -4,12 +4,13 @@
     "description": "",
     "main": "app.js",
     "scripts": {
+        "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-venom-memory",
         "start": "node app.js"
     },
     "keywords": [],
     "dependencies": {
-        "venom-bot": "4.3.7",
+        "venom-bot": "5.0.21",
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",

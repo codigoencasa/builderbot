@@ -139,10 +139,13 @@ class VenomProvider extends ProviderClass {
      * @returns
      */
     sendButtons = async (number, message, buttons = []) => {
-        const NOTE_VENOM_BUTTON = [`Actualmente VENOM tiene problemas con la API`, `para el envio de Botones`].join(
-            '\n'
+        this.emit(
+            'notice',
+            [
+                `[NOTA]: Actualmente enviar botones no esta disponible con este proveedor`,
+                `[NOTA]: esta funcion esta disponible con Meta o Twilio`,
+            ].join('\n')
         )
-        this.emit('notice', NOTE_VENOM_BUTTON)
         const buttonToStr = [message].concat(buttons.map((btn) => `${btn.body}`)).join(`\n`)
         return this.vendor.sendText(number, buttonToStr)
         // return this.vendor.sendButtons(number, "Title", buttons1, "Description");

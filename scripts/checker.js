@@ -61,6 +61,12 @@ const checkEveryProvider = async (provider = '', stable = true) => {
         const devParse = Object.entries(dependencies)
         const newDevParse = {}
         for (const [pkgName, pkgVersion] of devParse) {
+            if (!pkgVersion.includes('^')) {
+                newDevParse[pkgName] = pkgVersion
+                continue
+            }
+            console.log(`[VERSION]:${pkgVersion}`)
+
             if (!stable) newDevParse[pkgName] = await checkPkg(pkgName)
             if (stable) newDevParse[pkgName] = await checkPkgStable(pkgName, pkgVersion)
 

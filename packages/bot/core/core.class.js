@@ -295,7 +295,7 @@ class CoreClass extends EventEmitter {
 
                 if (!flowInstance?.toJson) {
                     printer([
-                        `[CIRCULAR_DEPENDENCY]: Se ha detectado una dependencia circular.`,
+                        `[POSSIBLE_CIRCULAR_DEPENDENCY]: Se ha detectado una dependencia circular.`,
                         `Para evitar problemas, te recomendamos utilizar 'require'('./ruta_del_flow')`,
                         `Ejemplo:  gotoFlow(helloFlow) -->  gotoFlow(require('./flows/helloFlow.js'))`,
                         `[INFO]: https://bot-whatsapp.netlify.app/docs/goto-flow/`,
@@ -303,13 +303,11 @@ class CoreClass extends EventEmitter {
                     return
                 }
 
+                await delay(flowInstance?.ctx?.options?.delay ?? 0)
+
                 const flowTree = flowInstance.toJson()
 
                 const flowParentId = flowTree[step]
-
-                if (endFlowFlag) {
-                    return
-                }
 
                 const parseListMsg = await this.flowClass.find(flowParentId?.ref, true, flowTree)
 

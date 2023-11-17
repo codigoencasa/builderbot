@@ -4,12 +4,13 @@
     "description": "",
     "main": "app.js",
     "scripts": {
+        "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-wweb-postgres",
         "start": "node app.js"
     },
     "keywords": [],
     "dependencies": {
-        "whatsapp-web.js": "1.19.4",
+        "whatsapp-web.js": "1.23.0",
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",
