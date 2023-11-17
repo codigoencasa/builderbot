@@ -138,6 +138,14 @@ class WPPConnectProviderClass extends ProviderClass {
      * @example await sendButtons("+XXXXXXXXXXX", "Your Text", [{"body": "Button 1"},{"body": "Button 2"}])
      */
     sendButtons = async (number, text, buttons) => {
+        this.emit(
+            'notice',
+            [
+                `[NOTA]: Actualmente enviar botones no esta disponible con este proveedor`,
+                `[NOTA]: esta funcion esta disponible con Meta o Twilio`,
+            ].join('\n')
+        )
+
         const templateButtons = buttons.map((btn, i) => ({
             id: `id-btn-${i}`,
             text: btn.body,
