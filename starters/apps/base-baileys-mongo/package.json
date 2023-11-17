@@ -4,6 +4,7 @@
     "description": "",
     "main": "app.js",
     "scripts": {
+        "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-baileys-mongo",
         "start": "node app.js"
     },
@@ -16,8 +17,9 @@
         "@bot-whatsapp/portal": "latest",
         "mime-types": "2.1.35",
         "mongodb": "^4.12.1",
-        "@whiskeysockets/baileys": "^6.4.0",
-        "wa-sticker-formatter": "4.3.2"
+        "@whiskeysockets/baileys": "6.5.0",
+        "wa-sticker-formatter": "4.4.4",
+        "cache-manager": "5.2.4"
     },
     "devDependencies": {
         "eslint-plugin-bot-whatsapp": "latest",

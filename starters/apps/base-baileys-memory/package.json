@@ -4,6 +4,7 @@
     "description": "",
     "main": "app.js",
     "scripts": {
+        "prestart": "npx eslint .",
         "pre-copy": "cd .. && npm run  copy.lib base-baileys-memory",
         "start": "node app.js"
     },
@@ -14,8 +15,9 @@
         "@bot-whatsapp/database": "latest",
         "@bot-whatsapp/provider": "latest",
         "@bot-whatsapp/portal": "latest",
-        "@whiskeysockets/baileys": "^6.4.0",
-        "wa-sticker-formatter": "4.3.2"
+        "@whiskeysockets/baileys": "6.5.0",
+        "wa-sticker-formatter": "4.4.4",
+        "cache-manager": "5.2.4"
     },
     "devDependencies": {
         "eslint-plugin-bot-whatsapp": "latest",
