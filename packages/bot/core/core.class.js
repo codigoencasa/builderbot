@@ -292,6 +292,7 @@ class CoreClass extends EventEmitter {
             async (flowInstance, step = 0) => {
                 const promises = []
                 flag.gotoFlow = true
+
                 if (!flowInstance?.toJson) {
                     printer([
                         `[POSSIBLE_CIRCULAR_DEPENDENCY]: Se ha detectado una dependencia circular.`,
@@ -301,6 +302,8 @@ class CoreClass extends EventEmitter {
                     ])
                     return
                 }
+
+                await delay(flowInstance?.ctx?.options?.delay ?? 0)
 
                 const flowTree = flowInstance.toJson()
 
@@ -316,6 +319,7 @@ class CoreClass extends EventEmitter {
                     // Enviar el mensaje al proveedor y guardarlo
                     await this.sendProviderAndSave(from, ctxMessage).then(() => promises.push(ctxMessage))
                 }
+
                 await endFlow(flag)(promises)
 
                 return
