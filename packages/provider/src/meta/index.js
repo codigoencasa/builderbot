@@ -7,6 +7,7 @@ const { generalDownload } = require('../../common/download')
 const { convertAudio } = require('../utils/convertAudio')
 const MetaWebHookServer = require('./server')
 const URL = `https://graph.facebook.com`
+const Queue = require('queue-promise')
 
 /**
  * ⚙️MetaProvider: Es un provedor que te ofrece enviar
@@ -38,6 +39,12 @@ class MetaProvider extends ProviderClass {
         for (const { event, func } of listEvents) {
             this.metHook.on(event, func)
         }
+
+        this.queue = new Queue({
+            concurrent: 1, // Cantidad de tareas que se ejecutarán en paralelo
+            interval: 100, // Intervalo entre tareas
+            start: true, // Iniciar la cola automáticamente
+        })
     }
 
     /**
@@ -63,11 +70,22 @@ class MetaProvider extends ProviderClass {
     ]
 
     /**
-     * Enviar directo a META
-     * @param {*} body
-     * @returns
+     * Sends a message with metadata to the API.
+     *
+     * @param {Object} body - The body of the message.
+     * @return {Promise} A Promise that resolves when the message is sent.
      */
-    sendMessageMeta = async (body) => {
+    sendMessageMeta(body) {
+        return this.queue.add(() => this.sendMessageToApi(body))
+    }
+
+    /**
+     * Sends a message to the API.
+     *
+     * @param {Object} body - The body of the message.
+     * @return {Object} The response data from the API.
+     */
+    async sendMessageToApi(body) {
         try {
             const response = await axios.post(`${URL}/${this.version}/${this.numberId}/messages`, body, {
                 headers: {
@@ -76,8 +94,8 @@ class MetaProvider extends ProviderClass {
             })
             return response.data
         } catch (error) {
-            console.log(error)
-            return Promise.resolve(error)
+            console.error(error)
+            throw error
         }
     }
 
@@ -394,14 +412,14 @@ class MetaProvider extends ProviderClass {
                                 text: 'text-string',
                             },
                             {
-                                type: "currency",
+                                type: 'currency',
                                 currency: {
-                                    fallback_value: "$100.99",
-                                    code: "USD",
-                                    amount_1000: 100990
-                                }
+                                    fallback_value: '$100.99',
+                                    code: 'USD',
+                                    amount_1000: 100990,
+                                },
                             },
-                        ]
+                        ],
                     },
                     {
                         type: 'button',
@@ -410,13 +428,13 @@ class MetaProvider extends ProviderClass {
                         parameters: [
                             {
                                 type: 'payload',
-                                payload: 'aGlzIHRoaXMgaXMgY29v'
+                                payload: 'aGlzIHRoaXMgaXMgY29v',
                             },
                         ],
                     },
-                ]
+                ],
             },
-        };
+        }
         return this.sendMessageMeta(body)
     }
 
@@ -431,14 +449,40 @@ class MetaProvider extends ProviderClass {
         const parseContacts = contact.map((contact) => ({
             name: {
                 formatted_name: contact.name,
+                first_name: contact.first_name,
+                last_name: contact.last_name,
+                middle_name: contact.middle_name,
+                suffix: contact.suffix,
+                prefix: contact.prefix,
             },
-            phone: [
-                {
-                    phone: contact.phone,
-                    wa_id: contact.phone,
-                    type: 'MOBILE',
-                },
-            ],
+            birthday: contact.birthday,
+            phones: contact.phones.map((phone) => ({
+                phone: phone.phone,
+                wa_id: phone.wa_id,
+                type: phone.type,
+            })),
+            emails: contact.emails.map((email) => ({
+                email: email.email,
+                type: email.type,
+            })),
+            org: {
+                company: contact.company,
+                department: contact.department,
+                title: contact.title,
+            },
+            urls: contact.urls.map((url) => ({
+                url: url.url,
+                type: url.type,
+            })),
+            addresses: contact.addresses.map((address) => ({
+                street: address.street,
+                city: address.city,
+                state: address.state,
+                zip: address.zip,
+                country: address.country,
+                country_code: address.counry_code,
+                type: address.type,
+            })),
         }))
 
         const body = {
@@ -474,10 +518,10 @@ class MetaProvider extends ProviderClass {
                 action: {
                     name: 'catalog_message',
                     parameters: {
-                        "thumbnail_product_retailer_id": itemCatalogId,
-                    }
-                }
-            }
+                        thumbnail_product_retailer_id: itemCatalogId,
+                    },
+                },
+            },
         }
         return this.sendMessageMeta(body)
     }
@@ -494,6 +538,48 @@ class MetaProvider extends ProviderClass {
         if (options?.media) return this.sendMedia(number, message, options.media)
 
         this.sendtext(number, message)
+    }
+
+    /**
+     * Enviar reacción a un mensaje
+     * @param {*} number
+     * @param {*} react
+     */
+    sendReaction = async (number, react) => {
+        const body = {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to: number,
+            type: 'reaction',
+            reaction: {
+                message_id: react.message_id,
+                emoji: react.emoji,
+            },
+        }
+        return this.sendMessageMeta(body)
+    }
+
+    /**
+     * Enviar Ubicación
+     * @param {*} longitude
+     * @param {*} latitude
+     * @param {*} name
+     * @param {*} address
+     * @returns
+     */
+    sendLocation = async (number, localization) => {
+        const body = {
+            messaging_product: 'whatsapp',
+            to: number,
+            type: 'location',
+            location: {
+                longitude: localization.long_number,
+                latitude: localization.lat_number,
+                name: localization.name,
+                address: localization.address,
+            },
+        }
+        return this.sendMessageMeta(body)
     }
 }
 

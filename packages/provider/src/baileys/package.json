@@ -1,6 +1,7 @@
 {
     "dependencies": {
-        "@whiskeysockets/baileys": "^6.5.0",
-        "wa-sticker-formatter": "4.3.2"
+        "@whiskeysockets/baileys": "6.5.0",
+        "wa-sticker-formatter": "4.4.4",
+        "cache-manager": "5.2.4"
     }
 }

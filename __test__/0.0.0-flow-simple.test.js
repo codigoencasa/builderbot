@@ -3,18 +3,18 @@ const assert = require('uvu/assert')
 const { addKeyword, createBot, createFlow } = require('../packages/bot/index')
 const { setup, clear, delay } = require('../__mocks__/env')
 
-const suiteCase = suite('Flujo: Simple')
+const testSuite = suite('Flujo: Simple')
 
-suiteCase.before.each(setup)
-suiteCase.after.each(clear)
+testSuite.before.each(setup)
+testSuite.after.each(clear)
 
-suiteCase(`Responder a "hola"`, async ({ database, provider }) => {
-    const flow = addKeyword('hola').addAnswer('Buenas!').addAnswer('Como vamos!')
+testSuite(`Responder a "hola"`, async ({ database, provider }) => {
+    const helloFlow = addKeyword('hola').addAnswer('Buenas!').addAnswer('Como vamos!')
 
     await createBot({
         database,
         provider,
-        flow: createFlow([flow]),
+        flow: createFlow([helloFlow]),
     })
 
     await provider.delaySendMessage(0, 'message', {
@@ -23,18 +23,19 @@ suiteCase(`Responder a "hola"`, async ({ database, provider }) => {
     })
 
     await delay(50)
+
     assert.is('Buenas!', database.listHistory[0].answer)
     assert.is('Como vamos!', database.listHistory[1].answer)
     assert.is(undefined, database.listHistory[2])
 })
 
-suiteCase(`NO reponder a "pepe"`, async ({ database, provider }) => {
-    const flow = addKeyword('hola').addAnswer('Buenas!').addAnswer('Como vamos!')
+testSuite(`NO responder a "pepe"`, async ({ database, provider }) => {
+    const helloFlow = addKeyword('hola').addAnswer('Buenas!').addAnswer('Como vamos!')
 
     await createBot({
         database,
         provider,
-        flow: createFlow([flow]),
+        flow: createFlow([helloFlow]),
     })
 
     await provider.delaySendMessage(0, 'message', {
@@ -48,4 +49,4 @@ suiteCase(`NO reponder a "pepe"`, async ({ database, provider }) => {
     assert.is(undefined, database.listHistory[1])
 })
 
-suiteCase.run()
+testSuite.run()

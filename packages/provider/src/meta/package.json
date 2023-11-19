@@ -1,5 +1,6 @@
 {
     "dependencies": {
-        "form-data": "^4.0.0"
+        "form-data": "4.0.0",
+        "queue-promise": "2.2.1"
     }
 }

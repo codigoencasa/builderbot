@@ -394,6 +394,13 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendButtons = async (number, text, buttons) => {
+        this.emit(
+            'notice',
+            [
+                `[NOTA]: Actualmente enviar botones no esta disponible con este proveedor`,
+                `[NOTA]: esta funcion esta disponible con Meta o Twilio`,
+            ].join('\n')
+        )
         const numberClean = baileyCleanNumber(number)
 
         const templateButtons = buttons.map((btn, i) => ({

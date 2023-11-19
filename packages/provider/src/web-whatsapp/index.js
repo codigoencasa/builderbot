@@ -127,6 +127,13 @@ class WebWhatsappProvider extends ProviderClass {
      * @returns
      */
     sendButtons = async (number, message, buttons = []) => {
+        this.emit(
+            'notice',
+            [
+                `[NOTA]: Actualmente enviar botones no esta disponible con este proveedor`,
+                `[NOTA]: esta funcion esta disponible con Meta o Twilio`,
+            ].join('\n')
+        )
         const buttonMessage = new Buttons(message, buttons, '', '')
         return this.vendor.sendMessage(number, buttonMessage)
     }

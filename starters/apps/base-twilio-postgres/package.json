@@ -4,6 +4,7 @@
     "description": "",
     "main": "app.js",
     "scripts": {
+        "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-twilio-postgres",
         "start": "node app.js"
     },
@@ -11,7 +12,7 @@
     "dependencies": {
         "body-parser": "^1.20.1",
         "polka": "^0.5.2",
-        "twilio": "3.84.1",
+        "twilio": "4.19.0",
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database": "latest",

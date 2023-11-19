@@ -4,6 +4,7 @@
     "description": "",
     "main": "app.js",
     "scripts": {
+        "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-meta-mysql",
         "start": "node app.js"
     },
@@ -16,7 +17,9 @@
         "@bot-whatsapp/database": "latest",
         "@bot-whatsapp/provider": "latest",
         "axios": "^1.2.1",
-        "mysql2": "^2.3.3"
+        "mysql2": "^2.3.3",
+        "form-data": "4.0.0",
+        "queue-promise": "2.2.1"
     },
     "devDependencies": {
         "eslint-plugin-bot-whatsapp": "latest",
