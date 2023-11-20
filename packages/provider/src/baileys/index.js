@@ -483,34 +483,62 @@ class BaileysProvider extends ProviderClass {
 
     /**
      * @param {string} remoteJid
-     * @param {string} contactNumber
-     * @param {string} displayName
+     * @param {object} datos
+     * @param {string} datos.contactNumber
+     * @param {string} datos.displayName
+     * @param {string} datos.birthday
+     * @param {string} datos.orgName
+     * @param {string} datos.address
+     * @param {string} datos.email
+     * @param {string} datos.URLWork
+     * @param {string} datos.URLHome
      * @param {any} messages - optional
-     * @example await sendContact("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "+xxxxxxxxxxx", "Robin Smith", messages)
+     * @example await sendContact("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", {
+     *   contactNumber: "+xxxxxxxxxxx",
+     *   displayName: "Robin Smith",
+     *   //...otros datos
+     * }, messages)
      */
 
-    sendContact = async (remoteJid, contactNumber, displayName, messages = null) => {
-        const cleanContactNumber = contactNumber.replaceAll(' ', '')
-        const waid = cleanContactNumber.replace('+', '')
+    sendContact = async (remoteJid, datos, messages = null) => {
+        const { contactNumberCell, contactNumberHome, name, displayName, birthday, orgName, address, email, URLWork, URLHome } = datos;
+        const cleanContactNumberCell = contactNumberCell ? contactNumberCell.replaceAll(' ', '') : '';
+        const waidCell = contactNumberCell ? cleanContactNumberCell.replace('+', '') : '';
+        const cleanContactNumberHome = contactNumberHome ? contactNumberHome.replaceAll(' ', '') : '';
+        const waidHome = contactNumberHome ? cleanContactNumberHome.replace('+', '') : '';
+        const urlWorkField = URLWork ? `URL;TYPE=work:${URLWork}\n` : '';
+        const urlHomeField = URLHome ? `URL;TYPE=home:${URLHome}\n` : '';
+        const nameField = name ? `N:${name}\n` : '';
+        const birthdayField = birthday ? `BDAY:${birthday}\n` : '';
+        const displayNameField = displayName ? `FN:${displayName}\n` : '';
+        const orgNameField = orgName ? `ORG:${orgName}\n` : '';
+        const addressField = address ? `ADR;TYPE=dom, work: ${address}\n` : '';
+        const emailField = email ? `EMAIL;TYPE=work:${email}\n` : '';
 
         const vcard =
             'BEGIN:VCARD\n' +
             'VERSION:3.0\n' +
-            `FN:${displayName}\n` +
-            'ORG:Ashoka Uni;\n' +
-            `TEL;type=CELL;type=VOICE;waid=${waid}:${cleanContactNumber}\n` +
-            'END:VCARD'
+            nameField +
+            birthdayField +
+            displayNameField +
+            orgNameField +
+            addressField +
+            emailField +
+            (contactNumberCell ? `TEL;type=CELL;type=VOICE;waid=${waidCell}:${cleanContactNumberCell}\n` : '') +
+            (contactNumberHome ? `TEL;type=HOME;type=VOICE;waid=${waidHome}:${cleanContactNumberHome}\n` : '') +
+            urlWorkField +
+            urlHomeField +
+            'END:VCARD';
 
-        await this.client.sendMessage(
+        await this.vendor.sendMessage(
             remoteJid,
             {
                 contacts: {
-                    displayName: 'XD',
                     contacts: [{ vcard }],
                 },
             },
             { quoted: messages }
-        )
+        );
 
         return { status: 'success' }
     }
@@ -521,7 +549,7 @@ class BaileysProvider extends ProviderClass {
      * @example await sendPresenceUpdate("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "recording")
      */
     sendPresenceUpdate = async (remoteJid, WAPresence) => {
-        await this.client.sendPresenceUpdate(WAPresence, remoteJid)
+        await this.vendor.sendPresenceUpdate(WAPresence, remoteJid)
     }
 
     /**
@@ -541,7 +569,7 @@ class BaileysProvider extends ProviderClass {
 
         const buffer = await sticker.toMessage()
 
-        await this.client.sendMessage(remoteJid, buffer, { quoted: messages })
+        await this.vendor.sendMessage(remoteJid, buffer, { quoted: messages })
     }
 }
 
