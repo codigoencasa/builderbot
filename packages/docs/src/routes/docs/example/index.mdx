@@ -2,7 +2,7 @@ import Navigation from '../../../components/widgets/Navigation'
 
 # Ejemplo
 
-Si copias y pegas este codigo y tu entorno de trabajo cumple con todos los requesitos te debe funcionar abajo explico muy por encima
+Si copias y pegas este código (y tu entorno de trabajo cumple con todos los [requesitos](/docs/requirements)) te debe funcionar, abajo explico muy por encima.
 
 ```js
 const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
@@ -10,13 +10,12 @@ const { createBot, createProvider, createFlow, addKeyword } = require('@bot-what
 const WebWhatsappProvider = require('@bot-whatsapp/provider/web-whatsapp')
 const MockAdapter = require('@bot-whatsapp/database/mock')
 
-const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
+const flowPrincipal = addKeyword(['hola', 'alo'])
     .addAnswer(['Hola, bienvenido a mi tienda', '¿Como puedo ayudarte?'])
     .addAnswer(['Tengo:', 'Zapatos', 'Bolsos', 'etc ...'])
 
 /**
- * Esta es la funcion importante es la que realmente inicia
- * el chatbot.
+ * Esta es la función principal, ¡Importante, es la que realmente inicia el chatbot!
  */
 const main = async () => {
     const adapterDB = new MockAdapter()
@@ -34,7 +33,7 @@ main()
 
 ## Explicando
 
-En esta parte solo estamos declarando las dependencias que vamos a utilizar. Si quieres saber a fondo cada una de las funciones te recomiendo pasarte por la seccion de **[conceptos](/docs/concepts)**
+En esta parte sólo estamos declarando las dependencias que vamos a utilizar. Si quieres saber a fondo cada una de las funciones, te recomiendo pasarte por la seccion de **[conceptos](/docs/concepts)**
 
 ```js
 const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
@@ -43,11 +42,11 @@ const WebWhatsappProvider = require('@bot-whatsapp/provider/web-whatsapp')
 const MockAdapter = require('@bot-whatsapp/database/mock')
 ```
 
-La siguiente seccion te declaramos las palabras claves que disparan un flujo de conversación.
+En la siguiente sección declaramos las palabras claves que disparán un flujo de conversación.
 
 **Ejemplo**:
 
-Si un usuario te escribe **👦hola** ó **👦alo** el bot respondera
+Si un usuario te escribe cosas como **👦hola**, **👦Hola** o **👦alo** el bot responderá (es insensible a mayúsculas)
 
 **🤖Hola, bienvenido a mi tienda, ¿Como puedo ayudarte?**
 

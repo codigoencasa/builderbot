@@ -3,18 +3,18 @@ const assert = require('uvu/assert')
 const { addKeyword, createBot, createFlow } = require('../packages/bot/index')
 const { setup, clear, delay } = require('../__mocks__/env')
 
-const suiteCase = suite('Flujo: sensitive')
+const testSuite = suite('Flujo: sensitive')
 
-suiteCase.before.each(setup)
-suiteCase.after.each(clear)
+testSuite.before.each(setup)
+testSuite.after.each(clear)
 
-suiteCase(`Responder a "ole" en minuscula`, async ({ database, provider }) => {
-    const flow = addKeyword(['ola', 'ole'], { sensitive: true }).addAnswer('Bienvenido a la OLA')
+testSuite(`Responder a "ole" en minúscula`, async ({ database, provider }) => {
+    const sensitiveFlow = addKeyword(['ola', 'ole'], { sensitive: true }).addAnswer('Bienvenido a la OLA')
 
     await createBot({
         database,
         provider,
-        flow: createFlow([flow]),
+        flow: createFlow([sensitiveFlow]),
     })
 
     await provider.delaySendMessage(0, 'message', {
@@ -28,13 +28,13 @@ suiteCase(`Responder a "ole" en minuscula`, async ({ database, provider }) => {
     assert.is(undefined, database.listHistory[1])
 })
 
-suiteCase(`NO Responder a "ole" en minuscula`, async ({ database, provider }) => {
-    const flow = addKeyword(['ola', 'ole'], { sensitive: true }).addAnswer('Bienvenido a la OLA')
+testSuite(`NO Responder a "OLE" en mayúscula`, async ({ database, provider }) => {
+    const sensitiveFlow = addKeyword(['ola', 'ole'], { sensitive: true }).addAnswer('Bienvenido a la OLA')
 
     await createBot({
         database,
         provider,
-        flow: createFlow([flow]),
+        flow: createFlow([sensitiveFlow]),
     })
 
     await provider.delaySendMessage(0, 'message', {
@@ -48,4 +48,4 @@ suiteCase(`NO Responder a "ole" en minuscula`, async ({ database, provider }) =>
     assert.is(undefined, database.listHistory[1])
 })
 
-suiteCase.run()
+testSuite.run()
