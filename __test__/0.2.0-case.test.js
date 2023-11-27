@@ -94,7 +94,6 @@ suiteCase(`Encadenanos addAction con captures and gotoFlow`, async ({ database, 
 
     const flujoTercero = addKeyword(['ordenar'])
         .addAction({ ref: `00000000000000000000000` }, async (ctx, { flowDynamic, state }) => {
-            console.log(`🔴🔴🔴🔴`)
             await flowDynamic(`Gracias por el interes`)
         })
         .addAction({ ref: `1111111111111111111` }, async (ctx, { flowDynamic }) => {
