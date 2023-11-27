@@ -12,7 +12,8 @@ class FlowClass {
 
     constructor(_flow) {
         if (!Array.isArray(_flow)) throw new Error('Esto debe ser un ARRAY')
-        this.flowRaw = this.addEndsFlows(_flow)
+        // this.flowRaw = this.addEndsFlows(_flow)
+        this.flowRaw = _flow
 
         this.allCallbacks = flatObject(_flow)
 

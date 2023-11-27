@@ -174,21 +174,33 @@ class CoreClass extends EventEmitter {
         // 📄 Finalizar flujo
         const endFlow =
             (flag) =>
-            async (messages = null) => {
+            async (messages = null, options = { fromGotoFlow: false, end: false }) => {
                 flag.endFlow = true
                 endFlowFlag = true
-                if (typeof messages === 'string') {
+
+                if (typeof messages === 'string' || messages === null) {
                     await this.sendProviderAndSave(from, createCtxMessage(messages))
+                    clearQueue()
+                    return
                 }
 
                 // Procesos de callback que se deben execute como exepciones
                 if (Array.isArray(messages)) {
+                    // console.log('options.fromGotoFlow', messages)
+
+                    // const indexLimit = messages.findIndex((m) => m.ref === inRef)
                     for (const iteratorCtxMessage of messages) {
-                        await resolveCbEveryCtx(iteratorCtxMessage, {
-                            omitEndFlow: true,
+                        // console.log(`Counter ${indexLimit}`)
+                        // if(indexLimit !== -1 && counterFor === indexLimit) break
+                        const scopeCtx = await resolveCbEveryCtx(iteratorCtxMessage, {
+                            omitEndFlow: options.fromGotoFlow,
                             idleCtx: !!iteratorCtxMessage?.options?.idle,
                             triggerKey: iteratorCtxMessage.keyword.startsWith('key_'),
                         })
+
+                        if (scopeCtx?.endFlow) break
+
+                        // options.fromGotoFlow = false
                     }
                 }
                 clearQueue()
@@ -315,13 +327,10 @@ class CoreClass extends EventEmitter {
                     const msgParse = this.flowClass.findSerializeByRef(msg?.ref)
 
                     const ctxMessage = { ...msgParse, ...msg }
-
-                    // Enviar el mensaje al proveedor y guardarlo
                     await this.sendProviderAndSave(from, ctxMessage).then(() => promises.push(ctxMessage))
                 }
 
-                await endFlow(flag)(promises)
-
+                await endFlow(flag)(promises, { fromGotoFlow: true, ...{ end: endFlowFlag } })
                 return
             }
 
@@ -377,13 +386,16 @@ class CoreClass extends EventEmitter {
                     `[ATENCION IDLE]: La función "idle" no tendrá efecto a menos que habilites la opción "capture:true". Por favor, asegúrate de configurar "capture:true" o elimina la función "idle"`
                 )
             }
+
+            // if(endFlowFlag) return
+
             if (ctxMessage?.options?.idle) {
-                await cbEveryCtx(ctxMessage?.ref, { ...options, startIdleMs: ctxMessage?.options?.idle })
-                return
+                const run = await cbEveryCtx(ctxMessage?.ref, { ...options, startIdleMs: ctxMessage?.options?.idle })
+                return run
             }
             if (!ctxMessage?.options?.capture) {
-                await cbEveryCtx(ctxMessage?.ref, options)
-                return
+                const run = await cbEveryCtx(ctxMessage?.ref, options)
+                return run
             }
         }
 
@@ -414,7 +426,7 @@ class CoreClass extends EventEmitter {
                 inRef,
                 fallBack: fallBack(flags),
                 flowDynamic: flowDynamic(flags, inRef, options),
-                endFlow: endFlow(flags),
+                endFlow: endFlow(flags, inRef),
                 gotoFlow: gotoFlow(flags),
             }
 
@@ -452,7 +464,7 @@ class CoreClass extends EventEmitter {
             }
 
             await runContext()
-            return
+            return { ...flags }
         }
 
         const exportFunctionsSend = async (cb = () => Promise.resolve()) => {

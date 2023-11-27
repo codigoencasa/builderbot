@@ -2,6 +2,7 @@ const { suite } = require('uvu')
 const assert = require('uvu/assert')
 const { addKeyword, createBot, createFlow } = require('../packages/bot/index')
 const { setup, clear, delay } = require('../__mocks__/env')
+const { EVENTS } = require('../packages/bot/lib/bundle.bot.cjs')
 
 const fakeHTTP = async (fakeData = []) => {
     await delay(50)
@@ -162,6 +163,73 @@ suiteCase(`flowDynamic con capture`, async ({ database, provider }) => {
     assert.is('18', getHistory[9])
     assert.is('Bien tu edad es correcta!', getHistory[10])
     assert.is('Puedes pasar', getHistory[11])
+})
+
+suiteCase(`endFlow desde gotoFlow`, async ({ database, provider }) => {
+    const flow = addKeyword(['hola'])
+        .addAnswer('Buenas!', null, async (_, { gotoFlow }) => {
+            return gotoFlow(flowUsuario)
+        })
+        .addAnswer('no debe llegar')
+
+    const flowUsuario = addKeyword(EVENTS.ACTION)
+        .addAction({ ref: `1111111111111111` }, async (_, { flowDynamic, endFlow }) => {
+            try {
+                const confirmar = {
+                    data: {
+                        estado: '3',
+                    },
+                }
+                if (confirmar === 500) {
+                    return gotoFlow(serverError)
+                }
+                if (confirmar.data.estado === '3') {
+                    return endFlow(`Final y no mas`)
+                }
+
+                if (confirmar.data) {
+                    await flowDynamic('ya estas! debe finalizar flow no debe enviar mas mensajes')
+                    return endFlow()
+                }
+            } catch (error) {
+                console.error(error)
+            }
+            await flowDynamic('⏳ por favor solo espere a que el asistente responda 🍀🤖...')
+        })
+        .addAction({ ref: `22222222222` }, async (_, { flowDynamic }) => {
+            await flowDynamic('ping pong')
+            console.log(`🌟🌟🌟🌟`)
+        })
+
+    await createBot({
+        database,
+        provider,
+        flow: createFlow([flow, flowUsuario]),
+    })
+
+    await provider.delaySendMessage(100, 'message', {
+        from: '000',
+        body: 'hola',
+    })
+
+    await delay(5000)
+    const getHistory = database.listHistory.map((i) => i.answer)
+    assert.is('Buenas!', getHistory[0])
+    assert.is('__capture_only_intended__', getHistory[1])
+    assert.is('__capture_only_intended__', getHistory[2])
+    assert.is('Final y no mas', getHistory[3])
+    assert.is(undefined, getHistory[4])
+    // assert.is('this is not email value', getHistory[1])
+    // assert.is(MOCK_VALUES[0], getHistory[2])
+    // assert.is('test@test.com', getHistory[3])
+    // assert.is('Gracias por tu email se ha validado de manera correcta', getHistory[4])
+    // assert.is(MOCK_VALUES[1], getHistory[5])
+    // assert.is(MOCK_VALUES[2], getHistory[6])
+    // assert.is('20', getHistory[7])
+    // assert.is('Ups creo que no eres mayor de edad', getHistory[8])
+    // assert.is('18', getHistory[9])
+    // assert.is('Bien tu edad es correcta!', getHistory[10])
+    // assert.is('Puedes pasar', getHistory[11])
 })
 
 suiteCase.run()
