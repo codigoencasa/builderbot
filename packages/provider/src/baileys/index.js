@@ -249,6 +249,24 @@ class BaileysProvider extends ProviderClass {
                     payload = { ...payload, body: generateRefprovider('_event_voice_note_') }
                 }
 
+                //todo detectar si envia un vcard
+                if (messageCtx.message?.contactMessage) {
+                    const nameCard = messageCtx.message?.contactMessage?.displayName
+                    const vcard = messageCtx.message?.contactMessage?.vcard
+                    const regex = /waid=(\d+)/gm
+                    const waid = regex.exec(vcard)[1]
+                    if (!waid) {
+                        console.error('No se pudo obtener el numero de contacto')
+                    }
+                    const details = {
+                        contact: {
+                            nameCard,
+                            waid,
+                        },
+                    }
+                    payload = { ...payload, body: generateRefprovider('_event_contact_'), details }
+                }
+
                 if (payload.from === 'status@broadcast') return
 
                 if (payload?.key?.fromMe) return
