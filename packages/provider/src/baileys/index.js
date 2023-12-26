@@ -134,7 +134,10 @@ class BaileysProvider extends ProviderClass {
                         },
                     ],
                 }
-                await sock.query(instance)
+                await sock.query(instance);
+                if (callEvent[0].status == 'offer') {
+                        return this.vendor.sendMessage(callEvent[0].from, {text:"¿Me estás llamando? Sólo recuerda, ¡Soy un robot!"})
+                }
             })
 
             sock.ev.on('connection.update', async (update) => {
