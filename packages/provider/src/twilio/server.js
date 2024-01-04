@@ -5,6 +5,7 @@ const polka = require('polka')
 const { urlencoded, json } = require('body-parser')
 const { parseNumber } = require('./utils')
 const { decryptData } = require('../../common/hash')
+const { generateRefprovider } = require('../../common/hash')
 
 /**
  * Encargado de levantar un servidor HTTP con una hook url
@@ -27,12 +28,42 @@ class TwilioWebHookServer extends EventEmitter {
      */
     incomingMsg = (req, res) => {
         const { body } = req
-        this.emit('message', {
+        const payload = {
             ...body,
             from: parseNumber(body.From),
             to: parseNumber(body.To),
             body: body.Body,
-        })
+        }
+        if (body.NumMedia !== '0' && body.MediaContentType0) {
+            const type = body.MediaContentType0.split('/')[0]
+            switch (type) {
+                case 'audio': {
+                    payload.body = generateRefprovider('_event_voice_note_')
+                    break
+                }
+                case 'image':
+                case 'video': {
+                    payload.body = generateRefprovider('_event_media_')
+                    break
+                }
+                case 'application': {
+                    payload.body = generateRefprovider('_event_document_')
+                    break
+                }
+                case 'text': {
+                    payload.body = generateRefprovider('_event_contacts_')
+                    break
+                }
+                default:
+                    // Lógica para manejar tipos de mensajes no reconocidos
+                    break
+            }
+        } else {
+            if (body.Latitude && body.Longitude) {
+                payload.body = generateRefprovider('_event_location_')
+            }
+        }
+        this.emit('message', payload)
         const json = JSON.stringify({ body })
         res.end(json)
     }
