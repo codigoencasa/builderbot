@@ -24,8 +24,8 @@ class IdleState {
             inRef,
             cb,
             stop: (ctxInComming) => {
-                cb({ ...ctxInComming, next: false, inRef })
                 clearInterval(interval)
+                cb({ ...ctxInComming, next: false, inRef })
             },
         })
     }

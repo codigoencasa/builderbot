@@ -174,33 +174,29 @@ class CoreClass extends EventEmitter {
         // 📄 Finalizar flujo
         const endFlow =
             (flag) =>
+            async (message = null) => {
+                flag.endFlow = true
+                endFlowFlag = true
+                if (message) this.sendProviderAndSave(from, createCtxMessage(message))
+                clearQueue()
+                return
+            }
+
+        // 📄 Finalizar flujo (patch)
+        const endFlowToGotoFlow =
+            (flag) =>
             async (messages = null, options = { fromGotoFlow: false, end: false }) => {
                 flag.endFlow = true
                 endFlowFlag = true
 
-                if (typeof messages === 'string' || messages === null) {
-                    await this.sendProviderAndSave(from, createCtxMessage(messages))
-                    clearQueue()
-                    return
-                }
-
-                // Procesos de callback que se deben execute como exepciones
                 if (Array.isArray(messages)) {
-                    // console.log('options.fromGotoFlow', messages)
-
-                    // const indexLimit = messages.findIndex((m) => m.ref === inRef)
                     for (const iteratorCtxMessage of messages) {
-                        // console.log(`Counter ${indexLimit}`)
-                        // if(indexLimit !== -1 && counterFor === indexLimit) break
                         const scopeCtx = await resolveCbEveryCtx(iteratorCtxMessage, {
                             omitEndFlow: options.fromGotoFlow,
                             idleCtx: !!iteratorCtxMessage?.options?.idle,
                             triggerKey: iteratorCtxMessage.keyword.startsWith('key_'),
                         })
-
                         if (scopeCtx?.endFlow) break
-
-                        // options.fromGotoFlow = false
                     }
                 }
                 clearQueue()
@@ -211,7 +207,7 @@ class CoreClass extends EventEmitter {
         const sendFlow = async (messageToSend, numberOrId, options = {}) => {
             options = { prev: prevMsg, forceQueue: false, ...options }
 
-            if (options.prev?.options?.capture) {
+            if (options.prev?.options?.capture && !options.prev?.options?.idle) {
                 await cbEveryCtx(options.prev?.ref)
             }
 
@@ -268,8 +264,10 @@ class CoreClass extends EventEmitter {
             if (initRef && !initRef?.idleFallBack) {
                 nextFlow = (await this.flowClass.find(initRef?.ref, true)) ?? []
             }
+
             const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
             const isContinueFlow = filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)
+            console.log('--------------->', isContinueFlow, initRef)
 
             if (!isContinueFlow) {
                 const refToContinueChild = this.flowClass.getRefToContinueChild(currentPrev?.keyword)
@@ -279,6 +277,10 @@ class CoreClass extends EventEmitter {
                 if (nextChildMessages?.length)
                     return exportFunctionsSend(() => sendFlow(nextChildMessages, from, { prev: undefined }))
 
+                return exportFunctionsSend(() => sendFlow(filterNextFlow, from, { prev: undefined }))
+            }
+
+            if (initRef) {
                 return exportFunctionsSend(() => sendFlow(filterNextFlow, from, { prev: undefined }))
             }
         }
@@ -330,7 +332,7 @@ class CoreClass extends EventEmitter {
                     await this.sendProviderAndSave(from, ctxMessage).then(() => promises.push(ctxMessage))
                 }
 
-                await endFlow(flag)(promises, { fromGotoFlow: true, ...{ end: endFlowFlag } })
+                await endFlowToGotoFlow(flag)(promises, { fromGotoFlow: true, ...{ end: endFlowFlag } })
                 return
             }
 
@@ -385,9 +387,11 @@ class CoreClass extends EventEmitter {
                 printer(
                     `[ATENCION IDLE]: La función "idle" no tendrá efecto a menos que habilites la opción "capture:true". Por favor, asegúrate de configurar "capture:true" o elimina la función "idle"`
                 )
+                return
             }
 
-            // if(endFlowFlag) return
+            // const endFlowState = state.getMyState() && state.get('__end_flow__')
+            // if(endFlowState) return
 
             if (ctxMessage?.options?.idle) {
                 const run = await cbEveryCtx(ctxMessage?.ref, { ...options, startIdleMs: ctxMessage?.options?.idle })
@@ -456,7 +460,6 @@ class CoreClass extends EventEmitter {
                     inRef,
                     timeInSeconds: options.startIdleMs / 1000,
                     cb: async (opts) => {
-                        endFlowFlag = false
                         await runContext(true, { idleFallBack: opts.next, ref: opts.inRef, body: opts.body })
                     },
                 })
