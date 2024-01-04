@@ -264,8 +264,10 @@ class CoreClass extends EventEmitter {
             if (initRef && !initRef?.idleFallBack) {
                 nextFlow = (await this.flowClass.find(initRef?.ref, true)) ?? []
             }
+
             const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
             const isContinueFlow = filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)
+            console.log('--------------->', isContinueFlow, initRef)
 
             if (!isContinueFlow) {
                 const refToContinueChild = this.flowClass.getRefToContinueChild(currentPrev?.keyword)
@@ -275,6 +277,10 @@ class CoreClass extends EventEmitter {
                 if (nextChildMessages?.length)
                     return exportFunctionsSend(() => sendFlow(nextChildMessages, from, { prev: undefined }))
 
+                return exportFunctionsSend(() => sendFlow(filterNextFlow, from, { prev: undefined }))
+            }
+
+            if (initRef) {
                 return exportFunctionsSend(() => sendFlow(filterNextFlow, from, { prev: undefined }))
             }
         }
@@ -454,7 +460,6 @@ class CoreClass extends EventEmitter {
                     inRef,
                     timeInSeconds: options.startIdleMs / 1000,
                     cb: async (opts) => {
-                        endFlowFlag = false
                         await runContext(true, { idleFallBack: opts.next, ref: opts.inRef, body: opts.body })
                     },
                 })
