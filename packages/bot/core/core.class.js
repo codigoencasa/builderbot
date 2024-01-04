@@ -174,21 +174,29 @@ class CoreClass extends EventEmitter {
         // 📄 Finalizar flujo
         const endFlow =
             (flag) =>
-            async (messages = null) => {
+            async (message = null) => {
                 flag.endFlow = true
                 endFlowFlag = true
-                if (typeof messages === 'string') {
-                    await this.sendProviderAndSave(from, createCtxMessage(messages))
-                }
+                if (message) this.sendProviderAndSave(from, createCtxMessage(message))
+                clearQueue()
+                return
+            }
 
-                // Procesos de callback que se deben execute como exepciones
+        // 📄 Finalizar flujo (patch)
+        const endFlowToGotoFlow =
+            (flag) =>
+            async (messages = null, options = { fromGotoFlow: false, end: false }) => {
+                flag.endFlow = true
+                endFlowFlag = true
+
                 if (Array.isArray(messages)) {
                     for (const iteratorCtxMessage of messages) {
-                        await resolveCbEveryCtx(iteratorCtxMessage, {
-                            omitEndFlow: true,
+                        const scopeCtx = await resolveCbEveryCtx(iteratorCtxMessage, {
+                            omitEndFlow: options.fromGotoFlow,
                             idleCtx: !!iteratorCtxMessage?.options?.idle,
                             triggerKey: iteratorCtxMessage.keyword.startsWith('key_'),
                         })
+                        if (scopeCtx?.endFlow) break
                     }
                 }
                 clearQueue()
@@ -199,7 +207,7 @@ class CoreClass extends EventEmitter {
         const sendFlow = async (messageToSend, numberOrId, options = {}) => {
             options = { prev: prevMsg, forceQueue: false, ...options }
 
-            if (options.prev?.options?.capture) {
+            if (options.prev?.options?.capture && !options.prev?.options?.idle) {
                 await cbEveryCtx(options.prev?.ref)
             }
 
@@ -315,13 +323,10 @@ class CoreClass extends EventEmitter {
                     const msgParse = this.flowClass.findSerializeByRef(msg?.ref)
 
                     const ctxMessage = { ...msgParse, ...msg }
-
-                    // Enviar el mensaje al proveedor y guardarlo
                     await this.sendProviderAndSave(from, ctxMessage).then(() => promises.push(ctxMessage))
                 }
 
-                await endFlow(flag)(promises)
-
+                await endFlowToGotoFlow(flag)(promises, { fromGotoFlow: true, ...{ end: endFlowFlag } })
                 return
             }
 
@@ -376,14 +381,19 @@ class CoreClass extends EventEmitter {
                 printer(
                     `[ATENCION IDLE]: La función "idle" no tendrá efecto a menos que habilites la opción "capture:true". Por favor, asegúrate de configurar "capture:true" o elimina la función "idle"`
                 )
-            }
-            if (ctxMessage?.options?.idle) {
-                await cbEveryCtx(ctxMessage?.ref, { ...options, startIdleMs: ctxMessage?.options?.idle })
                 return
+            }
+
+            // const endFlowState = state.getMyState() && state.get('__end_flow__')
+            // if(endFlowState) return
+
+            if (ctxMessage?.options?.idle) {
+                const run = await cbEveryCtx(ctxMessage?.ref, { ...options, startIdleMs: ctxMessage?.options?.idle })
+                return run
             }
             if (!ctxMessage?.options?.capture) {
-                await cbEveryCtx(ctxMessage?.ref, options)
-                return
+                const run = await cbEveryCtx(ctxMessage?.ref, options)
+                return run
             }
         }
 
@@ -414,7 +424,7 @@ class CoreClass extends EventEmitter {
                 inRef,
                 fallBack: fallBack(flags),
                 flowDynamic: flowDynamic(flags, inRef, options),
-                endFlow: endFlow(flags),
+                endFlow: endFlow(flags, inRef),
                 gotoFlow: gotoFlow(flags),
             }
 
@@ -452,7 +462,7 @@ class CoreClass extends EventEmitter {
             }
 
             await runContext()
-            return
+            return { ...flags }
         }
 
         const exportFunctionsSend = async (cb = () => Promise.resolve()) => {

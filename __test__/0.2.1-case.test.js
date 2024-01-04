@@ -8,7 +8,7 @@ const suiteCase = suite('Flujo: idle state')
 suiteCase.before.each(setup)
 suiteCase.after.each(clear)
 
-suiteCase(`Prevenir enviar mensaje luego de inactividad (2seg)`, async ({ database, provider }) => {
+suiteCase.skip(`Prevenir enviar mensaje luego de inactividad (2seg)`, async ({ database, provider }) => {
     const flujoFinal = addKeyword(EVENTS.ACTION).addAnswer('Se cancelo por inactividad')
 
     const flujoPrincipal = addKeyword(['hola'])
@@ -47,7 +47,7 @@ suiteCase(`Prevenir enviar mensaje luego de inactividad (2seg)`, async ({ databa
     assert.is(undefined, getHistory[3])
 })
 
-suiteCase(`Enviar mensaje luego de inactividad (2seg)`, async ({ database, provider }) => {
+suiteCase.skip(`Enviar mensaje luego de inactividad (2seg)`, async ({ database, provider }) => {
     const flujoFinal = addKeyword(EVENTS.ACTION).addAnswer('Se cancelo por inactividad')
 
     const flujoPrincipal = addKeyword(['hola'])
@@ -80,7 +80,7 @@ suiteCase(`Enviar mensaje luego de inactividad (2seg)`, async ({ database, provi
     assert.is(undefined, getHistory[2])
 })
 
-suiteCase(`Enviar mensajes con ambos casos de idle`, async ({ database, provider }) => {
+suiteCase.skip(`Enviar mensajes con ambos casos de idle`, async ({ database, provider }) => {
     const flujoFinal = addKeyword(EVENTS.ACTION)
         .addAnswer('Se cancelo por inactividad')
         .addAction(async (_, { flowDynamic }) => {

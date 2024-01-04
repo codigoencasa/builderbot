@@ -235,7 +235,7 @@ testSuite(`Debe de continuar el el encadenamiento con procesos async`, async ({ 
     assert.is('datos de json', history[3])
     assert.is('Digame su *Nombre y apellidos* para reservar su mesa...', history[4])
     assert.is('leifer', history[5])
-    assert.is(undefined, history[96])
+    assert.is(undefined, history[6])
 })
 
 //Issue https://github.com/codigoencasa/bot-whatsapp/issues/877
