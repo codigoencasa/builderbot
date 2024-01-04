@@ -4,6 +4,7 @@ const mime = require('mime-types')
 const polka = require('polka')
 const { urlencoded, json } = require('body-parser')
 const { parseNumber } = require('./utils')
+const { decryptData } = require('../../common/hash')
 
 /**
  * Encargado de levantar un servidor HTTP con una hook url
@@ -47,7 +48,8 @@ class TwilioWebHookServer extends EventEmitter {
         const { query } = req
         const file = query?.path
         if (!file) return res.end(`path: invalid`)
-        const decodeFile = decodeURIComponent(file)
+        const descryptPath = decryptData(file)
+        const decodeFile = decodeURIComponent(descryptPath)
         if (!existsSync(decodeFile)) return res.end(`not exits: ${decodeFile}`)
         const fileStream = createReadStream(decodeFile)
         const mimeType = mime.lookup(decodeFile)
