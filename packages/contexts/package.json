@@ -3,6 +3,9 @@
     "version": "0.0.39-alpha.0",
     "description": "",
     "main": "./lib/bundle.contexts.cjs",
+    "scripts": {
+        "build": "rimraf ./lib && rollup --config ./rollup.config.js"
+    },
     "files": [
         "./lib/"
     ],

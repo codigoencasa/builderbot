@@ -6,6 +6,9 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
+    "scripts": {
+        "build": "rimraf ./lib && rollup --config ./rollup.config.js"
+    },
     "files": [
         "./lib/"
     ],

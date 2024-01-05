@@ -6,6 +6,9 @@
     "files": [
         "./lib/*"
     ],
+    "scripts": {
+        "build": "rimraf ./lib && rollup --config ./rollup.config.js"
+    },
     "author": "",
     "license": "ISC"
 }

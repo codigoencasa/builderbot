@@ -15,7 +15,7 @@ module.exports = {
     },
     plugins: [
         copy({
-            targets: [{ src: 'starters/*', dest: join(__dirname, 'starters') }],
+            targets: [{ src: join(process.cwd(), 'starters', '*'), dest: join(__dirname, 'starters') }],
         }),
         commonjs(),
         nodeResolve(),

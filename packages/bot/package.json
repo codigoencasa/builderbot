@@ -4,7 +4,8 @@
     "description": "",
     "main": "./lib/bundle.bot.cjs",
     "scripts": {
-        "bot:rollup": "node ../../node_modules/.bin/rollup index.js --config ./rollup-cli.config.js",
+        "build": "rimraf ./lib && rollup --config ./rollup.config.js",
+        "bot:rollup": "node ../../node_modules/.bin/rollup index.js --config ./rollup.config.js",
         "format:check": "prettier --check .",
         "format:write": "prettier --write .",
         "lint:check": "eslint .",
