@@ -207,7 +207,7 @@ class CoreClass extends EventEmitter {
         const sendFlow = async (messageToSend, numberOrId, options = {}) => {
             options = { prev: prevMsg, forceQueue: false, ...options }
 
-            const idleCtxQueue = idleForCallback.get({ from, inRef: prevMsg?.ref })
+            // const idleCtxQueue = idleForCallback.get({ from, inRef: prevMsg?.ref })
 
             // console.log(`>>>>>>>>>>`,{prevRef:prevMsg?.ref, ctx:messageCtxInComming?.ref, idle:options.prev?.options?.idle, idleCtxQueue})
 
