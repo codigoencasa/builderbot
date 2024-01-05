@@ -81,14 +81,14 @@ suiteCase(`Enviar mensaje luego de inactividad (2seg)`, async ({ database, provi
     assert.is(undefined, getHistory[2])
 })
 
-suiteCase.skip(`Enviar mensajes con ambos casos de idle`, async ({ database, provider }) => {
+suiteCase(`Enviar mensajes con ambos casos de idle`, async ({ database, provider }) => {
     const flujoFinal = addKeyword(EVENTS.ACTION)
         .addAnswer('Se cancelo por inactividad')
         .addAction(async (_, { flowDynamic }) => {
             await flowDynamic(`Empezemos de nuevo.`)
             await flowDynamic(`Cual es el numero de orden? tienes dos segundos para responder...`)
         })
-        .addAction({ capture: true, idle: 2000, ref: '🙉🙉🙉🙉🙉🙉🙉🙉' }, async (ctx, { flowDynamic }) => {
+        .addAction({ capture: true, idle: 2100, ref: '🙉🙉🙉🙉🙉🙉🙉🙉' }, async (ctx, { flowDynamic }) => {
             if (ctx?.idleFallBack) {
                 console.log(`[seundo desvio]`)
                 console.log(`[idleFallBack]:`, ctx)
@@ -126,10 +126,10 @@ suiteCase.skip(`Enviar mensajes con ambos casos de idle`, async ({ database, pro
         body: 'el numero es 444',
     })
 
-    await delay(10000)
+    await delay(15000)
 
     const getHistory = database.listHistory.map((i) => i.answer)
-    assert.is('Hola tienes 2 segundos para responder si no te pedire de nuevo otro dato', getHistory)
+    assert.is('Hola tienes 2 segundos para responder si no te pedire de nuevo otro dato', getHistory[0])
     assert.is('Se cancelo por inactividad', getHistory[1])
     assert.is('__call_action__', getHistory[2])
     assert.is('__capture_only_intended__', getHistory[3])
