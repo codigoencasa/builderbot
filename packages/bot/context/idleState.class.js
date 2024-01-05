@@ -2,6 +2,7 @@ class IdleState {
     indexCb = new Map()
 
     setIdleTime = ({ from, inRef, timeInSeconds, cb }) => {
+        cb = cb ?? (() => {})
         const startTime = new Date().getTime()
         const endTime = startTime + timeInSeconds * 1000
 
