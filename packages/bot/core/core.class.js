@@ -207,6 +207,10 @@ class CoreClass extends EventEmitter {
         const sendFlow = async (messageToSend, numberOrId, options = {}) => {
             options = { prev: prevMsg, forceQueue: false, ...options }
 
+            const idleCtxQueue = idleForCallback.get({ from, inRef: prevMsg?.ref })
+
+            // console.log(`>>>>>>>>>>`,{prevRef:prevMsg?.ref, ctx:messageCtxInComming?.ref, idle:options.prev?.options?.idle, idleCtxQueue})
+
             if (options.prev?.options?.capture && !options.prev?.options?.idle) {
                 await cbEveryCtx(options.prev?.ref)
             }
@@ -267,7 +271,6 @@ class CoreClass extends EventEmitter {
 
             const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
             const isContinueFlow = filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)
-            console.log('--------------->', isContinueFlow, initRef)
 
             if (!isContinueFlow) {
                 const refToContinueChild = this.flowClass.getRefToContinueChild(currentPrev?.keyword)
@@ -280,7 +283,7 @@ class CoreClass extends EventEmitter {
                 return exportFunctionsSend(() => sendFlow(filterNextFlow, from, { prev: undefined }))
             }
 
-            if (initRef) {
+            if (initRef && !initRef?.idleFallBack) {
                 return exportFunctionsSend(() => sendFlow(filterNextFlow, from, { prev: undefined }))
             }
         }
@@ -541,6 +544,7 @@ class CoreClass extends EventEmitter {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.TEMPLATE) || []
             }
         }
+
         return exportFunctionsSend(() => sendFlow(msgToSend, from, { forceQueue: true }))
     }
 

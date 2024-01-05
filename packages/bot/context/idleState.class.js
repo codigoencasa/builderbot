@@ -30,6 +30,22 @@ class IdleState {
         })
     }
 
+    /**
+     *
+     * @param {*} param0
+     * @returns
+     */
+    get = ({ from, inRef }) => {
+        try {
+            const queueCb = this.indexCb.get(from) ?? []
+            const isHas = queueCb.findIndex((i) => i.inRef !== inRef) !== -1
+            return isHas
+        } catch (err) {
+            console.error(`Error Get ctxInComming: `, err)
+            return null
+        }
+    }
+
     stop = (ctxInComming) => {
         try {
             const queueCb = this.indexCb.get(ctxInComming.from) ?? []
