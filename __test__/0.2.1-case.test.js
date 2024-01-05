@@ -81,13 +81,12 @@ suiteCase(`Enviar mensaje luego de inactividad (2seg)`, async ({ database, provi
     assert.is(undefined, getHistory[2])
 })
 
-suiteCase.skip(`Enviar mensajes con ambos casos de idle`, async ({ database, provider }) => {
+suiteCase(`Enviar mensajes con ambos casos de idle`, async ({ database, provider }) => {
     const flujoFinal = addKeyword(EVENTS.ACTION)
         .addAnswer('Se cancelo por inactividad')
         .addAction(async (_, { flowDynamic }) => {
             await flowDynamic(`Empezemos de nuevo.`)
             await flowDynamic(`Cual es el numero de orden? tienes dos segundos para responder...`)
-            console.log('--> antes de action capture')
         })
         .addAction({ capture: true, idle: 2100, ref: '🙉🙉🙉🙉🙉🙉🙉🙉' }, async (ctx, { flowDynamic }) => {
             if (ctx?.idleFallBack) {
