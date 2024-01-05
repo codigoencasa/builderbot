@@ -1,6 +1,14 @@
 {
     "$schema": "node_modules/lerna/schemas/lerna-schema.json",
     "version": "0.0.0",
-    "packages": ["packages/*"],
+    "packages": [
+        "packages/bot",
+        "packages/cli",
+        "packages/contexts",
+        "packages/create-bot-whatsapp",
+        "packages/database",
+        "packages/eslint-plugin-bot-whatsapp",
+        "packages/provider"
+    ],
     "npmClient": "pnpm"
 }
