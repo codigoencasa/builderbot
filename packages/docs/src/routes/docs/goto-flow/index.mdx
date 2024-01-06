@@ -3,7 +3,7 @@ import Alert from '../../../components/widgets/Alert'
 
 # gotoFlow
 
-Se utiliza para poder saltar de un flujo a otro. Utila cuando tenemos logica separada en diferentes flujos.
+Se utiliza para poder saltar de un flujo a otro. Util cuando tenemos logica separada en diferentes flujos.
 
 ```js
 const { addKeyword } = require('@bot-whatsapp/bot')
@@ -49,6 +49,8 @@ const flowBienvenida = addKeyword('hola')
     }
 
 })
+
+const adapterFlow = createFlow([flowBienvenida, flujoUsuariosRegistrados, flujoUsuariosNORegistrados])
 
 
 ```
