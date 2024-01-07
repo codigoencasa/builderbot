@@ -30,8 +30,8 @@
 - [X] WhatsappWeb provider enviar imagenes
 - [X] WhatsappWeb provider enviar audio
 - [X] WhatsappWeb botones (Tiene truco) github:leifermendez/whatsapp-web.js
-- [ ] Twilio adapter
-- [ ] Meta adapter
+- [X] Twilio adapter
+- [X] Meta adapter
 
 ### @bot-whatsapp/cli
 - [X] Hacer comando para crear `example-app`

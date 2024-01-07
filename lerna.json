@@ -3,6 +3,7 @@
     "version": "0.1.0-alpha.0",
     "packages": [
         "packages/bot",
+        "packages/bot-ts",
         "packages/cli",
         "packages/contexts",
         "packages/create-bot-whatsapp",
