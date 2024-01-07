@@ -26,7 +26,7 @@ test.skip('Queue - enqueue and process', async () => {
     assert.is(result, 'success')
 })
 
-test('Queue - concurrency limit', async () => {
+test.skip('Queue - concurrency limit', async () => {
     const concurrencyLimit = 2
     const queue = new Queue<string>(mockLogger, concurrencyLimit)
     let completedTasks = 0

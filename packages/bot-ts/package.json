@@ -9,7 +9,8 @@
     "type": "module",
     "types": "dist/index.d.ts",
     "scripts": {
-        "build": "rimraf dist && rollup --config"
+        "build": "rimraf dist && rollup --config",
+        "test": " npx uvu -r tsm ./__tests__"
     },
     "files": [
         "./dist/"

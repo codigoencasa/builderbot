@@ -6,7 +6,7 @@ interface Message {
 
 type UserId = string | number
 
-interface Vendor extends Object {}
+interface Vendor extends Object { }
 
 const NODE_ENV = process.env.NODE_ENV || 'dev'
 
@@ -30,4 +30,4 @@ class ProviderClass extends EventEmitter {
     }
 }
 
-export default ProviderClass
+export { ProviderClass }

@@ -1,5 +1,6 @@
 packages/**/lib
 packages/docs/
+packages/bot-ts/
 **/.git
 **/.svn
 **/.hg

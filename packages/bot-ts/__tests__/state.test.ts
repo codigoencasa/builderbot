@@ -1,6 +1,6 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import SingleState from '../src/context/stateClass'
+import { SingleState } from '../src/context/stateClass'
 
 const singleState = new SingleState()
 
@@ -16,18 +16,18 @@ test('updateState', async () => {
     assert.equal(state, keyValue)
 })
 
-test('getMyState', () => {
+test('getMyState', async () => {
     const from = 'user2'
-    singleState.updateState({ from })({ key: 'value' })
+    await singleState.updateState({ from })({ key: 'value' })
 
     const state = singleState.getMyState(from)()
     assert.ok(state)
     assert.equal(state, { key: 'value' })
 })
 
-test('get', () => {
+test('get', async () => {
     const from = 'user3'
-    singleState.updateState({ from })({ key: 'value', anotherKey: 'anotherValue' })
+    await singleState.updateState({ from })({ key: 'value', anotherKey: 'anotherValue' })
 
     const getKey = singleState.get(from)
     assert.is(getKey('key'), 'value')
@@ -35,12 +35,12 @@ test('get', () => {
     assert.is(getKey('nonExistentKey'), undefined)
 })
 
-test('getAllState', () => {
+test('getAllState', async () => {
     const from1 = 'user4'
     const from2 = 'user5'
 
-    singleState.updateState({ from: from1 })({ key: 'value1' })
-    singleState.updateState({ from: from2 })({ key: 'value2' })
+    await singleState.updateState({ from: from1 })({ key: 'value1' })
+    await singleState.updateState({ from: from2 })({ key: 'value2' })
 
     const allStates = [...Array.from(singleState.getAllState())]
     assert.is(allStates.length, 2)
@@ -48,9 +48,9 @@ test('getAllState', () => {
     assert.equal(allStates[1], { key: 'value2' })
 })
 
-test('clear', () => {
+test('clear', async () => {
     const from = 'user6'
-    singleState.updateState({ from })({ key: 'value' })
+    await singleState.updateState({ from })({ key: 'value' })
 
     const clear = singleState.clear(from)
     assert.ok(clear())

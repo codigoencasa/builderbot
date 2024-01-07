@@ -7,7 +7,7 @@ type StateValue = Record<string, any>
 class SingleState {
     private STATE: Map<string, StateValue> = new Map()
 
-    constructor() {}
+    constructor() { }
 
     /**
      * Updates the state for a given context.
@@ -58,7 +58,11 @@ class SingleState {
         return () => this.STATE.delete(from)
     }
 
+    /**
+     * 
+     * @returns 
+     */
     clearAll = (): void => this.STATE.clear()
 }
 
-export default SingleState
+export { SingleState } 
