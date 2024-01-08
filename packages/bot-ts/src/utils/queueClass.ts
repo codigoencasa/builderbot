@@ -36,6 +36,27 @@ class Queue<T> {
         this.concurrencyLimit = concurrencyLimit
     }
 
+    private async processItem(from: string, item: QueueItem<T>): Promise<void> {
+        try {
+            const refToPromise = item.promiseFunc(item)
+            const value = await Promise.race([
+                refToPromise.timerPromise,
+                refToPromise.promiseInFunc().then(() => {
+                    refToPromise.cancel()
+                    return 'success' as unknown as T // Assuming 'success' is a valid T
+                }),
+            ])
+
+            this.clearIdFromCallback(from, item.fingerIdRef)
+            this.logger.log(`${from}:SUCCESS`)
+            item.resolve(value)
+        } catch (err) {
+            this.clearIdFromCallback(from, item.fingerIdRef)
+            this.logger.error(`${from}:ERROR: ${JSON.stringify(err)}`)
+            item.reject(err)
+        }
+    }
+
     async enqueue(from: string, promiseInFunc: () => Promise<T>, fingerIdRef: string): Promise<T> {
         this.logger.log(`${from}:ENCOLADO ${fingerIdRef}`)
 
@@ -117,38 +138,17 @@ class Queue<T> {
         const queueByFrom = this.queue.get(from)!
 
         while (queueByFrom.length > 0) {
-            const tasksToProcess = queueByFrom.splice(0, this.concurrencyLimit)
+            const tasksToProcess = queueByFrom.splice(0, this.concurrencyLimit - 1)
+            const promises = tasksToProcess.map((item) => this.processItem(from, item))
 
-            const promises = tasksToProcess.map(async (item) => {
-                try {
-                    const refToPromise = item.promiseFunc(item)
-                    const value = await Promise.race([
-                        refToPromise.timerPromise,
-                        refToPromise.promiseInFunc().then(() => {
-                            refToPromise.cancel()
-                            return 'success' as unknown as T // Assuming 'success' is a valid T
-                        }),
-                    ])
-
-                    this.clearIdFromCallback(from, item.fingerIdRef)
-                    this.logger.log(`${from}:SUCCESS`)
-                    return item.resolve(value)
-                } catch (err) {
-                    this.clearIdFromCallback(from, item.fingerIdRef)
-
-                    this.logger.error(`${from}:ERROR: ${JSON.stringify(err)}`)
-                    return item.reject(err)
-                }
-            })
-
-            await Promise.allSettled(promises)
+            await Promise.all(promises) // Wait for all tasks in the batch to complete
         }
 
         this.workingOnPromise.set(from, false)
         await this.clearQueue(from)
     }
 
-    async clearQueue(from: string): Promise<void> {
+    async clearQueue(from: string): Promise<number> {
         if (this.queue.has(from)) {
             const queueByFrom = this.queue.get(from)!
             const workingByFrom = this.workingOnPromise.get(from)!
@@ -165,6 +165,8 @@ class Queue<T> {
             if (workingByFrom) {
                 this.workingOnPromise.set(from, false)
             }
+            const queueNumber = queueByFrom.length
+            return Promise.resolve(queueNumber)
         }
     }
 

@@ -32,7 +32,7 @@ const generateRefSerialize = ({
 }: {
     index: number
     answer: string
-    keyword: string
+    keyword?: string
 }): string => {
     return createHash('md5').update(JSON.stringify({ index, answer, keyword })).digest('hex')
 }

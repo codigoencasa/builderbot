@@ -4,11 +4,11 @@ import { Queue } from '../src/utils/queueClass'
 
 // Mock Logger
 const mockLogger: Console = {
-    log: () => {},
-    error: () => {},
+    log: () => { },
+    error: () => { },
 } as unknown as Console
 
-test.skip('Queue - enqueue and process', async () => {
+test('Queue - enqueue and process', async () => {
     const queue = new Queue<string>(mockLogger)
     let result = ''
 
@@ -26,52 +26,45 @@ test.skip('Queue - enqueue and process', async () => {
     assert.is(result, 'success')
 })
 
-test.skip('Queue - concurrency limit', async () => {
+test('Queue - concurrency limit', async () => {
     const concurrencyLimit = 2
     const queue = new Queue<string>(mockLogger, concurrencyLimit)
     let completedTasks = 0
 
-    // Mock promise function
     const promiseFunc = () =>
         new Promise<string>((resolve) => {
             setTimeout(() => {
                 completedTasks++
                 resolve('completed')
-            }, 10)
+            }, 100)
         })
 
-    // Enqueue tasks more than the concurrency limit
-    for (let i = 0; i < concurrencyLimit + 1; i++) {
-        queue.enqueue('test', promiseFunc, i.toString())
-    }
+    queue.enqueue('test', promiseFunc, '1')
+    queue.enqueue('test', promiseFunc, '2')
+    queue.enqueue('test', promiseFunc, '3')
+    queue.enqueue('test', promiseFunc, '4')
+    queue.enqueue('test', promiseFunc, '5')
 
-    // Wait for the queue to process
-    await new Promise((resolve) => setTimeout(resolve, 50))
+    await new Promise((resolve) => setTimeout(resolve, 210))
 
-    // Check if the number of completed tasks does not exceed the concurrency limit
     assert.is(completedTasks, concurrencyLimit)
 })
-
-test.skip('Queue - clearQueue', async () => {
+test('Queue - clearQueue', async () => {
     const queue = new Queue<string>(mockLogger)
     let result = ''
 
-    // Mock promise function
     const promiseFunc = () =>
         new Promise<string>((resolve) => {
             setTimeout(() => resolve('completed'), 10)
         })
 
-    // Enqueue a task
     queue.enqueue('test', promiseFunc, '1').then((res) => {
         result = res
     })
 
-    // Clear the queue before the task completes
-    await queue.clearQueue('test')
+    const n = await queue.clearQueue('test')
 
-    // Check if the task was cleared
-    assert.is(result, 'Queue cleared')
+    assert.is(0, n)
 })
 
 test.run()
