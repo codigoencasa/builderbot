@@ -64,6 +64,7 @@
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-replace": "^5.0.4",
         "@rollup/plugin-strip": "^3.0.4",
+        "@rollup/plugin-terser": "^0.4.4",
         "@rollup/plugin-typescript": "^11.1.5",
         "@types/assert": "^1.5.10",
         "@types/node": "^20.10.6",

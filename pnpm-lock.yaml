@@ -31,6 +31,9 @@ importers:
             '@rollup/plugin-strip':
                 specifier: ^3.0.4
                 version: 3.0.4(rollup@4.9.3)
+            '@rollup/plugin-terser':
+                specifier: ^0.4.4
+                version: 0.4.4(rollup@4.9.3)
             '@rollup/plugin-typescript':
                 specifier: ^11.1.5
                 version: 11.1.5(rollup@4.9.3)(tslib@2.6.2)(typescript@4.9.4)
@@ -2711,7 +2714,7 @@ packages:
         dependencies:
             '@jridgewell/set-array': 1.1.2
             '@jridgewell/sourcemap-codec': 1.4.15
-            '@jridgewell/trace-mapping': 0.3.19
+            '@jridgewell/trace-mapping': 0.3.20
         dev: true
 
     /@jridgewell/resolve-uri@3.1.1:
@@ -2730,21 +2733,21 @@ packages:
         engines: { node: '>=6.0.0' }
         dev: true
 
+    /@jridgewell/source-map@0.3.5:
+        resolution:
+            {
+                integrity: sha512-UTYAUj/wviwdsMfzoSJspJxbkH5o1snzwX0//0ENX1u/55kkZZkcTZP6u9bwKGkv+dkk9at4m1Cpt0uY80kcpQ==,
+            }
+        dependencies:
+            '@jridgewell/gen-mapping': 0.3.3
+            '@jridgewell/trace-mapping': 0.3.20
+        dev: true
+
     /@jridgewell/sourcemap-codec@1.4.15:
         resolution:
             {
                 integrity: sha512-eF2rxCRulEKXHTRiDrDy6erMYWqNw4LPdQ8UQA4huuxaQsVeRPFl2oM8oDGxMFhJUWZf9McpLtJasDDZb/Bpeg==,
             }
-        dev: true
-
-    /@jridgewell/trace-mapping@0.3.19:
-        resolution:
-            {
-                integrity: sha512-kf37QtfW+Hwx/buWGMPcR60iF9ziHa6r/CZJIHbmcm4+0qrXiVdxegAH0F6yddEVQ7zdkjcGCgCzUu+BcbhQxw==,
-            }
-        dependencies:
-            '@jridgewell/resolve-uri': 3.1.1
-            '@jridgewell/sourcemap-codec': 1.4.15
         dev: true
 
     /@jridgewell/trace-mapping@0.3.20:
@@ -4608,6 +4611,24 @@ packages:
             estree-walker: 2.0.2
             magic-string: 0.30.5
             rollup: 4.9.3
+        dev: true
+
+    /@rollup/plugin-terser@0.4.4(rollup@4.9.3):
+        resolution:
+            {
+                integrity: sha512-XHeJC5Bgvs8LfukDwWZp7yeqin6ns8RTl2B9avbejt6tZqsqvVoWI7ZTQrcNsfKEDWBTnTxM8nMDkO2IFFbd0A==,
+            }
+        engines: { node: '>=14.0.0' }
+        peerDependencies:
+            rollup: ^2.0.0||^3.0.0||^4.0.0
+        peerDependenciesMeta:
+            rollup:
+                optional: true
+        dependencies:
+            rollup: 4.9.3
+            serialize-javascript: 6.0.2
+            smob: 1.4.1
+            terser: 5.26.0
         dev: true
 
     /@rollup/plugin-typescript@11.1.5(rollup@4.9.3)(tslib@2.6.2)(typescript@4.9.4):
@@ -21840,6 +21861,15 @@ packages:
         engines: { node: '>= 0.8' }
         dev: true
 
+    /randombytes@2.1.0:
+        resolution:
+            {
+                integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==,
+            }
+        dependencies:
+            safe-buffer: 5.2.1
+        dev: true
+
     /range-parser@1.2.1:
         resolution:
             {
@@ -23057,6 +23087,15 @@ packages:
             }
         dev: false
 
+    /serialize-javascript@6.0.2:
+        resolution:
+            {
+                integrity: sha512-Saa1xPByTTq2gdeFZYLLo+RFE35NHZkAbqZeWNd3BpzppeVisAqpDjcp8dyf6uIvEqJRd46jemmyA4iFIeVk8g==,
+            }
+        dependencies:
+            randombytes: 2.1.0
+        dev: true
+
     /serve-static@1.13.1:
         resolution:
             {
@@ -23337,6 +23376,13 @@ packages:
                 integrity: sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==,
             }
         engines: { node: '>= 6.0.0', npm: '>= 3.0.0' }
+
+    /smob@1.4.1:
+        resolution:
+            {
+                integrity: sha512-9LK+E7Hv5R9u4g4C3p+jjLstaLe11MDsL21UpYaCNmapvMkYhqCV4A/f/3gyH8QjMyh6l68q9xC85vihY9ahMQ==,
+            }
+        dev: true
 
     /snapdragon-node@2.1.1:
         resolution:
@@ -24566,6 +24612,20 @@ packages:
             acorn: 8.10.0
             commander: 2.20.3
             source-map: 0.6.1
+            source-map-support: 0.5.21
+        dev: true
+
+    /terser@5.26.0:
+        resolution:
+            {
+                integrity: sha512-dytTGoE2oHgbNV9nTzgBEPaqAWvcJNl66VZ0BkJqlvp71IjO8CxdBx/ykCNb47cLnCmCvRZ6ZR0tLkqvZCdVBQ==,
+            }
+        engines: { node: '>=10' }
+        hasBin: true
+        dependencies:
+            '@jridgewell/source-map': 0.3.5
+            acorn: 8.10.0
+            commander: 2.20.3
             source-map-support: 0.5.21
         dev: true
 
