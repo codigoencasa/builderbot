@@ -6,8 +6,8 @@
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
     "license": "ISC",
     "main": "dist/index.cjs",
-    "type": "module",
     "types": "dist/index.d.ts",
+    "type": "module",
     "scripts": {
         "build": "rimraf dist && rollup --config",
         "test": " npx uvu -r tsm ./__tests__ methods.test.ts",
