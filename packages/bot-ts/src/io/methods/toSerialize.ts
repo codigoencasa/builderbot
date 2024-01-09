@@ -1,5 +1,5 @@
 import { generateRefSerialize } from '../../utils/hash';
-import { TContext } from '../types';
+import { TContext } from '../../types';
 
 
 /**
@@ -7,7 +7,7 @@ import { TContext } from '../types';
  * @param flowJson - Array de objetos que se van a serializar.
  * @returns Array de objetos serializados.
  */
-const toSerialize = (flowJson: TContext | TContext[]): TContext[] => {
+const toSerialize = (flowJson: TContext | TContext[] | Partial<TContext> | Partial<TContext>[]): TContext[] => {
     if (!Array.isArray(flowJson)) throw new Error('Esto debe ser un ARRAY');
 
     const jsonToSerialize: TContext[] = flowJson.map((row, index) => ({

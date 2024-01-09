@@ -1,17 +1,24 @@
 import flatObject from '../../utils/flattener';
 import { generateRef } from '../../utils/hash';
-import { Callbacks, TCTXoptions, TContext, TFlow } from '../types';
+import { TCTXoptions, TContext, TFlow, CallbackFunction, Callbacks, ActionPropertiesKeyword } from '../../types';
 import { addChild } from './addChild';
 import { toJson } from './toJson';
 
-
-
-const addAnswer = (inCtx: TContext) => (
+/**
+ * 
+ * @param inCtx 
+ * @returns 
+ */
+const addAnswer = (inCtx: TContext | TFlow) => (
     answer: string | string[],
-    options: TCTXoptions,
-    cb: Callbacks | null = null,
-    nested: TFlow[] | TFlow = []
-) => {
+    options?: ActionPropertiesKeyword,
+    cb?: CallbackFunction | null,
+    nested?: TFlow[] | TFlow
+): TFlow => {
+
+    const lastCtx = ('ctx' in inCtx ? inCtx.ctx : inCtx) as TContext;
+
+    nested = nested ?? []
     answer = Array.isArray(answer) ? answer.join('\n') : answer;
 
     const getAnswerOptions = (): TCTXoptions => ({
@@ -36,15 +43,17 @@ const addAnswer = (inCtx: TContext) => (
             };
         }
         return {
-            nested: addChild(nested as TFlow),
+            nested: addChild(nested),
         };
     };
 
-    const getCbFromNested = () => flatObject(Array.isArray(nested) ? nested : [nested]);
+    const getCbFromNested = () => {
+        const nestedArray = Array.isArray(nested) ? nested : [nested];
+        return flatObject(nestedArray);
+    };
 
     const callback = typeof cb === 'function' ? cb : () => { };
 
-    const lastCtx = ('ctx' in inCtx ? inCtx.ctx : inCtx) as TContext;
 
     const ctxAnswer = (): TContext => {
         const options = {
@@ -53,9 +62,10 @@ const addAnswer = (inCtx: TContext) => (
             keyword: {},
             callback: !!cb,
         };
+
         const ref = options.ref ?? `ans_${generateRef()}`;
 
-        const json = [].concat(inCtx.json).concat([
+        const json = [].concat(lastCtx.json).concat([
             {
                 ref,
                 keyword: lastCtx.ref,
@@ -64,8 +74,8 @@ const addAnswer = (inCtx: TContext) => (
             },
         ]);
 
-        const callbacks = {
-            ...inCtx.callbacks,
+        const callbacks: Callbacks = {
+            ...lastCtx.callbacks,
             ...getCbFromNested(),
             [ref]: callback,
         };
@@ -86,9 +96,9 @@ const addAnswer = (inCtx: TContext) => (
         ctx,
         ref: ctx.ref,
         addAnswer: addAnswer(ctx),
-        addAction: (cb: CallbackFunction | AnswerOptions = () => { }, flagCb: CallbackFunction = () => { }) => {
-            if (typeof cb === 'object') return addAnswer(ctx)('__capture_only_intended__', cb as AnswerOptions, flagCb);
-            return addAnswer(ctx)('__call_action__', {}, cb as CallbackFunction);
+        addAction: (cb: CallbackFunction = () => { }, flagCb: CallbackFunction = () => { }) => {
+            if (typeof cb === 'object') return addAnswer(ctx)('__capture_only_intended__', cb, flagCb);
+            return addAnswer(ctx)('__call_action__', null, cb as CallbackFunction);
         },
         toJson: toJson(ctx),
     };

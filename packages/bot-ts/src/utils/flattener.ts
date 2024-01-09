@@ -1,8 +1,4 @@
-// flatObject.ts
-
-interface CallbackContext {
-    callbacks: Record<string, Function>
-}
+import { TFlow } from "../types"
 
 /**
  * Convierte una lista de objetos anidados en un objeto plano,
@@ -10,7 +6,7 @@ interface CallbackContext {
  * @param listArray Lista de objetos anidados.
  * @returns Objeto plano resultante.
  */
-const flatObject = (listArray: { ctx?: CallbackContext }[] = []): Record<string, Function> => {
+const flatObject = (listArray: TFlow[] = []): Record<string, Function> => {
     const cbNestedList = Array.isArray(listArray) ? listArray : []
 
     if (!cbNestedList.length) return {}

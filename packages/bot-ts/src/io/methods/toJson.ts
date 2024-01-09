@@ -1,7 +1,7 @@
-import { TContext, TFlow } from "../types";
+import { TContext } from "../../types";
 
-const toJson = (inCtx: TFlow): (() => object) => {
-    const lastCtx = (inCtx.hasOwnProperty('ctx') ? inCtx.ctx : inCtx) as TContext;
+const toJson = (inCtx: TContext): (() => TContext[]) => {
+    const lastCtx = (inCtx.hasOwnProperty('ctx') ? inCtx.ctx : inCtx);
     return () => lastCtx.json;
 }
 

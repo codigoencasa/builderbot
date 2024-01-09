@@ -1,10 +1,7 @@
 import { generateRef, generateRefSerialize } from '../../utils/hash';
+import { ActionPropertiesKeyword, TContext } from '../../types';
 
-interface Options {
-  media?: string;
-  buttons?: any[]; // Replace 'any' with a more specific type if possible
-  capture?: boolean;
-}
+type Options = Partial<ActionPropertiesKeyword>
 
 interface ToCtxParams {
   body: string;
@@ -15,17 +12,7 @@ interface ToCtxParams {
   index?: number;
 }
 
-interface Context {
-  ref: string;
-  keyword: string;
-  answer: string;
-  options: Options;
-  from: string;
-  refSerialize: string;
-}
-
 /**
- * @deprecated
  * @param params ToCtxParams
  * @returns Context
  */
@@ -36,7 +23,7 @@ const toCtx = ({
   keyword,
   options = {},
   index,
-}: ToCtxParams): Context => {
+}: ToCtxParams): TContext => {
   return {
     ref: generateRef(),
     keyword: prevRef ?? keyword,

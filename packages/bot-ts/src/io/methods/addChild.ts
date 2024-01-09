@@ -1,4 +1,4 @@
-import { TContext, TFlow } from '../types';
+import { TContext, TFlow } from '../../types';
 import { toSerialize } from './toSerialize';
 
 /**

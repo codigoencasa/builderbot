@@ -10,7 +10,8 @@
     "types": "dist/index.d.ts",
     "scripts": {
         "build": "rimraf dist && rollup --config",
-        "test": " npx uvu -r tsm ./__tests__"
+        "test": " npx uvu -r tsm ./__tests__ methods.test.ts",
+        "test:debug": " npx tsm --inspect-brk ../../node_modules/uvu/bin.js ./__tests__ flowClass.test.ts"
     },
     "files": [
         "./dist/"

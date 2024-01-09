@@ -1,5 +1,3 @@
-// modulo.ts
-
 import { randomUUID, createHash } from 'crypto'
 
 /**
@@ -31,8 +29,8 @@ const generateRefSerialize = ({
     keyword,
 }: {
     index: number
-    answer: string
-    keyword?: string
+    answer: string | string[]
+    keyword?: string | string[]
 }): string => {
     return createHash('md5').update(JSON.stringify({ index, answer, keyword })).digest('hex')
 }

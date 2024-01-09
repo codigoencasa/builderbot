@@ -1,42 +1,22 @@
 import { generateRef } from '../../utils/hash';
-import { addAnswer, AddAnswerResult } from './addAnswer'; // Asumiendo que addAnswer tiene un tipo de retorno definido como AddAnswerResult
+import { addAnswer } from './addAnswer';
 import { toJson } from './toJson';
+import { ActionPropertiesKeyword, CallbackFunction, TContext, TFlow } from '../../types';
 
-interface Options {
-    sensitive?: boolean;
-    regex?: boolean;
-}
-
-interface KeywordContext {
-    ref: string;
-    keyword: string | string[];
-    options: Options;
-    json: any[]; // Reemplazar `any` con un tipo más específico si es posible
-}
-
-interface AddKeywordResult {
-    ctx: KeywordContext;
-    ref: string;
-    addAnswer: AddAnswerResult;
-    addAction: (cb?: Function | object, flagCb?: Function) => AddAnswerResult;
-    toJson: ReturnType<typeof toJson>;
-}
-
-const addKeyword = (keyword: string | string[], options: Options = {}): AddKeywordResult => {
+const addKeyword = (keyword: string | string[], options?: ActionPropertiesKeyword): TFlow => {
     if (typeof keyword !== 'string' && !Array.isArray(keyword)) {
         throw new Error('DEBE_SER_STRING_ARRAY_REGEX');
     }
 
-    const parseOptions = (): Options => {
-        const defaultProperties: Options = {
-            sensitive: typeof options.sensitive === 'boolean' ? options.sensitive : false,
-            regex: typeof options.regex === 'boolean' ? options.regex : false,
+    const parseOptions = (): ActionPropertiesKeyword => {
+        const defaultProperties = {
+            sensitive: typeof options?.sensitive === 'boolean' ? !!options?.sensitive : false,
+            regex: typeof options?.regex === 'boolean' ? !!options?.regex : false,
         };
-
         return defaultProperties;
     };
 
-    const ctxAddKeyword = (): KeywordContext => {
+    const ctxAddKeyword = (): TContext => {
         const ref = `key_${generateRef()}`;
         const parsedOptions = parseOptions();
         const json = [
@@ -55,7 +35,7 @@ const addKeyword = (keyword: string | string[], options: Options = {}): AddKeywo
         ctx,
         ref: ctx.ref,
         addAnswer: addAnswer(ctx),
-        addAction: (cb: Function | object = () => null, flagCb: Function = () => null): AddAnswerResult => {
+        addAction: (cb: CallbackFunction = () => null, flagCb: CallbackFunction = () => null) => {
             if (typeof cb === 'object') {
                 return addAnswer(ctx)('__capture_only_intended__', cb, flagCb);
             }

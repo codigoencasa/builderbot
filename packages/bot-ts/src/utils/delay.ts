@@ -1,5 +1,3 @@
-// delay.ts
-
 /**
  * A utility function that introduces a delay in execution.
  * @param milliseconds - The duration of the delay in milliseconds.
