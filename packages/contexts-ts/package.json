@@ -1,7 +1,7 @@
 {
-    "name": "bot-ts-demo",
+    "name": "contexts-ts",
     "version": "0.1.0-alpha.0",
-    "description": "core typescript",
+    "description": "contexts typescript",
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
     "license": "ISC",
@@ -10,7 +10,7 @@
     "type": "module",
     "scripts": {
         "build": "rimraf dist && rollup --config",
-        "test": " npx uvu -r tsm ./__tests__ methods.test.ts",
+        "test": " npx uvu -r tsm ./__tests__ .test.ts",
         "test:debug": " npx tsm --inspect-brk ../../node_modules/uvu/bin.js ./__tests__ flowClass.test.ts"
     },
     "files": [
@@ -27,7 +27,8 @@
     "bugs": {
         "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
     },
-    "devDependencies": {
-        "kleur": "^4.1.5"
+    "dependencies": {
+        "@google-cloud/dialogflow": "^6.2.0",
+        "bot-ts-demo": "*"
     }
 }

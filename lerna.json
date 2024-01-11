@@ -6,8 +6,10 @@
         "packages/bot-ts",
         "packages/cli",
         "packages/contexts",
+        "packages/contexts-ts",
         "packages/create-bot-whatsapp",
         "packages/database",
+        "packages/database-ts",
         "packages/eslint-plugin-bot-whatsapp",
         "packages/provider"
     ],
