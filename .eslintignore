@@ -2,3 +2,6 @@ packages/docs/*
 packages/portal/*
 starters/apps/*
 packages/bot-ts/
+packages/bot/
+packages/cli/
+packages/create-bot-whatsapp/

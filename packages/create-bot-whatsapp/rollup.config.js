@@ -11,13 +11,5 @@ export default {
         format: 'cjs',
         exports: 'named',
     },
-    plugins: [
-        // copy({
-        //     targets: [{ src: 'starters/*', dest: join(__dirname, 'starters') }],
-        // }),
-        commonjs(),
-        nodeResolve(),
-        typescript(),
-        terser(),
-    ],
+    plugins: [commonjs(), nodeResolve(), typescript(), terser()],
 }
