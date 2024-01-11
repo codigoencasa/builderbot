@@ -11,7 +11,7 @@
     "scripts": {
         "build": "rimraf dist && rollup --config",
         "test": " npx uvu -r tsm ./__tests__ .test.ts",
-        "test:debug": " npx tsm --inspect-brk ../../node_modules/uvu/bin.js ./__tests__ flowClass.test.ts"
+        "test:debug": " npx tsm --inspect-brk ../../node_modules/uvu/bin.js ./__tests__ .test.ts"
     },
     "files": [
         "./dist/"
