@@ -1,3 +1,4 @@
 import { MockDatabase } from './mock'
+import { MongoAdapter } from './mongo'
 
-export { MockDatabase }
+export { MockDatabase, MongoAdapter }

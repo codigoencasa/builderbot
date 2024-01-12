@@ -222,6 +222,19 @@ importers:
                 version: 8.11.2
 
     packages/database-ts:
+        dependencies:
+            dotenv:
+                specifier: ^16.0.3
+                version: 16.3.1
+            mongodb:
+                specifier: ^4.11.0
+                version: 4.11.0
+            mysql2:
+                specifier: ^2.3.3
+                version: 2.3.3
+            pg:
+                specifier: ^8.11.2
+                version: 8.11.2
         devDependencies:
             '@rollup/plugin-node-resolve':
                 specifier: ^15.2.3

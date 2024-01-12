@@ -3,9 +3,11 @@
  * Puedes ver el README.md dentro packages/database
  */
 
+import { History } from '../types'
+
 class MockDatabase {
     db: any
-    listHistory = []
+    listHistory: History[] = []
 
     constructor() {}
 
