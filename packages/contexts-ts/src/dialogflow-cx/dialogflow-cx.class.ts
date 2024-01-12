@@ -1,5 +1,5 @@
 import { SessionsClient } from '@google-cloud/dialogflow'
-import { CoreClass } from 'bot-ts-demo'
+import { CoreClass } from '@bot-whatsapp/bot'
 import { existsSync, readFileSync } from 'fs'
 import { join } from 'path'
 import {

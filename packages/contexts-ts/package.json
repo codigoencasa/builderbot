@@ -28,7 +28,13 @@
         "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
     },
     "dependencies": {
-        "@google-cloud/dialogflow": "^6.2.0",
-        "bot-ts-demo": "*"
+        "@bot-whatsapp/bot": "*",
+        "@google-cloud/dialogflow": "^6.2.0"
+    },
+    "devDependencies": {
+        "@rollup/plugin-node-resolve": "^15.2.3",
+        "@rollup/plugin-terser": "^0.4.4",
+        "@types/node": "^20.11.0",
+        "rollup-plugin-typescript2": "^0.36.0"
     }
 }

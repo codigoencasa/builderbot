@@ -1,35 +1,40 @@
 {
     "name": "@bot-whatsapp/bot",
     "version": "0.1.0-alpha.0",
-    "description": "",
-    "main": "./lib/bundle.bot.cjs",
-    "scripts": {
-        "build": "rimraf ./lib && rollup --config ./rollup.config.js",
-        "bot:rollup": "node ../../node_modules/.bin/rollup index.js --config ./rollup.config.js",
-        "format:check": "prettier --check .",
-        "format:write": "prettier --write .",
-        "lint:check": "eslint .",
-        "lint:fix": "eslint --fix .",
-        "test.unit": "cross-env NODE_ENV=test node ../../node_modules/uvu/bin.js tests"
-    },
-    "keywords": [],
-    "files": [
-        "./lib/bundle.bot.cjs",
-        "./provider/*",
-        "./core/*",
-        "./io/*"
-    ],
-    "author": "",
+    "description": "core typescript",
+    "author": "Leifer Mendez <leifer33@gmail.com>",
+    "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
     "license": "ISC",
-    "devDependencies": {
-        "@bot-whatsapp/cli": "*",
-        "kleur": "^4.1.5"
+    "main": "dist/index.cjs",
+    "types": "dist/index.d.ts",
+    "type": "module",
+    "scripts": {
+        "build": "rimraf dist && rollup --config",
+        "test": " npx uvu -r tsm ./_test_ methods.test.ts",
+        "test:debug": " npx tsm --inspect-brk ../../node_modules/uvu/bin.js ./_test_ flowClass.test.ts"
     },
-    "dependencies": {
-        "dotenv": "^16.0.3"
+    "files": [
+        "./dist/"
+    ],
+    "directories": {
+        "src": "src",
+        "test": "_test_"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/codigoencasa/bot-whatsapp/tree/main/packages/bot"
+        "url": "git+https://github.com/codigoencasa/bot-whatsapp.git"
+    },
+    "bugs": {
+        "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
+    },
+    "devDependencies": {
+        "@rollup/plugin-node-resolve": "^15.2.3",
+        "@rollup/plugin-terser": "^0.4.4",
+        "@types/node": "^20.11.0",
+        "kleur": "^4.1.5",
+        "rimraf": "^3.0.2",
+        "rollup-plugin-typescript2": "^0.36.0",
+        "tslib": "^2.6.2",
+        "tsm": "^2.3.0"
     }
 }

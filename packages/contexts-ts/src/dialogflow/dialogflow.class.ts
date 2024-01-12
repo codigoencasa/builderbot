@@ -1,4 +1,4 @@
-import { CoreClass } from 'bot-ts-demo'
+import { CoreClass } from '@bot-whatsapp/bot'
 import { existsSync, readFileSync } from 'fs'
 import { join } from 'path'
 import dialogflow from '@google-cloud/dialogflow'
@@ -95,7 +95,7 @@ export class DialogFlowContext extends CoreClass {
                 ...customPayload,
                 answer: fields?.answer?.stringValue,
             }
-            this.sendFlowSimple([ctxFromDX], from)
+            // this.sendFlowSimple([ctxFromDX], from)
             return
         }
 
@@ -111,6 +111,6 @@ export class DialogFlowContext extends CoreClass {
             })
             .filter((e) => e)
 
-        this.sendFlowSimple(messagesFromCX, from)
+        // this.sendFlowSimple(messagesFromCX, from)
     }
 }

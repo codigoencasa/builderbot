@@ -1,23 +1,23 @@
-const banner = require('../../config/banner.rollup.json')
-const commonjs = require('@rollup/plugin-commonjs')
-const copy = require('rollup-plugin-copy')
-const { nodeResolve } = require('@rollup/plugin-node-resolve')
-const { join } = require('path')
+import commonjs from '@rollup/plugin-commonjs'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
+import typescript from 'rollup-plugin-typescript2'
+import terser from '@rollup/plugin-terser'
 
-const PATH = join(__dirname, 'lib', 'cli', 'bundle.cli.cjs')
-
-module.exports = {
-    input: join(__dirname, 'index.js'),
+export default {
+    input: ['src/index.ts'],
     output: {
-        banner: banner['banner.output'].join(''),
-        file: PATH,
+        dir: 'dist',
+        entryFileNames: '[name].cjs',
         format: 'cjs',
+        exports: 'named',
     },
     plugins: [
-        copy({
-            targets: [{ src: join(process.cwd(), 'starters', '*'), dest: join(__dirname, 'starters') }],
-        }),
+        // copy({
+        //     targets: [{ src: 'starters/*', dest: join(__dirname, 'starters') }],
+        // }),
         commonjs(),
         nodeResolve(),
+        typescript(),
+        terser(),
     ],
 }
