@@ -2,27 +2,33 @@
     "name": "@bot-whatsapp/provider",
     "version": "0.1.0-alpha.0",
     "description": "Esto es el conector a Twilio, Meta, etc...",
-    "main": "./lib/mock/index.cjs",
     "keywords": [],
     "author": "",
     "license": "ISC",
+    "main": "dist/index.cjs",
+    "types": "dist/index.d.ts",
+    "type": "module",
     "scripts": {
-        "build": "rimraf ./lib && rollup --config ./rollup.config.js"
+        "build": "rimraf dist && rollup --config",
+        "test": "npx uvu -r tsm ./_test_"
     },
     "files": [
-        "./lib/"
+        "./dist/"
     ],
     "dependencies": {
-        "@bot-whatsapp/bot": "*",
+        "@bot-whatsapp/bot": "workspace:*",
         "@ffmpeg-installer/ffmpeg": "^1.1.0",
-        "axios": "^1.4.0",
+        "axios": "^1.6.5",
+        "body-parser": "^1.20.2",
         "combine-image": "^1.0.3",
         "fluent-ffmpeg": "^2.1.2",
-        "follow-redirects": "^1.15.2",
+        "follow-redirects": "^1.15.4",
+        "mime-types": "^2.1.35",
+        "polka": "^0.5.2",
         "qr-image": "^3.2.0",
         "queue-promise": "^2.2.1",
         "rimraf": "^3.0.2",
-        "sharp": "^0.30.5"
+        "sharp": "^0.30.7"
     },
     "exports": {
         "./mock": "./lib/mock/index.cjs",
@@ -36,5 +42,17 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/codigoencasa/bot-whatsapp/tree/main/packages/provider"
+    },
+    "devDependencies": {
+        "@types/body-parser": "^1.19.5",
+        "@types/fluent-ffmpeg": "^2.1.24",
+        "@types/follow-redirects": "^1.14.4",
+        "@types/mime-types": "^2.1.4",
+        "@types/node": "^20.11.0",
+        "@types/polka": "^0.5.7",
+        "@types/proxyquire": "^1.3.31",
+        "@types/sinon": "^17.0.3",
+        "proxyquire": "^2.1.3",
+        "sinon": "^17.0.1"
     }
 }

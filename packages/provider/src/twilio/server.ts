@@ -1,59 +1,71 @@
-const { EventEmitter } = require('node:events')
-const { existsSync, createReadStream } = require('node:fs')
-const mime = require('mime-types')
-const polka = require('polka')
-const { urlencoded, json } = require('body-parser')
-const { parseNumber } = require('./utils')
-const { decryptData } = require('../../common/hash')
-const { generateRefprovider } = require('../../common/hash')
+import { EventEmitter } from 'node:events'
+import { existsSync, createReadStream } from 'node:fs'
+import mime from 'mime-types'
+import polka, { Middleware, Polka } from 'polka'
+import { urlencoded, json } from 'body-parser'
+import { parseNumber } from './utils'
+import { generateRefprovider, decryptData } from '../utils/hash'
+
+interface TwilioRequestBody {
+    From: string
+    To: string
+    Body: string
+    NumMedia: string
+    MediaContentType0?: string
+    Latitude?: string
+    Longitude?: string
+}
+
+interface TwilioPayload {
+    from: string
+    to: string
+    body: string
+}
 
 /**
  * Encargado de levantar un servidor HTTP con una hook url
  * [POST] /twilio-hook
  */
 class TwilioWebHookServer extends EventEmitter {
-    twilioServer
-    twilioPort
-    constructor(_twilioPort) {
+    private twilioServer: Polka
+    private twilioPort: number
+
+    constructor(twilioPort: number) {
         super()
         this.twilioServer = this.buildHTTPServer()
-        this.twilioPort = _twilioPort
+        this.twilioPort = twilioPort
     }
 
     /**
      * Mensaje entrante
      * emit: 'message'
-     * @param {*} req
-     * @param {*} res
+     * @param req
+     * @param res
      */
-    incomingMsg = (req, res) => {
-        const { body } = req
-        const payload = {
-            ...body,
+    private incomingMsg: Middleware = (req, res) => {
+        const body = req.body as TwilioRequestBody
+        const payload: TwilioPayload = {
             from: parseNumber(body.From),
             to: parseNumber(body.To),
             body: body.Body,
         }
+
         if (body.NumMedia !== '0' && body.MediaContentType0) {
             const type = body.MediaContentType0.split('/')[0]
             switch (type) {
-                case 'audio': {
+                case 'audio':
                     payload.body = generateRefprovider('_event_voice_note_')
                     break
-                }
                 case 'image':
-                case 'video': {
+                case 'video':
                     payload.body = generateRefprovider('_event_media_')
                     break
-                }
-                case 'application': {
+                case 'application':
                     payload.body = generateRefprovider('_event_document_')
                     break
-                }
-                case 'text': {
+                case 'text':
                     payload.body = generateRefprovider('_event_contacts_')
                     break
-                }
                 default:
                     // Lógica para manejar tipos de mensajes no reconocidos
                     break
@@ -63,36 +75,37 @@ class TwilioWebHookServer extends EventEmitter {
                 payload.body = generateRefprovider('_event_location_')
             }
         }
+
         this.emit('message', payload)
-        const json = JSON.stringify({ body })
-        res.end(json)
+        const jsonResponse = JSON.stringify({ body })
+        res.end(jsonResponse)
     }
 
     /**
      * Manejar los local media como
-     * C\\Projects\\bot-restaurante\\tmp\\menu.png
+     * C:\\Projects\\bot-restaurante\\tmp\\menu.png
      * para que puedas ser llevar a una url online
-     * @param {*} req
-     * @param {*} res
+     * @param req
+     * @param res
      */
-    handlerLocalMedia = (req, res) => {
-        const { query } = req
+    private handlerLocalMedia: Middleware = (req, res) => {
+        const query = req.query as { path?: string }
         const file = query?.path
         if (!file) return res.end(`path: invalid`)
-        const descryptPath = decryptData(file)
-        const decodeFile = decodeURIComponent(descryptPath)
+        const decryptPath = decryptData(file)
+        const decodeFile = decodeURIComponent(decryptPath)
         if (!existsSync(decodeFile)) return res.end(`not exits: ${decodeFile}`)
         const fileStream = createReadStream(decodeFile)
-        const mimeType = mime.lookup(decodeFile)
+        const mimeType = mime.lookup(decodeFile) || 'application/octet-stream'
         res.writeHead(200, { 'Content-Type': mimeType })
         fileStream.pipe(res)
     }
 
     /**
-     * Contruir HTTP Server
-     * @returns
+     * Construir HTTP Server
+     * @returns Polka instance
      */
-    buildHTTPServer = () => {
+    private buildHTTPServer(): Polka {
         return polka()
             .use(urlencoded({ extended: true }))
             .use(json())
@@ -101,19 +114,18 @@ class TwilioWebHookServer extends EventEmitter {
     }
 
     /**
-     * Puerto del HTTP
-     * @param {*} port default 3000
+     * Iniciar el servidor HTTP
      */
-    start = () => {
+    public start(): void {
         this.twilioServer.listen(this.twilioPort, () => {
             console.log(``)
             console.log(`[Twilio]: Agregar esta url "WHEN A MESSAGE COMES IN"`)
             console.log(`[Twilio]: POST http://localhost:${this.twilioPort}/twilio-hook`)
-            console.log(`[Twilio]: Más información en la documentacion`)
+            console.log(`[Twilio]: Más información en la documentación`)
             console.log(``)
         })
         this.emit('ready')
     }
 }
 
-module.exports = TwilioWebHookServer
+export { TwilioWebHookServer }

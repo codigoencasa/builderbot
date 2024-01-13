@@ -31,7 +31,7 @@ class MysqlAdapter {
         // if (this.db._closing) await this.init()
         return await new Promise((resolve, reject) => {
             const sql = `SELECT * FROM history WHERE phone='${from}' ORDER BY id DESC`
-            this.db.query<HistoryRow[]>(sql, (error: any, rows: string | any[]) => {
+            this.db.query<HistoryRow[]>(sql, (error: any, rows: any[]) => {
                 if (error) {
                     reject(error)
                 }

@@ -1,4 +1,4 @@
-import kleur from 'kleur'
+import color from 'picocolors'
 
 type PrinterFunction = (message: string | string[], title?: string) => void
 
@@ -11,8 +11,8 @@ const NODE_ENV: string = process.env.NODE_ENV || 'dev'
  */
 const printer: PrinterFunction = (message, title) => {
     if (NODE_ENV !== 'test') {
-        if (title) console.log(kleur.bgRed(`${title}`))
-        console.log(kleur.yellow(Array.isArray(message) ? message.join('\n') : message))
+        if (title) console.log(color.bgRed(`${title}`))
+        console.log(color.yellow(Array.isArray(message) ? message.join('\n') : message))
         console.log(``)
     }
 }

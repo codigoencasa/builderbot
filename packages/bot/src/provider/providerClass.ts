@@ -1,10 +1,11 @@
 import { EventEmitter } from 'node:events'
 
-interface Message {
-    content: string
-}
+export type UserId = string | number
 
-type UserId = string | number
+export interface Message {
+    message: string
+    userId?: UserId
+}
 
 interface Vendor extends Object {}
 
@@ -22,7 +23,7 @@ class ProviderClass extends EventEmitter {
         if (NODE_ENV !== 'production') {
             console.log('[sendMessage]', { userId, message })
         }
-        return message
+        return Promise.resolve(message)
     }
 
     public getInstance(): Vendor {

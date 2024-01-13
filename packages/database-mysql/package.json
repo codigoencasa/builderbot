@@ -32,12 +32,13 @@
         "mysql2": "^2.3.3"
     },
     "devDependencies": {
+        "@rollup/plugin-commonjs": "^23.0.7",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-terser": "^0.4.4",
         "@types/node": "^20.11.0",
-        "rollup-plugin-typescript2": "^0.36.0",
         "kleur": "^4.1.5",
         "rimraf": "^3.0.2",
+        "rollup-plugin-typescript2": "^0.36.0",
         "tslib": "^2.6.2",
         "tsm": "^2.3.0"
     }
