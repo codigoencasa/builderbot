@@ -1,4 +1,5 @@
-import { addKeyword, addAnswer, addChild, toSerialize } from './io/methods'
+import { addKeyword, addAnswer } from './io/methods'
+import * as utils from './utils'
 import { LIST_ALL as EVENTS } from './io/events'
 import { CoreClass, CoreClassArgs } from './core/coreClass'
 import FlowClass from './io/flowClass'
@@ -62,15 +63,6 @@ const createProvider = <T extends ProviderClass>(providerClass: new (args: any) 
     return providerInstance
 }
 
-export {
-    createBot,
-    createFlow,
-    createProvider,
-    addKeyword,
-    addAnswer,
-    addChild,
-    toSerialize,
-    ProviderClass,
-    CoreClass,
-    EVENTS,
-}
+const UTILS = utils
+
+export { createBot, createFlow, createProvider, addKeyword, addAnswer, ProviderClass, CoreClass, EVENTS, UTILS }

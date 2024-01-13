@@ -64,6 +64,7 @@
         "fs-extra": "^11.1.1",
         "git-cz": "^4.9.0",
         "husky": "^8.0.3",
+        "lerna": "^8.0.2",
         "only-allow": "^1.2.1",
         "prettier": "^2.8.8",
         "pretty-quick": "^3.1.3",
