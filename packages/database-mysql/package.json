@@ -1,27 +1,44 @@
 {
     "name": "database-mysql",
     "version": "0.1.0-alpha.0",
-    "description": "Now I’m the model of a modern major general / The venerated Virginian veteran whose men are all / Lining up, to put me up on a pedestal / Writin’ letters to relatives / Embellishin’ my elegance and eloquence / But the elephant is in the room / The truth is in ya face when ya hear the British cannons go / BOOM",
+    "description": "Esto es el conector a Mysql",
     "keywords": [],
-    "author": "vicente1992 <vic_ortiz20@hotmail.es>",
+    "author": "Leifer Mendez <leifer33@gmail.com>",
     "license": "ISC",
-    "main": "lib/database-mysql.js",
+    "main": "dist/index.cjs",
+    "types": "dist/index.d.ts",
+    "type": "module",
     "directories": {
-        "lib": "lib",
+        "src": "src",
         "test": "__tests__"
     },
     "files": [
-        "lib"
+        "src"
     ],
     "repository": {
         "type": "git",
         "url": "git+https://github.com/vicente1992/bot-whatsapp.git"
     },
     "scripts": {
-        "test": "node ./__tests__/database-mysql.test.js"
+        "build": "rimraf dist && rollup --config",
+        "test": " npx uvu -r tsm ./__tests__ .test.ts",
+        "test:debug": " npx tsm --inspect-brk ../../node_modules/uvu/bin.js ./__tests__ .test.ts"
     },
     "bugs": {
         "url": "https://github.com/vicente1992/bot-whatsapp/issues"
     },
-    "homepage": "https://github.com/vicente1992/bot-whatsapp#readme"
+    "homepage": "https://github.com/vicente1992/bot-whatsapp#readme",
+    "dependencies": {
+        "mysql2": "^2.3.3"
+    },
+    "devDependencies": {
+        "@rollup/plugin-node-resolve": "^15.2.3",
+        "@rollup/plugin-terser": "^0.4.4",
+        "@types/node": "^20.11.0",
+        "rollup-plugin-typescript2": "^0.36.0",
+        "kleur": "^4.1.5",
+        "rimraf": "^3.0.2",
+        "tslib": "^2.6.2",
+        "tsm": "^2.3.0"
+    }
 }

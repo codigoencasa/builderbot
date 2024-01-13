@@ -1,5 +1,5 @@
 import mysql, { Connection, OkPacket, RowDataPacket } from 'mysql2'
-import { HistoryRow, MysqlAdapterCredentials } from '../types'
+import { HistoryRow, MysqlAdapterCredentials } from './types'
 
 class MysqlAdapter {
     db: Connection
@@ -28,14 +28,13 @@ class MysqlAdapter {
 
     getPrevByNumber = async (from: any): Promise<HistoryRow | null> => {
         //    TODO:pendiente valida _closing, lanza error
-        if (this.db._closing) await this.init()
+        // if (this.db._closing) await this.init()
         return await new Promise((resolve, reject) => {
             const sql = `SELECT * FROM history WHERE phone='${from}' ORDER BY id DESC`
             this.db.query<HistoryRow[]>(sql, (error: any, rows: string | any[]) => {
                 if (error) {
                     reject(error)
                 }
-
                 if (rows.length) {
                     const [row] = rows
                     row.options = JSON.parse(row.options)

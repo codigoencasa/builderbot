@@ -1,8 +1,12 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { MongoAdapter } from '../src/mongo'
+import { MongoAdapter } from '../src/index'
 
-const credentials = { dbUri: 'mongodb://localhost:27017', dbName: 'testDB' }
+const credentials = {
+    dbUri: 'mongodb://localhost:27017',
+    dbName: 'test',
+}
+
 const mongoAdapter = new MongoAdapter(credentials)
 
 test('[MongoAdapter] - instantiation', () => {

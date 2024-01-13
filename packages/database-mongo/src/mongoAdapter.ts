@@ -1,8 +1,8 @@
-import { MongoClient } from 'mongodb'
-import { History, MongoAdapterCredentials } from '../types'
+import { MongoClient, Db } from 'mongodb'
+import { History, MongoAdapterCredentials } from './types'
 
 class MongoAdapter {
-    db
+    db: Db
     listHistory: History[] = []
     credentials: MongoAdapterCredentials = { dbUri: null, dbName: null }
     constructor(_credentials: MongoAdapterCredentials) {
@@ -24,7 +24,7 @@ class MongoAdapter {
         }
     }
 
-    getPrevByNumber = async (from: string): Promise<History> => {
+    getPrevByNumber = async (from: string): Promise<any> => {
         const result = await this.db.collection('history').find({ from }).sort({ _id: -1 }).limit(1).toArray()
         return result[0]
     }
