@@ -221,6 +221,27 @@ importers:
                 specifier: ^8.11.2
                 version: 8.11.2
 
+    packages/database-mongo:
+        dependencies:
+            mongodb:
+                specifier: ^4.11.0
+                version: 4.11.0
+        devDependencies:
+            '@rollup/plugin-node-resolve':
+                specifier: ^15.2.3
+                version: 15.2.3(rollup@4.9.3)
+            '@rollup/plugin-terser':
+                specifier: ^0.4.4
+                version: 0.4.4(rollup@4.9.3)
+            '@types/node':
+                specifier: ^20.11.0
+                version: 20.11.0
+            rollup-plugin-typescript2:
+                specifier: ^0.36.0
+                version: 0.36.0(rollup@4.9.3)(typescript@5.3.3)
+
+    packages/database-mysql: {}
+
     packages/database-ts:
         dependencies:
             dotenv:

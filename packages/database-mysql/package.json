@@ -1,0 +1,27 @@
+{
+    "name": "database-mysql",
+    "version": "0.1.0-alpha.0",
+    "description": "Now I’m the model of a modern major general / The venerated Virginian veteran whose men are all / Lining up, to put me up on a pedestal / Writin’ letters to relatives / Embellishin’ my elegance and eloquence / But the elephant is in the room / The truth is in ya face when ya hear the British cannons go / BOOM",
+    "keywords": [],
+    "author": "vicente1992 <vic_ortiz20@hotmail.es>",
+    "license": "ISC",
+    "main": "lib/database-mysql.js",
+    "directories": {
+        "lib": "lib",
+        "test": "__tests__"
+    },
+    "files": [
+        "lib"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/vicente1992/bot-whatsapp.git"
+    },
+    "scripts": {
+        "test": "node ./__tests__/database-mysql.test.js"
+    },
+    "bugs": {
+        "url": "https://github.com/vicente1992/bot-whatsapp/issues"
+    },
+    "homepage": "https://github.com/vicente1992/bot-whatsapp#readme"
+}
