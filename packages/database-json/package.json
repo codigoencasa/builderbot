@@ -1,7 +1,7 @@
 {
-    "name": "@bot-whatsapp/database-mysql",
+    "name": "@bot-whatsapp/database-json",
     "version": "0.1.0-alpha.0",
-    "description": "Esto es el conector a Mysql",
+    "description": "Esto es el conector a json",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "license": "ISC",
@@ -28,9 +28,6 @@
         "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
     },
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
-    "dependencies": {
-        "mysql2": "^2.3.3"
-    },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^23.0.7",
         "@rollup/plugin-node-resolve": "^15.2.3",

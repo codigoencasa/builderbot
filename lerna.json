@@ -13,7 +13,8 @@
         "packages/eslint-plugin-bot-whatsapp",
         "packages/provider",
         "packages/database-mongo",
-        "packages/database-mysql"
+        "packages/database-mysql",
+        "packages/database-json"
     ],
     "npmClient": "pnpm"
 }
