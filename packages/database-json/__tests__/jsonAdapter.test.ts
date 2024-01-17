@@ -17,9 +17,6 @@ const entryMock: HistoryEntry = {
 }
 
 const jsonFileAdapterOptions: JsonFileAdapterOptions = { filename: 'test-db.json' }
-
-const filenameDbInit = 'test.json'
-
 const jsonFileAdapter = new JsonFileAdapter(jsonFileAdapterOptions)
 
 async function fileExists(hasFile: boolean): Promise<boolean> {
