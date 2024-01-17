@@ -17,7 +17,8 @@
         }
     ],
     "parserOptions": {
-        "ecmaVersion": "latest"
+        "ecmaVersion": "latest",
+        "sourceType": "module"
     },
     "ignorePatterns": ["node_modules/", "starters/", "__test__", "base-**"]
 }
