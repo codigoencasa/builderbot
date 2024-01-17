@@ -1,11 +1,12 @@
-import { addKeyword, addAnswer } from './io/methods'
 import * as utils from './utils'
 import { LIST_ALL as EVENTS } from './io/events'
-import { CoreClass, CoreClassArgs } from './core/coreClass'
 import FlowClass from './io/flowClass'
-import { ProviderClass } from './provider'
+import { addKeyword } from './io/methods/addKeyword'
+import { addAnswer } from './io/methods/addAnswer'
+import { ProviderClass } from './provider/providerClass'
+import { CoreClass, CoreClassArgs } from './core/coreClass'
 
-interface GeneralArgs {
+export interface GeneralArgs {
     blackList?: any[]
     listEvents?: Record<string, any>
     delay?: number
@@ -17,7 +18,7 @@ interface GeneralArgs {
     }
 }
 
-interface BotCreationArgs {
+export interface BotCreationArgs {
     flow: FlowClass
     database: any
     provider: ProviderClass
@@ -63,6 +64,4 @@ const createProvider = <T extends ProviderClass>(providerClass: new (args: any) 
     return providerInstance
 }
 
-const UTILS = utils
-
-export { createBot, createFlow, createProvider, addKeyword, addAnswer, ProviderClass, CoreClass, EVENTS, UTILS }
+export { createBot, createFlow, createProvider, addKeyword, addAnswer, ProviderClass, CoreClass, EVENTS, utils }

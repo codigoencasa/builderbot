@@ -7,12 +7,12 @@ export interface Message {
     userId?: UserId
 }
 
-interface Vendor extends Object {}
+export type Vendor<T = {}> = {} & T
 
 const NODE_ENV = process.env.NODE_ENV || 'dev'
 
 class ProviderClass extends EventEmitter {
-    private vendor: Vendor
+    protected vendor: Vendor
 
     constructor() {
         super()

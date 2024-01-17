@@ -12,12 +12,9 @@ export default {
         exports: 'named',
     },
     plugins: [
-        // copy({
-        //     targets: [{ src: 'starters/*', dest: join(__dirname, 'starters') }],
-        // }),
-        commonjs(),
         nodeResolve(),
+        commonjs(),
         typescript(),
-        terser(),
+        // terser()
     ],
 }

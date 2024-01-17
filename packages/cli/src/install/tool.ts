@@ -1,4 +1,4 @@
-import kleur from 'kleur'
+import color from 'picocolors'
 import spawn from 'cross-spawn'
 
 type PackageManager = 'npm' | 'yarn' | 'pnpm'
@@ -26,7 +26,7 @@ const installDeps = (pkgManager: string, packageList: string | string[]) => {
 
                     childProcess.on('error', (e) => {
                         console.error(e)
-                        console.error(kleur.red(errorMessage))
+                        console.error(color.red(errorMessage))
                         resolve()
                     })
 
@@ -35,12 +35,12 @@ const installDeps = (pkgManager: string, packageList: string | string[]) => {
                             resolve()
                         } else {
                             console.error(code)
-                            console.error(kleur.red(errorMessage))
+                            console.error(color.red(errorMessage))
                         }
                     })
                 } catch (e) {
                     console.error(e)
-                    console.error(kleur.red(errorMessage))
+                    console.error(color.red(errorMessage))
                     resolve()
                 }
             })

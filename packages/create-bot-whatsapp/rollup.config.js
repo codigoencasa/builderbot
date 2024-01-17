@@ -11,5 +11,10 @@ export default {
         format: 'cjs',
         exports: 'named',
     },
-    plugins: [commonjs(), nodeResolve(), typescript(), terser()],
+    plugins: [
+        commonjs(),
+        nodeResolve(),
+        typescript(),
+        // terser()
+    ],
 }
