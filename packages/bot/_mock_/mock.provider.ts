@@ -1,5 +1,5 @@
-import { ProviderClass } from '../src/index'
 import { delay } from './env'
+import { ProviderClass } from '../src/index'
 
 class MockProvider extends ProviderClass {
     constructor() {

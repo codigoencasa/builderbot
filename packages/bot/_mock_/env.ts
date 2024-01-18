@@ -1,5 +1,5 @@
-import { ProviderMock } from '../src/provider/providerMock'
 import { DatabaseMock } from '../src/db/'
+import { ProviderMock } from '../src/provider/providerMock'
 
 interface Callbacks {
     ref: () => number

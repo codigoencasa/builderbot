@@ -1,7 +1,6 @@
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
 import { Vendor } from '@bot-whatsapp/bot/dist/provider/providerClass'
 import { Boom } from '@hapi/boom'
-
 import { Console } from 'console'
 import { createWriteStream, readFileSync, existsSync, PathOrFileDescriptor } from 'fs'
 import mime from 'mime-types'
@@ -10,8 +9,6 @@ import pino from 'pino'
 import { rimraf } from 'rimraf'
 import { IStickerOptions, Sticker } from 'wa-sticker-formatter'
 
-import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber } from './utils'
-import { GlobalVendorArgs, SendOptions } from './type'
 import {
     AnyMediaMessageContent,
     AnyMessageContent,
@@ -26,6 +23,8 @@ import {
     proto,
     useMultiFileAuthState,
 } from './bailley'
+import { GlobalVendorArgs, SendOptions } from './type'
+import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber } from './utils'
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/baileys.log`),
