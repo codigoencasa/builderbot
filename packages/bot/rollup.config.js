@@ -16,9 +16,8 @@ export default {
     plugins: [
         json(),
         nodeResolve({
-            resolveOnly: (module) => !module.includes('fluent-ffmpeg'),
+            resolveOnly: (module) => !/ffmpeg|sharp/.test(module),
         }),
-        nodeResolve(),
         commonjs(),
         typescript(),
         // terser()

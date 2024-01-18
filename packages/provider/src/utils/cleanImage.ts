@@ -1,5 +1,5 @@
-import sharp from 'sharp'
 import { promises as fsPromises } from 'fs'
+import sharp from 'sharp'
 
 /**
  * Agregar un borde alrededor para mejorar la lectura de QR

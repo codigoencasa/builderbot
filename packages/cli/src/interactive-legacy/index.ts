@@ -1,10 +1,11 @@
-import prompts from 'prompts'
+import { existsSync } from 'fs'
 import { join } from 'path'
 import color from 'picocolors'
-import { existsSync } from 'fs'
-import { copyBaseApp } from '../create-app'
+import prompts from 'prompts'
+
 import { checkNodeVersion, checkOs, checkGit } from '../check'
 import { PROVIDER_LIST, PROVIDER_DATA } from '../configuration'
+import { copyBaseApp } from '../create-app'
 
 interface ProviderChoice {
     label: string

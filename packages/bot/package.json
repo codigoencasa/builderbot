@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/bot",
-    "version": "0.1.0-alpha.0",
+    "version": "0.1.0-alpha.17",
     "description": "core typescript",
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
@@ -10,7 +10,7 @@
     "type": "module",
     "scripts": {
         "build": "rimraf dist && rollup --config",
-        "test": " npx uvu -r tsm ./_test_",
+        "test": " npx uvu -r tsm ./_test_ ",
         "test:debug": " npx tsm --inspect-brk ../../node_modules/uvu/bin.js ./_test_ flowClass.test.ts"
     },
     "files": [
@@ -28,7 +28,6 @@
         "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
     },
     "devDependencies": {
-        "@ffmpeg-installer/ffmpeg": "^1.1.0",
         "@microsoft/api-extractor": "^7.39.1",
         "@rollup/plugin-commonjs": "^23.0.7",
         "@rollup/plugin-json": "^6.1.0",
@@ -40,18 +39,19 @@
         "@types/node": "^20.11.0",
         "@types/proxyquire": "^1.3.31",
         "@types/sinon": "^17.0.3",
-        "follow-redirects": "^1.15.4",
-        "mime-types": "^2.1.35",
-        "picocolors": "^1.0.0",
         "proxyquire": "^2.1.3",
         "rimraf": "^3.0.2",
         "rollup-plugin-typescript2": "^0.36.0",
-        "sharp": "^0.30.7",
         "sinon": "^17.0.1",
         "tslib": "^2.6.2",
         "tsm": "^2.3.0"
     },
     "dependencies": {
-        "fluent-ffmpeg": "^2.1.2"
+        "fluent-ffmpeg": "^2.1.2",
+        "picocolors": "^1.0.0",
+        "follow-redirects": "^1.15.4",
+        "mime-types": "^2.1.35",
+        "sharp": "^0.30.7",
+        "@ffmpeg-installer/ffmpeg": "^1.1.0"
     }
 }

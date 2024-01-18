@@ -21,7 +21,7 @@ const sharpMock: SharpMock = {
 const readFileMock = sinon.stub(fsPromises, 'readFile')
 
 // Proxyquire to replace sharp and fsPromises with our mocks
-const { cleanImage } = proxyquire('../src/utils/cleanImage', {
+const { cleanImage } = proxyquire('../../src/utils/cleanImage', {
     sharp: () => sharpMock,
     fs: { promises: { readFile: readFileMock } },
 })

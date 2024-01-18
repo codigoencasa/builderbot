@@ -6,7 +6,7 @@ import { TFlow } from '../types'
  * @param listArray Lista de objetos anidados.
  * @returns Objeto plano resultante.
  */
-const flatObject = (listArray: TFlow[] = []): Record<string, Function> => {
+const flatObject = <P>(listArray: TFlow<P>[] = []): Record<string, Function> => {
     const cbNestedList = Array.isArray(listArray) ? listArray : []
 
     if (!cbNestedList.length) return {}

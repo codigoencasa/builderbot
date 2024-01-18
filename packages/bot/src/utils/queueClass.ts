@@ -33,7 +33,7 @@ class Queue<T> {
         this.workingOnPromise = new Map()
         this.logger = logger
         this.timeout = timeout
-        this.concurrencyLimit = concurrencyLimit
+        this.concurrencyLimit = concurrencyLimit < 1 ? 15 : concurrencyLimit
     }
 
     private async processItem(from: string, item: QueueItem<T>): Promise<void> {
@@ -114,7 +114,6 @@ class Queue<T> {
         return new Promise<T>((resolve, reject) => {
             const pid = queueByFrom.findIndex((i) => i.fingerIdRef === fingerIdRef)
             if (pid !== -1) {
-                console.log(`🔥🔥🔥🔥`)
                 this.clearQueue(from)
             }
 
@@ -136,7 +135,6 @@ class Queue<T> {
 
     async processQueue(from: string): Promise<void> {
         const queueByFrom = this.queue.get(from)!
-
         while (queueByFrom.length > 0) {
             const tasksToProcess = queueByFrom.splice(0, this.concurrencyLimit - 1)
             const promises = tasksToProcess.map((item) => this.processItem(from, item))

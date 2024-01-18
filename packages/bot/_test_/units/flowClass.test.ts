@@ -1,7 +1,7 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import FlowClass from '../src/io/flowClass'
-import { addKeyword } from '../src/io/methods'
+import FlowClass from '../../src/io/flowClass'
+import { addKeyword } from '../../src/io/methods'
 
 test('[FlowClass] Probando instanciamiento de clase', () => {
     const MOCK_FLOW = addKeyword('hola').addAnswer('Buenas!')

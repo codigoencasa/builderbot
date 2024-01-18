@@ -1,5 +1,5 @@
-import { generateRef, generateRefSerialize } from '../../utils/hash'
 import { ActionPropertiesKeyword, TContext } from '../../types'
+import { generateRef, generateRefSerialize } from '../../utils/hash'
 
 type Options = Partial<ActionPropertiesKeyword>
 

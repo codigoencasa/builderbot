@@ -1,22 +1,22 @@
-import flatObject from '../../utils/flattener'
-import { generateRef } from '../../utils/hash'
-import { TCTXoptions, TContext, TFlow, CallbackFunction, Callbacks, ActionPropertiesKeyword } from '../../types'
 import { addChild } from './addChild'
 import { toJson } from './toJson'
+import { TCTXoptions, TContext, TFlow, CallbackFunction, Callbacks, ActionPropertiesKeyword } from '../../types'
+import flatObject from '../../utils/flattener'
+import { generateRef } from '../../utils/hash'
 
 /**
- *
+ * @public
  * @param inCtx
  * @returns
  */
 const addAnswer =
-    (inCtx: TContext | TFlow) =>
+    <P = any>(inCtx: TContext | TFlow<P>) =>
     (
         answer: string | string[],
         options?: ActionPropertiesKeyword,
-        cb?: CallbackFunction | null,
-        nested?: TFlow[] | TFlow
-    ): TFlow => {
+        cb?: CallbackFunction<P> | null,
+        nested?: TFlow<P>[] | TFlow<P>
+    ): TFlow<P> => {
         const lastCtx = ('ctx' in inCtx ? inCtx.ctx : inCtx) as TContext
 
         nested = nested ?? []
@@ -32,7 +32,7 @@ const addAnswer =
         })
 
         const getNested = () => {
-            let flatNested: (TFlow | TContext)[] = []
+            let flatNested: (TFlow<P> | TContext)[] = []
             if (Array.isArray(nested)) {
                 for (const iterator of nested) {
                     flatNested = [...flatNested, ...addChild(iterator)]
@@ -95,9 +95,9 @@ const addAnswer =
             ctx,
             ref: ctx.ref,
             addAnswer: addAnswer(ctx),
-            addAction: (cb: CallbackFunction = () => {}, flagCb: CallbackFunction = () => {}) => {
+            addAction: (cb: CallbackFunction<P> = () => {}, flagCb: CallbackFunction<P> = () => {}): TFlow<P> => {
                 if (typeof cb === 'object') return addAnswer(ctx)('__capture_only_intended__', cb, flagCb)
-                return addAnswer(ctx)('__call_action__', null, cb as CallbackFunction)
+                return addAnswer(ctx)('__call_action__', null, cb as CallbackFunction<P>)
             },
             toJson: toJson(ctx),
         }

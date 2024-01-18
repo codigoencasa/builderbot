@@ -1,6 +1,6 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { BlackList } from '../src/utils/blacklistClass'
+import { BlackList } from '../../src/utils/blacklistClass'
 
 test('constructor', () => {
     const blacklist = new BlackList(['123', '456'])

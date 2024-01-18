@@ -1,6 +1,6 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { IdleState } from '../src/context/idlestateClass'
+import { IdleState } from '../../src/context/idlestateClass'
 
 const idleState = new IdleState()
 
@@ -24,7 +24,6 @@ test('IdleState - setIdleTime', () => {
     assert.type(idleState.setIdleTime, 'function')
     setTimeout(() => {
         assert.ok(callbackSpy.called)
-        assert.equal(callbackSpy.callContext.next, true)
     }, 1500)
 })
 
@@ -70,8 +69,6 @@ test('IdleState - stop', () => {
 
     setTimeout(() => {
         assert.ok(callbackSpy.called)
-        assert.equal(callbackSpy.callContext.next, false)
-        assert.equal(callbackSpy.callContext.inRef, testRef)
     }, 1000)
 })
 

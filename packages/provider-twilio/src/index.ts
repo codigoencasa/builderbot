@@ -1,10 +1,11 @@
-import twilio from 'twilio'
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
-import { parseNumber } from './utils'
-import { TwilioWebHookServer } from './server'
-import { Message } from '@bot-whatsapp/bot/dist/provider/providerClass'
-import { Vendor } from '@bot-whatsapp/bot/dist/provider/providerClass'
 import { Button } from '@bot-whatsapp/bot/dist/types'
+import twilio from 'twilio'
+
+import { TwilioWebHookServer } from './server'
+import { parseNumber } from './utils'
+import { Vendor } from '@bot-whatsapp/bot/dist/provider/providerClass'
+import { Message } from 'twilio/lib/twiml/MessagingResponse'
 
 export interface ITwilioProviderOptions {
     accountSid: string

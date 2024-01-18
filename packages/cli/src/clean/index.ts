@@ -1,6 +1,6 @@
-import { rimraf } from 'rimraf'
-import color from 'picocolors'
 import { join } from 'path'
+import color from 'picocolors'
+import { rimraf } from 'rimraf'
 
 export type PathString = string
 

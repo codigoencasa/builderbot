@@ -1,6 +1,6 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { generateRefprovider, encryptData, decryptData } from '../src/utils/hash'
+import { generateRefprovider, encryptData, decryptData } from '../../src/utils/hash'
 
 test('generateRefprovider', () => {
     assert.type(generateRefprovider, 'function')

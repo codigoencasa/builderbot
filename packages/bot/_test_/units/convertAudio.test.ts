@@ -25,7 +25,7 @@ ffmpegStub.returns({
 })
 
 // Reemplazar el módulo 'fluent-ffmpeg' con los stubs
-const { convertAudio } = proxyquire('../src/utils/convertAudio', {
+const { convertAudio } = proxyquire('../../src/utils/convertAudio', {
     'fluent-ffmpeg': ffmpegStub,
 })
 

@@ -1,7 +1,7 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { addKeyword, toSerialize, addAnswer } from '../src/io/methods'
-import { generateRefSerialize } from '../src/utils'
+import { addKeyword, toSerialize, addAnswer } from '../../src/io/methods'
+import { generateRefSerialize } from '../../src/utils'
 
 interface Arrange {
     keyword: string | string[]

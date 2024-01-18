@@ -1,6 +1,6 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { GlobalState } from '../src/context/globalstateClass'
+import { GlobalState } from '../../src/context/globalstateClass'
 
 const globalState = new GlobalState()
 test.before.each(() => globalState.clear()())

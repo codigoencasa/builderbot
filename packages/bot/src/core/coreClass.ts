@@ -1,14 +1,14 @@
-import { EventEmitter } from 'node:events'
-import { createWriteStream } from 'fs'
-import { toCtx } from '../io/methods'
-import { printer } from '../utils/interactive'
-import { delay } from '../utils/delay'
 import { Console } from 'console'
+import { createWriteStream } from 'fs'
+import { EventEmitter } from 'node:events'
 
-import { LIST_REGEX } from '../io/events'
-import { BlackList, Queue } from '../utils'
 import { GlobalState, IdleState, SingleState } from '../context'
+import { LIST_REGEX } from '../io/events'
 import FlowClass from '../io/flowClass'
+import { toCtx } from '../io/methods'
+import { BlackList, Queue } from '../utils'
+import { delay } from '../utils/delay'
+import { printer } from '../utils/interactive'
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
@@ -62,7 +62,7 @@ class CoreClass extends EventEmitter {
 
         this.queuePrincipal = new Queue(
             loggerQueue,
-            this.generalArgs.queue.concurrencyLimit,
+            this.generalArgs.queue.concurrencyLimit ?? 15,
             this.generalArgs.queue.timeout
         )
 
@@ -111,11 +111,11 @@ class CoreClass extends EventEmitter {
         const { body, from } = messageCtxInComming
         let msgToSend = []
         let endFlowFlag = false
-        let fallBackFlag = false
+        const fallBackFlag = false
         if (this.dynamicBlacklist.checkIf(from)) return
         if (!body) return
 
-        let prevMsg = await this.databaseClass.getPrevByNumber(from)
+        const prevMsg = await this.databaseClass.getPrevByNumber(from)
         const refToContinue = this.flowClass.findBySerialize(prevMsg?.refSerialize)
 
         if (prevMsg?.ref) {

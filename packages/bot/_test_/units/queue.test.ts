@@ -1,6 +1,6 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { Queue } from '../src/utils/queueClass'
+import { Queue } from '../../src/utils/queueClass'
 
 // Mock Logger
 const mockLogger: Console = {

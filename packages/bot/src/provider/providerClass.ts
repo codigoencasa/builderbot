@@ -1,25 +1,13 @@
 import { EventEmitter } from 'node:events'
 
-export type UserId = string | number
-
-export interface Message {
-    message: string
-    userId?: UserId
-}
-
 export type Vendor<T = {}> = {} & T
 
 const NODE_ENV = process.env.NODE_ENV || 'dev'
 
 class ProviderClass extends EventEmitter {
-    protected vendor: Vendor
+    protected vendor: Vendor = {}
 
-    constructor() {
-        super()
-        this.vendor = {}
-    }
-
-    public async sendMessage(userId: UserId, message: Message): Promise<Message> {
+    public async sendMessage<K = any>(userId: string | number, message: any): Promise<K> {
         if (NODE_ENV !== 'production') {
             console.log('[sendMessage]', { userId, message })
         }

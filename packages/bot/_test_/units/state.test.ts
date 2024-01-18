@@ -1,6 +1,6 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { SingleState } from '../src/context/stateClass'
+import { SingleState } from '../../src/context/stateClass'
 
 const singleState = new SingleState()
 

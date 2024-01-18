@@ -1,5 +1,5 @@
-import color from 'picocolors'
 import spawn from 'cross-spawn'
+import color from 'picocolors'
 
 type PackageManager = 'npm' | 'yarn' | 'pnpm'
 const PKG_OPTION: Record<PackageManager, string> = {
@@ -14,7 +14,7 @@ const getPkgManage = async (): Promise<PackageManager> => {
 
 const installDeps = (pkgManager: string, packageList: string | string[]) => {
     const errorMessage = `Ocurrió un error instalando ${packageList}`
-    let childProcesses: (() => Promise<void>)[] = []
+    const childProcesses: (() => Promise<void>)[] = []
 
     const installSingle = (pkgInstall: string): (() => Promise<void>) => {
         return () =>

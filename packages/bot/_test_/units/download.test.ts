@@ -27,7 +27,7 @@ interface MockResponse extends EventEmitter {
 }
 
 // Importamos el módulo con las dependencias simuladas
-const { generalDownload } = proxyquire('../src/utils/download', {
+const { generalDownload } = proxyquire('../../src/utils/download', {
     http: httpMock,
     https: httpsMock,
     fs: fsMock,
