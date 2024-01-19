@@ -10,11 +10,15 @@
     "type": "module",
     "scripts": {
         "build": "rimraf dist && rollup --config",
-        "test": "npx uvu -r tsm ./_test_"
+        "test": "npx uvu -r tsm ./__tests__"
     },
     "files": [
         "./dist/"
     ],
+    "directories": {
+        "lib": "dist",
+        "test": "__tests__"
+    },
     "dependencies": {
         "@bot-whatsapp/baileys": "workspace:*",
         "@bot-whatsapp/bot": "workspace:*",

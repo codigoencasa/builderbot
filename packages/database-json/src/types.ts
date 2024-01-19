@@ -1,5 +1,5 @@
 export interface JsonFileAdapterOptions {
-    filename?: string
+    filename: string
 }
 
 export interface HistoryEntry {

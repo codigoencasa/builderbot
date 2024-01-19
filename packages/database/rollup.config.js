@@ -1,54 +1,15 @@
-const banner = require('../../config/banner.rollup.json')
-const commonjs = require('@rollup/plugin-commonjs')
-const { join } = require('path')
-
-module.exports = [
-    {
-        input: join(__dirname, 'src', 'mock', 'index.js'),
-        output: {
-            banner: banner['banner.output'].join(''),
-            file: join(__dirname, 'lib', 'mock', 'index.cjs'),
+import typescript from 'rollup-plugin-typescript2'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
+import terser from '@rollup/plugin-terser'
+export default {
+    input: ['src/index.ts'],
+    output: [
+        {
+            dir: 'dist',
+            entryFileNames: '[name].cjs',
             format: 'cjs',
-            sourcemap: true,
+            exports: 'named',
         },
-        plugins: [commonjs()],
-    },
-    {
-        input: join(__dirname, 'src', 'mongo', 'index.js'),
-        output: {
-            banner: banner['banner.output'].join(''),
-            file: join(__dirname, 'lib', 'mongo', 'index.cjs'),
-            format: 'cjs',
-            sourcemap: true,
-        },
-        plugins: [commonjs()],
-    },
-    {
-        input: join(__dirname, 'src', 'mysql', 'index.js'),
-        output: {
-            banner: banner['banner.output'].join(''),
-            file: join(__dirname, 'lib', 'mysql', 'index.cjs'),
-            format: 'cjs',
-            sourcemap: true,
-        },
-        plugins: [commonjs()],
-    },
-    {
-        input: join(__dirname, 'src', 'json', 'index.js'),
-        output: {
-            banner: banner['banner.output'].join(''),
-            file: join(__dirname, 'lib', 'json', 'index.cjs'),
-            format: 'cjs',
-        },
-        plugins: [commonjs()],
-    },
-    {
-        input: join(__dirname, 'src', 'postgres', 'index.js'),
-        output: {
-            banner: banner['banner.output'].join(''),
-            file: join(__dirname, 'lib', 'postgres', 'index.cjs'),
-            format: 'cjs',
-        },
-        plugins: [commonjs()],
-    },
-]
+    ],
+    plugins: [nodeResolve(), typescript(), terser()],
+}

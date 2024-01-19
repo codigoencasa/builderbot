@@ -1,32 +1,44 @@
 {
-    "name": "@bot-whatsapp/database",
+    "name": "database-ts",
     "version": "0.1.0-alpha.0",
     "description": "Esto es el conector a  mysql, pg, mongo",
-    "main": "./lib/mock/index.cjs",
     "keywords": [],
-    "author": "",
+    "author": "Leifer Mendez <leifer33@gmail.com>",
     "license": "ISC",
-    "scripts": {
-        "build": "rimraf ./lib && rollup --config ./rollup.config.js"
+    "main": "dist/index.cjs",
+    "types": "dist/index.d.ts",
+    "type": "module",
+    "directories": {
+        "src": "src",
+        "test": "__tests__"
     },
     "files": [
-        "./lib/"
+        "./dist/"
     ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/codigoencasa/bot-whatsapp.git"
+    },
+    "scripts": {
+        "build": "rimraf dist && rollup --config",
+        "test": " npx uvu -r tsm ./__tests__ .test.ts",
+        "test:debug": " npx tsm --inspect-brk ../../node_modules/uvu/bin.js ./__tests__ .test.ts"
+    },
+    "bugs": {
+        "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
+    },
+    "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
     "dependencies": {
         "dotenv": "^16.0.3",
         "mongodb": "^4.11.0",
         "mysql2": "^2.3.3",
         "pg": "^8.11.2"
     },
-    "exports": {
-        "./mock": "./lib/mock/index.cjs",
-        "./mongo": "./lib/mongo/index.cjs",
-        "./json": "./lib/json/index.cjs",
-        "./mysql": "./lib/mysql/index.cjs",
-        "./postgres": "./lib/postgres/index.cjs"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/codigoencasa/bot-whatsapp/tree/main/packages/database"
+    "devDependencies": {
+        "@rollup/plugin-node-resolve": "^15.2.3",
+        "@rollup/plugin-terser": "^0.4.4",
+        "@types/node": "^20.11.0",
+        "rollup-plugin-typescript2": "^0.36.0",
+        "rimraf": "^3.0.2"
     }
 }

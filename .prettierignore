@@ -8,3 +8,4 @@ packages/bot-ts/
 *.mjs
 *.cjs
 *.md
+*.json

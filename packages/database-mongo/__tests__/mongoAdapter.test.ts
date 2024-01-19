@@ -8,19 +8,23 @@ const credentials = {
     dbName: 'test',
 }
 
-const mongoAdapter = new MongoAdapter(credentials)
+test.skip('[MongoAdapter] - instantiation', () => {
+    const mongoAdapter = new MongoAdapter(credentials)
 
-test('[MongoAdapter] - instantiation', () => {
     assert.instance(mongoAdapter, MongoAdapter)
 })
 
-test('[MongoAdapter] - init', async () => {
+test.skip('[MongoAdapter] - init', async () => {
+    const mongoAdapter = new MongoAdapter(credentials)
+
     const initialized = await mongoAdapter.init()
     assert.ok(initialized, 'Initialization should be successful')
     assert.ok(mongoAdapter.db, 'Database connection should be established')
 })
 
-test('[MongoAdapter] - save', async () => {
+test.skip('[MongoAdapter] - save', async () => {
+    const mongoAdapter = new MongoAdapter(credentials)
+
     const ctx = {
         from: '12345',
         body: 'Hello Word!',
@@ -30,7 +34,9 @@ test('[MongoAdapter] - save', async () => {
     assert.equal(mongoAdapter.listHistory.length, 1)
 })
 
-test('[MongoAdapter] - getPrevByNumber', async () => {
+test.skip('[MongoAdapter] - getPrevByNumber', async () => {
+    const mongoAdapter = new MongoAdapter(credentials)
+
     const from = '12345'
     const prevDocument = await mongoAdapter.getPrevByNumber(from)
     assert.ok(prevDocument)

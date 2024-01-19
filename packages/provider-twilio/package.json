@@ -17,8 +17,11 @@
     },
     "scripts": {
         "build": "rimraf dist && rollup --config",
-        "test": " npx uvu -r tsm ./_test_",
-        "test:debug": " npx tsm --inspect-brk ../../node_modules/uvu/bin.js ./_test_ flowClass.test.ts"
+        "test": " npx uvu -r tsm ./__tests__"
+    },
+    "directories": {
+        "lib": "dist",
+        "test": "__tests__"
     },
     "bugs": {
         "url": "https://github.com/codigoencasa/bot-whatsapp/issues"

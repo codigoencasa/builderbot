@@ -4,7 +4,7 @@
     "packages": [
         "packages/bot",
         "packages/cli",
-        "packages/contexts",
+        // "packages/contexts",
         "packages/create-bot-whatsapp",
         "packages/provider",
         "packages/database-mongo",

@@ -1,26 +1,43 @@
 {
-    "name": "eslint-plugin-bot-whatsapp",
+    "name": "@bot-whatsapp/eslint-plugin-bot-whatsapp-ts",
     "version": "0.1.0-alpha.0",
     "description": "> TODO: description",
-    "main": "./lib/eslint-plugin-bot-whatsapp.cjs",
-    "files": [
-        "./lib/*"
-    ],
-    "scripts": {
-        "build": "rimraf ./lib && rollup --config ./rollup.config.js"
-    },
     "author": "vicente1992 <vic_ortiz20@hotmail.es>",
-    "license": "ISC",
     "homepage": "https://github.com/vicente1992/bot-whatsapp#readme",
+    "license": "ISC",
+    "main": "dist/index.cjs",
+    "types": "dist/index.d.ts",
+    "type": "module",
     "directories": {
         "src": "src",
         "test": "__tests__"
     },
+    "files": [
+        "src"
+    ],
     "repository": {
         "type": "git",
         "url": "git+https://github.com/vicente1992/bot-whatsapp.git"
     },
+    "scripts": {
+        "build": "rimraf dist && rollup --config",
+        "test": " npx uvu -r tsm ./__tests__ .test.ts",
+        "test:debug": " npx tsm --inspect-brk ../../node_modules/uvu/bin.js ./__tests__ .test.ts"
+    },
     "bugs": {
         "url": "https://github.com/vicente1992/bot-whatsapp/issues"
+    },
+    "devDependencies": {
+        "@rollup/plugin-commonjs": "^23.0.7",
+        "@rollup/plugin-node-resolve": "^15.2.3",
+        "@rollup/plugin-terser": "^0.4.4",
+        "@types/node": "^20.11.0",
+        "@types/sinon": "^17.0.3",
+        "kleur": "^4.1.5",
+        "rimraf": "^3.0.2",
+        "rollup-plugin-typescript2": "^0.36.0",
+        "sinon": "^17.0.1",
+        "tslib": "^2.6.2",
+        "tsm": "^2.3.0"
     }
 }

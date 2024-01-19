@@ -42,6 +42,8 @@
         ],
         "@typescript-eslint/no-explicit-any": 0,
         "no-useless-escape": 0,
+        "import/named": 0,
+        "import/no-named-as-default-member": 0,
         "@typescript-eslint/ban-types": 0,
         "no-prototype-builtins": 0,
         "@typescript-eslint/no-var-requires": 0,

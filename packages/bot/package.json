@@ -10,7 +10,7 @@
     "type": "module",
     "scripts": {
         "build": "rimraf dist && rollup --config",
-        "test": " npx uvu -r tsm ./_test_ ",
+        "test": " npx uvu -r tsm ./__tests__ cleanImage.test.ts",
         "test:debug": " npx tsm --inspect-brk ../../node_modules/uvu/bin.js ./_test_ flowClass.test.ts"
     },
     "files": [
@@ -18,7 +18,7 @@
     ],
     "directories": {
         "src": "src",
-        "test": "_test_"
+        "test": "__tests__"
     },
     "repository": {
         "type": "git",

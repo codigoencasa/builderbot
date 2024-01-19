@@ -4,14 +4,14 @@
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "outDir": "./dist",
+        "rootDir": "./src",
         "declaration": true,
-        "moduleResolution": "node"
+        "declarationMap": true,
+        "moduleResolution": "node",
+        "importHelpers": true,
+        "target": "es2021",
+        "types": ["node"]
     },
-    "files": [],
-    "include": [],
-    "references": [
-        {
-            "path": "./tsconfig.lib.json"
-        }
-    ]
+    "include": ["src/**/*.js", "src/**/*.ts"],
+    "exclude": ["**/*.spec.ts", "**/*.test.ts", "node_modules"]
 }

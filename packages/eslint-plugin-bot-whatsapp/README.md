@@ -1,11 +1,11 @@
-# `eslint-plugin-bot-whatsapp`
+# `eslint-plugin-bot-whatsapp-ts`
 
 > TODO: description
 
 ## Usage
 
 ```
-const eslintPluginBotWhatsapp = require('eslint-plugin-bot-whatsapp');
+const eslintPluginBotWhatsappTs = require('eslint-plugin-bot-whatsapp-ts');
 
 // TODO: DEMONSTRATE API
 ```
