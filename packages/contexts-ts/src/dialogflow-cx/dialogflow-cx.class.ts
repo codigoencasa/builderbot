@@ -10,8 +10,9 @@ import {
     MessageContextIncoming,
 } from '../types'
 
-export class DialogFlowCXContext extends CoreClass {
+export class DialogFlowCXContext {
     // Opciones del usuario
+    private coreInstance: CoreClass
     optionsDX: DialogFlowCXContextOptions = {
         language: 'es',
         location: '',
@@ -21,7 +22,7 @@ export class DialogFlowCXContext extends CoreClass {
     sessionClient = null
 
     constructor(_database, _provider, _optionsDX = {}) {
-        super(null, _database, _provider, null)
+        this.coreInstance = new CoreClass(null, _database, _provider, null)
         this.optionsDX = { ...this.optionsDX, ..._optionsDX }
     }
 
@@ -109,6 +110,6 @@ export class DialogFlowCXContext extends CoreClass {
             }
         })
 
-        this.sendFlowSimple(listMessages, from)
+        this.coreInstance.sendFlowSimple(listMessages, from)
     }
 }

@@ -6,7 +6,8 @@ import { DialogFlowContextOptions, DialogFlowCredentials, MessageContextIncoming
 
 const GOOGLE_ACCOUNT_PATH = join(process.cwd(), 'google-key.json')
 
-export class DialogFlowContext extends CoreClass {
+export class DialogFlowContext {
+    private coreInstance: CoreClass
     projectId: string | null = null
     configuration = null
     sessionClient = null
@@ -15,23 +16,23 @@ export class DialogFlowContext extends CoreClass {
     }
 
     constructor(_database, _provider, _optionsDX = {}) {
-        super(null, _database, _provider, null)
+        this.coreInstance = new CoreClass(null, _database, _provider, null)
         this.optionsDX = { ...this.optionsDX, ..._optionsDX }
     }
 
-    /**
-     * Verificar conexión con servicio de DialogFlow
-     */
-    init = () => {
+    loadCredentials = (): DialogFlowCredentials | null => {
         if (!existsSync(GOOGLE_ACCOUNT_PATH)) {
-            console.log(`[ERROR]: No se encontro ${GOOGLE_ACCOUNT_PATH}`)
-            /**
-             * Emitir evento de error para que se mueste por consola dicinedo que no tiene el json
-             *  */
+            console.log(`[ERROR]: No se encontró ${GOOGLE_ACCOUNT_PATH}`)
+            return null
         }
 
         const rawJson = readFileSync(GOOGLE_ACCOUNT_PATH, 'utf-8')
-        const { project_id, private_key, client_email } = JSON.parse(rawJson) as DialogFlowCredentials
+        console.log('rawJson--->', rawJson)
+        return JSON.parse(rawJson) as DialogFlowCredentials
+    }
+
+    private initializeDialogFlowClient = (credentials: DialogFlowCredentials): void => {
+        const { project_id, private_key, client_email } = credentials
 
         this.projectId = project_id
         this.configuration = {
@@ -42,6 +43,17 @@ export class DialogFlowContext extends CoreClass {
         }
 
         this.sessionClient = new dialogflow.SessionsClient(this.configuration)
+    }
+
+    /**
+     * Verificar conexión con servicio de DialogFlow
+     */
+    init = () => {
+        const credentials = this.loadCredentials()
+
+        if (credentials) {
+            this.initializeDialogFlowClient(credentials)
+        }
     }
 
     /**
@@ -95,7 +107,7 @@ export class DialogFlowContext extends CoreClass {
                 ...customPayload,
                 answer: fields?.answer?.stringValue,
             }
-            // this.sendFlowSimple([ctxFromDX], from)
+            this.coreInstance([ctxFromDX], from)
             return
         }
 
@@ -111,6 +123,6 @@ export class DialogFlowContext extends CoreClass {
             })
             .filter((e) => e)
 
-        // this.sendFlowSimple(messagesFromCX, from)
+        this.coreInstance.sendFlowSimple(messagesFromCX, from)
     }
 }
