@@ -1,8 +1,8 @@
-import { writeFile, createWriteStream } from 'fs'
 import { utils } from '@bot-whatsapp/bot'
-import { tmpdir } from 'os'
+import { writeFile, createWriteStream } from 'fs'
 import * as http from 'http'
 import * as https from 'https'
+import { tmpdir } from 'os'
 
 const venomCleanNumber = (number: string, full: boolean = false): string => {
     number = number.replace('@c.us', '')
