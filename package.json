@@ -4,7 +4,6 @@
     "description": "Bot de wahtsapp open source para MVP o pequeños negocios",
     "main": "app.js",
     "private": true,
-    "type": "module",
     "scripts": {
         "commit": "git-cz",
         "cli:rollup": "rollup --config ./packages/cli/rollup.config.js ",
