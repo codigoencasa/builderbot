@@ -1,6 +1,6 @@
-import flatObject from '../utils/flattener'
 import { toSerialize } from './methods/toSerialize'
 import { TContext, TFlow } from '../types'
+import flatObject from '../utils/flattener'
 
 /**
  * Esta clase se encarga de manejar la manipulación de los flows
@@ -24,7 +24,7 @@ class FlowClass {
 
     find(keyOrWord: string, symbol: boolean = false, overFlow: TContext[] | null = null): TContext[] {
         let capture = false
-        let messages: any[] = []
+        const messages: any[] = []
         let refSymbol: TContext | null = null
         overFlow = overFlow ?? this.flowSerialize
 

@@ -1,5 +1,6 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
+
 import { MockDatabase } from '../src/mock'
 
 const mockDatabase = new MockDatabase()

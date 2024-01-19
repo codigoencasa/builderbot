@@ -1,12 +1,13 @@
-import { EventEmitter } from 'node:events'
+import { utils } from '@bot-whatsapp/bot'
+import { urlencoded, json } from 'body-parser'
 import mime from 'mime-types'
+import { EventEmitter } from 'node:events'
 import { existsSync, createReadStream } from 'node:fs'
 import polka, { Middleware, Polka } from 'polka'
-import { urlencoded, json } from 'body-parser'
-import { parseNumber } from './utils'
-import { UTILS } from '@bot-whatsapp/bot'
 
-interface TwilioRequestBody {
+import { parseNumber } from './utils'
+
+export interface TwilioRequestBody {
     From: string
     To: string
     Body: string
@@ -16,7 +17,7 @@ interface TwilioRequestBody {
     Longitude?: string
 }
 
-interface TwilioPayload {
+export interface TwilioPayload {
     from: string
     to: string
     body: string
@@ -54,17 +55,17 @@ class TwilioWebHookServer extends EventEmitter {
             const type = body.MediaContentType0.split('/')[0]
             switch (type) {
                 case 'audio':
-                    payload.body = UTILS.generateRefprovider('_event_voice_note_')
+                    payload.body = utils.generateRefprovider('_event_voice_note_')
                     break
                 case 'image':
                 case 'video':
-                    payload.body = UTILS.generateRefprovider('_event_media_')
+                    payload.body = utils.generateRefprovider('_event_media_')
                     break
                 case 'application':
-                    payload.body = UTILS.generateRefprovider('_event_document_')
+                    payload.body = utils.generateRefprovider('_event_document_')
                     break
                 case 'text':
-                    payload.body = UTILS.generateRefprovider('_event_contacts_')
+                    payload.body = utils.generateRefprovider('_event_contacts_')
                     break
                 default:
                     // Lógica para manejar tipos de mensajes no reconocidos
@@ -72,7 +73,7 @@ class TwilioWebHookServer extends EventEmitter {
             }
         } else {
             if (body.Latitude && body.Longitude) {
-                payload.body = UTILS.generateRefprovider('_event_location_')
+                payload.body = utils.generateRefprovider('_event_location_')
             }
         }
 
@@ -92,7 +93,7 @@ class TwilioWebHookServer extends EventEmitter {
         const query = req.query as { path?: string }
         const file = query?.path
         if (!file) return res.end(`path: invalid`)
-        const decryptPath = UTILS.decryptData(file)
+        const decryptPath = utils.decryptData(file)
         const decodeFile = decodeURIComponent(decryptPath)
         if (!existsSync(decodeFile)) return res.end(`not exits: ${decodeFile}`)
         const fileStream = createReadStream(decodeFile)
@@ -125,6 +126,18 @@ class TwilioWebHookServer extends EventEmitter {
             console.log(``)
         })
         this.emit('ready')
+    }
+
+    public stop(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.twilioServer.server.close((err) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve()
+                }
+            })
+        })
     }
 }
 

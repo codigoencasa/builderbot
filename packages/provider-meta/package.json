@@ -28,6 +28,7 @@
         "url": "https://github.com/vicente1992/bot-whatsapp/issues"
     },
     "dependencies": {
+        "@types/axios": "^0.14.0",
         "axios": "^1.6.5"
     },
     "devDependencies": {

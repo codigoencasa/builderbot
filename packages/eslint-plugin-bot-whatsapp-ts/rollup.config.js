@@ -11,5 +11,11 @@ export default {
             exports: 'named',
         },
     ],
-    plugins: [nodeResolve(), typescript(), terser()],
+    plugins: [
+        nodeResolve({
+            resolveOnly: ['!rpt2'],
+        }),
+        typescript(),
+        terser(),
+    ],
 }

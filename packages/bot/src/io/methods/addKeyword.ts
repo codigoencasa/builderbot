@@ -1,9 +1,15 @@
-import { generateRef } from '../../utils/hash'
 import { addAnswer } from './addAnswer'
 import { toJson } from './toJson'
 import { ActionPropertiesKeyword, CallbackFunction, TContext, TFlow } from '../../types'
+import { generateRef } from '../../utils/hash'
 
-const addKeyword = (keyword: string | string[], options?: ActionPropertiesKeyword): TFlow => {
+/**
+ * @public
+ * @param keyword
+ * @param options
+ * @returns
+ */
+const addKeyword = <P = any, B = any>(keyword: string | string[], options?: ActionPropertiesKeyword): TFlow<P, B> => {
     if (typeof keyword !== 'string' && !Array.isArray(keyword)) {
         throw new Error('DEBE_SER_STRING_ARRAY_REGEX')
     }
@@ -35,7 +41,7 @@ const addKeyword = (keyword: string | string[], options?: ActionPropertiesKeywor
         ctx,
         ref: ctx.ref,
         addAnswer: addAnswer(ctx),
-        addAction: (cb: CallbackFunction = () => null, flagCb: CallbackFunction = () => null) => {
+        addAction: (cb: CallbackFunction<P, B> = () => null, flagCb: CallbackFunction<P, B> = () => null) => {
             if (typeof cb === 'object') {
                 return addAnswer(ctx)('__capture_only_intended__', cb, flagCb)
             }

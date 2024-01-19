@@ -1,9 +1,9 @@
-import mimeTypes from 'mime-types'
-import { tmpdir } from 'os'
 import { http, https } from 'follow-redirects'
 import { rename, createWriteStream, existsSync } from 'fs'
-import { extname, basename, parse, join } from 'path'
 import { IncomingMessage } from 'http'
+import mimeTypes from 'mime-types'
+import { tmpdir } from 'os'
+import { extname, basename, parse, join } from 'path'
 
 /**
  * Extraer el mimetype from buffer

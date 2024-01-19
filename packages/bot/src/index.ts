@@ -1,11 +1,14 @@
-import { addKeyword, addAnswer } from './io/methods'
-import * as utils from './utils'
-import { LIST_ALL as EVENTS } from './io/events'
 import { CoreClass, CoreClassArgs } from './core/coreClass'
+import { MemoryDBClass } from './db'
+import { LIST_ALL as EVENTS } from './io/events'
 import FlowClass from './io/flowClass'
-import { ProviderClass } from './provider'
+import { addAnswer } from './io/methods/addAnswer'
+import { addKeyword } from './io/methods/addKeyword'
+import { ProviderClass } from './provider/providerClass'
+import { TFlow } from './types'
+import * as utils from './utils'
 
-interface GeneralArgs {
+export interface GeneralArgs {
     blackList?: any[]
     listEvents?: Record<string, any>
     delay?: number
@@ -17,9 +20,9 @@ interface GeneralArgs {
     }
 }
 
-interface BotCreationArgs {
+export interface BotCreationArgs {
     flow: FlowClass
-    database: any
+    database: MemoryDBClass
     provider: ProviderClass
 }
 
@@ -29,13 +32,13 @@ interface BotCreationArgs {
 const createBot = async ({ flow, database, provider }: BotCreationArgs, args: GeneralArgs = {}): Promise<CoreClass> => {
     const defaultArgs: CoreClassArgs = {
         blackList: [],
-        listEvents: {},
+        listEvents: EVENTS,
         delay: 0,
         globalState: {},
         extensions: [],
         queue: {
-            timeout: 0,
-            concurrencyLimit: 0,
+            timeout: 50000,
+            concurrencyLimit: 15,
         },
     }
 
@@ -46,7 +49,7 @@ const createBot = async ({ flow, database, provider }: BotCreationArgs, args: Ge
 /**
  * Crear instancia de clase Io (Flow)
  */
-const createFlow = (args: any): FlowClass => {
+const createFlow = (args: TFlow[]): FlowClass => {
     return new FlowClass(args)
 }
 
@@ -57,12 +60,21 @@ const createFlow = (args: any): FlowClass => {
  */
 const createProvider = <T extends ProviderClass>(providerClass: new (args: any) => T, args: any = null): T => {
     const providerInstance = new providerClass(args)
-    if (!(providerInstance instanceof ProviderClass)) {
+    if (!(providerClass.prototype instanceof ProviderClass)) {
         throw new Error('El provider no implementa ProviderClass')
     }
     return providerInstance
 }
 
-const UTILS = utils
-
-export { createBot, createFlow, createProvider, addKeyword, addAnswer, ProviderClass, CoreClass, EVENTS, UTILS }
+export {
+    createBot,
+    createFlow,
+    createProvider,
+    addKeyword,
+    addAnswer,
+    ProviderClass,
+    CoreClass,
+    EVENTS,
+    MemoryDBClass as MemoryDB,
+    utils,
+}

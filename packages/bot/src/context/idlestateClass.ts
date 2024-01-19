@@ -76,12 +76,13 @@ class IdleState {
      *
      * @param ctxInComming
      */
-    stop = (ctxInComming: any): void => {
+    stop = (ctxInComming: { from: any }): void => {
         try {
             const queueCb = this.indexCb.get(ctxInComming.from) ?? []
             for (const iterator of queueCb) {
                 iterator.stop(ctxInComming)
             }
+            this.indexCb.set(ctxInComming.from, [])
         } catch (err) {
             console.error(err)
         }

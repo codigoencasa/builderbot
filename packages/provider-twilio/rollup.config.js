@@ -1,69 +1,25 @@
-const banner = require('../../config/banner.rollup.json')
-const { join } = require('path')
-const commonjs = require('@rollup/plugin-commonjs')
+import typescript from 'rollup-plugin-typescript2'
+import json from '@rollup/plugin-json'
+import commonjs from '@rollup/plugin-commonjs'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
 
-module.exports = [
-    {
-        input: join(__dirname, 'src', 'web-whatsapp', 'index.js'),
-        output: {
-            banner: banner['banner.output'].join(''),
-            file: join(__dirname, 'lib', 'web-whatsapp', 'index.cjs'),
+export default {
+    input: ['src/index.ts'],
+    output: [
+        {
+            dir: 'dist',
+            entryFileNames: '[name].cjs',
             format: 'cjs',
+            exports: 'named',
         },
-        plugins: [commonjs()],
-    },
-    {
-        input: join(__dirname, 'src', 'twilio', 'index.js'),
-        output: {
-            banner: banner['banner.output'].join(''),
-            file: join(__dirname, 'lib', 'twilio', 'index.cjs'),
-            format: 'cjs',
-        },
-        plugins: [commonjs()],
-    },
-    {
-        input: join(__dirname, 'src', 'mock', 'index.js'),
-        output: {
-            banner: banner['banner.output'].join(''),
-            file: join(__dirname, 'lib', 'mock', 'index.cjs'),
-            format: 'cjs',
-        },
-        plugins: [commonjs()],
-    },
-    {
-        input: join(__dirname, 'src', 'venom', 'index.js'),
-        output: {
-            banner: banner['banner.output'].join(''),
-            file: join(__dirname, 'lib', 'venom', 'index.cjs'),
-            format: 'cjs',
-        },
-        plugins: [commonjs()],
-    },
-    {
-        input: join(__dirname, 'src', 'baileys', 'index.js'),
-        output: {
-            banner: banner['banner.output'].join(''),
-            file: join(__dirname, 'lib', 'baileys', 'index.cjs'),
-            format: 'cjs',
-        },
-        plugins: [commonjs()],
-    },
-    {
-        input: join(__dirname, 'src', 'meta', 'index.js'),
-        output: {
-            banner: banner['banner.output'].join(''),
-            file: join(__dirname, 'lib', 'meta', 'index.cjs'),
-            format: 'cjs',
-        },
-        plugins: [commonjs()],
-    },
-    {
-        input: join(__dirname, 'src', 'wppconnect', 'index.js'),
-        output: {
-            banner: banner['banner.output'].join(''),
-            file: join(__dirname, 'lib', 'wppconnect', 'index.cjs'),
-            format: 'cjs',
-        },
-        plugins: [commonjs()],
-    },
-]
+    ],
+    plugins: [
+        json(),
+        nodeResolve({
+            resolveOnly: (module) => !/ffmpeg|baileys|@bot-whatsapp\/bot|twilio|sharp/i.test(module),
+        }),
+        nodeResolve(),
+        commonjs(),
+        typescript(),
+    ],
+}

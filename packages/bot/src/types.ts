@@ -2,6 +2,9 @@
  * @fileoverview Este archivo contiene las definiciones de tipos utilizadas en el proyecto.
  */
 
+import type { IdleState } from './context'
+import type { Queue } from './utils'
+
 export type Button = {
     body: string
 }
@@ -30,16 +33,6 @@ export type ActionPropertiesKeyword = {
  * @type {Omit<ActionPropertiesKeyword, "sensitive" | "regex">}
  */
 export type ActionPropertiesGeneric = Omit<ActionPropertiesKeyword, 'sensitive' | 'regex'>
-
-/**
- * @typedef IMethodsChain
- * @property {(actionProps: ActionPropertiesGeneric | CallbackFunction, cb?: CallbackFunction) => IMethodsChain} addAction - Añade una acción a la cadena.
- * @property {(message: string | string[], options?: ActionPropertiesKeyword, cb?: CallbackFunction) => IMethodsChain} addAnswer - Añade una respuesta a la cadena.
- */
-export type IMethodsChain = {
-    addAction: (actionProps: ActionPropertiesGeneric | CallbackFunction, cb?: CallbackFunction) => IMethodsChain
-    addAnswer: (message: string | string[], options?: ActionPropertiesKeyword, cb?: CallbackFunction) => IMethodsChain
-}
 
 /**
  * @typedef BotContext
@@ -82,7 +75,16 @@ export type BotState = {
     clear: () => void
 }
 
+export type DynamicBlacklist = {
+    add: (phoneNumbers: string | string[]) => string[]
+    remove: (phoneNumber: string) => void
+    checkIf: (phoneNumber: string) => boolean
+    getList: () => string[]
+}
+
 /**
+ * P = typeof provider
+ * B = typeof database
  * @typedef BotMethods
  * @property {(messages: string | FlowDynamicMessage[]) => Promise<void>} flowDynamic - Define el flujo dinámico del bot.
  * @property {(flow: any) => Promise<void>} gotoFlow - Dirige al bot a un flujo específico.
@@ -91,12 +93,19 @@ export type BotState = {
  * @property {BotState} state - Estado del bot.
  * @property {any} extensions - Extensiones del bot.
  */
-export type BotMethods = {
-    flowDynamic: (messages: string | FlowDynamicMessage[]) => Promise<void>
-    gotoFlow: (flow: TFlow) => Promise<void>
+export type BotMethods<P = {}, B = {}> = {
+    flowDynamic: (messages: string | string[] | FlowDynamicMessage[], opts?: { delay: number }) => Promise<void>
+    gotoFlow: (flow: TFlow<P>) => Promise<void>
     endFlow: (message?: string) => void
     fallBack: (message?: string) => void
+    provider: P
+    database: B
+    inRef: string
+    idle: IdleState
     state: BotState
+    blacklist: DynamicBlacklist
+    globalState: BotState
+    queue: Queue<any>
     extensions: Record<string, any>
 }
 
@@ -104,7 +113,7 @@ export type BotMethods = {
  * @typedef CallbackFunction
  * @type {(context: BotContext, methods: BotMethods) => void}
  */
-export type CallbackFunction = (context: BotContext, methods: BotMethods) => void
+export type CallbackFunction<P, B> = (context: BotContext, methods: BotMethods<P, B>) => void
 
 /**
  * @typedef TCTXoptions
@@ -170,15 +179,18 @@ export interface TContext {
  * @property {(action: any) => void} addAction - Añade una acción al flujo.
  * @property {() => TContext} toJson - Convierte el flujo a un objeto JSON.
  */
-export interface TFlow {
+export interface TFlow<P = any, B = any> {
     ctx: TContext
     ref: string
     addAnswer: (
         answer: string | string[],
-        options?: ActionPropertiesKeyword,
-        cb?: CallbackFunction | null,
-        nested?: TFlow | TFlow[] | null
-    ) => TFlow
-    addAction: (actionProps: ActionPropertiesGeneric | CallbackFunction, cb?: CallbackFunction) => void
+        options?: ActionPropertiesKeyword | null,
+        cb?: CallbackFunction<P, B> | null,
+        nested?: TFlow<P, B> | TFlow<P, B>[] | null
+    ) => TFlow<P, B>
+    addAction: (
+        actionProps: ActionPropertiesGeneric | CallbackFunction<P, B>,
+        cb?: CallbackFunction<P, B>
+    ) => TFlow<P, B>
     toJson: () => TContext[]
 }

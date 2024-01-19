@@ -1,26 +1,10 @@
 import { Context, INode } from '../types'
-
-function isInsideAddActionOrAddAnswer(node: INode): boolean {
-    let currentNode: INode = node
-    while (currentNode) {
-        if (
-            currentNode.type === 'CallExpression' &&
-            currentNode.callee &&
-            currentNode.callee.property &&
-            (currentNode.callee.property.name === 'addAnswer' || currentNode.callee.property.name === 'addAction')
-        ) {
-            return true
-        }
-        // currentNode = currentNode.parent
-        currentNode = (currentNode as any).parent
-    }
-    return false
-}
+import { isInsideAddActionOrAddAnswer } from '../utils'
 
 const processDynamicFlowAwait = (context: Context) => {
     return {
         'CallExpression[callee.name="flowDynamic"]'(node: INode) {
-            let parentNode = node.parent
+            const parentNode = node.parent
 
             // Verificar si estamos dentro de un 'addAction' o 'addAnswer'
             if (!isInsideAddActionOrAddAnswer(node)) {
@@ -41,4 +25,4 @@ const processDynamicFlowAwait = (context: Context) => {
     }
 }
 
-export { processDynamicFlowAwait, isInsideAddActionOrAddAnswer }
+export { processDynamicFlowAwait }

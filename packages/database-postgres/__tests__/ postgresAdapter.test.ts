@@ -1,8 +1,9 @@
+import { Pool } from 'pg'
+import * as sinon from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { Pool } from 'pg'
+
 import { PostgreSQLAdapter } from '../src/postgresAdapter'
-import sinon from 'sinon'
 import { Contact, HistoryEntry } from '../src/types'
 
 const credentials = { host: 'localhost', user: '', database: '', password: null, port: 5432 }
@@ -35,7 +36,7 @@ const contactMock: Contact = {
 class MockPool {
     async connect(): Promise<any> {
         return Promise.resolve({
-            async query(query: string, values: any[]) {
+            async query() {
                 return { rows: [] }
             },
         })
@@ -63,7 +64,7 @@ test('getPrevByNumber - It should return undefined', async () => {
     const from = '123456789'
     const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
     postgreSQLAdapter['db'] = {
-        query: async (query: string, values: any[]) => {
+        query: async () => {
             return { rows: [] }
         },
     }
@@ -76,7 +77,7 @@ test('getPrevByNumber - getPrevByNumber returns the previous history entry', asy
     const from = '123456789'
     const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
     postgreSQLAdapter['db'] = {
-        query: async (query: string, values: any[]) => {
+        query: async () => {
             return { rows: [{ ...historyMock }] }
         },
     }
@@ -90,7 +91,7 @@ test('getPrevByNumber - getPrevByNumber returns the previous history entry', asy
 test('getContact - It should return undefined', async () => {
     const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
     postgreSQLAdapter['db'] = {
-        query: async (query: string, values: any[]) => {
+        query: async () => {
             return { rows: [] }
         },
     }
@@ -106,7 +107,7 @@ test('getContact - It I should return a contact', async () => {
     }
     const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
     postgreSQLAdapter['db'] = {
-        query: async (query: string, values: any[]) => {
+        query: async () => {
             return { rows: [{ ...contactMock }] }
         },
     }
@@ -120,7 +121,7 @@ test('getContact - It I should return a contact', async () => {
 test('save method saves history entry', async () => {
     const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
     postgreSQLAdapter['db'] = {
-        query: async (query: string, values: any[]) => {
+        query: async () => {
             return { rows: [], rowCount: 1 }
         },
     }
@@ -133,7 +134,7 @@ test('save method saves history entry', async () => {
 test('checkTableExistsAndSP - creates or checks tables and stored procedures', async () => {
     const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
     postgreSQLAdapter['db'] = {
-        query: async (query: string) => {
+        query: async () => {
             return { rows: [], rowCount: 1 }
         },
     }
@@ -144,7 +145,7 @@ test('checkTableExistsAndSP - creates or checks tables and stored procedures', a
 test('createSP - creates or checks tables and stored procedures', async () => {
     const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
     postgreSQLAdapter['db'] = {
-        query: async (query: string) => {
+        query: async () => {
             return { rows: [], rowCount: 1 }
         },
     }

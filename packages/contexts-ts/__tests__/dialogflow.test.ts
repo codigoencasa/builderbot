@@ -1,10 +1,11 @@
+import { ProviderClass } from '@bot-whatsapp/bot'
+import fs from 'fs'
+import proxyquire from 'proxyquire'
+import { stub, spy } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { ProviderClass } from '@bot-whatsapp/bot'
-import { DialogFlowContextOptions, MessageContextIncoming } from '../src/types'
-import { stub, spy } from 'sinon'
-import proxyquire from 'proxyquire'
-import fs from 'fs'
+
+import { DialogFlowContextOptions } from '../src/types'
 
 const fsMock = {
     existsSync: stub(fs, 'existsSync'),

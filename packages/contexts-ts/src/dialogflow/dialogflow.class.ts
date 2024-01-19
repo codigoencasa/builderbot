@@ -1,7 +1,8 @@
 import { CoreClass } from '@bot-whatsapp/bot'
+import dialogflow from '@google-cloud/dialogflow'
 import { existsSync, readFileSync } from 'fs'
 import { join } from 'path'
-import dialogflow from '@google-cloud/dialogflow'
+
 import { DialogFlowContextOptions, DialogFlowCredentials, MessageContextIncoming } from '../types'
 
 const GOOGLE_ACCOUNT_PATH = join(process.cwd(), 'google-key.json')

@@ -1,5 +1,5 @@
-import kleur from 'kleur'
 import spawn from 'cross-spawn'
+import color from 'picocolors'
 
 type PackageManager = 'npm' | 'yarn' | 'pnpm'
 const PKG_OPTION: Record<PackageManager, string> = {
@@ -14,7 +14,7 @@ const getPkgManage = async (): Promise<PackageManager> => {
 
 const installDeps = (pkgManager: string, packageList: string | string[]) => {
     const errorMessage = `Ocurrió un error instalando ${packageList}`
-    let childProcesses: (() => Promise<void>)[] = []
+    const childProcesses: (() => Promise<void>)[] = []
 
     const installSingle = (pkgInstall: string): (() => Promise<void>) => {
         return () =>
@@ -26,7 +26,7 @@ const installDeps = (pkgManager: string, packageList: string | string[]) => {
 
                     childProcess.on('error', (e) => {
                         console.error(e)
-                        console.error(kleur.red(errorMessage))
+                        console.error(color.red(errorMessage))
                         resolve()
                     })
 
@@ -35,12 +35,12 @@ const installDeps = (pkgManager: string, packageList: string | string[]) => {
                             resolve()
                         } else {
                             console.error(code)
-                            console.error(kleur.red(errorMessage))
+                            console.error(color.red(errorMessage))
                         }
                     })
                 } catch (e) {
                     console.error(e)
-                    console.error(kleur.red(errorMessage))
+                    console.error(color.red(errorMessage))
                     resolve()
                 }
             })

@@ -1,8 +1,8 @@
-import { test } from 'uvu'
 import * as sinon from 'sinon'
-import * as assert from 'uvu/assert'
+import { test } from 'uvu'
+
+import { processEndFlowReturn } from '../src/rules/processEndFlowReturn'
 import { INode, Context } from '../src/types'
-import { isInsideAddActionOrAddAnswer, processEndFlowReturn } from '../src/rules/processEndFlowReturn'
 
 const createMockNode = (type: string, calleeName?: string): INode => ({
     type,
@@ -12,19 +12,6 @@ const createMockNode = (type: string, calleeName?: string): INode => ({
         },
     },
     parent: null as any,
-})
-
-test('isInsideAddActionOrAddAnswer - should return true if inside addAction or addAnswer', () => {
-    const node = createMockNode('CallExpression', 'addAction')
-    const result = isInsideAddActionOrAddAnswer(node)
-
-    assert.is(result, true)
-})
-
-test('isInsideAddActionOrAddAnswer - should return false if not inside addAction or addAnswer', () => {
-    const node = createMockNode('CallExpression', 'someOtherFunction')
-    const result = isInsideAddActionOrAddAnswer(node)
-    assert.is(result, false)
 })
 
 test('processEndFlowReturn - should report an error if endFlow is not inside a ReturnStatement', () => {

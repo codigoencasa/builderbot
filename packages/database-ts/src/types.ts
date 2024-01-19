@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb'
-
-import mysql, { Connection, OkPacket, RowDataPacket } from 'mysql2'
+import { RowDataPacket } from 'mysql2'
 export interface MongoAdapterCredentials {
     dbUri: string
     dbName: string

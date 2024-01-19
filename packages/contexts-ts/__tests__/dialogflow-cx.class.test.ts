@@ -1,6 +1,7 @@
+import { ProviderClass } from '@bot-whatsapp/bot'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { ProviderClass } from '@bot-whatsapp/bot'
+
 import { DialogFlowCXContext } from '../src/dialogflow-cx/dialogflow-cx.class'
 import { DialogFlowContextOptions } from '../src/types'
 

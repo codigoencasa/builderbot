@@ -33,7 +33,17 @@ class Queue<T> {
         this.workingOnPromise = new Map()
         this.logger = logger
         this.timeout = timeout
-        this.concurrencyLimit = concurrencyLimit
+        this.concurrencyLimit = concurrencyLimit < 1 ? 15 : concurrencyLimit
+    }
+
+    /**
+     * Limpiar colar de proceso
+     * @param from
+     * @param item
+     */
+    public clearAndDone(from: string, item: { fingerIdRef: string }) {
+        this.clearIdFromCallback(from, item.fingerIdRef)
+        this.logger.log(`${from}:SUCCESS ${item.fingerIdRef}`)
     }
 
     private async processItem(from: string, item: QueueItem<T>): Promise<void> {
@@ -46,9 +56,6 @@ class Queue<T> {
                     return 'success' as unknown as T // Assuming 'success' is a valid T
                 }),
             ])
-
-            this.clearIdFromCallback(from, item.fingerIdRef)
-            this.logger.log(`${from}:SUCCESS`)
             item.resolve(value)
         } catch (err) {
             this.clearIdFromCallback(from, item.fingerIdRef)
@@ -97,6 +104,7 @@ class Queue<T> {
                     const refIdTimeOut = timer({ reject, resolve })
                     clearTimeout(this.timers.get(fingerIdRef) as NodeJS.Timeout)
                     this.timers.set(fingerIdRef, refIdTimeOut)
+                    this.clearAndDone(from, item)
                     this.clearQueue(from)
                     return refIdTimeOut
                 }
@@ -107,6 +115,7 @@ class Queue<T> {
             const cancel = () => {
                 clearTimeout(this.timers.get(fingerIdRef) as NodeJS.Timeout)
                 this.timers.delete(fingerIdRef)
+                this.clearAndDone(from, item)
             }
             return { promiseInFunc, timer, timerPromise, cancel }
         }
@@ -114,7 +123,6 @@ class Queue<T> {
         return new Promise<T>((resolve, reject) => {
             const pid = queueByFrom.findIndex((i) => i.fingerIdRef === fingerIdRef)
             if (pid !== -1) {
-                console.log(`🔥🔥🔥🔥`)
                 this.clearQueue(from)
             }
 
@@ -136,12 +144,12 @@ class Queue<T> {
 
     async processQueue(from: string): Promise<void> {
         const queueByFrom = this.queue.get(from)!
-
         while (queueByFrom.length > 0) {
             const tasksToProcess = queueByFrom.splice(0, this.concurrencyLimit - 1)
-            const promises = tasksToProcess.map((item) => this.processItem(from, item))
-
-            await Promise.all(promises) // Wait for all tasks in the batch to complete
+            const promises = tasksToProcess.map((item) =>
+                this.processItem(from, item).finally(() => this.clearAndDone(from, item))
+            )
+            await Promise.all(promises)
         }
 
         this.workingOnPromise.set(from, false)
@@ -156,6 +164,7 @@ class Queue<T> {
             try {
                 for (const item of queueByFrom) {
                     item.cancelled = true
+                    this.clearAndDone(from, item)
                     item.resolve('Queue cleared' as unknown as T)
                 }
             } finally {

@@ -13,12 +13,11 @@ export default {
         },
     ],
     plugins: [
-        commonjs(),
         json(),
         nodeResolve({
-            resolveOnly: ['!fluent-ffmpeg'],
+            resolveOnly: (module) => !/ffmpeg|sharp/.test(module),
         }),
+        commonjs(),
         typescript(),
-        // terser()
     ],
 }

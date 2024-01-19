@@ -1,10 +1,11 @@
 import { intro, outro, confirm, select, spinner, isCancel, cancel, note } from '@clack/prompts'
-import color from 'picocolors'
-import { join } from 'path'
 import { existsSync } from 'fs'
-import { copyBaseApp } from '../create-app'
+import { join } from 'path'
+import color from 'picocolors'
+
 import { checkNodeVersion, checkGit } from '../check'
 import { PROVIDER_LIST, PROVIDER_DATA } from '../configuration'
+import { copyBaseApp } from '../create-app'
 import { startInteractiveLegacy } from '../interactive-legacy'
 
 interface CheckResult {

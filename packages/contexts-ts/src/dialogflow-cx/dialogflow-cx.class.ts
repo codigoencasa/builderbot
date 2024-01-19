@@ -1,7 +1,8 @@
-import { SessionsClient } from '@google-cloud/dialogflow'
 import { CoreClass } from '@bot-whatsapp/bot'
+import { SessionsClient } from '@google-cloud/dialogflow'
 import { existsSync, readFileSync } from 'fs'
 import { join } from 'path'
+
 import {
     DialogFlowCXContextOptions,
     DialogFlowCredentials,

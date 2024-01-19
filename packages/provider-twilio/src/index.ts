@@ -1,9 +1,12 @@
+import { ProviderClass, utils } from '@bot-whatsapp/bot'
+import { Vendor } from '@bot-whatsapp/bot/dist/provider/providerClass'
+import { Button } from '@bot-whatsapp/bot/dist/types'
 import twilio from 'twilio'
-import { ProviderClass, UTILS } from '@bot-whatsapp/bot'
-import { parseNumber } from './utils'
-import { TwilioWebHookServer } from './server'
 
-interface ITwilioProviderOptions {
+import { TwilioWebHookServer } from './server'
+import { parseNumber } from './utils'
+
+export interface ITwilioProviderOptions {
     accountSid: string
     authToken: string
     vendorNumber: string
@@ -11,14 +14,14 @@ interface ITwilioProviderOptions {
     publicUrl?: string
 }
 
-interface IMessageOptions {
-    buttons?: any[]
+export interface IMessageOptions {
+    buttons?: Button[]
     media?: string
 }
 
 class TwilioProvider extends ProviderClass {
-    private twilioServer: TwilioWebHookServer
-    private vendor: twilio.Twilio
+    public twilioServer: TwilioWebHookServer
+    protected vendor: Vendor<twilio.Twilio>
     private vendorNumber: string
     private publicUrl: string
 
@@ -31,13 +34,13 @@ class TwilioProvider extends ProviderClass {
     }: ITwilioProviderOptions) {
         super()
         this.publicUrl = publicUrl
+
         this.vendor = twilio(accountSid, authToken)
         this.twilioServer = new TwilioWebHookServer(port)
         this.vendorNumber = parseNumber(vendorNumber)
 
         this.twilioServer.start()
         const listEvents = this.busEvents()
-
         for (const { event, func } of listEvents) {
             this.twilioServer.on(event, func)
         }
@@ -64,7 +67,7 @@ class TwilioProvider extends ProviderClass {
 
     private async sendMedia(number: string, message: string, mediaInput: string | null): Promise<any> {
         if (!mediaInput) throw new Error(`MEDIA_INPUT_NULL_: ${mediaInput}`)
-        const ecrypPath = UTILS.encryptData(encodeURIComponent(mediaInput))
+        const ecrypPath = utils.encryptData(encodeURIComponent(mediaInput))
         const urlEncode = `${this.publicUrl}/tmp?path=${ecrypPath}`
         const regexUrl = /^(?!https?:\/\/)[^\s]+$/
 
@@ -104,21 +107,20 @@ class TwilioProvider extends ProviderClass {
         )
     }
 
-    public async senadMessage(userId: string | number, message: Message): Promise<Message> {}
-
     public async sendMessage(
-        number: string,
-        message: string,
-        { options }: { options?: IMessageOptions } = {}
+        number: string | number,
+        { message }: { message: string },
+        arg: { options?: IMessageOptions }
     ): Promise<any> {
-        number = parseNumber(number)
-        if (options?.buttons?.length) await this.sendButtons()
-        if (options?.media) return this.sendMedia(number, message, options.media)
-        return this.vendor.messages.create({
+        number = parseNumber(`${number}`)
+        if (arg?.options?.buttons?.length) await this.sendButtons()
+        if (arg?.options?.media) return this.sendMedia(number, message, arg?.options.media)
+        const response = this.vendor.messages.create({
             body: message,
             from: `whatsapp:+${this.vendorNumber}`,
             to: `whatsapp:+${number}`,
         })
+        return response
     }
 }
 

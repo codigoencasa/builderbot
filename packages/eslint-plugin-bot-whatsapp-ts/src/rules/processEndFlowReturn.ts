@@ -1,25 +1,10 @@
 import { INode, Context } from '../types'
-
-function isInsideAddActionOrAddAnswer(node: INode) {
-    let currentNode = node
-    while (currentNode) {
-        if (
-            currentNode.type === 'CallExpression' &&
-            currentNode.callee &&
-            currentNode.callee.property &&
-            (currentNode.callee.property.name === 'addAnswer' || currentNode.callee.property.name === 'addAction')
-        ) {
-            return true
-        }
-        currentNode = currentNode.parent
-    }
-    return false
-}
+import { isInsideAddActionOrAddAnswer } from '../utils'
 
 const processEndFlowReturn = (context: Context) => {
     return {
         'CallExpression[callee.name="endFlow"]'(node: INode) {
-            let parentNode = node.parent
+            const parentNode = node.parent
 
             // Verificar si estamos dentro de un 'addAction' o 'addAnswer'
             if (!isInsideAddActionOrAddAnswer(node)) {
@@ -40,4 +25,4 @@ const processEndFlowReturn = (context: Context) => {
     }
 }
 
-export { processEndFlowReturn, isInsideAddActionOrAddAnswer }
+export { processEndFlowReturn }

@@ -3,20 +3,22 @@
     "version": "0.1.0-alpha.0",
     "packages": [
         "packages/bot",
-        "packages/bot-ts",
         "packages/cli",
-        "packages/contexts",
         "packages/contexts-ts",
         "packages/create-bot-whatsapp",
-        "packages/database",
         "packages/database-ts",
-        "packages/eslint-plugin-bot-whatsapp",
         "packages/provider",
         "packages/database-mongo",
         "packages/database-mysql",
         "packages/database-json",
         "packages/eslint-plugin-bot-whatsapp-ts",
-        "packages/provider-meta"
+        "packages/provider-meta",
+        "packages/provider",
+        "packages/provider-bailey",
+        "packages/provider-twilio",
+        "packages/provider-web-whatsapp",
+        "packages/provider-wppconnect",
+        "packages/database-postgres"
     ],
     "npmClient": "pnpm"
 }

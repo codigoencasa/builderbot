@@ -1,5 +1,5 @@
-import { generateRefSerialize } from '../../utils/hash'
 import { TContext } from '../../types'
+import { generateRefSerialize } from '../../utils/hash'
 
 /**
  * Crear referencia serializada

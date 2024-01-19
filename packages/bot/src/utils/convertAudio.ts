@@ -1,5 +1,5 @@
-import ffmpeg from 'fluent-ffmpeg'
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg'
+import ffmpeg from 'fluent-ffmpeg'
 import path from 'path'
 ffmpeg.setFfmpegPath(ffmpegInstaller.path)
 

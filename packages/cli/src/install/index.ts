@@ -1,5 +1,6 @@
 import { readFileSync, existsSync } from 'fs'
 import { join } from 'path'
+
 import { installDeps, getPkgManage } from './tool'
 
 interface PackageToUpdate {

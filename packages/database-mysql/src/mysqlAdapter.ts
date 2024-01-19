@@ -1,4 +1,5 @@
 import mysql, { Connection, OkPacket, RowDataPacket } from 'mysql2'
+
 import { HistoryRow, MysqlAdapterCredentials } from './types'
 
 class MysqlAdapter {

@@ -1,7 +1,8 @@
-import { test } from 'uvu'
 import axios from 'axios'
 import * as sinon from 'sinon'
+import { test } from 'uvu'
 import * as assert from 'uvu/assert'
+
 import { getMediaUrl } from '../src/utils'
 
 const httpsMock = {

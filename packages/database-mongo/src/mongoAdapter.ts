@@ -1,4 +1,5 @@
 import { MongoClient, Db } from 'mongodb'
+
 import { History, MongoAdapterCredentials } from './types'
 
 class MongoAdapter {

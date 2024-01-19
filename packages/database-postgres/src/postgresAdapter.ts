@@ -1,4 +1,5 @@
 import { Pool } from 'pg'
+
 import { Contact, Credential, HistoryEntry } from './types'
 
 class PostgreSQLAdapter {

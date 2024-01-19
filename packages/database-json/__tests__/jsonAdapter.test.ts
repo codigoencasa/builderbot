@@ -1,7 +1,8 @@
+import { promises as fsPromises } from 'fs'
+import { join } from 'path'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { join } from 'path'
-import { promises as fsPromises } from 'fs'
+
 import { JsonFileAdapter } from '../src/jsonAdapter'
 import { HistoryEntry, JsonFileAdapterOptions } from '../src/types'
 
