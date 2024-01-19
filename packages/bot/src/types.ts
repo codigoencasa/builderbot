@@ -76,6 +76,8 @@ export type BotState = {
 }
 
 /**
+ * P = typeof provider
+ * B = typeof database
  * @typedef BotMethods
  * @property {(messages: string | FlowDynamicMessage[]) => Promise<void>} flowDynamic - Define el flujo dinámico del bot.
  * @property {(flow: any) => Promise<void>} gotoFlow - Dirige al bot a un flujo específico.
@@ -84,13 +86,13 @@ export type BotState = {
  * @property {BotState} state - Estado del bot.
  * @property {any} extensions - Extensiones del bot.
  */
-export type BotMethods<P = {}> = {
+export type BotMethods<P = {}, B = {}> = {
     flowDynamic: (messages: string | string[] | FlowDynamicMessage[], opts?: { delay: number }) => Promise<void>
     gotoFlow: (flow: TFlow<P>) => Promise<void>
     endFlow: (message?: string) => void
     fallBack: (message?: string) => void
     provider: P
-    database: any
+    database: B
     inRef: string
     idle: IdleState
     state: BotState
@@ -103,7 +105,7 @@ export type BotMethods<P = {}> = {
  * @typedef CallbackFunction
  * @type {(context: BotContext, methods: BotMethods) => void}
  */
-export type CallbackFunction<P> = (context: BotContext, methods: BotMethods<P>) => void
+export type CallbackFunction<P, B> = (context: BotContext, methods: BotMethods<P, B>) => void
 
 /**
  * @typedef TCTXoptions
@@ -169,15 +171,18 @@ export interface TContext {
  * @property {(action: any) => void} addAction - Añade una acción al flujo.
  * @property {() => TContext} toJson - Convierte el flujo a un objeto JSON.
  */
-export interface TFlow<P> {
+export interface TFlow<P = any, B = any> {
     ctx: TContext
     ref: string
     addAnswer: (
         answer: string | string[],
         options?: ActionPropertiesKeyword | null,
-        cb?: CallbackFunction<P> | null,
-        nested?: TFlow<P> | TFlow<P>[] | null
-    ) => TFlow<P>
-    addAction: (actionProps: ActionPropertiesGeneric | CallbackFunction<P>, cb?: CallbackFunction<P>) => TFlow<P>
+        cb?: CallbackFunction<P, B> | null,
+        nested?: TFlow<P, B> | TFlow<P, B>[] | null
+    ) => TFlow<P, B>
+    addAction: (
+        actionProps: ActionPropertiesGeneric | CallbackFunction<P, B>,
+        cb?: CallbackFunction<P, B>
+    ) => TFlow<P, B>
     toJson: () => TContext[]
 }

@@ -10,11 +10,11 @@ import { generateRef } from '../../utils/hash'
  * @returns
  */
 const addAnswer =
-    <P = any>(inCtx: TContext | TFlow<P>) =>
+    <P = any, B = any>(inCtx: TContext | TFlow<P, B>) =>
     (
         answer: string | string[],
         options?: ActionPropertiesKeyword,
-        cb?: CallbackFunction<P> | null,
+        cb?: CallbackFunction<P, B> | null,
         nested?: TFlow<P>[] | TFlow<P>
     ): TFlow<P> => {
         const lastCtx = ('ctx' in inCtx ? inCtx.ctx : inCtx) as TContext
@@ -95,9 +95,12 @@ const addAnswer =
             ctx,
             ref: ctx.ref,
             addAnswer: addAnswer(ctx),
-            addAction: (cb: CallbackFunction<P> = () => {}, flagCb: CallbackFunction<P> = () => {}): TFlow<P> => {
+            addAction: (
+                cb: CallbackFunction<P, B> = () => {},
+                flagCb: CallbackFunction<P, B> = () => {}
+            ): TFlow<P, B> => {
                 if (typeof cb === 'object') return addAnswer(ctx)('__capture_only_intended__', cb, flagCb)
-                return addAnswer(ctx)('__call_action__', null, cb as CallbackFunction<P>)
+                return addAnswer(ctx)('__call_action__', null, cb as CallbackFunction<P, B>)
             },
             toJson: toJson(ctx),
         }

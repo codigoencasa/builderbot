@@ -3,7 +3,7 @@ interface Context {
     keyword?: string
 }
 
-class DatabaseMock {
+class MemoryDBClass {
     private listHistory: Context[] = []
 
     constructor() {}
@@ -21,4 +21,4 @@ class DatabaseMock {
     }
 }
 
-export { DatabaseMock }
+export { MemoryDBClass }

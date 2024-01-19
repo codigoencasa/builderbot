@@ -292,29 +292,43 @@ class CoreClass extends EventEmitter {
             }
         }
 
-        const continueFlow = async (initRef = undefined) => {
-            const currentPrev = await this.databaseClass.getPrevByNumber(from)
-            let nextFlow = (await this.flowClass.find(refToContinue?.ref, true)) ?? []
-            if (initRef && !initRef?.idleFallBack) {
-                nextFlow = (await this.flowClass.find(initRef?.ref, true)) ?? []
-            }
+        const continueFlow = async (initRef = undefined): Promise<any> => {
+            try {
+                const currentPrev = await this.databaseClass.getPrevByNumber(from)
 
-            const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
-            const isContinueFlow = filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)
+                let nextFlow = this.flowClass.find(refToContinue?.ref, true) || []
+                if (initRef && !initRef?.idleFallBack) {
+                    nextFlow = this.flowClass.find(initRef?.ref, true) || []
+                }
 
-            if (!isContinueFlow) {
-                const refToContinueChild = this.flowClass.getRefToContinueChild(currentPrev?.keyword)
-                const flowStandaloneChild = this.flowClass.getFlowsChild()
-                const nextChildMessages =
-                    (await this.flowClass.find(refToContinueChild?.ref, true, flowStandaloneChild)) || []
-                if (nextChildMessages?.length)
-                    return exportFunctionsSend(() => sendFlow(nextChildMessages, from, { prev: undefined }))
+                const getContinueIndex = nextFlow.findIndex((msg) => msg.refSerialize === currentPrev?.refSerialize)
+                const indexToContinue = getContinueIndex !== -1 ? getContinueIndex : 0
+                const filterNextFlow = nextFlow
+                    .slice(indexToContinue)
+                    .filter((i) => i.refSerialize !== currentPrev?.refSerialize)
 
-                return exportFunctionsSend(() => sendFlow(filterNextFlow, from, { prev: undefined }))
-            }
+                // const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize);
+                const isContinueFlow = filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)
 
-            if (initRef && !initRef?.idleFallBack) {
-                return exportFunctionsSend(() => sendFlow(filterNextFlow, from, { prev: undefined }))
+                if (!isContinueFlow) {
+                    const refToContinueChild = this.flowClass.getRefToContinueChild(currentPrev?.keyword)
+                    const flowStandaloneChild = this.flowClass.getFlowsChild()
+                    const nextChildMessages =
+                        this.flowClass.find(refToContinueChild?.ref, true, flowStandaloneChild) || []
+
+                    if (nextChildMessages.length) {
+                        return exportFunctionsSend(() => sendFlow(nextChildMessages, from, { prev: undefined }))
+                    }
+
+                    return exportFunctionsSend(() => sendFlow(filterNextFlow, from, { prev: undefined }))
+                }
+
+                if (initRef && !initRef?.idleFallBack) {
+                    return exportFunctionsSend(() => sendFlow(filterNextFlow, from, { prev: undefined }))
+                }
+            } catch (error) {
+                // Manejar errores aquí según tu lógica de manejo de errores.
+                console.error('Error en continueFlow:', error)
             }
         }
         // 📄 [options: fallBack]: esta funcion se encarga de repetir el ultimo mensaje
@@ -337,6 +351,7 @@ class CoreClass extends EventEmitter {
         const gotoFlow =
             (flag: { endFlow?: boolean; fallBack?: boolean; flowDynamic?: boolean; gotoFlow?: any }) =>
             async (flowInstance: { toJson: () => any; ctx: { options: { delay: any } } }, step = 0) => {
+                idleForCallback.stop({ from })
                 const promises = []
                 flag.gotoFlow = true
 
@@ -396,7 +411,7 @@ class CoreClass extends EventEmitter {
                     return
                 }
 
-                this.queuePrincipal.setFingerTime(from, inRef) // Debe decirle al sistema que finalizó el flujo aquí.
+                this.queuePrincipal.setFingerTime(from, inRef)
 
                 for (const msg of parseListMsg) {
                     if (privateOptions?.idleCtx) {
@@ -426,9 +441,6 @@ class CoreClass extends EventEmitter {
                 )
                 return
             }
-
-            // const endFlowState = state.getMyState() && state.get('__end_flow__')
-            // if(endFlowState) return
 
             if (ctxMessage?.options?.idle) {
                 const run = await cbEveryCtx(ctxMessage?.ref, { ...options, startIdleMs: ctxMessage?.options?.idle })
@@ -472,22 +484,28 @@ class CoreClass extends EventEmitter {
             }
 
             const runContext = async (continueAfterIdle = false, overCtx: any = {}) => {
-                messageCtxInComming = { ...messageCtxInComming, ...overCtx }
+                try {
+                    messageCtxInComming = { ...messageCtxInComming, ...overCtx }
 
-                if (options?.idleCtx && !options?.triggerKey) {
-                    return
-                }
+                    if (options?.idleCtx && !options?.triggerKey) {
+                        return
+                    }
 
-                await this.flowClass.allCallbacks[inRef](messageCtxInComming, argsCb)
-                //Si no hay llamado de fallaback y no hay llamado de flowDynamic y no hay llamado de enflow EL flujo continua
-                if (continueAfterIdle) {
-                    await continueFlow(overCtx)
-                    return
-                }
-                const ifContinue = !flags.endFlow && !flags.fallBack && !flags.flowDynamic
-                if (ifContinue) {
-                    await continueFlow()
-                    return
+                    await this.flowClass.allCallbacks[inRef](messageCtxInComming, argsCb)
+                    //Si no hay llamado de fallaback y no hay llamado de flowDynamic y no hay llamado de enflow EL flujo continua
+                    if (continueAfterIdle) {
+                        idleForCallback.stop({ from })
+                        await continueFlow(overCtx)
+                        return
+                    }
+                    const ifContinue = !flags.endFlow && !flags.fallBack && !flags.flowDynamic
+                    if (ifContinue) {
+                        idleForCallback.stop({ from })
+                        await continueFlow()
+                        return
+                    }
+                } catch (error) {
+                    return Promise.reject(error)
                 }
             }
 
@@ -497,7 +515,9 @@ class CoreClass extends EventEmitter {
                     inRef,
                     timeInSeconds: options.startIdleMs / 1000,
                     cb: async (opts: any) => {
-                        await runContext(true, { idleFallBack: opts.next, ref: opts.inRef, body: opts.body })
+                        if (opts.next) {
+                            await runContext(true, { idleFallBack: opts.next, ref: opts.inRef, body: opts.body })
+                        }
                     },
                 })
                 return

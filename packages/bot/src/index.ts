@@ -1,4 +1,5 @@
 import { CoreClass, CoreClassArgs } from './core/coreClass'
+import { MemoryDBClass } from './db'
 import { LIST_ALL as EVENTS } from './io/events'
 import FlowClass from './io/flowClass'
 import { addAnswer } from './io/methods/addAnswer'
@@ -21,7 +22,7 @@ export interface GeneralArgs {
 
 export interface BotCreationArgs {
     flow: FlowClass
-    database: any
+    database: MemoryDBClass
     provider: ProviderClass
 }
 
@@ -65,4 +66,15 @@ const createProvider = <T extends ProviderClass>(providerClass: new (args: any) 
     return providerInstance
 }
 
-export { createBot, createFlow, createProvider, addKeyword, addAnswer, ProviderClass, CoreClass, EVENTS, utils }
+export {
+    createBot,
+    createFlow,
+    createProvider,
+    addKeyword,
+    addAnswer,
+    ProviderClass,
+    CoreClass,
+    EVENTS,
+    MemoryDBClass as MemoryDB,
+    utils,
+}

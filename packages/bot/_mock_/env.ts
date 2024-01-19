@@ -1,4 +1,4 @@
-import { DatabaseMock } from '../src/db/'
+import { MemoryDBClass } from '../src/db/'
 import { ProviderMock } from '../src/provider/providerMock'
 
 interface Callbacks {
@@ -38,7 +38,7 @@ class MockFlow {
  */
 const setup = async (context: any): Promise<void> => {
     context.provider = new ProviderMock()
-    context.database = new DatabaseMock()
+    context.database = new MemoryDBClass()
     context.flow = new MockFlow()
     await delay(10)
 }

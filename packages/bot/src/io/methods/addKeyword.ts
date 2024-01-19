@@ -9,7 +9,7 @@ import { generateRef } from '../../utils/hash'
  * @param options
  * @returns
  */
-const addKeyword = <P = any>(keyword: string | string[], options?: ActionPropertiesKeyword): TFlow<P> => {
+const addKeyword = <P = any, B = any>(keyword: string | string[], options?: ActionPropertiesKeyword): TFlow<P, B> => {
     if (typeof keyword !== 'string' && !Array.isArray(keyword)) {
         throw new Error('DEBE_SER_STRING_ARRAY_REGEX')
     }
@@ -41,7 +41,7 @@ const addKeyword = <P = any>(keyword: string | string[], options?: ActionPropert
         ctx,
         ref: ctx.ref,
         addAnswer: addAnswer(ctx),
-        addAction: (cb: CallbackFunction<P> = () => null, flagCb: CallbackFunction<P> = () => null) => {
+        addAction: (cb: CallbackFunction<P, B> = () => null, flagCb: CallbackFunction<P, B> = () => null) => {
             if (typeof cb === 'object') {
                 return addAnswer(ctx)('__capture_only_intended__', cb, flagCb)
             }
