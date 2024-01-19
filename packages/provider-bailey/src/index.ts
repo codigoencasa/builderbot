@@ -172,7 +172,7 @@ class BaileysProvider extends ProviderClass {
                 let payload = {
                     ...messageCtx,
                     body: messageCtx?.message?.extendedTextMessage?.text ?? messageCtx?.message?.conversation,
-
+                    name: messageCtx?.pushName,
                     from: messageCtx?.key?.remoteJid,
                 }
 
@@ -180,7 +180,10 @@ class BaileysProvider extends ProviderClass {
                 if (messageCtx.message?.locationMessage) {
                     const { degreesLatitude, degreesLongitude } = messageCtx.message.locationMessage
                     if (typeof degreesLatitude === 'number' && typeof degreesLongitude === 'number') {
-                        payload = { ...payload, body: utils.generateRefprovider('_event_location_') }
+                        payload = {
+                            ...payload,
+                            body: utils.generateRefprovider('_event_location_'),
+                        }
                     }
                 }
 

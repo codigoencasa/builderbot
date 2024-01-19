@@ -46,7 +46,7 @@
     },
     "dependencies": {
         "@ffmpeg-installer/ffmpeg": "^1.1.0",
-        "@whiskeysockets/baileys": "^6.5.0",
+        "@whiskeysockets/baileys": "^6.6.0",
         "fluent-ffmpeg": "^2.1.2"
     }
 }
