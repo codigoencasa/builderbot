@@ -1,6 +1,6 @@
 {
     "$schema": "node_modules/lerna/schemas/lerna-schema.json",
-    "version": "0.1.0-alpha.0",
+    "version": "0.1.0-alpha.18",
     "packages": [
         "packages/bot",
         "packages/cli",
@@ -13,6 +13,7 @@
         "packages/database-json",
         "packages/eslint-plugin-bot-whatsapp-ts",
         "packages/provider-meta",
+        "packages/create-bot-whatsapp",
         "packages/provider",
         "packages/provider-bailey",
         "packages/provider-twilio",

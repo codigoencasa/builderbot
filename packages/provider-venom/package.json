@@ -1,6 +1,6 @@
 {
-    "name": "@bot-whatsapp/baileys",
-    "version": "0.1.0-alpha.18",
+    "name": "@bot-whatsapp/venom",
+    "version": "0.1.0-alpha.19",
     "description": "Now I’m the model of a modern major general / The venerated Virginian veteran whose men are all / Lining up, to put me up on a pedestal / Writin’ letters to relatives / Embellishin’ my elegance and eloquence / But the elephant is in the room / The truth is in ya face when ya hear the British cannons go / BOOM",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
@@ -8,13 +8,13 @@
     "main": "dist/index.cjs",
     "types": "dist/index.d.ts",
     "type": "module",
+    "files": [
+        "dist"
+    ],
     "scripts": {
         "build": "rimraf dist && rollup --config",
         "test": "npx uvu -r tsm ./_test_"
     },
-    "files": [
-        "./dist/"
-    ],
     "directories": {
         "lib": "lib",
         "test": "__tests__"
@@ -29,24 +29,19 @@
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
     "devDependencies": {
         "@bot-whatsapp/bot": "workspace:*",
-        "@hapi/boom": "^10.0.1",
-        "@rollup/plugin-commonjs": "^23.0.7",
+        "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@types/mime-types": "^2.1.4",
-        "@types/node": "^20.11.0",
+        "@types/node": "^20.11.5",
         "@types/qr-image": "^3.2.9",
-        "@types/sharp": "^0.32.0",
         "mime-types": "^2.1.35",
-        "pino": "^7.11.0",
+        "pino": "^8.17.2",
         "qr-image": "^3.2.0",
         "rimraf": "^5.0.5",
-        "rollup-plugin-typescript2": "^0.36.0",
-        "wa-sticker-formatter": "^4.4.4"
+        "rollup-plugin-typescript2": "^0.36.0"
     },
     "dependencies": {
-        "@ffmpeg-installer/ffmpeg": "^1.1.0",
-        "@whiskeysockets/baileys": "^6.5.0",
-        "fluent-ffmpeg": "^2.1.2"
+        "venom-bot": "^5.0.21"
     }
 }
