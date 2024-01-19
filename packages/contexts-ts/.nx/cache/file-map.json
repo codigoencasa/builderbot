@@ -1,0 +1,71 @@
+{
+    "version": "6.0",
+    "nxVersion": "17.2.8",
+    "deps": {
+        "@google-cloud/dialogflow": "^6.2.0",
+        "@bot-whatsapp/bot": "*"
+    },
+    "pathMappings": {},
+    "nxJsonPlugins": [],
+    "fileMap": {
+        "projectFileMap": {},
+        "nonProjectFiles": [
+            {
+                "file": "README.md",
+                "hash": "10031930955688098182"
+            },
+            {
+                "file": "__tests__/dialogflow-cx.class.test.ts",
+                "hash": "11714385590634663697"
+            },
+            {
+                "file": "__tests__/dialogflow.test.ts",
+                "hash": "4305155963623554207"
+            },
+            {
+                "file": "package.json",
+                "hash": "12452798087407331532"
+            },
+            {
+                "file": "rollup.config.js",
+                "hash": "2656739887157519743"
+            },
+            {
+                "file": "src/dialogflow-cx/dialogflow-cx.class.ts",
+                "hash": "7960862795187620095"
+            },
+            {
+                "file": "src/dialogflow-cx/index.ts",
+                "hash": "4354682600324775235"
+            },
+            {
+                "file": "src/dialogflow/dialogflow.class.ts",
+                "hash": "694494641982724778"
+            },
+            {
+                "file": "src/dialogflow/index.ts",
+                "hash": "10323578568641162168"
+            },
+            {
+                "file": "src/mock/index.ts",
+                "hash": "2272425108533874536"
+            },
+            {
+                "file": "src/mock/mock.class.ts",
+                "hash": "9657403143227537095"
+            },
+            {
+                "file": "src/types.ts",
+                "hash": "8093076102478711540"
+            },
+            {
+                "file": "tsconfig.json",
+                "hash": "6905108888799406794"
+            },
+            {
+                "file": "tsconfig.lib.json",
+                "hash": "1442753003615042981"
+            }
+        ]
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "name": "bot-ts-demo",
+    "version": "0.1.0-alpha.0",
+    "description": "core typescript",
+    "author": "Leifer Mendez <leifer33@gmail.com>",
+    "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
+    "license": "ISC",
+    "main": "dist/index.cjs",
+    "types": "dist/index.d.ts",
+    "type": "module",
+    "scripts": {
+        "build": "rimraf dist && rollup --config",
+        "test": " npx uvu -r tsm ./__tests__ methods.test.ts",
+        "test:debug": " npx tsm --inspect-brk ../../node_modules/uvu/bin.js ./__tests__ flowClass.test.ts"
+    },
+    "files": [
+        "./dist/"
+    ],
+    "directories": {
+        "src": "src",
+        "test": "__tests__"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/codigoencasa/bot-whatsapp.git"
+    },
+    "bugs": {
+        "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
+    },
+    "devDependencies": {
+        "kleur": "^4.1.5"
+    }
+}

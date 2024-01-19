@@ -1,0 +1,14 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./dist/out-tsc",
+        "target": "es2015",
+        "esModuleInterop": true,
+        "module": "commonjs"
+    },
+    "exclude": ["**/*.spec.ts", "**/*.spec.tsx", "node_modules"],
+    "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"],
+    "paths": {
+        "@src/*": ["src/*"]
+    }
+}

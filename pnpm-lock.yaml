@@ -153,6 +153,12 @@ importers:
                 specifier: ^2.3.0
                 version: 2.3.0
 
+    packages/bot-ts:
+        devDependencies:
+            kleur:
+                specifier: ^4.1.5
+                version: 4.1.5
+
     packages/cli:
         devDependencies:
             '@clack/prompts':
@@ -219,6 +225,46 @@ importers:
                 specifier: '*'
                 version: 0.1.33
 
+    packages/contexts-ts:
+        dependencies:
+            '@bot-whatsapp/bot':
+                specifier: '*'
+                version: 0.1.33
+            '@google-cloud/dialogflow':
+                specifier: ^6.2.0
+                version: 6.3.0
+        devDependencies:
+            '@rollup/plugin-commonjs':
+                specifier: ^23.0.7
+                version: 23.0.7(rollup@4.9.5)
+            '@rollup/plugin-node-resolve':
+                specifier: ^15.2.3
+                version: 15.2.3(rollup@4.9.5)
+            '@rollup/plugin-terser':
+                specifier: ^0.4.4
+                version: 0.4.4(rollup@4.9.5)
+            '@types/node':
+                specifier: ^20.11.0
+                version: 20.11.5
+            '@types/proxyquire':
+                specifier: ^1.3.31
+                version: 1.3.31
+            '@types/sinon':
+                specifier: ^17.0.3
+                version: 17.0.3
+            proxyquire:
+                specifier: ^2.1.3
+                version: 2.1.3
+            rimraf:
+                specifier: ^3.0.2
+                version: 3.0.2
+            rollup-plugin-typescript2:
+                specifier: ^0.36.0
+                version: 0.36.0(rollup@4.9.5)(typescript@5.3.3)
+            sinon:
+                specifier: ^17.0.1
+                version: 17.0.1
+
     packages/create-bot-whatsapp:
         dependencies:
             '@bot-whatsapp/cli':
@@ -259,7 +305,212 @@ importers:
                 specifier: ^8.11.2
                 version: 8.11.2
 
+    packages/database-json:
+        devDependencies:
+            '@rollup/plugin-commonjs':
+                specifier: ^23.0.7
+                version: 23.0.7(rollup@4.9.5)
+            '@rollup/plugin-node-resolve':
+                specifier: ^15.2.3
+                version: 15.2.3(rollup@4.9.5)
+            '@rollup/plugin-terser':
+                specifier: ^0.4.4
+                version: 0.4.4(rollup@4.9.5)
+            '@types/node':
+                specifier: ^20.11.0
+                version: 20.11.5
+            kleur:
+                specifier: ^4.1.5
+                version: 4.1.5
+            rimraf:
+                specifier: ^3.0.2
+                version: 3.0.2
+            rollup-plugin-typescript2:
+                specifier: ^0.36.0
+                version: 0.36.0(rollup@4.9.5)(typescript@5.3.3)
+            tslib:
+                specifier: ^2.6.2
+                version: 2.6.2
+            tsm:
+                specifier: ^2.3.0
+                version: 2.3.0
+
+    packages/database-mongo:
+        dependencies:
+            mongodb:
+                specifier: ^4.17.2
+                version: 4.17.2
+        devDependencies:
+            '@rollup/plugin-commonjs':
+                specifier: ^23.0.7
+                version: 23.0.7(rollup@4.9.5)
+            '@rollup/plugin-node-resolve':
+                specifier: ^15.2.3
+                version: 15.2.3(rollup@4.9.5)
+            '@rollup/plugin-terser':
+                specifier: ^0.4.4
+                version: 0.4.4(rollup@4.9.5)
+            '@types/node':
+                specifier: ^20.11.0
+                version: 20.11.5
+            kleur:
+                specifier: ^4.1.5
+                version: 4.1.5
+            rimraf:
+                specifier: ^3.0.2
+                version: 3.0.2
+            rollup-plugin-typescript2:
+                specifier: ^0.36.0
+                version: 0.36.0(rollup@4.9.5)(typescript@5.3.3)
+            tslib:
+                specifier: ^2.6.2
+                version: 2.6.2
+            tsm:
+                specifier: ^2.3.0
+                version: 2.3.0
+
+    packages/database-mysql:
+        dependencies:
+            mysql2:
+                specifier: ^2.3.3
+                version: 2.3.3
+        devDependencies:
+            '@rollup/plugin-commonjs':
+                specifier: ^23.0.7
+                version: 23.0.7(rollup@4.9.5)
+            '@rollup/plugin-node-resolve':
+                specifier: ^15.2.3
+                version: 15.2.3(rollup@4.9.5)
+            '@rollup/plugin-terser':
+                specifier: ^0.4.4
+                version: 0.4.4(rollup@4.9.5)
+            '@types/node':
+                specifier: ^20.11.0
+                version: 20.11.5
+            kleur:
+                specifier: ^4.1.5
+                version: 4.1.5
+            rimraf:
+                specifier: ^3.0.2
+                version: 3.0.2
+            rollup-plugin-typescript2:
+                specifier: ^0.36.0
+                version: 0.36.0(rollup@4.9.5)(typescript@5.3.3)
+            tslib:
+                specifier: ^2.6.2
+                version: 2.6.2
+            tsm:
+                specifier: ^2.3.0
+                version: 2.3.0
+
+    packages/database-postgres:
+        dependencies:
+            pg:
+                specifier: ^8.11.2
+                version: 8.11.2
+        devDependencies:
+            '@rollup/plugin-commonjs':
+                specifier: ^23.0.7
+                version: 23.0.7(rollup@4.9.5)
+            '@rollup/plugin-node-resolve':
+                specifier: ^15.2.3
+                version: 15.2.3(rollup@4.9.5)
+            '@rollup/plugin-terser':
+                specifier: ^0.4.4
+                version: 0.4.4(rollup@4.9.5)
+            '@types/node':
+                specifier: ^20.11.0
+                version: 20.11.5
+            '@types/pg':
+                specifier: ^8.10.9
+                version: 8.10.9
+            kleur:
+                specifier: ^4.1.5
+                version: 4.1.5
+            rimraf:
+                specifier: ^3.0.2
+                version: 3.0.2
+            rollup-plugin-typescript2:
+                specifier: ^0.36.0
+                version: 0.36.0(rollup@4.9.5)(typescript@5.3.3)
+            sinon:
+                specifier: ^17.0.1
+                version: 17.0.1
+            tslib:
+                specifier: ^2.6.2
+                version: 2.6.2
+            tsm:
+                specifier: ^2.3.0
+                version: 2.3.0
+
+    packages/database-ts:
+        dependencies:
+            dotenv:
+                specifier: ^16.0.3
+                version: 16.3.1
+            mongodb:
+                specifier: ^4.11.0
+                version: 4.17.2
+            mysql2:
+                specifier: ^2.3.3
+                version: 2.3.3
+            pg:
+                specifier: ^8.11.2
+                version: 8.11.2
+        devDependencies:
+            '@rollup/plugin-node-resolve':
+                specifier: ^15.2.3
+                version: 15.2.3(rollup@4.9.5)
+            '@rollup/plugin-terser':
+                specifier: ^0.4.4
+                version: 0.4.4(rollup@4.9.5)
+            '@types/node':
+                specifier: ^20.11.0
+                version: 20.11.5
+            rimraf:
+                specifier: ^3.0.2
+                version: 3.0.2
+            rollup-plugin-typescript2:
+                specifier: ^0.36.0
+                version: 0.36.0(rollup@4.9.5)(typescript@5.3.3)
+
     packages/eslint-plugin-bot-whatsapp: {}
+
+    packages/eslint-plugin-bot-whatsapp-ts:
+        devDependencies:
+            '@rollup/plugin-commonjs':
+                specifier: ^23.0.7
+                version: 23.0.7(rollup@4.9.5)
+            '@rollup/plugin-node-resolve':
+                specifier: ^15.2.3
+                version: 15.2.3(rollup@4.9.5)
+            '@rollup/plugin-terser':
+                specifier: ^0.4.4
+                version: 0.4.4(rollup@4.9.5)
+            '@types/node':
+                specifier: ^20.11.0
+                version: 20.11.5
+            '@types/sinon':
+                specifier: ^17.0.3
+                version: 17.0.3
+            kleur:
+                specifier: ^4.1.5
+                version: 4.1.5
+            rimraf:
+                specifier: ^3.0.2
+                version: 3.0.2
+            rollup-plugin-typescript2:
+                specifier: ^0.36.0
+                version: 0.36.0(rollup@4.9.5)(typescript@5.3.3)
+            sinon:
+                specifier: ^17.0.1
+                version: 17.0.1
+            tslib:
+                specifier: ^2.6.2
+                version: 2.6.2
+            tsm:
+                specifier: ^2.3.0
+                version: 2.3.0
 
     packages/provider:
         dependencies:
@@ -376,6 +627,49 @@ importers:
             wa-sticker-formatter:
                 specifier: ^4.4.4
                 version: 4.4.4
+
+    packages/provider-meta:
+        dependencies:
+            '@types/axios':
+                specifier: ^0.14.0
+                version: 0.14.0
+            axios:
+                specifier: ^1.6.5
+                version: 1.6.5
+        devDependencies:
+            '@rollup/plugin-commonjs':
+                specifier: ^23.0.7
+                version: 23.0.7(rollup@4.9.5)
+            '@rollup/plugin-node-resolve':
+                specifier: ^15.2.3
+                version: 15.2.3(rollup@4.9.5)
+            '@rollup/plugin-terser':
+                specifier: ^0.4.4
+                version: 0.4.4(rollup@4.9.5)
+            '@types/node':
+                specifier: ^20.11.0
+                version: 20.11.5
+            '@types/sinon':
+                specifier: ^17.0.3
+                version: 17.0.3
+            kleur:
+                specifier: ^4.1.5
+                version: 4.1.5
+            rimraf:
+                specifier: ^3.0.2
+                version: 3.0.2
+            rollup-plugin-typescript2:
+                specifier: ^0.36.0
+                version: 0.36.0(rollup@4.9.5)(typescript@5.3.3)
+            sinon:
+                specifier: ^17.0.1
+                version: 17.0.1
+            tslib:
+                specifier: ^2.6.2
+                version: 2.6.2
+            tsm:
+                specifier: ^2.3.0
+                version: 2.3.0
 
     packages/provider-twilio:
         dependencies:
@@ -1777,6 +2071,44 @@ packages:
             }
         dev: false
 
+    /@google-cloud/dialogflow@6.3.0:
+        resolution:
+            {
+                integrity: sha512-SvrNtRdwCTWNXUR41YEIRXxUxgKX/KG5u/oC7BqvnHYMg0DQ39+B52aUUkk0VLDLGBZ/Qq3OuVo8JHLR+TKYMA==,
+            }
+        engines: { node: '>=14.0.0' }
+        dependencies:
+            google-gax: 4.1.0
+        transitivePeerDependencies:
+            - encoding
+            - supports-color
+        dev: false
+
+    /@grpc/grpc-js@1.9.14:
+        resolution:
+            {
+                integrity: sha512-nOpuzZ2G3IuMFN+UPPpKrC6NsLmWsTqSsm66IRfnBt1D4pwTqE27lmbpcPM+l2Ua4gE7PfjRHI6uedAy7hoXUw==,
+            }
+        engines: { node: ^8.13.0 || >=10.10.0 }
+        dependencies:
+            '@grpc/proto-loader': 0.7.10
+            '@types/node': 20.11.5
+        dev: false
+
+    /@grpc/proto-loader@0.7.10:
+        resolution:
+            {
+                integrity: sha512-CAqDfoaQ8ykFd9zqBDn4k6iWT9loLAlc2ETmDFS9JCD70gDcnA4L3AFEo2iV7KyAtAAHFW9ftq1Fz+Vsgq80RQ==,
+            }
+        engines: { node: '>=6' }
+        hasBin: true
+        dependencies:
+            lodash.camelcase: 4.3.0
+            long: 5.2.3
+            protobufjs: 7.2.6
+            yargs: 17.7.2
+        dev: false
+
     /@hapi/boom@10.0.1:
         resolution:
             {
@@ -2312,6 +2644,17 @@ packages:
                 integrity: sha512-9b8mPpKrfeGRuhFH5iO1iwCLeIIsV6+H1sRfxbkoGXIyQE2BTsPd9zqSqQJ+pv5sJ/hT5M1zvOFL02MnEezFug==,
             }
         dev: true
+
+    /@mongodb-js/saslprep@1.1.4:
+        resolution:
+            {
+                integrity: sha512-8zJ8N1x51xo9hwPh6AWnKdLGEC5N3lDa6kms1YHmFBoRhTpJR6HG8wWk0td1MVCu9cD4YBrvjZEtd5Obw0Fbnw==,
+            }
+        requiresBuild: true
+        dependencies:
+            sparse-bitfield: 3.0.3
+        dev: false
+        optional: true
 
     /@nodelib/fs.scandir@2.1.5:
         resolution:
@@ -4278,6 +4621,18 @@ packages:
             }
         dev: true
 
+    /@types/axios@0.14.0:
+        resolution:
+            {
+                integrity: sha512-KqQnQbdYE54D7oa/UmYVMZKq7CO4l8DEENzOKc4aBRwxCXSlJXGz83flFx5L7AWrOQnmuN3kVsRdt+GZPPjiVQ==,
+            }
+        deprecated: This is a stub types definition for axios (https://github.com/mzabriskie/axios). axios provides its own type definitions, so you don't need @types/axios installed!
+        dependencies:
+            axios: 1.6.5
+        transitivePeerDependencies:
+            - debug
+        dev: false
+
     /@types/body-parser@1.19.5:
         resolution:
             {
@@ -4285,8 +4640,15 @@ packages:
             }
         dependencies:
             '@types/connect': 3.4.38
-            '@types/node': 20.11.0
+            '@types/node': 20.11.5
         dev: true
+
+    /@types/caseless@0.12.5:
+        resolution:
+            {
+                integrity: sha512-hWtVTC2q7hc7xZ/RLbxapMvDMgUnDvKvMOpKal4DrMyfGBUfB1oKaZlIRr6mJL+If3bAP6sV/QneGzF6tJjZDg==,
+            }
+        dev: false
 
     /@types/connect@3.4.38:
         resolution:
@@ -4507,6 +4869,17 @@ packages:
             }
         dev: true
 
+    /@types/pg@8.10.9:
+        resolution:
+            {
+                integrity: sha512-UksbANNE/f8w0wOMxVKKIrLCbEMV+oM1uKejmwXr39olg4xqcfBDbXxObJAt6XxHbDa4XTKOlUEcEltXDX+XLQ==,
+            }
+        dependencies:
+            '@types/node': 20.11.5
+            pg-protocol: 1.6.0
+            pg-types: 4.0.1
+        dev: true
+
     /@types/polka@0.5.7:
         resolution:
             {
@@ -4515,7 +4888,7 @@ packages:
         dependencies:
             '@types/express': 4.17.21
             '@types/express-serve-static-core': 4.17.41
-            '@types/node': 20.11.0
+            '@types/node': 20.11.5
             '@types/trouter': 3.1.4
         dev: true
 
@@ -4558,6 +4931,18 @@ packages:
                 integrity: sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==,
             }
         dev: true
+
+    /@types/request@2.48.12:
+        resolution:
+            {
+                integrity: sha512-G3sY+NpsA9jnwm0ixhAFQSJ3Q9JkpLZpJbI3GMv0mIAT0y3mRabYeINzal5WOChIiaTEGQYlHOKgkaM9EisWHw==,
+            }
+        dependencies:
+            '@types/caseless': 0.12.5
+            '@types/node': 20.11.5
+            '@types/tough-cookie': 4.0.5
+            form-data: 2.5.1
+        dev: false
 
     /@types/resolve@1.20.2:
         resolution:
@@ -4628,6 +5013,13 @@ packages:
                 integrity: sha512-mQkU2jY8jJEF7YHjHvsQO8+3ughTL1mcnn96igfhONmR+fUPSKIkefQYpSe8bsly2Ep7oQbn/6VG5/9/0qcArQ==,
             }
         dev: true
+
+    /@types/tough-cookie@4.0.5:
+        resolution:
+            {
+                integrity: sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==,
+            }
+        dev: false
 
     /@types/triple-beam@1.3.5:
         resolution:
@@ -5058,7 +5450,6 @@ packages:
         engines: { node: '>=6.5' }
         dependencies:
             event-target-shim: 5.0.1
-        dev: true
 
     /acorn-jsx@5.3.2(acorn@8.11.3):
         resolution:
@@ -5608,6 +5999,13 @@ packages:
         requiresBuild: true
         dev: false
 
+    /bignumber.js@9.1.2:
+        resolution:
+            {
+                integrity: sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==,
+            }
+        dev: false
+
     /binary@0.3.0:
         resolution:
             {
@@ -5769,7 +6167,6 @@ packages:
             {
                 integrity: sha512-zRpUiDwd/xk6ADqPMATG8vc9VPrkck7T07OIx0gnjmJAnHnTVXNQG3vfvWNuiZIkwu9KrKdA1iJKfsfTVxE6NA==,
             }
-        dev: true
 
     /buffer-from@1.1.2:
         resolution:
@@ -7635,7 +8032,6 @@ packages:
             }
         dependencies:
             safe-buffer: 5.2.1
-        dev: true
 
     /ee-first@1.1.1:
         resolution:
@@ -8372,7 +8768,6 @@ packages:
                 integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==,
             }
         engines: { node: '>=6' }
-        dev: true
 
     /eventemitter3@4.0.7:
         resolution:
@@ -8454,6 +8849,13 @@ packages:
             {
                 integrity: sha512-dX7e/LHVJ6W3DE1MHWi9S1EYzDESENfLrYohG2G++ovZrYOkm4Knwa0mc1cn84xJOR4KEU0WSchhLbd0UklbHw==,
             }
+
+    /extend@3.0.2:
+        resolution:
+            {
+                integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==,
+            }
+        dev: false
 
     /external-editor@3.1.0:
         resolution:
@@ -8807,6 +9209,18 @@ packages:
         engines: { node: '>= 14.17' }
         dev: false
 
+    /form-data@2.5.1:
+        resolution:
+            {
+                integrity: sha512-m21N3WOmEEURgk6B9GLOE4RuWOFf28Lhh9qGYeNlGq4VDXUlJy2th2slBNU8Gp8EzloYZOibZJ7t5ecIrFSjVA==,
+            }
+        engines: { node: '>= 0.12' }
+        dependencies:
+            asynckit: 0.4.0
+            combined-stream: 1.0.8
+            mime-types: 2.1.35
+        dev: false
+
     /form-data@4.0.0:
         resolution:
             {
@@ -8976,6 +9390,36 @@ packages:
             string-width: 4.2.3
             strip-ansi: 6.0.1
             wide-align: 1.1.5
+
+    /gaxios@6.1.1:
+        resolution:
+            {
+                integrity: sha512-bw8smrX+XlAoo9o1JAksBwX+hi/RG15J+NTSxmNPIclKC3ZVK6C2afwY8OSdRvOK0+ZLecUJYtj2MmjOt3Dm0w==,
+            }
+        engines: { node: '>=14' }
+        dependencies:
+            extend: 3.0.2
+            https-proxy-agent: 7.0.2
+            is-stream: 2.0.1
+            node-fetch: 2.7.0
+        transitivePeerDependencies:
+            - encoding
+            - supports-color
+        dev: false
+
+    /gcp-metadata@6.1.0:
+        resolution:
+            {
+                integrity: sha512-Jh/AIwwgaxan+7ZUUmRLCjtchyDiqh4KjBJ5tW3plBZb5iL/BPcso8A5DlzeD9qlw0duCamnNdpFjxwaT0KyKg==,
+            }
+        engines: { node: '>=14' }
+        dependencies:
+            gaxios: 6.1.1
+            json-bigint: 1.0.0
+        transitivePeerDependencies:
+            - encoding
+            - supports-color
+        dev: false
 
     /generate-function@2.3.1:
         resolution:
@@ -9347,6 +9791,47 @@ packages:
             merge2: 1.4.1
             slash: 3.0.0
 
+    /google-auth-library@9.4.2:
+        resolution:
+            {
+                integrity: sha512-rTLO4gjhqqo3WvYKL5IdtlCvRqeQ4hxUx/p4lObobY2xotFW3bCQC+Qf1N51CYOfiqfMecdMwW9RIo7dFWYjqw==,
+            }
+        engines: { node: '>=14' }
+        dependencies:
+            base64-js: 1.5.1
+            ecdsa-sig-formatter: 1.0.11
+            gaxios: 6.1.1
+            gcp-metadata: 6.1.0
+            gtoken: 7.0.1
+            jws: 4.0.0
+        transitivePeerDependencies:
+            - encoding
+            - supports-color
+        dev: false
+
+    /google-gax@4.1.0:
+        resolution:
+            {
+                integrity: sha512-VP5MYsIXEoXmdeHZl1Qsjv89PvE+LT8fw/2jxpFQtFed22YYAHgiTUuMfj2RWlGJUmRaYEMxBRBDWj+q/hOGQg==,
+            }
+        engines: { node: '>=14' }
+        dependencies:
+            '@grpc/grpc-js': 1.9.14
+            '@grpc/proto-loader': 0.7.10
+            '@types/long': 4.0.2
+            abort-controller: 3.0.0
+            duplexify: 4.1.2
+            google-auth-library: 9.4.2
+            node-fetch: 2.7.0
+            object-hash: 3.0.0
+            proto3-json-serializer: 2.0.1
+            protobufjs: 7.2.5
+            retry-request: 7.0.1
+        transitivePeerDependencies:
+            - encoding
+            - supports-color
+        dev: false
+
     /gopd@1.0.1:
         resolution:
             {
@@ -9438,6 +9923,20 @@ packages:
                 integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==,
             }
         dev: true
+
+    /gtoken@7.0.1:
+        resolution:
+            {
+                integrity: sha512-KcFVtoP1CVFtQu0aSk3AyAt2og66PFhZAlkUOuWKwzMLoulHXG5W5wE5xAnHb+yl3/wEFoqGW7/cDGMU8igDZQ==,
+            }
+        engines: { node: '>=14.0.0' }
+        dependencies:
+            gaxios: 6.1.1
+            jws: 4.0.0
+        transitivePeerDependencies:
+            - encoding
+            - supports-color
+        dev: false
 
     /handlebars@4.7.8:
         resolution:
@@ -10558,6 +11057,15 @@ packages:
         dependencies:
             argparse: 2.0.1
 
+    /json-bigint@1.0.0:
+        resolution:
+            {
+                integrity: sha512-SiPv/8VpZuWbvLSMtTDU8hEfrZWg/mH/nV/b4o0CYbSxu1UIQPLdwKOCIyLQX+VIPO5vrLX3i8qtqFyhdPSUSQ==,
+            }
+        dependencies:
+            bignumber.js: 9.1.2
+        dev: false
+
     /json-buffer@3.0.0:
         resolution:
             {
@@ -10729,6 +11237,17 @@ packages:
             safe-buffer: 5.2.1
         dev: true
 
+    /jwa@2.0.0:
+        resolution:
+            {
+                integrity: sha512-jrZ2Qx916EA+fq9cEAeCROWPTfCwi1IVHqT2tapuqLEVVDKFDENFw1oL+MwrTvH6msKxsd1YTDVw6uKEcsrLEA==,
+            }
+        dependencies:
+            buffer-equal-constant-time: 1.0.1
+            ecdsa-sig-formatter: 1.0.11
+            safe-buffer: 5.2.1
+        dev: false
+
     /jws@3.2.2:
         resolution:
             {
@@ -10738,6 +11257,16 @@ packages:
             jwa: 1.4.1
             safe-buffer: 5.2.1
         dev: true
+
+    /jws@4.0.0:
+        resolution:
+            {
+                integrity: sha512-KDncfTmOZoOMTFG4mBlG0qUIOlc03fmzH+ru6RgYVZhPkyiy/92Owlt/8UEN+a4TXR1FQetfIpJE8ApdvdVxTg==,
+            }
+        dependencies:
+            jwa: 2.0.0
+            safe-buffer: 5.2.1
+        dev: false
 
     /keyv@3.1.0:
         resolution:
@@ -11118,7 +11647,6 @@ packages:
             {
                 integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==,
             }
-        dev: true
 
     /lodash.clonedeep@4.5.0:
         resolution:
@@ -12014,6 +12542,23 @@ packages:
             - aws-crt
         dev: false
 
+    /mongodb@4.17.2:
+        resolution:
+            {
+                integrity: sha512-mLV7SEiov2LHleRJPMPrK2PMyhXFZt2UQLC4VD4pnth3jMjYKHhtqfwwkkvS/NXuo/Fp3vbhaNcXrIDaLRb9Tg==,
+            }
+        engines: { node: '>=12.9.0' }
+        dependencies:
+            bson: 4.7.2
+            mongodb-connection-string-url: 2.6.0
+            socks: 2.7.1
+        optionalDependencies:
+            '@aws-sdk/credential-providers': 3.495.0
+            '@mongodb-js/saslprep': 1.1.4
+        transitivePeerDependencies:
+            - aws-crt
+        dev: false
+
     /mpg123-decoder@0.4.12:
         resolution:
             {
@@ -12726,6 +13271,14 @@ packages:
             - debug
         dev: true
 
+    /object-hash@3.0.0:
+        resolution:
+            {
+                integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==,
+            }
+        engines: { node: '>= 6' }
+        dev: false
+
     /object-inspect@1.13.1:
         resolution:
             {
@@ -12787,6 +13340,13 @@ packages:
             call-bind: 1.0.5
             define-properties: 1.2.1
             es-abstract: 1.22.3
+        dev: true
+
+    /obuf@1.1.2:
+        resolution:
+            {
+                integrity: sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==,
+            }
         dev: true
 
     /ogg-opus-decoder@1.6.12:
@@ -13426,7 +13986,14 @@ packages:
                 integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==,
             }
         engines: { node: '>=4.0.0' }
-        dev: false
+
+    /pg-numeric@1.0.2:
+        resolution:
+            {
+                integrity: sha512-BM/Thnrw5jm2kKLE5uJkXqqExRUY/toLHda65XgFTBTFYZyopbKjBe29Ii3RbkvlsMoFwD+tHeGaCjjv0gHlyw==,
+            }
+        engines: { node: '>=4' }
+        dev: true
 
     /pg-pool@3.6.1(pg@8.11.2):
         resolution:
@@ -13444,7 +14011,6 @@ packages:
             {
                 integrity: sha512-M+PDm637OY5WM307051+bsDia5Xej6d9IR4GwJse1qA1DIhiKlksvrneZOYQq42OM+spubpcNYEo2FcKQrDk+Q==,
             }
-        dev: false
 
     /pg-types@2.2.0:
         resolution:
@@ -13459,6 +14025,22 @@ packages:
             postgres-date: 1.0.7
             postgres-interval: 1.2.0
         dev: false
+
+    /pg-types@4.0.1:
+        resolution:
+            {
+                integrity: sha512-hRCSDuLII9/LE3smys1hRHcu5QGcLs9ggT7I/TCs0IE+2Eesxi9+9RWAAwZ0yaGjxoWICF/YHLOEjydGujoJ+g==,
+            }
+        engines: { node: '>=10' }
+        dependencies:
+            pg-int8: 1.0.1
+            pg-numeric: 1.0.2
+            postgres-array: 3.0.2
+            postgres-bytea: 3.0.0
+            postgres-date: 2.0.1
+            postgres-interval: 3.0.0
+            postgres-range: 1.1.3
+        dev: true
 
     /pg@8.11.2:
         resolution:
@@ -13643,6 +14225,14 @@ packages:
         engines: { node: '>=4' }
         dev: false
 
+    /postgres-array@3.0.2:
+        resolution:
+            {
+                integrity: sha512-6faShkdFugNQCLwucjPcY5ARoW1SlbnrZjmGl0IrrqewpvxvhSLHimCVzqeuULCbG0fQv7Dtk1yDbG3xv7Veog==,
+            }
+        engines: { node: '>=12' }
+        dev: true
+
     /postgres-bytea@1.0.0:
         resolution:
             {
@@ -13651,6 +14241,16 @@ packages:
         engines: { node: '>=0.10.0' }
         dev: false
 
+    /postgres-bytea@3.0.0:
+        resolution:
+            {
+                integrity: sha512-CNd4jim9RFPkObHSjVHlVrxoVQXz7quwNFpz7RY1okNNme49+sVyiTvTRobiLV548Hx/hb1BG+iE7h9493WzFw==,
+            }
+        engines: { node: '>= 6' }
+        dependencies:
+            obuf: 1.1.2
+        dev: true
+
     /postgres-date@1.0.7:
         resolution:
             {
@@ -13658,6 +14258,14 @@ packages:
             }
         engines: { node: '>=0.10.0' }
         dev: false
+
+    /postgres-date@2.0.1:
+        resolution:
+            {
+                integrity: sha512-YtMKdsDt5Ojv1wQRvUhnyDJNSr2dGIC96mQVKz7xufp07nfuFONzdaowrMHjlAzY6GDLd4f+LUHHAAM1h4MdUw==,
+            }
+        engines: { node: '>=12' }
+        dev: true
 
     /postgres-interval@1.2.0:
         resolution:
@@ -13668,6 +14276,21 @@ packages:
         dependencies:
             xtend: 4.0.2
         dev: false
+
+    /postgres-interval@3.0.0:
+        resolution:
+            {
+                integrity: sha512-BSNDnbyZCXSxgA+1f5UU2GmwhoI0aU5yMxRGO8CdFEcY2BQF9xm/7MqKnYoM1nJDk8nONNWDk9WeSmePFhQdlw==,
+            }
+        engines: { node: '>=12' }
+        dev: true
+
+    /postgres-range@1.1.3:
+        resolution:
+            {
+                integrity: sha512-VdlZoocy5lCP0c/t66xAfclglEapXPCIVhqqJRncYpvbCgImF0w67aPKfbqUMr72tO2k5q0TdTZwCLjPTI6C9g==,
+            }
+        dev: true
 
     /prebuild-install@7.1.1:
         resolution:
@@ -13857,6 +14480,16 @@ packages:
             }
         dev: false
 
+    /proto3-json-serializer@2.0.1:
+        resolution:
+            {
+                integrity: sha512-8awBvjO+FwkMd6gNoGFZyqkHZXCFd54CIYTb6De7dPaufGJ2XNW+QUNqbMr8MaAocMdb+KpsD4rxEOaTBDCffA==,
+            }
+        engines: { node: '>=14.0.0' }
+        dependencies:
+            protobufjs: 7.2.6
+        dev: false
+
     /protobufjs@6.8.8:
         resolution:
             {
@@ -13878,6 +14511,28 @@ packages:
             '@types/long': 4.0.2
             '@types/node': 10.17.60
             long: 4.0.0
+        dev: false
+
+    /protobufjs@7.2.5:
+        resolution:
+            {
+                integrity: sha512-gGXRSXvxQ7UiPgfw8gevrfRWcTlSbOFg+p/N+JVJEK5VhueL2miT6qTymqAmjr1Q5WbOCyJbyrk6JfWKwlFn6A==,
+            }
+        engines: { node: '>=12.0.0' }
+        requiresBuild: true
+        dependencies:
+            '@protobufjs/aspromise': 1.1.2
+            '@protobufjs/base64': 1.1.2
+            '@protobufjs/codegen': 2.0.4
+            '@protobufjs/eventemitter': 1.1.0
+            '@protobufjs/fetch': 1.1.0
+            '@protobufjs/float': 1.0.2
+            '@protobufjs/inquire': 1.1.0
+            '@protobufjs/path': 1.1.2
+            '@protobufjs/pool': 1.1.0
+            '@protobufjs/utf8': 1.1.0
+            '@types/node': 20.11.5
+            long: 5.2.3
         dev: false
 
     /protobufjs@7.2.6:
@@ -14751,6 +15406,22 @@ packages:
             signal-exit: 3.0.7
         dev: false
 
+    /retry-request@7.0.1:
+        resolution:
+            {
+                integrity: sha512-ZI6vJp9rfB71mrZpw+n9p/B6HCsd7QJlSEQftZ+xfJzr3cQ9EPGKw1FF0BnViJ0fYREX6FhymBD2CARpmsFciQ==,
+            }
+        engines: { node: '>=14' }
+        dependencies:
+            '@types/request': 2.48.12
+            debug: 4.3.4
+            extend: 3.0.2
+            teeny-request: 9.0.0
+        transitivePeerDependencies:
+            - encoding
+            - supports-color
+        dev: false
+
     /retry@0.12.0:
         resolution:
             {
@@ -15578,6 +16249,15 @@ packages:
             bl: 5.1.0
         dev: false
 
+    /stream-events@1.0.5:
+        resolution:
+            {
+                integrity: sha512-E1GUzBSgvct8Jsb3v2X15pjzN1tYebtbLaMg+eBOUOAxgbLoSbT2NS91ckc5lJD1KfLjId+jXJRgo0qnV5Nerg==,
+            }
+        dependencies:
+            stubs: 3.0.0
+        dev: false
+
     /stream-shift@1.0.2:
         resolution:
             {
@@ -15799,6 +16479,13 @@ packages:
             '@tokenizer/token': 0.3.0
             peek-readable: 4.1.0
 
+    /stubs@3.0.0:
+        resolution:
+            {
+                integrity: sha512-PdHt7hHUJKxvTCgbKX9C1V/ftOcjJQgz8BZwNfV5c4B6dcGqlpelTbJ999jBGZ2jYiPAwcX5dP6oBwVlBlUbxw==,
+            }
+        dev: false
+
     /supports-color@5.5.0:
         resolution:
             {
@@ -15884,6 +16571,23 @@ packages:
             minizlib: 2.1.2
             mkdirp: 1.0.4
             yallist: 4.0.0
+
+    /teeny-request@9.0.0:
+        resolution:
+            {
+                integrity: sha512-resvxdc6Mgb7YEThw6G6bExlXKkv6+YbuzGg9xuXxSgxJF7Ozs+o8Y9+2R3sArdWdW8nOokoQb1yrpFB0pQK2g==,
+            }
+        engines: { node: '>=14' }
+        dependencies:
+            http-proxy-agent: 5.0.0
+            https-proxy-agent: 5.0.1
+            node-fetch: 2.7.0
+            stream-events: 1.0.5
+            uuid: 9.0.1
+        transitivePeerDependencies:
+            - encoding
+            - supports-color
+        dev: false
 
     /temp-dir@1.0.0:
         resolution:
