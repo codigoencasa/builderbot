@@ -1,7 +1,7 @@
 import typescript from 'rollup-plugin-typescript2'
 import json from '@rollup/plugin-json'
-import commonjs from '@rollup/plugin-commonjs'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
+import commonjs from '@rollup/plugin-commonjs'
 export default {
     input: ['src/index.ts'],
     output: [
@@ -14,10 +14,10 @@ export default {
     ],
     plugins: [
         json(),
-        nodeResolve({
-            resolveOnly: (module) => !/ffmpeg|sharp/.test(module),
-        }),
         commonjs(),
+        nodeResolve({
+            resolveOnly: (module) => !/ffmpeg|@wppconnect|@bot-whatsapp\/bot|sharp/i.test(module),
+        }),
         typescript(),
     ],
 }

@@ -1,6 +1,0 @@
-{
-    "dependencies": {
-        "venom-bot": "5.0.21",
-        "mime-types": "2.1.35"
-    }
-}

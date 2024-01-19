@@ -13,7 +13,7 @@
     ],
     "overrides": [
         {
-            "files": ["packages/**/*.js"],
+            "files": ["packages/**/*.ts"],
             "rules": {
                 "no-unsafe-negation": "off",
                 "no-prototype-builtins": "off",

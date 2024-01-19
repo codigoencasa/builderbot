@@ -16,11 +16,10 @@ export default {
     plugins: [
         json(),
         nodeResolve({
-            resolveOnly: (module) => !module.includes('fluent-ffmpeg'),
+            resolveOnly: (module) => !/ffmpeg|baileys|@bot-whatsapp\/bot|twilio|sharp/i.test(module),
         }),
         nodeResolve(),
         commonjs(),
         typescript(),
-        // terser()
     ],
 }

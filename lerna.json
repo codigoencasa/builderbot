@@ -3,13 +3,16 @@
     "version": "0.1.0-alpha.0",
     "packages": [
         "packages/bot",
-        "packages/bot-ts",
         "packages/cli",
-        "packages/contexts",
+        // "packages/contexts",
         "packages/create-bot-whatsapp",
-        "packages/database",
-        "packages/eslint-plugin-bot-whatsapp",
-        "packages/provider"
+        // "packages/database",
+        // "packages/eslint-plugin-bot-whatsapp",
+        "packages/provider",
+        "packages/provider-bailey",
+        "packages/provider-twilio",
+        "packages/provider-web-whatsapp",
+        "packages/provider-wppconnect"
     ],
     "npmClient": "pnpm"
 }

@@ -2,7 +2,6 @@ import { ProviderClass, utils } from '@bot-whatsapp/bot'
 import { Vendor } from '@bot-whatsapp/bot/dist/provider/providerClass'
 import { Button } from '@bot-whatsapp/bot/dist/types'
 import twilio from 'twilio'
-import { Message } from 'twilio/lib/twiml/MessagingResponse'
 
 import { TwilioWebHookServer } from './server'
 import { parseNumber } from './utils'
@@ -110,18 +109,18 @@ class TwilioProvider extends ProviderClass {
 
     public async sendMessage(
         number: string | number,
-        { message }: Message,
-        { options }: { options?: IMessageOptions } = {}
-    ): Promise<Message> {
+        { message }: { message: string },
+        arg: { options?: IMessageOptions }
+    ): Promise<any> {
         number = parseNumber(`${number}`)
-        if (options?.buttons?.length) await this.sendButtons()
-        if (options?.media) return this.sendMedia(number, message, options.media)
-        const respone = this.vendor.messages.create({
+        if (arg?.options?.buttons?.length) await this.sendButtons()
+        if (arg?.options?.media) return this.sendMedia(number, message, arg?.options.media)
+        const response = this.vendor.messages.create({
             body: message,
             from: `whatsapp:+${this.vendorNumber}`,
             to: `whatsapp:+${number}`,
         })
-        return respone as unknown as Message
+        return response
     }
 }
 

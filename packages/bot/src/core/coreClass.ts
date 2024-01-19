@@ -464,12 +464,15 @@ class CoreClass extends EventEmitter {
             const database = this.databaseClass
 
             if (!this.flowClass.allCallbacks[inRef]) return Promise.resolve()
+
+            /** argumentos que se exponen */
             const argsCb = {
                 database,
                 provider,
                 state,
                 globalState,
                 extensions,
+                blacklist: this.dynamicBlacklist,
                 queue: this.queuePrincipal,
                 idle: idleForCallback,
                 inRef,
