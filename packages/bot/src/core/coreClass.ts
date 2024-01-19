@@ -35,7 +35,7 @@ const idleForCallback = new IdleState()
 
 class CoreClass extends EventEmitter {
     flowClass: FlowClass
-    databaseClass
+    databaseClass: any
     providerClass: any
     queuePrincipal: Queue<unknown>
     stateHandler = new SingleState()
@@ -99,10 +99,6 @@ class CoreClass extends EventEmitter {
             event: 'message',
             func: (msg: { from: string; ref?: string; body?: string }) => this.handleMsg(msg),
         },
-        // {
-        //     event: 'notice',
-        //     func: (note: string | string[]) => printer(note),
-        // },
     ]
 
     handleMsg = async (messageCtxInComming: { from: string; ref?: string; body?: string }) => {
@@ -627,7 +623,6 @@ class CoreClass extends EventEmitter {
     }
 
     /**
-     * @deprecated
      * @private
      * @param {*} message
      * @param {*} ref
