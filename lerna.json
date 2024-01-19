@@ -14,7 +14,9 @@
         "packages/provider",
         "packages/database-mongo",
         "packages/database-mysql",
-        "packages/database-json"
+        "packages/database-json",
+        "packages/eslint-plugin-bot-whatsapp-ts",
+        "packages/provider-meta"
     ],
     "npmClient": "pnpm"
 }

@@ -1,5 +1,5 @@
 {
-    "name": "@bot-whatsapp/eslint-plugin-bot-whatsapp-ts",
+    "name": "@bot-whatsapp/provider-meta",
     "version": "0.1.0-alpha.0",
     "description": "> TODO: description",
     "author": "vicente1992 <vic_ortiz20@hotmail.es>",
@@ -26,6 +26,9 @@
     },
     "bugs": {
         "url": "https://github.com/vicente1992/bot-whatsapp/issues"
+    },
+    "dependencies": {
+        "axios": "^1.6.5"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^23.0.7",

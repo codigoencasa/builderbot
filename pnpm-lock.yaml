@@ -551,6 +551,46 @@ importers:
                 specifier: ^17.0.1
                 version: 17.0.1
 
+    packages/provider-meta:
+        dependencies:
+            axios:
+                specifier: ^1.6.5
+                version: 1.6.5
+        devDependencies:
+            '@rollup/plugin-commonjs':
+                specifier: ^23.0.7
+                version: 23.0.7(rollup@4.9.4)
+            '@rollup/plugin-node-resolve':
+                specifier: ^15.2.3
+                version: 15.2.3(rollup@4.9.4)
+            '@rollup/plugin-terser':
+                specifier: ^0.4.4
+                version: 0.4.4(rollup@4.9.4)
+            '@types/node':
+                specifier: ^20.11.0
+                version: 20.11.0
+            '@types/sinon':
+                specifier: ^17.0.3
+                version: 17.0.3
+            kleur:
+                specifier: ^4.1.5
+                version: 4.1.5
+            rimraf:
+                specifier: ^3.0.2
+                version: 3.0.2
+            rollup-plugin-typescript2:
+                specifier: ^0.36.0
+                version: 0.36.0(rollup@4.9.4)(typescript@5.3.3)
+            sinon:
+                specifier: ^17.0.1
+                version: 17.0.1
+            tslib:
+                specifier: ^2.6.2
+                version: 2.6.2
+            tsm:
+                specifier: ^2.3.0
+                version: 2.3.0
+
     packages/provider-twilio:
         dependencies:
             '@bot-whatsapp/bot':
@@ -2578,7 +2618,7 @@ packages:
             rollup:
                 optional: true
         dependencies:
-            '@rollup/pluginutils': 5.0.5(rollup@4.9.4)
+            '@rollup/pluginutils': 5.1.0(rollup@4.9.4)
             '@types/resolve': 1.20.2
             deepmerge: 4.3.1
             is-builtin-module: 3.2.1
@@ -2614,24 +2654,6 @@ packages:
         dependencies:
             estree-walker: 2.0.2
             picomatch: 2.3.1
-        dev: true
-
-    /@rollup/pluginutils@5.0.5(rollup@4.9.4):
-        resolution:
-            {
-                integrity: sha512-6aEYR910NyP73oHiJglti74iRyOwgFU4x3meH/H8OJx6Ry0j6cOVZ5X/wTvub7G7Ao6qaHBEaNsV3GLJkSsF+Q==,
-            }
-        engines: { node: '>=14.0.0' }
-        peerDependencies:
-            rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
-        peerDependenciesMeta:
-            rollup:
-                optional: true
-        dependencies:
-            '@types/estree': 1.0.3
-            estree-walker: 2.0.2
-            picomatch: 2.3.1
-            rollup: 4.9.4
         dev: true
 
     /@rollup/pluginutils@5.1.0(rollup@4.9.4):
@@ -3805,13 +3827,6 @@ packages:
             }
         dependencies:
             '@types/node': 20.11.0
-        dev: true
-
-    /@types/estree@1.0.3:
-        resolution:
-            {
-                integrity: sha512-CS2rOaoQ/eAgAfcTfq6amKG7bsN+EMcgGY4FAFQdvSj2y1ixvOZTUA9mOtCai7E1SYu283XNw7urKK30nP3wkQ==,
-            }
         dev: true
 
     /@types/estree@1.0.5:
