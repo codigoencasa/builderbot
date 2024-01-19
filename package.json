@@ -28,7 +28,7 @@
         "test.e2e": "node ./node_modules/uvu/bin.js __test__ ",
         "test.coverage": "node ./node_modules/c8/bin/c8.js npm run test.unit",
         "test": "npm run test.coverage",
-        "cli": "node ./packages/cli/bin/cli.js",
+        "cli": "node ./packages/cli/bin/cli.cjs",
         "create": "node ./packages/create-bot-whatsapp/bin/create.js",
         "dev:debug": "node --inspect ./example-app/app.js",
         "dev": "node ./example-app/app.js",

@@ -116,6 +116,7 @@ const startInteractive = async (): Promise<void> => {
         bannerDone(NAME_DIR)
         outro(color.inverse('Finalizado correctamente!'))
     } catch (e: any) {
+        console.log(e)
         if (e?.code === 'ERR_TTY_INIT_FAILED') return handleLegacyCli()
         cancel([`Ups! 🙄 algo no va bien.`, `Revisa los requerimientos mínimos en la documentación`].join('\n'))
         return process.exit(0)

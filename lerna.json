@@ -9,7 +9,8 @@
         "packages/provider-bailey",
         "packages/provider-twilio",
         "packages/provider-web-whatsapp",
-        "packages/provider-wppconnect"
+        "packages/provider-wppconnect",
+        "packages/provider-venom"
     ],
     "npmClient": "pnpm"
 }
