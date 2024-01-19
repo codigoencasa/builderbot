@@ -251,10 +251,10 @@ class WPPConnectProviderClass extends ProviderClass {
      * @param {*} param2
      * @returns
      */
-    sendMessage = async (to: any, message: any, { options }: any) => {
+    async sendMessage(to: string, message: string, arg: any): Promise<any> {
         const number = to
-        if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
-        if (options?.media) return this.sendMedia(number, options.media, message)
+        if (arg?.options?.buttons?.length) return this.sendButtons(number, message, arg?.options.buttons)
+        if (arg?.options?.media) return this.sendMedia(number, arg?.options.media, message)
         return this.vendor.sendText(number, message)
     }
 }

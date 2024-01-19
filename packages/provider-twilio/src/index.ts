@@ -107,11 +107,7 @@ class TwilioProvider extends ProviderClass {
         )
     }
 
-    public async sendMessage(
-        number: string | number,
-        { message }: { message: string },
-        arg: { options?: IMessageOptions }
-    ): Promise<any> {
+    public async sendMessage(number: string, message: string, arg: { options?: IMessageOptions }): Promise<any> {
         number = parseNumber(`${number}`)
         if (arg?.options?.buttons?.length) await this.sendButtons()
         if (arg?.options?.media) return this.sendMedia(number, message, arg?.options.media)
