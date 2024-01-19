@@ -24,7 +24,7 @@
         "build:full": "pnpm run build:portal-web && pnpm run cli:rollup && pnpm run bot:rollup && pnpm run provider:rollup && pnpm run database:rollup && pnpm run contexts:rollup && pnpm run create-bot-whatsapp:rollup && pnpm run eslint-plugin:rollup && pnpm run portal:rollup",
         "build": "pnpm run cli:rollup && pnpm run bot:rollup && pnpm run provider:rollup && pnpm run database:rollup && pnpm run contexts:rollup && pnpm run create-bot-whatsapp:rollup && pnpm run portal:rollup && pnpm run eslint-plugin:rollup",
         "copy.lib": "node ./scripts/move.js",
-        "test.unit": "node ./node_modules/uvu/bin.js packages test -i bot-ts -i bot -i cli -i create-bot-whatsapp -i provider-twilio -i provider",
+        "test.unit": "node ./node_modules/uvu/bin.js packages test -i bot-ts -i bot -i cli -i create-bot-whatsapp -i provider-twilio -i provider -i contexts-ts -i database-mongo -i database-mysql -i database-ts -i database-json -i database-postgres",
         "test.e2e": "node ./node_modules/uvu/bin.js __test__ ",
         "test.coverage": "node ./node_modules/c8/bin/c8.js npm run test.unit",
         "test": "npm run test.coverage",

@@ -4,12 +4,22 @@
     "packages": [
         "packages/bot",
         "packages/cli",
+        "packages/contexts-ts",
+        "packages/create-bot-whatsapp",
+        "packages/database-ts",
+        "packages/provider",
+        "packages/database-mongo",
+        "packages/database-mysql",
+        "packages/database-json",
+        "packages/eslint-plugin-bot-whatsapp-ts",
+        "packages/provider-meta",
         "packages/create-bot-whatsapp",
         "packages/provider",
         "packages/provider-bailey",
         "packages/provider-twilio",
         "packages/provider-web-whatsapp",
-        "packages/provider-wppconnect"
+        "packages/provider-wppconnect",
+        "packages/database-postgres"
     ],
     "npmClient": "pnpm"
 }
