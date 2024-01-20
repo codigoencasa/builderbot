@@ -1,10 +1,10 @@
 import { urlencoded, json } from 'body-parser'
 import { EventEmitter } from 'node:events'
-import polka, { Polka } from 'polka'
 import Queue from 'queue-promise'
 
+import polka, { Polka } from 'polka'
 import { Message } from './types'
-import { generateRefprovider, getMediaUrl } from './utils'
+import { processIncomingMessage } from './utils'
 
 class MetaWebHookServer extends EventEmitter {
     private metaPort: number
@@ -38,10 +38,11 @@ class MetaWebHookServer extends EventEmitter {
      */
     incomingMsg = async (req: any, res: any) => {
         const { body } = req
+        const { jwtToken, numberId, version } = this
         const messages = body?.entry?.[0]?.changes?.[0]?.value?.messages
         const contacts = req?.body?.entry?.[0]?.changes?.[0]?.value?.contacts
 
-        if (!messages) {
+        if (!messages.length) {
             res.statusCode = 200
             res.end('empty endpoint')
             return
@@ -51,154 +52,14 @@ class MetaWebHookServer extends EventEmitter {
             const [contact] = contacts
             const to = body.entry[0].changes[0].value?.metadata?.display_phone_number
             const pushName = contact?.profile?.name
-            let responseObj: Message
-
-            switch (message.type) {
-                case 'text': {
-                    responseObj = {
-                        type: message.type,
-                        from: message.from,
-                        to,
-                        body: message.text?.body,
-                        pushName,
-                    }
-                    break
-                }
-                case 'interactive': {
-                    responseObj = {
-                        type: 'interactive',
-                        from: message.from,
-                        to,
-                        body: message.interactive?.button_reply?.title || message.interactive?.list_reply?.id,
-                        title_button_reply: message.interactive?.button_reply?.title,
-                        title_list_reply: message.interactive?.list_reply?.title,
-                        pushName,
-                    }
-                    break
-                }
-                case 'button': {
-                    responseObj = {
-                        type: 'button',
-                        from: message.from,
-                        to,
-                        body: message.button?.text,
-                        payload: message.button?.payload,
-                        title_button_reply: message.button?.payload,
-                        pushName,
-                    }
-                    break
-                }
-                case 'image': {
-                    const imageUrl = await getMediaUrl(this.version, message.image?.id, this.numberId, this.jwtToken)
-                    responseObj = {
-                        type: message.type,
-                        from: message.from,
-                        url: imageUrl,
-                        to,
-                        body: generateRefprovider('_event_media_'),
-                        pushName,
-                    }
-                    break
-                }
-                case 'document': {
-                    const documentUrl = await getMediaUrl(
-                        this.version,
-                        message.document?.id,
-                        this.numberId,
-                        this.jwtToken
-                    )
-                    responseObj = {
-                        type: message.type,
-                        from: message.from,
-                        url: documentUrl,
-                        to,
-                        body: generateRefprovider('_event_document_'),
-                        pushName,
-                    }
-                    break
-                }
-                case 'video': {
-                    const videoUrl = await getMediaUrl(this.version, message.video?.id, this.numberId, this.jwtToken)
-                    responseObj = {
-                        type: message.type,
-                        from: message.from,
-                        url: videoUrl,
-                        to,
-                        body: generateRefprovider('_event_media_'),
-                        pushName,
-                    }
-                    break
-                }
-                case 'location': {
-                    responseObj = {
-                        type: message.type,
-                        from: message.from,
-                        to,
-                        latitude: message.location.latitude,
-                        longitude: message.location.longitude,
-                        body: generateRefprovider('_event_location_'),
-                        pushName,
-                    }
-                    break
-                }
-                case 'audio': {
-                    const audioUrl = await getMediaUrl(this.version, message.audio?.id, this.numberId, this.jwtToken)
-                    responseObj = {
-                        type: message.type,
-                        from: message.from,
-                        url: audioUrl,
-                        to,
-                        body: generateRefprovider('_event_audio_'),
-                        pushName,
-                    }
-                    break
-                }
-                case 'sticker': {
-                    responseObj = {
-                        type: message.type,
-                        from: message.from,
-                        to,
-                        id: message.sticker.id,
-                        body: generateRefprovider('_event_media_'),
-                        pushName,
-                    }
-                    break
-                }
-                case 'contacts': {
-                    responseObj = {
-                        type: message.type,
-                        from: message.from,
-                        contacts: [
-                            {
-                                name: message.contacts[0].name,
-                                phones: message.contacts[0].phones,
-                            },
-                        ],
-                        to,
-                        body: generateRefprovider('_event_contacts_'),
-                        pushName,
-                    }
-                    break
-                }
-                case 'order': {
-                    responseObj = {
-                        type: message.type,
-                        from: message.from,
-                        to,
-                        order: {
-                            catalog_id: message.order.catalog_id,
-                            product_items: message.order.product_items,
-                        },
-                        body: generateRefprovider('_event_order_'),
-                        pushName,
-                    }
-                    break
-                }
-                default:
-                    // Lógica para manejar tipos de mensajes no reconocidos
-                    break
-            }
-
+            const responseObj: Message = await processIncomingMessage({
+                to,
+                pushName,
+                message,
+                jwtToken,
+                numberId,
+                version,
+            })
             if (responseObj) {
                 this.messageQueue.enqueue(() => this.processMessage(responseObj))
             }
@@ -208,8 +69,15 @@ class MetaWebHookServer extends EventEmitter {
         res.end('Messages enqueued')
     }
 
-    processMessage = (message: Message) => {
-        this.emit('message', message)
+    processMessage = (message: Message): Promise<void> => {
+        return new Promise((resolve, reject) => {
+            try {
+                this.emit('message', message)
+                resolve()
+            } catch (error) {
+                reject(error)
+            }
+        })
     }
 
     /**

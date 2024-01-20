@@ -27,3 +27,12 @@ export interface Message {
     order?: Order
     id?: string
 }
+
+export interface ParamasIncomingMessage {
+    pushName: string
+    to: string
+    jwtToken: string
+    numberId: string
+    version: string
+    message: any
+}

@@ -1,12 +1,19 @@
 import { spy, stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { MetaWebHookServer } from '../src/server'
 
+import { MetaWebHookServer } from '../src/server'
+import { Message } from '../src/types'
+
+const resMock = {
+    statusCode: 0,
+    end: spy(),
+}
 const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3000)
 
 test('should create MetaWebHookServer instance', () => {
-    console.assert(server instanceof MetaWebHookServer)
+    assert.is(server['metaPort'], 3000)
+    assert.is(server['jwtToken'], 'jwtToken')
 })
 
 test('start -should start MetaWebHookServer and emit "ready"', () => {
@@ -32,19 +39,18 @@ test('tokenIsValid method should return false for invalid token', () => {
 test('verifyToken - should return 403 and "No token!" if mode or token are missing', () => {
     const metaWebHookServer = new MetaWebHookServer('valid-jwt', '123', 'v1', 'valid-token')
     const req = { query: {} }
-    const res = { statusCode: 0, end: spy() }
-    metaWebHookServer.verifyToken(req, res)
-    assert.is(res.statusCode, 403)
-    assert.is(res.end.calledWith('No token!'), true)
+
+    metaWebHookServer.verifyToken(req, resMock)
+    assert.is(resMock.statusCode, 403)
+    assert.is(resMock.end.calledWith('No token!'), true)
 })
 
 test('verifyToken - should return 403 and "Invalid token!" if token is invalid', () => {
     const metaWebHookServer = new MetaWebHookServer('valid-jwt', '123', 'v1', 'valid-token')
     const req = { query: { 'hub.mode': 'subscribe', 'hub.verify_token': 'invalid-token' } }
-    const res = { statusCode: 0, end: spy() }
-    metaWebHookServer.verifyToken(req, res)
-    assert.is(res.statusCode, 403)
-    assert.is(res.end.calledWith('Invalid token!'), true)
+    metaWebHookServer.verifyToken(req, resMock)
+    assert.is(resMock.statusCode, 403)
+    assert.is(resMock.end.calledWith('Invalid token!'), true)
 })
 
 test('verifyToken - should return 200 and the challenge if token is valid', () => {
@@ -53,18 +59,127 @@ test('verifyToken - should return 200 and the challenge if token is valid', () =
     const req = {
         query: { 'hub.mode': 'subscribe', 'hub.verify_token': 'valid-token', 'hub.challenge': challengeValue },
     }
-    const res = { statusCode: 0, end: spy() }
-    metaWebHookServer.verifyToken(req, res)
-    assert.is(res.statusCode, 200)
-    assert.is(res.end.calledWith(challengeValue), true)
+    metaWebHookServer.verifyToken(req, resMock)
+    assert.is(resMock.statusCode, 200)
+    assert.is(resMock.end.calledWith(challengeValue), true)
 })
 
 test('emptyCtrl - should call res.end with an empty string', () => {
     const metaWebHookServer = new MetaWebHookServer('valid-jwt', '123', 'v1', 'valid-token')
     const req = {}
-    const res = { end: spy() }
-    metaWebHookServer.emptyCtrl(req, res)
-    assert.is(res.end.calledWith(''), true)
+    metaWebHookServer.emptyCtrl(req, resMock)
+    assert.is(resMock.end.calledWith(''), true)
+})
+
+test('processMessage emits the correct message', () => {
+    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3000)
+    const mockEmit = spy(server, 'emit')
+    const message: Message = {
+        type: 'text',
+        from: 'sender',
+        to: 'recipient',
+        body: 'Hello!',
+        pushName: 'John Doe',
+    }
+    server.processMessage(message)
+    assert.equal(mockEmit.calledWith('message', message), true)
+})
+
+// test('incomingMsg should process messages correctly', async () => {
+//     const req: any = {
+//         body: {
+//             entry: [
+//                 {
+//                     changes: [
+//                         {
+//                             value: {
+//                                 messages: [
+//                                     {
+//                                         type: 'text',
+//                                         from: 'sender',
+//                                         text: {
+//                                             body: 'Hello, World!'
+//                                         }
+//                                     }
+//                                 ],
+//                                 metadata: {
+//                                     display_phone_number: '1234567890'
+//                                 },
+//                                 contacts: [
+//                                     {
+//                                         profile: {
+//                                             name: 'Test'
+//                                         }
+
+//                                     }
+//                                 ]
+//                             }
+//                         }
+//                     ]
+//                 }
+//             ]
+//         }
+//     };
+//     const res: any = {
+//         statusCode: 0,
+//         end: () => { }
+//     };
+//     const enqueueStub = spy(server['messageQueue'], 'enqueue');
+//     await server.incomingMsg(req, res);
+
+//     assert.ok(enqueueStub.called);
+// });
+
+test('incomingMsg - incomingMsg should process messages correctly', async () => {
+    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3000)
+    const message = { type: 'text', from: 'sender', to: 'receiver', body: 'Hello!' }
+    const req = {
+        body: {
+            entry: [
+                {
+                    changes: [
+                        {
+                            value: {
+                                messages: [message],
+                                contacts: [{ profile: { name: 'John Doe' } }],
+                                metadata: { display_phone_number: '+123456789' },
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+    }
+
+    const enqueueStub = spy(server['messageQueue'], 'enqueue')
+    await server.incomingMsg(req, resMock)
+    assert.equal(resMock.statusCode, 200)
+    assert.ok(resMock.end.calledWith('Messages enqueued'))
+    assert.ok(enqueueStub.called)
+})
+test('incomingMsg - No debe llamar el metodo messageQueuey retornar el mensaje empty endpoint ', async () => {
+    const req = {
+        body: {
+            entry: [
+                {
+                    changes: [
+                        {
+                            value: {
+                                messages: [],
+                                contacts: [{ profile: { name: 'John Doe' } }],
+                                metadata: { display_phone_number: '+123456789' },
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+    }
+    const enqueueStub = spy(server['messageQueue'], 'enqueue')
+    await server.incomingMsg(req, resMock)
+    assert.equal(resMock.statusCode, 200)
+    assert.ok(resMock.end.calledWith('empty endpoint'))
+    assert.ok(enqueueStub.notCalled)
 })
 
 test.run()
