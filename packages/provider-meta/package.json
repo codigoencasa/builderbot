@@ -29,13 +29,18 @@
     },
     "dependencies": {
         "@types/axios": "^0.14.0",
-        "axios": "^1.6.5"
+        "axios": "^1.6.5",
+        "body-parser": "^1.20.2",
+        "crypto": "^1.0.1",
+        "polka": "^0.5.2",
+        "queue-promise": "^2.2.1"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^23.0.7",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-terser": "^0.4.4",
         "@types/node": "^20.11.0",
+        "@types/polka": "^0.5.7",
         "@types/sinon": "^17.0.3",
         "kleur": "^4.1.5",
         "rimraf": "^3.0.2",

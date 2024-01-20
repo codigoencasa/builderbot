@@ -153,12 +153,6 @@ importers:
                 specifier: ^2.3.0
                 version: 2.3.0
 
-    packages/bot-ts:
-        devDependencies:
-            kleur:
-                specifier: ^4.1.5
-                version: 4.1.5
-
     packages/cli:
         devDependencies:
             '@clack/prompts':
@@ -220,12 +214,6 @@ importers:
                 version: 0.5.6
 
     packages/contexts:
-        dependencies:
-            '@bot-whatsapp/bot':
-                specifier: '*'
-                version: 0.1.33
-
-    packages/contexts-ts:
         dependencies:
             '@bot-whatsapp/bot':
                 specifier: '*'
@@ -304,6 +292,22 @@ importers:
             pg:
                 specifier: ^8.11.2
                 version: 8.11.2
+        devDependencies:
+            '@rollup/plugin-node-resolve':
+                specifier: ^15.2.3
+                version: 15.2.3(rollup@4.9.5)
+            '@rollup/plugin-terser':
+                specifier: ^0.4.4
+                version: 0.4.4(rollup@4.9.5)
+            '@types/node':
+                specifier: ^20.11.0
+                version: 20.11.5
+            rimraf:
+                specifier: ^3.0.2
+                version: 3.0.2
+            rollup-plugin-typescript2:
+                specifier: ^0.36.0
+                version: 0.36.0(rollup@4.9.5)(typescript@5.3.3)
 
     packages/database-json:
         devDependencies:
@@ -443,40 +447,7 @@ importers:
                 specifier: ^2.3.0
                 version: 2.3.0
 
-    packages/database-ts:
-        dependencies:
-            dotenv:
-                specifier: ^16.0.3
-                version: 16.3.1
-            mongodb:
-                specifier: ^4.11.0
-                version: 4.17.2
-            mysql2:
-                specifier: ^2.3.3
-                version: 2.3.3
-            pg:
-                specifier: ^8.11.2
-                version: 8.11.2
-        devDependencies:
-            '@rollup/plugin-node-resolve':
-                specifier: ^15.2.3
-                version: 15.2.3(rollup@4.9.5)
-            '@rollup/plugin-terser':
-                specifier: ^0.4.4
-                version: 0.4.4(rollup@4.9.5)
-            '@types/node':
-                specifier: ^20.11.0
-                version: 20.11.5
-            rimraf:
-                specifier: ^3.0.2
-                version: 3.0.2
-            rollup-plugin-typescript2:
-                specifier: ^0.36.0
-                version: 0.36.0(rollup@4.9.5)(typescript@5.3.3)
-
-    packages/eslint-plugin-bot-whatsapp: {}
-
-    packages/eslint-plugin-bot-whatsapp-ts:
+    packages/eslint-plugin-bot-whatsapp:
         devDependencies:
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
@@ -636,6 +607,18 @@ importers:
             axios:
                 specifier: ^1.6.5
                 version: 1.6.5
+            body-parser:
+                specifier: ^1.20.2
+                version: 1.20.2
+            crypto:
+                specifier: ^1.0.1
+                version: 1.0.1
+            polka:
+                specifier: ^0.5.2
+                version: 0.5.2
+            queue-promise:
+                specifier: ^2.2.1
+                version: 2.2.1
         devDependencies:
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
@@ -649,6 +632,9 @@ importers:
             '@types/node':
                 specifier: ^20.11.0
                 version: 20.11.5
+            '@types/polka':
+                specifier: ^0.5.7
+                version: 0.5.7
             '@types/sinon':
                 specifier: ^17.0.3
                 version: 17.0.3
@@ -7502,6 +7488,14 @@ packages:
         engines: { node: '>=12' }
         dependencies:
             type-fest: 1.4.0
+        dev: false
+
+    /crypto@1.0.1:
+        resolution:
+            {
+                integrity: sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig==,
+            }
+        deprecated: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
         dev: false
 
     /css-select@5.1.0:
@@ -14927,6 +14921,14 @@ packages:
             {
                 integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==,
             }
+
+    /queue-promise@2.2.1:
+        resolution:
+            {
+                integrity: sha512-C3eyRwLF9m6dPV4MtqMVFX+Xmc7keZ9Ievm3jJ/wWM5t3uVbFnGsJXwpYzZ4LaIEcX9bss/mdaKzyrO6xheRuA==,
+            }
+        engines: { node: '>=8.12.0' }
+        dev: false
 
     /queue-tick@1.0.1:
         resolution:
