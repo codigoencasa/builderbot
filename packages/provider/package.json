@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/provider",
-    "version": "0.1.0-alpha.18",
+    "version": "0.1.1-alpha.0",
     "description": "Esto es el conector a Twilio, Meta, etc...",
     "keywords": [],
     "author": "",
@@ -29,7 +29,7 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
             "require": "./lib/index.cjs"
-          },
+        },
         "./mock": {
             "types": "./dist/memory.d.ts",
             "import": "./dist/memory.mjs",
