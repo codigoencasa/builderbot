@@ -1,6 +1,10 @@
 class IdleState {
     indexCb = new Map()
 
+    /**
+     *
+     * @param param0
+     */
     setIdleTime = ({ from, inRef, timeInSeconds, cb }) => {
         cb = cb ?? (() => {})
         const startTime = new Date().getTime()
@@ -33,7 +37,7 @@ class IdleState {
 
     /**
      *
-     * @param {*} param0
+     * @param param0
      * @returns
      */
     get = ({ from, inRef }) => {
@@ -47,15 +51,19 @@ class IdleState {
         }
     }
 
+    /**
+     *
+     * @param ctxInComming
+     */
     stop = (ctxInComming) => {
         try {
             const queueCb = this.indexCb.get(ctxInComming.from) ?? []
             for (const iterator of queueCb) {
                 iterator.stop(ctxInComming)
             }
+            this.indexCb.set(ctxInComming.from, [])
         } catch (err) {
-            console.log(err)
-            return null
+            console.error(err)
         }
     }
 }
