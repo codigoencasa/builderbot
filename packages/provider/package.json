@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/provider",
-    "version": "0.1.1-alpha.0",
+    "version": "0.1.1-alpha.0+4cbee15",
     "description": "Esto es el conector a Twilio, Meta, etc...",
     "keywords": [],
     "author": "",
@@ -20,9 +20,9 @@
         "test": "__tests__"
     },
     "dependencies": {
-        "@bot-whatsapp/bot": "0.1.1-alpha.0",
+        "@bot-whatsapp/bot": "^0.1.1-alpha.0+4cbee15",
         "@bot-whatsapp/provider-baileys": "workspace:*",
-        "@bot-whatsapp/provider-twilio": "0.1.1-alpha.0"
+        "@bot-whatsapp/provider-twilio": "^0.1.1-alpha.0+4cbee15"
     },
     "exports": {
         ".": {
@@ -72,5 +72,5 @@
         "rollup-plugin-typescript2": "^0.36.0",
         "sinon": "^17.0.1"
     },
-    "gitHead": "3d3cada7e7c9b9a579bb8c94e5b68dfb6fa3878f"
+    "gitHead": "4cbee15085bc6664a85f02311d7c0b98377af1fa"
 }

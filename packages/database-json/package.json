@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/database-json",
-    "version": "0.1.1-alpha.0",
+    "version": "0.1.1-alpha.0+4cbee15",
     "description": "Esto es el conector a json",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
@@ -39,5 +39,5 @@
         "tslib": "^2.6.2",
         "tsm": "^2.3.0"
     },
-    "gitHead": "3d3cada7e7c9b9a579bb8c94e5b68dfb6fa3878f"
+    "gitHead": "4cbee15085bc6664a85f02311d7c0b98377af1fa"
 }
