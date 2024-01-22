@@ -153,12 +153,6 @@ importers:
                 specifier: ^2.3.0
                 version: 2.3.0
 
-    packages/bot-ts:
-        devDependencies:
-            kleur:
-                specifier: ^4.1.5
-                version: 4.1.5
-
     packages/cli:
         devDependencies:
             '@clack/prompts':
@@ -220,12 +214,6 @@ importers:
                 version: 0.5.6
 
     packages/contexts:
-        dependencies:
-            '@bot-whatsapp/bot':
-                specifier: '*'
-                version: 0.1.33
-
-    packages/contexts-ts:
         dependencies:
             '@bot-whatsapp/bot':
                 specifier: '*'
@@ -304,6 +292,22 @@ importers:
             pg:
                 specifier: ^8.11.2
                 version: 8.11.2
+        devDependencies:
+            '@rollup/plugin-node-resolve':
+                specifier: ^15.2.3
+                version: 15.2.3(rollup@4.9.5)
+            '@rollup/plugin-terser':
+                specifier: ^0.4.4
+                version: 0.4.4(rollup@4.9.5)
+            '@types/node':
+                specifier: ^20.11.0
+                version: 20.11.5
+            rimraf:
+                specifier: ^3.0.2
+                version: 3.0.2
+            rollup-plugin-typescript2:
+                specifier: ^0.36.0
+                version: 0.36.0(rollup@4.9.5)(typescript@5.3.3)
 
     packages/database-json:
         devDependencies:
@@ -443,40 +447,7 @@ importers:
                 specifier: ^2.3.0
                 version: 2.3.0
 
-    packages/database-ts:
-        dependencies:
-            dotenv:
-                specifier: ^16.0.3
-                version: 16.3.1
-            mongodb:
-                specifier: ^4.11.0
-                version: 4.17.2
-            mysql2:
-                specifier: ^2.3.3
-                version: 2.3.3
-            pg:
-                specifier: ^8.11.2
-                version: 8.11.2
-        devDependencies:
-            '@rollup/plugin-node-resolve':
-                specifier: ^15.2.3
-                version: 15.2.3(rollup@4.9.5)
-            '@rollup/plugin-terser':
-                specifier: ^0.4.4
-                version: 0.4.4(rollup@4.9.5)
-            '@types/node':
-                specifier: ^20.11.0
-                version: 20.11.5
-            rimraf:
-                specifier: ^3.0.2
-                version: 3.0.2
-            rollup-plugin-typescript2:
-                specifier: ^0.36.0
-                version: 0.36.0(rollup@4.9.5)(typescript@5.3.3)
-
-    packages/eslint-plugin-bot-whatsapp: {}
-
-    packages/eslint-plugin-bot-whatsapp-ts:
+    packages/eslint-plugin-bot-whatsapp:
         devDependencies:
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
@@ -514,13 +485,13 @@ importers:
 
     packages/provider:
         dependencies:
-            '@bot-whatsapp/baileys':
-                specifier: workspace:*
-                version: link:../provider-bailey
             '@bot-whatsapp/bot':
                 specifier: workspace:*
                 version: link:../bot
-            '@bot-whatsapp/twilio':
+            '@bot-whatsapp/provider-baileys':
+                specifier: workspace:*
+                version: link:../provider-baileys
+            '@bot-whatsapp/provider-twilio':
                 specifier: workspace:*
                 version: link:../provider-twilio
         devDependencies:
@@ -570,7 +541,7 @@ importers:
                 specifier: ^17.0.1
                 version: 17.0.1
 
-    packages/provider-bailey:
+    packages/provider-baileys:
         dependencies:
             '@ffmpeg-installer/ffmpeg':
                 specifier: ^1.1.0
@@ -2453,7 +2424,7 @@ packages:
         dependencies:
             '@jridgewell/set-array': 1.1.2
             '@jridgewell/sourcemap-codec': 1.4.15
-            '@jridgewell/trace-mapping': 0.3.20
+            '@jridgewell/trace-mapping': 0.3.21
         dev: true
 
     /@jridgewell/resolve-uri@3.1.1:
@@ -2487,16 +2458,6 @@ packages:
             {
                 integrity: sha512-eF2rxCRulEKXHTRiDrDy6erMYWqNw4LPdQ8UQA4huuxaQsVeRPFl2oM8oDGxMFhJUWZf9McpLtJasDDZb/Bpeg==,
             }
-        dev: true
-
-    /@jridgewell/trace-mapping@0.3.20:
-        resolution:
-            {
-                integrity: sha512-R8LcPeWZol2zR8mmH3JeKQ6QRCFb7XgUhV9ZlGhHLGyg4wpPiPZNQOOWhFZhxKw8u//yTbNGI42Bx/3paXEQ+Q==,
-            }
-        dependencies:
-            '@jridgewell/resolve-uri': 3.1.1
-            '@jridgewell/sourcemap-codec': 1.4.15
         dev: true
 
     /@jridgewell/trace-mapping@0.3.21:
@@ -17395,7 +17356,7 @@ packages:
             }
         engines: { node: '>=10.12.0' }
         dependencies:
-            '@jridgewell/trace-mapping': 0.3.20
+            '@jridgewell/trace-mapping': 0.3.21
             '@types/istanbul-lib-coverage': 2.0.5
             convert-source-map: 2.0.0
         dev: true

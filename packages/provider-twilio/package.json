@@ -1,5 +1,5 @@
 {
-    "name": "@bot-whatsapp/twilio",
+    "name": "@bot-whatsapp/provider-twilio",
     "version": "0.1.0-alpha.18",
     "description": "> TODO: description",
     "author": "Leifer Mendez <leifer33@gmail.com>",

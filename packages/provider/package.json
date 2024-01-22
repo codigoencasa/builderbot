@@ -20,42 +20,35 @@
         "test": "__tests__"
     },
     "dependencies": {
-        "@bot-whatsapp/baileys": "workspace:*",
         "@bot-whatsapp/bot": "workspace:*",
-        "@bot-whatsapp/twilio": "workspace:*"
+        "@bot-whatsapp/provider-baileys": "workspace:*",
+        "@bot-whatsapp/provider-twilio": "workspace:*"
     },
     "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./lib/index.cjs"
+          },
         "./mock": {
-            "import": {
-                "default": "./dist/memory.mjs"
-            },
-            "require": {
-                "default": "./dist/memory.cjs"
-            }
+            "types": "./dist/memory.d.ts",
+            "import": "./dist/memory.mjs",
+            "require": "./dist/memory.cjs"
         },
         "./memory": {
-            "import": {
-                "default": "./dist/memory.mjs"
-            },
-            "require": {
-                "default": "./dist/memory.cjs"
-            }
+            "types": "./dist/memory.d.ts",
+            "import": "./dist/memory.mjs",
+            "require": "./dist/memory.cjs"
         },
         "./baileys": {
-            "import": {
-                "default": "./dist/baileys.mjs"
-            },
-            "require": {
-                "default": "./dist/baileys.cjs"
-            }
+            "types": "./dist/baileys.d.ts",
+            "import": "./dist/baileys.mjs",
+            "require": "./dist/baileys.cjs"
         },
         "./twilio": {
-            "import": {
-                "default": "./dist/twilio.mjs"
-            },
-            "require": {
-                "default": "./dist/twilio.cjs"
-            }
+            "types": "./dist/twilio.d.ts",
+            "import": "./dist/twilio.mjs",
+            "require": "./dist/twilio.cjs"
         }
     },
     "repository": {

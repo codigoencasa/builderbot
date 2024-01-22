@@ -8,7 +8,11 @@ class JsonFileAdapter {
     private listHistory: HistoryEntry[] = []
     private options: JsonFileAdapterOptions = { filename: 'db.json' }
 
-    constructor(options: JsonFileAdapterOptions = {}) {
+    constructor(
+        options: JsonFileAdapterOptions = {
+            filename: 'de',
+        }
+    ) {
         this.options = { ...this.options, ...options }
         this.pathFile = join(process.cwd(), this.options.filename)
         this.init().then()

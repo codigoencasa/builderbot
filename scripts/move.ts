@@ -18,18 +18,44 @@ const copyLibPkg = async (pkgName: string, to: string): Promise<void> => {
     await copy(join(FROM, 'package.json'), join(TO, 'package.json'))
 }
 
-const listLib: string[] = [
-    'create-bot-whatsapp',
-    'bot',
+const listLib: { name: string }[] = [
+    {
+        name: 'create-bot-whatsapp',
+    },
+    {
+        name: 'bot',
+    },
+    // {
+    //     name: 'database'
+    // },
+    {
+        name: 'provider',
+    },
+    {
+        name: 'provider-baileys',
+    },
+    {
+        name: 'provider-twilio',
+    },
+    {
+        name: 'provider-venom',
+    },
+    {
+        name: 'provider-web-whatsapp',
+    },
+    {
+        name: 'provider-wppconnect',
+    },
+    // {
+    //     name:'contexts'
+    // },
+    // {
+    //     name:'portal'
+    // },
+    // {
+    //     name: 'database'
+    // }
     // 'database', manuel
-    'provider',
-    'provider-bailey',
-    'provider-twilio',
-    'provider-venom',
-    'provider-web-whatsapp',
-    'provider-wppconnect',
-    // 'contexts', manuel
-    // 'portal'
 ]
 
 const main = async (): Promise<void> => {
@@ -37,8 +63,8 @@ const main = async (): Promise<void> => {
         throw new Error('appDir is not specified in the arguments.')
     }
     for (const iterator of listLib) {
-        await copyLibPkg(iterator, appDir)
-        console.log(`${iterator}: Copiado ✅`)
+        await copyLibPkg(iterator.name, appDir)
+        console.log(`${iterator.name}: Copiado ✅`)
     }
 }
 
