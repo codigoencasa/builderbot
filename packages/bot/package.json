@@ -53,5 +53,6 @@
         "mime-types": "^2.1.35",
         "picocolors": "^1.0.0",
         "sharp": "^0.33.2"
-    }
+    },
+    "gitHead": "3d3cada7e7c9b9a579bb8c94e5b68dfb6fa3878f"
 }

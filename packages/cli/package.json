@@ -40,5 +40,6 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/codigoencasa/bot-whatsapp/tree/main/packages/cli"
-    }
+    },
+    "gitHead": "3d3cada7e7c9b9a579bb8c94e5b68dfb6fa3878f"
 }
