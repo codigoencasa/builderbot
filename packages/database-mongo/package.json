@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/database-mongo",
-    "version": "0.1.1-alpha.0+4cbee15",
+    "version": "0.1.1-alpha.1+11f7eab",
     "description": "Esto es el conector a mongo DB",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
@@ -42,5 +42,5 @@
         "tslib": "^2.6.2",
         "tsm": "^2.3.0"
     },
-    "gitHead": "4cbee15085bc6664a85f02311d7c0b98377af1fa"
+    "gitHead": "11f7eab33e9d1a5eaf8bf566e89a41d90ccee1a8"
 }

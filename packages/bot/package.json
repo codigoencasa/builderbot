@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/bot",
-    "version": "0.1.1-alpha.0+4cbee15",
+    "version": "0.1.1-alpha.1+11f7eab",
     "description": "core typescript",
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
@@ -54,5 +54,5 @@
         "picocolors": "^1.0.0",
         "sharp": "^0.33.2"
     },
-    "gitHead": "4cbee15085bc6664a85f02311d7c0b98377af1fa"
+    "gitHead": "11f7eab33e9d1a5eaf8bf566e89a41d90ccee1a8"
 }

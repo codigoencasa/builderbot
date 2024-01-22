@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/provider-venom",
-    "version": "0.1.1-alpha.0+4cbee15",
+    "version": "0.1.1-alpha.1+11f7eab",
     "description": "Now I’m the model of a modern major general / The venerated Virginian veteran whose men are all / Lining up, to put me up on a pedestal / Writin’ letters to relatives / Embellishin’ my elegance and eloquence / But the elephant is in the room / The truth is in ya face when ya hear the British cannons go / BOOM",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
@@ -28,7 +28,7 @@
     },
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
     "devDependencies": {
-        "@bot-whatsapp/bot": "^0.1.1-alpha.0+4cbee15",
+        "@bot-whatsapp/bot": "^0.1.1-alpha.1+11f7eab",
         "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
@@ -44,5 +44,5 @@
     "dependencies": {
         "venom-bot": "^5.0.21"
     },
-    "gitHead": "4cbee15085bc6664a85f02311d7c0b98377af1fa"
+    "gitHead": "11f7eab33e9d1a5eaf8bf566e89a41d90ccee1a8"
 }
