@@ -1,8 +1,8 @@
 import { urlencoded, json } from 'body-parser'
 import { EventEmitter } from 'node:events'
+import polka, { Polka } from 'polka'
 import Queue from 'queue-promise'
 
-import polka, { Polka } from 'polka'
 import { Message } from './types'
 import { processIncomingMessage } from './utils'
 

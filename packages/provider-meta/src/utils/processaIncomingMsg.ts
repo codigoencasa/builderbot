@@ -1,4 +1,5 @@
-import { generateRefprovider } from './hash'
+import { utils } from '@bot-whatsapp/bot'
+
 import { getMediaUrl } from './mediaUrl'
 import { Message, ParamasIncomingMessage } from '../types'
 
@@ -54,7 +55,7 @@ export const processIncomingMessage = async ({
                 from: message.from,
                 url: imageUrl,
                 to,
-                body: generateRefprovider('_event_media_'),
+                body: utils.generateRefprovider('_event_media_'),
                 pushName,
             }
             break
@@ -66,7 +67,7 @@ export const processIncomingMessage = async ({
                 from: message.from,
                 url: documentUrl,
                 to,
-                body: generateRefprovider('_event_document_'),
+                body: utils.generateRefprovider('_event_document_'),
                 pushName,
             }
             break
@@ -78,7 +79,7 @@ export const processIncomingMessage = async ({
                 from: message.from,
                 url: videoUrl,
                 to,
-                body: generateRefprovider('_event_media_'),
+                body: utils.generateRefprovider('_event_media_'),
                 pushName,
             }
             break
@@ -90,7 +91,7 @@ export const processIncomingMessage = async ({
                 to,
                 latitude: message.location.latitude,
                 longitude: message.location.longitude,
-                body: generateRefprovider('_event_location_'),
+                body: utils.generateRefprovider('_event_location_'),
                 pushName,
             }
             break
@@ -102,7 +103,7 @@ export const processIncomingMessage = async ({
                 from: message.from,
                 url: audioUrl,
                 to,
-                body: generateRefprovider('_event_audio_'),
+                body: utils.generateRefprovider('_event_audio_'),
                 pushName,
             }
             break
@@ -113,7 +114,7 @@ export const processIncomingMessage = async ({
                 from: message.from,
                 to,
                 id: message.sticker.id,
-                body: generateRefprovider('_event_media_'),
+                body: utils.generateRefprovider('_event_media_'),
                 pushName,
             }
             break
@@ -129,7 +130,7 @@ export const processIncomingMessage = async ({
                     },
                 ],
                 to,
-                body: generateRefprovider('_event_contacts_'),
+                body: utils.generateRefprovider('_event_contacts_'),
                 pushName,
             }
             break
@@ -143,7 +144,7 @@ export const processIncomingMessage = async ({
                     catalog_id: message.order.catalog_id,
                     product_items: message.order.product_items,
                 },
-                body: generateRefprovider('_event_order_'),
+                body: utils.generateRefprovider('_event_order_'),
                 pushName,
             }
             break

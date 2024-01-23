@@ -85,51 +85,6 @@ test('processMessage emits the correct message', () => {
     assert.equal(mockEmit.calledWith('message', message), true)
 })
 
-// test('incomingMsg should process messages correctly', async () => {
-//     const req: any = {
-//         body: {
-//             entry: [
-//                 {
-//                     changes: [
-//                         {
-//                             value: {
-//                                 messages: [
-//                                     {
-//                                         type: 'text',
-//                                         from: 'sender',
-//                                         text: {
-//                                             body: 'Hello, World!'
-//                                         }
-//                                     }
-//                                 ],
-//                                 metadata: {
-//                                     display_phone_number: '1234567890'
-//                                 },
-//                                 contacts: [
-//                                     {
-//                                         profile: {
-//                                             name: 'Test'
-//                                         }
-
-//                                     }
-//                                 ]
-//                             }
-//                         }
-//                     ]
-//                 }
-//             ]
-//         }
-//     };
-//     const res: any = {
-//         statusCode: 0,
-//         end: () => { }
-//     };
-//     const enqueueStub = spy(server['messageQueue'], 'enqueue');
-//     await server.incomingMsg(req, res);
-
-//     assert.ok(enqueueStub.called);
-// });
-
 test('incomingMsg - incomingMsg should process messages correctly', async () => {
     const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3000)
     const message = { type: 'text', from: 'sender', to: 'receiver', body: 'Hello!' }
