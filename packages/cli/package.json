@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/cli",
-    "version": "0.0.111-alpha.0",
+    "version": "0.1.37",
     "description": "",
     "main": "index.js",
     "devDependencies": {
