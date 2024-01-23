@@ -9,14 +9,17 @@ const resMock = {
     statusCode: 0,
     end: spy(),
 }
-const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3000)
 
-test('should create MetaWebHookServer instance', () => {
-    assert.is(server['metaPort'], 3000)
+test('should create MetaWebHookServer instance', async () => {
+    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3001)
+    server.start()
+    assert.is(server['metaPort'], 3001)
     assert.is(server['jwtToken'], 'jwtToken')
+    await server.stop()
 })
 
-test('start -should start MetaWebHookServer and emit "ready"', () => {
+test('start -should start MetaWebHookServer and emit "ready"', async () => {
+    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3002)
     const emitSpy = stub(server, 'emit')
     const metaServerSpy = stub(server['metaServer'], 'listen')
     server.start()
@@ -113,6 +116,7 @@ test('incomingMsg - incomingMsg should process messages correctly', async () => 
     assert.ok(enqueueStub.called)
 })
 test('incomingMsg - No debe llamar el metodo messageQueuey retornar el mensaje empty endpoint ', async () => {
+    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3000)
     const req = {
         body: {
             entry: [

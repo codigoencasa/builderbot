@@ -28,7 +28,7 @@ export interface TwilioPayload {
  * [POST] /twilio-hook
  */
 class TwilioWebHookServer extends EventEmitter {
-    private twilioServer: Polka
+    public twilioServer: Polka
     private twilioPort: number
 
     constructor(twilioPort: number) {

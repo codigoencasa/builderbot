@@ -101,4 +101,8 @@ test('sendVideo - should correctly call sendMessageMeta with the message body', 
     console.log(sendMessageMetaStub.calledWith(expectedBody))
 })
 
+test.after(async () => {
+    await metaProvider.metHook.stop()
+})
+
 test.run()

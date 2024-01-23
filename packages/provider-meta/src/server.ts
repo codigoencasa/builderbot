@@ -7,12 +7,12 @@ import { Message } from './types'
 import { processIncomingMessage } from './utils'
 
 class MetaWebHookServer extends EventEmitter {
+    public metaServer: Polka
     private metaPort: number
     private token: string
     private jwtToken: string
     private numberId: string
     private version: string
-    private metaServer: Polka
     private messageQueue: Queue
 
     constructor(jwtToken: string, numberId: string, version: string, token: string, metaPort: number = 3000) {
@@ -143,6 +143,18 @@ class MetaWebHookServer extends EventEmitter {
             console.log(`[meta]: Más información en la documentación`)
         })
         this.emit('ready')
+    }
+
+    public stop(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.metaServer.server.close((err) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve()
+                }
+            })
+        })
     }
 }
 
