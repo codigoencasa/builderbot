@@ -30,11 +30,7 @@ test('getMediaUrl - should return media url correctly', async () => {
 
 test('getMediaUrl should handle errors and return undefined', async () => {
     httpsMock.get.throws('Some error')
-    // Act
     const result = await getMediaUrl(version, idMedia, numberId, token)
-
-    console.log(result)
-    // Assert
     assert.is(result, undefined)
 })
 

@@ -256,8 +256,8 @@ importers:
     packages/create-bot-whatsapp:
         dependencies:
             '@bot-whatsapp/cli':
-                specifier: workspace:*
-                version: link:../cli
+                specifier: ^0.1.1-alpha.1+11f7eab
+                version: 0.1.37
         devDependencies:
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
@@ -486,13 +486,13 @@ importers:
     packages/provider:
         dependencies:
             '@bot-whatsapp/bot':
-                specifier: workspace:*
-                version: link:../bot
+                specifier: ^0.1.1-alpha.1+11f7eab
+                version: 0.1.33
             '@bot-whatsapp/provider-baileys':
                 specifier: workspace:*
                 version: link:../provider-baileys
             '@bot-whatsapp/provider-twilio':
-                specifier: workspace:*
+                specifier: ^0.1.1-alpha.1+11f7eab
                 version: link:../provider-twilio
         devDependencies:
             '@rollup/plugin-commonjs':
@@ -607,7 +607,28 @@ importers:
             axios:
                 specifier: ^1.6.5
                 version: 1.6.5
+            body-parser:
+                specifier: ^1.20.2
+                version: 1.20.2
+            crypto:
+                specifier: ^1.0.1
+                version: 1.0.1
+            form-data:
+                specifier: ^4.0.0
+                version: 4.0.0
+            mime-types:
+                specifier: ^2.1.35
+                version: 2.1.35
+            polka:
+                specifier: ^0.5.2
+                version: 0.5.2
+            queue-promise:
+                specifier: ^2.2.1
+                version: 2.2.1
         devDependencies:
+            '@bot-whatsapp/bot':
+                specifier: workspace:*
+                version: link:../bot
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
                 version: 23.0.7(rollup@4.9.5)
@@ -620,12 +641,18 @@ importers:
             '@types/node':
                 specifier: ^20.11.0
                 version: 20.11.5
+            '@types/polka':
+                specifier: ^0.5.7
+                version: 0.5.7
             '@types/sinon':
                 specifier: ^17.0.3
                 version: 17.0.3
             kleur:
                 specifier: ^4.1.5
                 version: 4.1.5
+            proxyquire:
+                specifier: ^2.1.3
+                version: 2.1.3
             rimraf:
                 specifier: ^3.0.2
                 version: 3.0.2
@@ -658,8 +685,8 @@ importers:
                 version: 0.5.2
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: workspace:*
-                version: link:../bot
+                specifier: ^0.1.1-alpha.1+11f7eab
+                version: 0.1.33
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
                 version: 23.0.7(rollup@4.9.5)
@@ -719,8 +746,8 @@ importers:
                 version: 5.0.21(typescript@5.3.3)
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: workspace:*
-                version: link:../bot
+                specifier: ^0.1.1-alpha.1+11f7eab
+                version: 0.1.33
             '@rollup/plugin-commonjs':
                 specifier: ^25.0.7
                 version: 25.0.7(rollup@4.9.5)
@@ -762,8 +789,8 @@ importers:
                 version: 1.23.0
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: workspace:*
-                version: link:../bot
+                specifier: ^0.1.1-alpha.1+11f7eab
+                version: 0.1.33
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
                 version: 23.0.7(rollup@4.9.5)
@@ -808,8 +835,8 @@ importers:
                 version: 1.28.4(typescript@5.3.3)
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: workspace:*
-                version: link:../bot
+                specifier: ^0.1.1-alpha.1+11f7eab
+                version: 0.1.33
             '@rollup/plugin-commonjs':
                 specifier: ^25.0.7
                 version: 25.0.7(rollup@4.9.5)
@@ -1572,6 +1599,15 @@ packages:
             }
         dependencies:
             dotenv: 16.3.1
+
+    /@bot-whatsapp/cli@0.1.37:
+        resolution:
+            {
+                integrity: sha512-H6/AE4tkLEGCUzVdyxpnnQ55HeTwB2aqJBWUAwQZZZNTTWC8bhQTrUASyhnSnT2b07z9XdJKnkstI9SjzFC+aw==,
+            }
+        hasBin: true
+        dependencies:
+            picocolors: 1.0.0
         dev: false
 
     /@clack/core@0.3.3:
@@ -7463,6 +7499,14 @@ packages:
         engines: { node: '>=12' }
         dependencies:
             type-fest: 1.4.0
+        dev: false
+
+    /crypto@1.0.1:
+        resolution:
+            {
+                integrity: sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig==,
+            }
+        deprecated: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
         dev: false
 
     /css-select@5.1.0:
@@ -14888,6 +14932,14 @@ packages:
             {
                 integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==,
             }
+
+    /queue-promise@2.2.1:
+        resolution:
+            {
+                integrity: sha512-C3eyRwLF9m6dPV4MtqMVFX+Xmc7keZ9Ievm3jJ/wWM5t3uVbFnGsJXwpYzZ4LaIEcX9bss/mdaKzyrO6xheRuA==,
+            }
+        engines: { node: '>=8.12.0' }
+        dev: false
 
     /queue-tick@1.0.1:
         resolution:
