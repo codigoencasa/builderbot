@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/provider",
-    "version": "0.0.161-alpha.0",
+    "version": "0.1.37",
     "description": "Esto es el conector a Twilio, Meta, etc...",
     "main": "./lib/mock/index.cjs",
     "keywords": [],

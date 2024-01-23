@@ -283,12 +283,19 @@ class CoreClass extends EventEmitter {
 
         const continueFlow = async (initRef = undefined) => {
             const currentPrev = await this.databaseClass.getPrevByNumber(from)
-            let nextFlow = (await this.flowClass.find(refToContinue?.ref, true)) ?? []
+
+            let nextFlow = this.flowClass.find(refToContinue?.ref, true) || []
             if (initRef && !initRef?.idleFallBack) {
-                nextFlow = (await this.flowClass.find(initRef?.ref, true)) ?? []
+                nextFlow = this.flowClass.find(initRef?.ref, true) || []
             }
 
-            const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
+            const getContinueIndex = nextFlow.findIndex((msg) => msg.refSerialize === currentPrev?.refSerialize)
+            const indexToContinue = getContinueIndex !== -1 ? getContinueIndex : 0
+            const filterNextFlow = nextFlow
+                .slice(indexToContinue)
+                .filter((i) => i.refSerialize !== currentPrev?.refSerialize)
+
+            // const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize);
             const isContinueFlow = filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)
 
             if (!isContinueFlow) {
@@ -482,7 +489,9 @@ class CoreClass extends EventEmitter {
                     inRef,
                     timeInSeconds: options.startIdleMs / 1000,
                     cb: async (opts) => {
-                        await runContext(true, { idleFallBack: opts.next, ref: opts.inRef, body: opts.body })
+                        if (opts?.next) {
+                            await runContext(true, { idleFallBack: opts.next, ref: opts.inRef, body: opts.body })
+                        }
                     },
                 })
                 return
