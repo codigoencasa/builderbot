@@ -174,21 +174,29 @@ class CoreClass extends EventEmitter {
         // 📄 Finalizar flujo
         const endFlow =
             (flag) =>
-            async (messages = null) => {
+            async (message = null) => {
                 flag.endFlow = true
                 endFlowFlag = true
-                if (typeof messages === 'string') {
-                    await this.sendProviderAndSave(from, createCtxMessage(messages))
-                }
+                if (message) this.sendProviderAndSave(from, createCtxMessage(message))
+                clearQueue()
+                return
+            }
 
-                // Procesos de callback que se deben execute como exepciones
+        // 📄 Finalizar flujo (patch)
+        const endFlowToGotoFlow =
+            (flag) =>
+            async (messages = null, options = { fromGotoFlow: false, end: false }) => {
+                flag.endFlow = true
+                endFlowFlag = true
+
                 if (Array.isArray(messages)) {
                     for (const iteratorCtxMessage of messages) {
-                        await resolveCbEveryCtx(iteratorCtxMessage, {
-                            omitEndFlow: true,
+                        const scopeCtx = await resolveCbEveryCtx(iteratorCtxMessage, {
+                            omitEndFlow: options.fromGotoFlow,
                             idleCtx: !!iteratorCtxMessage?.options?.idle,
                             triggerKey: iteratorCtxMessage.keyword.startsWith('key_'),
                         })
+                        if (scopeCtx?.endFlow) break
                     }
                 }
                 clearQueue()
@@ -199,64 +207,95 @@ class CoreClass extends EventEmitter {
         const sendFlow = async (messageToSend, numberOrId, options = {}) => {
             options = { prev: prevMsg, forceQueue: false, ...options }
 
-            if (options.prev?.options?.capture) {
-                await cbEveryCtx(options.prev?.ref)
+            const idleCtxQueue = idleForCallback.get({ from, inRef: prevMsg?.ref })
+
+            const { ref: prevRef, options: prevOptions } = options.prev || {}
+            const { capture, idle } = prevOptions || {}
+
+            if (messageCtxInComming?.ref && idleCtxQueue && messageToSend.length) {
+                return
+            }
+
+            if (capture && idle && messageToSend.length === 0) {
+                await cbEveryCtx(prevRef)
+                return
+            }
+
+            if (capture && !idle) {
+                await cbEveryCtx(prevRef)
             }
 
             for (const ctxMessage of messageToSend) {
                 if (endFlowFlag) {
-                    return // Si endFlowFlag es verdadero, detener el flujo
+                    break
                 }
 
                 const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
                 await delay(delayMs)
 
                 //TODO el proceso de forzar cola de procsos
-                if (options?.forceQueue) {
-                    const listIdsRefCallbacks = messageToSend.map((i) => i.ref)
-
-                    const listProcessWait = this.queuePrincipal.getIdsCallback(from)
-                    if (!listProcessWait.length) {
-                        this.queuePrincipal.setIdsCallbacks(from, listIdsRefCallbacks)
-                    } else {
-                        const lastMessage = messageToSend[messageToSend.length - 1]
-                        await this.databaseClass.save({ ...lastMessage, from: numberOrId })
-                        if (listProcessWait.includes(lastMessage.ref)) {
-                            this.queuePrincipal.clearQueue(from)
-                        }
-                    }
+                if (options.forceQueue) {
+                    await handleForceQueue(ctxMessage, messageToSend, numberOrId, from)
                 }
 
-                try {
-                    // this.queuePrincipal.clearQueue(from);
-                    await this.queuePrincipal.enqueue(
-                        from,
-                        async () => {
-                            // Usar async en la función pasada a enqueue
-                            await this.sendProviderAndSave(numberOrId, ctxMessage).then(() =>
-                                resolveCbEveryCtx(ctxMessage)
-                            )
-                            logger.log(`[QUEUE_SE_ENVIO]: `, ctxMessage)
-                            // await resolveCbEveryCtx(ctxMessage)
-                        },
-                        ctxMessage.ref
-                    )
-                } catch (error) {
-                    logger.error(`Error al encolar (ID ${ctxMessage.ref}):`, error)
-                    return Promise.reject()
-                    // Puedes considerar manejar el error aquí o rechazar la promesa
-                    // Pasada a resolveCbEveryCtx con el error correspondiente.
+                await enqueueMsg(numberOrId, ctxMessage, from)
+            }
+        }
+
+        // Se han extraído algunas funcionalidades en nuevas funciones para mejorar la legibilidad
+        const handleForceQueue = async (_, messageToSend, numberOrId, from) => {
+            const listIdsRefCallbacks = messageToSend.map((i) => i.ref)
+            const listProcessWait = this.queuePrincipal.getIdsCallback(from)
+
+            if (!listProcessWait.length) {
+                this.queuePrincipal.setIdsCallbacks(from, listIdsRefCallbacks)
+            } else {
+                const lastMessage = messageToSend[messageToSend.length - 1]
+                await this.databaseClass.save({ ...lastMessage, from: numberOrId })
+
+                if (listProcessWait.includes(lastMessage.ref)) {
+                    this.queuePrincipal.clearQueue(from)
                 }
+            }
+        }
+
+        const enqueueMsg = async (numberOrId, ctxMessage, from) => {
+            try {
+                await this.queuePrincipal.enqueue(
+                    from,
+                    async () => {
+                        await this.sendProviderAndSave(numberOrId, ctxMessage)
+                            .then(() => resolveCbEveryCtx(ctxMessage))
+                            .catch((error) => {
+                                logger.error(`Error en sendProviderAndSave (ID ${ctxMessage.ref}):`, error)
+                                throw error
+                            })
+
+                        logger.log(`[QUEUE_SE_ENVIO]: `, ctxMessage)
+                    },
+                    ctxMessage.ref
+                )
+            } catch (error) {
+                logger.error(`Error al encolar (ID ${ctxMessage.ref}):`, error)
+                throw error
             }
         }
 
         const continueFlow = async (initRef = undefined) => {
             const currentPrev = await this.databaseClass.getPrevByNumber(from)
-            let nextFlow = (await this.flowClass.find(refToContinue?.ref, true)) ?? []
+
+            let nextFlow = this.flowClass.find(refToContinue?.ref, true) || []
             if (initRef && !initRef?.idleFallBack) {
-                nextFlow = (await this.flowClass.find(initRef?.ref, true)) ?? []
+                nextFlow = this.flowClass.find(initRef?.ref, true) || []
             }
-            const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize)
+
+            const getContinueIndex = nextFlow.findIndex((msg) => msg.refSerialize === currentPrev?.refSerialize)
+            const indexToContinue = getContinueIndex !== -1 ? getContinueIndex : 0
+            const filterNextFlow = nextFlow
+                .slice(indexToContinue)
+                .filter((i) => i.refSerialize !== currentPrev?.refSerialize)
+
+            // const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize);
             const isContinueFlow = filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)
 
             if (!isContinueFlow) {
@@ -267,6 +306,10 @@ class CoreClass extends EventEmitter {
                 if (nextChildMessages?.length)
                     return exportFunctionsSend(() => sendFlow(nextChildMessages, from, { prev: undefined }))
 
+                return exportFunctionsSend(() => sendFlow(filterNextFlow, from, { prev: undefined }))
+            }
+
+            if (initRef && !initRef?.idleFallBack) {
                 return exportFunctionsSend(() => sendFlow(filterNextFlow, from, { prev: undefined }))
             }
         }
@@ -315,13 +358,10 @@ class CoreClass extends EventEmitter {
                     const msgParse = this.flowClass.findSerializeByRef(msg?.ref)
 
                     const ctxMessage = { ...msgParse, ...msg }
-
-                    // Enviar el mensaje al proveedor y guardarlo
                     await this.sendProviderAndSave(from, ctxMessage).then(() => promises.push(ctxMessage))
                 }
 
-                await endFlow(flag)(promises)
-
+                await endFlowToGotoFlow(flag)(promises, { fromGotoFlow: true, ...{ end: endFlowFlag } })
                 return
             }
 
@@ -376,14 +416,19 @@ class CoreClass extends EventEmitter {
                 printer(
                     `[ATENCION IDLE]: La función "idle" no tendrá efecto a menos que habilites la opción "capture:true". Por favor, asegúrate de configurar "capture:true" o elimina la función "idle"`
                 )
-            }
-            if (ctxMessage?.options?.idle) {
-                await cbEveryCtx(ctxMessage?.ref, { ...options, startIdleMs: ctxMessage?.options?.idle })
                 return
+            }
+
+            // const endFlowState = state.getMyState() && state.get('__end_flow__')
+            // if(endFlowState) return
+
+            if (ctxMessage?.options?.idle) {
+                const run = await cbEveryCtx(ctxMessage?.ref, { ...options, startIdleMs: ctxMessage?.options?.idle })
+                return run
             }
             if (!ctxMessage?.options?.capture) {
-                await cbEveryCtx(ctxMessage?.ref, options)
-                return
+                const run = await cbEveryCtx(ctxMessage?.ref, options)
+                return run
             }
         }
 
@@ -414,7 +459,7 @@ class CoreClass extends EventEmitter {
                 inRef,
                 fallBack: fallBack(flags),
                 flowDynamic: flowDynamic(flags, inRef, options),
-                endFlow: endFlow(flags),
+                endFlow: endFlow(flags, inRef),
                 gotoFlow: gotoFlow(flags),
             }
 
@@ -444,15 +489,16 @@ class CoreClass extends EventEmitter {
                     inRef,
                     timeInSeconds: options.startIdleMs / 1000,
                     cb: async (opts) => {
-                        endFlowFlag = false
-                        await runContext(true, { idleFallBack: opts.next, ref: opts.inRef, body: opts.body })
+                        if (opts?.next) {
+                            await runContext(true, { idleFallBack: opts.next, ref: opts.inRef, body: opts.body })
+                        }
                     },
                 })
                 return
             }
 
             await runContext()
-            return
+            return { ...flags }
         }
 
         const exportFunctionsSend = async (cb = () => Promise.resolve()) => {
@@ -526,6 +572,7 @@ class CoreClass extends EventEmitter {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.TEMPLATE) || []
             }
         }
+
         return exportFunctionsSend(() => sendFlow(msgToSend, from, { forceQueue: true }))
     }
 

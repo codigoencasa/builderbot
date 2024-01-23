@@ -4,7 +4,7 @@
     "description": "",
     "main": "app.js",
     "scripts": {
-        "prestart": "npx eslint .",
+        "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-baileys-memory",
         "start": "node app.js"
     },

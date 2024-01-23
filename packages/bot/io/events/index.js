@@ -15,7 +15,7 @@ const LIST_ALL = {
     VOICE_NOTE: eventVoiceNote(),
     ACTION: eventAction(),
     ORDER: eventOrder(),
-    TEMPLATE: eventTemplate()
+    TEMPLATE: eventTemplate(),
 }
 
 const LIST_REGEX = {
@@ -24,7 +24,7 @@ const LIST_REGEX = {
     REGEX_EVENT_MEDIA,
     REGEX_EVENT_VOICE_NOTE,
     REGEX_EVENT_ORDER,
-    REGEX_EVENT_TEMPLATE
+    REGEX_EVENT_TEMPLATE,
 }
 
 module.exports = { LIST_ALL, LIST_REGEX }
