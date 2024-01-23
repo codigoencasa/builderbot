@@ -26,24 +26,24 @@ class MyslAdapter {
     }
 
     getPrevByNumber = async (from) => {
-        if (this.db._closing) await this.init() 
+        if (this.db._closing) await this.init()
         return await new Promise((resolve, reject) => {
-            const sql = `SELECT * FROM history WHERE phone='${from}' ORDER BY id DESC`;
+            const sql = `SELECT * FROM history WHERE phone='${from}' ORDER BY id DESC`
             this.db.query(sql, (error, rows) => {
                 if (error) {
-                    reject(error);
+                    reject(error)
                 }
 
                 if (rows.length) {
-                    const [row] = rows;
-                    row.options = JSON.parse(row.options);
-                    resolve(row);
+                    const [row] = rows
+                    row.options = JSON.parse(row.options)
+                    resolve(row)
                 }
 
                 if (!rows.length) {
-                    resolve(null);
+                    resolve(null)
                 }
-            });
+            })
         })
     }
 
