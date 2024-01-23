@@ -1,2 +1,2 @@
-import { BaileysProvider } from '@bot-whatsapp/baileys'
+import { BaileysProvider } from '@bot-whatsapp/provider-baileys'
 export { BaileysProvider }

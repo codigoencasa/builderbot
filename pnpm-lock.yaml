@@ -256,8 +256,8 @@ importers:
     packages/create-bot-whatsapp:
         dependencies:
             '@bot-whatsapp/cli':
-                specifier: workspace:*
-                version: link:../cli
+                specifier: ^0.1.1-alpha.0+4cbee15
+                version: 0.1.37
         devDependencies:
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
@@ -485,15 +485,15 @@ importers:
 
     packages/provider:
         dependencies:
-            '@bot-whatsapp/baileys':
-                specifier: workspace:*
-                version: link:../provider-bailey
             '@bot-whatsapp/bot':
+                specifier: ^0.1.1-alpha.0+4cbee15
+                version: 0.1.33
+            '@bot-whatsapp/provider-baileys':
                 specifier: workspace:*
-                version: link:../bot
-            '@bot-whatsapp/twilio':
-                specifier: workspace:*
-                version: link:../provider-twilio
+                version: link:../provider-baileys
+            '@bot-whatsapp/provider-twilio':
+                specifier: ^0.1.1-alpha.0+4cbee15
+                version: 0.1.1-alpha.0
         devDependencies:
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
@@ -541,7 +541,7 @@ importers:
                 specifier: ^17.0.1
                 version: 17.0.1
 
-    packages/provider-bailey:
+    packages/provider-baileys:
         dependencies:
             '@ffmpeg-installer/ffmpeg':
                 specifier: ^1.1.0
@@ -685,8 +685,8 @@ importers:
                 version: 0.5.2
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: workspace:*
-                version: link:../bot
+                specifier: ^0.1.1-alpha.0+4cbee15
+                version: 0.1.33
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
                 version: 23.0.7(rollup@4.9.5)
@@ -746,8 +746,8 @@ importers:
                 version: 5.0.21(typescript@5.3.3)
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: workspace:*
-                version: link:../bot
+                specifier: ^0.1.1-alpha.0+4cbee15
+                version: 0.1.33
             '@rollup/plugin-commonjs':
                 specifier: ^25.0.7
                 version: 25.0.7(rollup@4.9.5)
@@ -789,8 +789,8 @@ importers:
                 version: 1.23.0
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: workspace:*
-                version: link:../bot
+                specifier: ^0.1.1-alpha.0+4cbee15
+                version: 0.1.33
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
                 version: 23.0.7(rollup@4.9.5)
@@ -835,8 +835,8 @@ importers:
                 version: 1.28.4(typescript@5.3.3)
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: workspace:*
-                version: link:../bot
+                specifier: ^0.1.1-alpha.0+4cbee15
+                version: 0.1.33
             '@rollup/plugin-commonjs':
                 specifier: ^25.0.7
                 version: 25.0.7(rollup@4.9.5)
@@ -1599,6 +1599,29 @@ packages:
             }
         dependencies:
             dotenv: 16.3.1
+
+    /@bot-whatsapp/cli@0.1.37:
+        resolution:
+            {
+                integrity: sha512-H6/AE4tkLEGCUzVdyxpnnQ55HeTwB2aqJBWUAwQZZZNTTWC8bhQTrUASyhnSnT2b07z9XdJKnkstI9SjzFC+aw==,
+            }
+        hasBin: true
+        dependencies:
+            picocolors: 1.0.0
+        dev: false
+
+    /@bot-whatsapp/provider-twilio@0.1.1-alpha.0:
+        resolution:
+            {
+                integrity: sha512-FLlevmC3/NAJhA9CPlEQBSJQ0TCWCl9/7jNycnZV+ibTUNuaSm+nAgp1aC6+tCl7Ifunn8Pdu/I09Br1UtTx4A==,
+            }
+        dependencies:
+            body-parser: 1.20.2
+            fluent-ffmpeg: 2.1.2
+            mime-types: 2.1.35
+            polka: 0.5.2
+        transitivePeerDependencies:
+            - supports-color
         dev: false
 
     /@clack/core@0.3.3:
@@ -2451,7 +2474,7 @@ packages:
         dependencies:
             '@jridgewell/set-array': 1.1.2
             '@jridgewell/sourcemap-codec': 1.4.15
-            '@jridgewell/trace-mapping': 0.3.20
+            '@jridgewell/trace-mapping': 0.3.21
         dev: true
 
     /@jridgewell/resolve-uri@3.1.1:
@@ -2485,16 +2508,6 @@ packages:
             {
                 integrity: sha512-eF2rxCRulEKXHTRiDrDy6erMYWqNw4LPdQ8UQA4huuxaQsVeRPFl2oM8oDGxMFhJUWZf9McpLtJasDDZb/Bpeg==,
             }
-        dev: true
-
-    /@jridgewell/trace-mapping@0.3.20:
-        resolution:
-            {
-                integrity: sha512-R8LcPeWZol2zR8mmH3JeKQ6QRCFb7XgUhV9ZlGhHLGyg4wpPiPZNQOOWhFZhxKw8u//yTbNGI42Bx/3paXEQ+Q==,
-            }
-        dependencies:
-            '@jridgewell/resolve-uri': 3.1.1
-            '@jridgewell/sourcemap-codec': 1.4.15
         dev: true
 
     /@jridgewell/trace-mapping@0.3.21:
@@ -17409,7 +17422,7 @@ packages:
             }
         engines: { node: '>=10.12.0' }
         dependencies:
-            '@jridgewell/trace-mapping': 0.3.20
+            '@jridgewell/trace-mapping': 0.3.21
             '@types/istanbul-lib-coverage': 2.0.5
             convert-source-map: 2.0.0
         dev: true

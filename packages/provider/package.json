@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/provider",
-    "version": "0.1.0-alpha.18",
+    "version": "0.1.1-alpha.0+4cbee15",
     "description": "Esto es el conector a Twilio, Meta, etc...",
     "keywords": [],
     "author": "",
@@ -20,42 +20,35 @@
         "test": "__tests__"
     },
     "dependencies": {
-        "@bot-whatsapp/baileys": "workspace:*",
-        "@bot-whatsapp/bot": "workspace:*",
-        "@bot-whatsapp/twilio": "workspace:*"
+        "@bot-whatsapp/bot": "^0.1.1-alpha.0+4cbee15",
+        "@bot-whatsapp/provider-baileys": "workspace:*",
+        "@bot-whatsapp/provider-twilio": "^0.1.1-alpha.0+4cbee15"
     },
     "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./lib/index.cjs"
+        },
         "./mock": {
-            "import": {
-                "default": "./dist/memory.mjs"
-            },
-            "require": {
-                "default": "./dist/memory.cjs"
-            }
+            "types": "./dist/memory.d.ts",
+            "import": "./dist/memory.mjs",
+            "require": "./dist/memory.cjs"
         },
         "./memory": {
-            "import": {
-                "default": "./dist/memory.mjs"
-            },
-            "require": {
-                "default": "./dist/memory.cjs"
-            }
+            "types": "./dist/memory.d.ts",
+            "import": "./dist/memory.mjs",
+            "require": "./dist/memory.cjs"
         },
         "./baileys": {
-            "import": {
-                "default": "./dist/baileys.mjs"
-            },
-            "require": {
-                "default": "./dist/baileys.cjs"
-            }
+            "types": "./dist/baileys.d.ts",
+            "import": "./dist/baileys.mjs",
+            "require": "./dist/baileys.cjs"
         },
         "./twilio": {
-            "import": {
-                "default": "./dist/twilio.mjs"
-            },
-            "require": {
-                "default": "./dist/twilio.cjs"
-            }
+            "types": "./dist/twilio.d.ts",
+            "import": "./dist/twilio.mjs",
+            "require": "./dist/twilio.cjs"
         }
     },
     "repository": {
@@ -78,5 +71,6 @@
         "rimraf": "^5.0.5",
         "rollup-plugin-typescript2": "^0.36.0",
         "sinon": "^17.0.1"
-    }
+    },
+    "gitHead": "4cbee15085bc6664a85f02311d7c0b98377af1fa"
 }
