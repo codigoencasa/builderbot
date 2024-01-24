@@ -1,2 +1,2 @@
-import { TwilioProvider } from '@bot-whatsapp/twilio'
+import { TwilioProvider } from '@bot-whatsapp/provider-twilio'
 export { TwilioProvider }

@@ -28,7 +28,6 @@ export class DialogFlowContext {
         }
 
         const rawJson = readFileSync(GOOGLE_ACCOUNT_PATH, 'utf-8')
-        console.log('rawJson--->', rawJson)
         return JSON.parse(rawJson) as DialogFlowCredentials
     }
 

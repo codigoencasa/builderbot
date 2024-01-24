@@ -14,10 +14,10 @@ export default {
     ],
     plugins: [
         json(),
-        commonjs(),
         nodeResolve({
             resolveOnly: (module) => !/ffmpeg|@wppconnect|@bot-whatsapp\/bot|sharp/i.test(module),
         }),
+        commonjs(),
         typescript(),
     ],
 }

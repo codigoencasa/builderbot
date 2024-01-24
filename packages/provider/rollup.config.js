@@ -20,10 +20,10 @@ export default {
     ],
     plugins: [
         json(),
-        commonjs(),
         nodeResolve({
             resolveOnly: (module) => !/ffmpeg|baileys|@bot-whatsapp|sharp/i.test(module),
         }),
+        commonjs(),
         typescript(),
     ],
 }

@@ -20,9 +20,9 @@
         "test": "__tests__"
     },
     "dependencies": {
-        "@bot-whatsapp/bot": "^0.1.1-alpha.1+11f7eab",
+        "@bot-whatsapp/bot": "workspace:*",
         "@bot-whatsapp/provider-baileys": "workspace:*",
-        "@bot-whatsapp/provider-twilio": "^0.1.1-alpha.1+11f7eab"
+        "@bot-whatsapp/provider-twilio": "workspace:*"
     },
     "exports": {
         ".": {
