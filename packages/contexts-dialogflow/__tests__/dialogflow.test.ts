@@ -1,4 +1,5 @@
 import { ProviderClass } from '@bot-whatsapp/bot'
+import * as dialogflow from '@google-cloud/dialogflow'
 import fs from 'fs'
 import proxyquire from 'proxyquire'
 import { stub, spy } from 'sinon'
@@ -63,6 +64,21 @@ test('init - should call initializeDialogFlowClient if credentials are available
     dialogFlowContext.init()
     assert.equal(initializeDialogFlowClientStub.called, true)
     assert.equal(initializeDialogFlowClientStub.calledWith(credentials), true)
+})
+
+test('initializeDialogFlowClient should set projectId, configuration, and sessionClient', () => {
+    const dialogFlowContext = new DialogFlowContext(mockDatabase, mockProvider, optionsDX)
+    const credentials = {
+        project_id: 'test_project',
+        private_key: 'private_key',
+        client_email: 'client_email',
+    }
+    dialogFlowContext.initializeDialogFlowClient(credentials)
+    assert.is(dialogFlowContext.projectId, credentials.project_id)
+    assert.equal(dialogFlowContext.configuration, {
+        credentials: { private_key: 'private_key', client_email: 'client_email' },
+    })
+    assert.instance(dialogFlowContext.sessionClient, dialogflow.SessionsClient)
 })
 
 test.run()

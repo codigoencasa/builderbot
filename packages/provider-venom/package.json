@@ -28,7 +28,7 @@
     },
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
     "devDependencies": {
-        "@bot-whatsapp/bot": "^0.1.1-alpha.1+11f7eab",
+        "@bot-whatsapp/bot": "workspace:*",
         "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
