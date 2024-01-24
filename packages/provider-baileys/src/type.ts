@@ -3,6 +3,7 @@ export interface GlobalVendorArgs {
     gifPlayback: boolean
     usePairingCode: boolean
     phoneNumber: string | null
+    useBaileysStore: boolean
 }
 
 export interface ButtonOption {
