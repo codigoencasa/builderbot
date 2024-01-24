@@ -14,14 +14,15 @@ suiteCase(`Prevenir enviar mensaje luego de inactividad (2seg)`, async ({ databa
     const flujoPrincipal = addKeyword(['hola'])
         .addAnswer(
             'debes de responder antes de que transcurran 2 segundos (2000)',
-            { capture: true, idle: 2000 },
+            { capture: true, idle: 2000, ref: '000000000000000000000000' },
             async (ctx, { gotoFlow, inRef }) => {
                 if (ctx?.idleFallBack) {
+                    console.log('me executo ????')
                     return gotoFlow(flujoFinal)
                 }
             }
         )
-        .addAnswer('gracias!')
+        .addAnswer('gracias!', { ref: '1111111111111' })
 
     await createBot({
         database,
@@ -87,7 +88,7 @@ suiteCase(`Enviar mensajes con ambos casos de idle`, async ({ database, provider
             await flowDynamic(`Empezemos de nuevo.`)
             await flowDynamic(`Cual es el numero de orden? tienes dos segundos para responder...`)
         })
-        .addAction({ capture: true, idle: 2000, ref: '🙉🙉🙉🙉🙉🙉🙉🙉' }, async (ctx, { flowDynamic }) => {
+        .addAction({ capture: true, idle: 2100, ref: '🙉🙉🙉🙉🙉🙉🙉🙉' }, async (ctx, { flowDynamic }) => {
             if (ctx?.idleFallBack) {
                 console.log(`[seundo desvio]`)
                 console.log(`[idleFallBack]:`, ctx)
@@ -125,7 +126,7 @@ suiteCase(`Enviar mensajes con ambos casos de idle`, async ({ database, provider
         body: 'el numero es 444',
     })
 
-    await delay(10000)
+    await delay(15000)
 
     const getHistory = database.listHistory.map((i) => i.answer)
     assert.is('Hola tienes 2 segundos para responder si no te pedire de nuevo otro dato', getHistory[0])
