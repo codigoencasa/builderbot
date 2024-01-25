@@ -52,3 +52,7 @@ yarn-error.log
 **.node-persist**
 **_IGNORE_**
 # end managed
+
+/packages/provider-wppconnect/tokens
+/packages/provider-wppconnect/ruta-de-prueba
+

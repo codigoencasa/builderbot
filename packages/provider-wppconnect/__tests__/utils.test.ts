@@ -4,7 +4,6 @@ import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
 import { Response } from '../src/types'
-import { WppConnectCleanNumber, WppConnectValidNumber, notMatches } from '../src/utils'
 
 const fsMock = {
     writeFile: stub(),
@@ -13,13 +12,12 @@ const fsMock = {
 const utilsMock = {
     cleanImage: stub().resolves(),
 }
-const writeFilePromiseStub = stub().resolves(true)
 
-const { writeFilePromise, WppConnectGenerateImage } = proxyquire<typeof import('../src/utils')>('../src/utils', {
-    '@bot-whatsapp/bot': { utils: utilsMock },
-    fs: fsMock,
-    writeFilePromise: writeFilePromiseStub(),
-})
+const { writeFilePromise, WppConnectGenerateImage, WppConnectCleanNumber, WppConnectValidNumber, notMatches } =
+    proxyquire<typeof import('../src/utils')>('../src/utils', {
+        '@bot-whatsapp/bot': { utils: utilsMock },
+        fs: fsMock,
+    })
 
 test.after.each(() => {
     fsMock.writeFile.resetHistory()
@@ -79,6 +77,19 @@ test('writeFilePromise - should resolve to true on success', async () => {
     }
     const result = await writeFilePromise(pathQr, response)
     assert.equal(result, true)
+})
+
+test('should reject with error message on file write error', async () => {
+    const matches: RegExpMatchArray | null = ['match1', 'match2', 'match3']
+    const response: Response = {
+        type: matches[1],
+        data: Buffer.from(matches[2], 'base64'),
+    }
+    try {
+        await writeFilePromise('', response)
+    } catch (error) {
+        assert.equal(error, 'ERROR_QR_GENERATE')
+    }
 })
 
 test('WppConnectGenerateImage - should handle an invalid base64 string and return an error', async () => {

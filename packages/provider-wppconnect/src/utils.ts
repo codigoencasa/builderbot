@@ -16,7 +16,7 @@ const notMatches = (matches: RegExpMatchArray | null): boolean => {
 const writeFilePromise = (pathQr: string, response: Response): Promise<boolean> => {
     return new Promise((resolve, reject) => {
         writeFile(pathQr, response.data, 'binary', (err) => {
-            if (err != null) reject('ERROR_QR_GENERATE')
+            if (err !== null) reject('ERROR_QR_GENERATE')
             resolve(true)
         })
     })
