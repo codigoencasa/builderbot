@@ -13,6 +13,7 @@ defaultLogger.transports.forEach((t) => (t.silent = true)) //<==
 class WPPConnectProviderClass extends ProviderClass {
     globalVendorArgs = { name: 'bot' }
     vendor: Whatsapp
+    wppConnectProvider: any
 
     constructor(args: { name: string }) {
         super()
@@ -46,7 +47,6 @@ class WPPConnectProviderClass extends ProviderClass {
                     args: ['--no-sandbox'],
                 },
             })
-
             this.vendor = session
             this.emit('ready', true)
             this.initBusEvents()
