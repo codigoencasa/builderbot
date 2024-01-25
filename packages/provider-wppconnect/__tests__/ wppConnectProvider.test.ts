@@ -1,7 +1,7 @@
+import proxyquire from 'proxyquire'
+import { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { stub } from 'sinon'
-import proxyquire from 'proxyquire'
 
 const wppconnectMock = {
     create: stub().resolves({ session: true }),

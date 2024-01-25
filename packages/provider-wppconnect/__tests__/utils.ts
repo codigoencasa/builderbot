@@ -1,9 +1,10 @@
+import proxyquire from 'proxyquire'
+import { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { stub } from 'sinon'
-import proxyquire from 'proxyquire'
-import { WppConnectCleanNumber, WppConnectValidNumber, notMatches } from '../src/utils'
+
 import { Response } from '../src/types'
+import { WppConnectCleanNumber, WppConnectValidNumber, notMatches } from '../src/utils'
 
 const fsMock = {
     writeFile: stub(),
