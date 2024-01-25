@@ -15,6 +15,7 @@ const metaProvider = new MetaProvider({
     numberId: 'your_number_id',
     verifyToken: 'your_verify_token',
     version: 'v16.0',
+    port: 3999,
 })
 
 const mockMessageBody = {
@@ -528,9 +529,15 @@ test('sendLocation should call sendMessageMeta with the correct parameters', asy
     sendMessageMetaStub.restore()
 })
 
-// test(`server instance to extend meta endpoint`, async () => {
-//     const server = metaProvider.http.server.get('/', async (req, res) => {})
-// })
+test('server instance to extend meta endpoint with middleware', async () => {
+    stub(metaProvider, 'sendMessageMeta').resolves({})
+    metaProvider.http.server.get('/your-route-custom', (_, res) => {
+        res.end('Hello World')
+    })
+    const response = await axios(`http://localhost:3999/your-route-custom`)
+    assert.equal(response.status, 200)
+    assert.equal(response.data, 'Hello World')
+})
 
 test.after(async () => {
     await metaProvider.http.stop()

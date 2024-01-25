@@ -47,6 +47,14 @@ test.skip('TwilioProvider: sendMessage sends a message without media', async () 
     })
 })
 
-// Aquí puedes agregar más pruebas para los otros métodos y casos de uso
+// test('server instance to extend meta endpoint with middleware', async () => {
+//     stub(metaProvider, 'sendMessageMeta').resolves({})
+//     metaProvider.http.server.get('/your-route-custom', (_, res) => {
+//         res.end('Hello World')
+//     })
+//     const response = await axios(`http://localhost:3999/your-route-custom`)
+//     assert.equal(response.status, 200)
+//     assert.equal(response.data, 'Hello World')
+// });
 
 test.run()
