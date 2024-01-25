@@ -528,8 +528,12 @@ test('sendLocation should call sendMessageMeta with the correct parameters', asy
     sendMessageMetaStub.restore()
 })
 
+// test(`server instance to extend meta endpoint`, async () => {
+//     const server = metaProvider.http.server.get('/', async (req, res) => {})
+// })
+
 test.after(async () => {
-    await metaProvider.metHook.stop()
+    await metaProvider.http.stop()
 })
 
 test.run()

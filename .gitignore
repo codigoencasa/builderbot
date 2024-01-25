@@ -4,6 +4,7 @@
 /packages/*/starters
 /packages/*/node_modules
 /packages/*/dist
+/packages/*/*/tokens/*
 /packages/*/docs/dist
 /packages/provider/src/venom/tokens
 session.json
@@ -52,3 +53,5 @@ yarn-error.log
 **.node-persist**
 **_IGNORE_**
 # end managed
+**/tokens/**
+.nx/*

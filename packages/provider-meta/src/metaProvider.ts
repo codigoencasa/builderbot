@@ -13,7 +13,7 @@ const URL = `https://graph.facebook.com`
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000
 
 class MetaProvider extends ProviderClass {
-    metHook: MetaWebHookServer | undefined
+    http: MetaWebHookServer | undefined
     jwtToken: string | undefined
     numberId: string | undefined
     version: string = 'v16.0'
@@ -24,13 +24,13 @@ class MetaProvider extends ProviderClass {
         this.jwtToken = jwtToken
         this.numberId = numberId
         this.version = version
-        this.metHook = new MetaWebHookServer(jwtToken, numberId, version, verifyToken, port)
-        this.metHook.start()
+        this.http = new MetaWebHookServer(jwtToken, numberId, version, verifyToken, port)
+        this.http.start()
 
         const listEvents = this.busEvents()
 
         for (const { event, func } of listEvents) {
-            this.metHook.on(event, func)
+            this.http.on(event, func)
         }
         this.queue = new Queue({
             concurrent: 1, // Cantidad de tareas que se ejecutarán en paralelo

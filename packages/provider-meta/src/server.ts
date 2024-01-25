@@ -7,8 +7,8 @@ import { Message } from './types'
 import { processIncomingMessage } from './utils'
 
 class MetaWebHookServer extends EventEmitter {
-    public metaServer: Polka
-    private metaPort: number
+    public server: Polka
+    public metaPort: number
     private token: string
     private jwtToken: string
     private numberId: string
@@ -22,7 +22,7 @@ class MetaWebHookServer extends EventEmitter {
         this.jwtToken = jwtToken
         this.numberId = numberId
         this.version = version
-        this.metaServer = this.buildHTTPServer()
+        this.server = this.buildHTTPServer()
         this.messageQueue = new Queue({
             concurrent: 1,
             interval: 50,
@@ -36,7 +36,7 @@ class MetaWebHookServer extends EventEmitter {
      * @param {*} req
      * @param {*} res
      */
-    incomingMsg = async (req: any, res: any) => {
+    protected incomingMsg = async (req: any, res: any) => {
         const { body } = req
         const { jwtToken, numberId, version } = this
         const messages = body?.entry?.[0]?.changes?.[0]?.value?.messages
@@ -69,7 +69,7 @@ class MetaWebHookServer extends EventEmitter {
         res.end('Messages enqueued')
     }
 
-    processMessage = (message: Message): Promise<void> => {
+    protected processMessage = (message: Message): Promise<void> => {
         return new Promise((resolve, reject) => {
             try {
                 this.emit('message', message)
@@ -86,7 +86,7 @@ class MetaWebHookServer extends EventEmitter {
      * @param {string} token
      * @returns {boolean}
      */
-    tokenIsValid(mode: string, token: string) {
+    protected tokenIsValid(mode: string, token: string) {
         return mode === 'subscribe' && this.token === token
     }
 
@@ -95,7 +95,7 @@ class MetaWebHookServer extends EventEmitter {
      * @param {*} req
      * @param {*} res
      */
-    verifyToken = (req, res) => {
+    protected verifyToken = (req, res) => {
         const { query } = req
         const mode: string = query?.['hub.mode']
         const token: string = query?.['hub.verify_token']
@@ -117,14 +117,14 @@ class MetaWebHookServer extends EventEmitter {
         res.end('Invalid token!')
     }
 
-    emptyCtrl = (_, res) => {
+    protected emptyCtrl = (_, res) => {
         res.end('')
     }
 
     /**
      * Contruir HTTP Server
      */
-    buildHTTPServer() {
+    protected buildHTTPServer() {
         return polka()
             .use(urlencoded({ extended: true }))
             .use(json())
@@ -136,8 +136,8 @@ class MetaWebHookServer extends EventEmitter {
     /**
      * Iniciar el servidor HTTP
      */
-    start() {
-        this.metaServer.listen(this.metaPort, () => {
+    protected start() {
+        this.server.listen(this.metaPort, () => {
             console.log(`[meta]: Agregar esta url "Webhook"`)
             console.log(`[meta]: POST http://localhost:${this.metaPort}/webhook`)
             console.log(`[meta]: Más información en la documentación`)
@@ -147,7 +147,7 @@ class MetaWebHookServer extends EventEmitter {
 
     public stop(): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.metaServer.server.close((err) => {
+            this.server.server.close((err) => {
                 if (err) {
                     reject(err)
                 } else {

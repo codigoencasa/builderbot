@@ -29,7 +29,7 @@ export interface TwilioPayload {
  */
 class TwilioWebHookServer extends EventEmitter {
     public twilioServer: Polka
-    private twilioPort: number
+    public twilioPort: number
 
     constructor(twilioPort: number) {
         super()
@@ -106,7 +106,7 @@ class TwilioWebHookServer extends EventEmitter {
      * Construir HTTP Server
      * @returns Polka instance
      */
-    private buildHTTPServer(): Polka {
+    protected buildHTTPServer(): Polka {
         return polka()
             .use(urlencoded({ extended: true }))
             .use(json())
@@ -117,7 +117,7 @@ class TwilioWebHookServer extends EventEmitter {
     /**
      * Iniciar el servidor HTTP
      */
-    public start(): void {
+    protected start(): void {
         this.twilioServer.listen(this.twilioPort, () => {
             console.log(``)
             console.log(`[Twilio]: Agregar esta url "WHEN A MESSAGE COMES IN"`)
@@ -128,7 +128,7 @@ class TwilioWebHookServer extends EventEmitter {
         this.emit('ready')
     }
 
-    public stop(): Promise<void> {
+    protected stop(): Promise<void> {
         return new Promise((resolve, reject) => {
             this.twilioServer.server.close((err) => {
                 if (err) {
