@@ -86,3 +86,11 @@ export interface Localization {
     name: string
     address: string
 }
+
+export interface MetaProviderOptions {
+    jwtToken: string
+    numberId: string
+    verifyToken: string
+    version: string
+    port?: number
+}

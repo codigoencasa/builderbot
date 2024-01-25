@@ -31,7 +31,13 @@ const logger = new Console({
 })
 
 class BaileysProvider extends ProviderClass {
-    globalVendorArgs: GlobalVendorArgs = { name: `bot`, gifPlayback: false, usePairingCode: false, phoneNumber: null }
+    globalVendorArgs: GlobalVendorArgs = {
+        name: `bot`,
+        gifPlayback: false,
+        usePairingCode: false,
+        phoneNumber: null,
+        useBaileysStore: true,
+    }
     vendor: Vendor<WASocket>
     store?: ReturnType<typeof makeInMemoryStore>
     saveCredsGlobal: (() => Promise<void>) | null = null
@@ -53,14 +59,16 @@ class BaileysProvider extends ProviderClass {
 
         this.saveCredsGlobal = saveCreds
 
-        this.store = makeInMemoryStore({ logger: loggerBaileys })
-        this.store.readFromFile(`${NAME_DIR_SESSION}/baileys_store.json`)
-        setInterval(() => {
-            const path = `${NAME_DIR_SESSION}/baileys_store.json`
-            if (existsSync(NAME_DIR_SESSION)) {
-                this.store.writeToFile(path)
-            }
-        }, 10_000)
+        if (this.globalVendorArgs.useBaileysStore) {
+            this.store = makeInMemoryStore({ logger: loggerBaileys })
+            this.store.readFromFile(`${NAME_DIR_SESSION}/baileys_store.json`)
+            setInterval(() => {
+                const path = `${NAME_DIR_SESSION}/baileys_store.json`
+                if (existsSync(NAME_DIR_SESSION)) {
+                    this.store.writeToFile(path)
+                }
+            }, 10_000)
+        }
 
         try {
             const sock = makeWASocketOther({
@@ -244,7 +252,7 @@ class BaileysProvider extends ProviderClass {
                             const [messageCtx] = message
 
                             const messageOriginalKey = messageCtx?.update?.pollUpdates[0]?.pollUpdateMessageKey
-                            const messageOriginal = await this.store.loadMessage(
+                            const messageOriginal = await this.store?.loadMessage(
                                 messageOriginalKey.remoteJid,
                                 messageOriginalKey.id
                             )

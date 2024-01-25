@@ -1,38 +1,40 @@
 import { utils } from '@bot-whatsapp/bot'
 import { writeFile } from 'fs'
 
+import { Response } from './types'
+
 const WppConnectCleanNumber = (number: string, full: boolean = false): string => {
     number = number.replace('@c.us', '')
     number = full ? `${number}@c.us` : `${number}`
     return number
 }
 
+const notMatches = (matches: RegExpMatchArray | null): boolean => {
+    return !matches || matches.length !== 3
+}
+
+const writeFilePromise = (pathQr: string, response: Response): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+        writeFile(pathQr, response.data, 'binary', (err) => {
+            if (err != null) reject('ERROR_QR_GENERATE')
+            resolve(true)
+        })
+    })
+}
+
 const WppConnectGenerateImage = async (base: string, name: string = 'qr.png'): Promise<void | Error> => {
     const PATH_QR: string = `${process.cwd()}/${name}`
     const matches: RegExpMatchArray | null = base.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
-    if (!matches || matches.length !== 3) {
+
+    if (notMatches(matches)) {
         return new Error('Invalid input string')
     }
-
-    interface Response {
-        type: string
-        data: Buffer
-    }
-
     const response: Response = {
         type: matches[1],
         data: Buffer.from(matches[2], 'base64'),
     }
 
-    const writeFilePromise = (): Promise<boolean> =>
-        new Promise((resolve, reject) => {
-            writeFile(PATH_QR, response.data, 'binary', (err) => {
-                if (err != null) reject('ERROR_QR_GENERATE')
-                resolve(true)
-            })
-        })
-
-    await writeFilePromise()
+    await writeFilePromise(PATH_QR, response)
     await utils.cleanImage(PATH_QR)
 }
 
@@ -42,4 +44,4 @@ const WppConnectValidNumber = (rawNumber: string): boolean => {
     return !exist
 }
 
-export { WppConnectValidNumber, WppConnectGenerateImage, WppConnectCleanNumber }
+export { WppConnectValidNumber, WppConnectGenerateImage, WppConnectCleanNumber, notMatches, writeFilePromise }

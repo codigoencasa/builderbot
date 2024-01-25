@@ -8,7 +8,4 @@ import { DialogFlowCXContext } from './dialogflow-cx.class'
 const createBotDialog = async ({ database, provider }, _options) =>
     new DialogFlowCXContext(database, provider, _options)
 
-module.exports = {
-    createBotDialog,
-    DialogFlowCXContext,
-}
+export { createBotDialog, DialogFlowCXContext }

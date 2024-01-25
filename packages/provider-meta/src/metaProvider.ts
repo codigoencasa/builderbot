@@ -6,19 +6,11 @@ import mime from 'mime-types'
 import Queue from 'queue-promise'
 
 import { MetaWebHookServer } from './server'
-import { Localization, Reaction, TextMessageBody } from './types'
+import { Localization, MetaProviderOptions, Reaction, TextMessageBody } from './types'
 
 const URL = `https://graph.facebook.com`
 
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000
-
-interface MetaProviderOptions {
-    jwtToken: string
-    numberId: string
-    verifyToken: string
-    version: string
-    port?: number
-}
 
 class MetaProvider extends ProviderClass {
     metHook: MetaWebHookServer | undefined
@@ -40,7 +32,6 @@ class MetaProvider extends ProviderClass {
         for (const { event, func } of listEvents) {
             this.metHook.on(event, func)
         }
-
         this.queue = new Queue({
             concurrent: 1, // Cantidad de tareas que se ejecutarán en paralelo
             interval: 100, // Intervalo entre tareas
@@ -187,7 +178,7 @@ class MetaProvider extends ProviderClass {
      * @example await sendMessage('+XXXXXXXXXXX', 'https://dominio.com/imagen.jpg' | 'img/imagen.jpg')
      */
 
-    sendMedia = async (to: string, text = '', mediaInput) => {
+    sendMedia = async (to: string, text = '', mediaInput: string) => {
         const fileDownloaded = await utils.generalDownload(mediaInput)
         const mimeType = mime.lookup(fileDownloaded)
         mediaInput = fileDownloaded
@@ -446,7 +437,7 @@ class MetaProvider extends ProviderClass {
      * @returns
      */
 
-    sendContacts = async (number, contact) => {
+    sendContacts = async (to: string, contact = []) => {
         const parseContacts = contact.map((contact) => ({
             name: {
                 formatted_name: contact.name,
@@ -489,7 +480,7 @@ class MetaProvider extends ProviderClass {
         const body = {
             messaging_product: 'whatsapp',
             recipient_type: 'individual',
-            to: number,
+            to,
             type: 'contacts',
             contacts: parseContacts,
         }
@@ -534,7 +525,7 @@ class MetaProvider extends ProviderClass {
      * @param {*} param2
      * @returns
      */
-    sendMessage = async (number: string, message: string, arg: { options?: any }) => {
+    sendMsg = async (number: string, message: string, arg: { options?: any }) => {
         if (arg?.options?.buttons?.length) return this.sendButtons(number, message, arg?.options.buttons)
         if (arg?.options?.media) return this.sendMedia(number, message, arg?.options.media)
 

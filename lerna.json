@@ -14,10 +14,13 @@
     "packages/provider-meta",
     "packages/provider",
     "packages/provider-bailey",
+    "packages/provider-baileys",
     "packages/provider-twilio",
     "packages/provider-web-whatsapp",
     "packages/provider-wppconnect",
-    "packages/provider-venom"
+    "packages/provider-venom",
+    "packages/contexts-dialogflow",
+    "packages/contexts"
   ],
   "npmClient": "pnpm"
 }
