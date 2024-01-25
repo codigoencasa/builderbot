@@ -1,6 +1,5 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-
 import { MongoAdapter } from '../src/index'
 
 const credentials = {

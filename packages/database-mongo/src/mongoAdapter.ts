@@ -3,7 +3,7 @@ import { MongoClient, Db } from 'mongodb'
 import { History, MongoAdapterCredentials } from './types'
 
 class MongoAdapter {
-    db: Db
+    db: Db | null = null
     listHistory: History[] = []
     credentials: MongoAdapterCredentials = { dbUri: null, dbName: null }
     constructor(_credentials: MongoAdapterCredentials) {
