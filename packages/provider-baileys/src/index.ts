@@ -78,7 +78,7 @@ class BaileysProvider extends ProviderClass {
                     creds: state.creds,
                     keys: makeCacheableSignalKeyStore(state.keys, loggerBaileys),
                 },
-                browser: ['Chrome (Linux)', '', ''],
+                browser: [ "Ubuntu", "Chrome", "20.0.04" ],
                 syncFullHistory: false,
                 generateHighQualityLinkPreview: true,
                 getMessage: this.getMessage,
