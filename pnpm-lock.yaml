@@ -296,7 +296,7 @@ importers:
     packages/create-bot-whatsapp:
         dependencies:
             '@bot-whatsapp/cli':
-                specifier: ^0.1.1-alpha.1+11f7eab
+                specifier: ^0.1.2-alpha.0
                 version: 0.1.38
         devDependencies:
             '@rollup/plugin-commonjs':
@@ -532,14 +532,14 @@ importers:
     packages/provider:
         dependencies:
             '@bot-whatsapp/bot':
-                specifier: 0.1.1-alpha.1+11f7eab
-                version: 0.1.1-alpha.1
+                specifier: ^0.1.2-alpha.0
+                version: 0.1.33
             '@bot-whatsapp/provider-baileys':
-                specifier: 0.1.0-alpha.18
+                specifier: ^0.1.2-alpha.0
                 version: link:../provider-baileys
             '@bot-whatsapp/provider-twilio':
-                specifier: 0.1.1-alpha.1+11f7eab
-                version: 0.1.1-alpha.1
+                specifier: ^0.1.2-alpha.0
+                version: link:../provider-twilio
         devDependencies:
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
@@ -600,8 +600,8 @@ importers:
                 version: 2.1.2
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: 0.1.1-alpha.1+11f7eab
-                version: 0.1.1-alpha.1
+                specifier: ^0.1.2-alpha.0
+                version: 0.1.33
             '@hapi/boom':
                 specifier: ^10.0.1
                 version: 10.0.1
@@ -670,8 +670,8 @@ importers:
                 version: 2.2.1
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: 0.1.1-alpha.1+11f7eab
-                version: 0.1.1-alpha.1
+                specifier: ^0.1.2-alpha.0
+                version: 0.1.33
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
                 version: 23.0.7(rollup@4.9.5)
@@ -734,8 +734,8 @@ importers:
                 version: 0.5.2
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: 0.1.1-alpha.1+11f7eab
-                version: 0.1.1-alpha.1
+                specifier: ^0.1.2-alpha.0
+                version: 0.1.33
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
                 version: 23.0.7(rollup@4.9.5)
@@ -795,8 +795,8 @@ importers:
                 version: 5.0.21(typescript@5.3.3)
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: 0.1.1-alpha.1+11f7eab
-                version: 0.1.1-alpha.1
+                specifier: ^0.1.2-alpha.0
+                version: 0.1.33
             '@rollup/plugin-commonjs':
                 specifier: ^25.0.7
                 version: 25.0.7(rollup@4.9.5)
@@ -838,8 +838,8 @@ importers:
                 version: 1.23.0
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: 0.1.1-alpha.1+11f7eab
-                version: 0.1.1-alpha.1
+                specifier: ^0.1.2-alpha.0
+                version: 0.1.33
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
                 version: 23.0.7(rollup@4.9.5)
@@ -884,8 +884,8 @@ importers:
                 version: 1.28.4(puppeteer-core@21.9.0)(typescript@5.3.3)
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: 0.1.1-alpha.1+11f7eab
-                version: 0.1.1-alpha.1
+                specifier: ^0.1.2-alpha.0
+                version: 0.1.33
             '@rollup/plugin-commonjs':
                 specifier: ^25.0.7
                 version: 25.0.7(rollup@4.9.5)
@@ -1656,21 +1656,6 @@ packages:
             }
         dev: true
 
-    /@bot-whatsapp/bot@0.1.1-alpha.1:
-        resolution:
-            {
-                integrity: sha512-+2e7ljKVA/mibvLfnOarVGRSNp0KGtqN2IwQp3qlo4Gcpc0tLw/uZ1WK/3WqTUd5r1ph1V9bfYgMRBSa9yyCOA==,
-            }
-        dependencies:
-            '@ffmpeg-installer/ffmpeg': 1.1.0
-            fluent-ffmpeg: 2.1.2
-            follow-redirects: 1.15.5
-            mime-types: 2.1.35
-            picocolors: 1.0.0
-            sharp: 0.33.2
-        transitivePeerDependencies:
-            - debug
-
     /@bot-whatsapp/bot@0.1.33:
         resolution:
             {
@@ -1678,7 +1663,6 @@ packages:
             }
         dependencies:
             dotenv: 16.3.1
-        dev: false
 
     /@bot-whatsapp/cli@0.1.38:
         resolution:
@@ -1688,20 +1672,6 @@ packages:
         hasBin: true
         dependencies:
             picocolors: 1.0.0
-        dev: false
-
-    /@bot-whatsapp/provider-twilio@0.1.1-alpha.1:
-        resolution:
-            {
-                integrity: sha512-fMaVOzoBQ+qrlhAMMnBNODSQcdknLk7jqBPhWNYqohGrbCAQQDxkbJtv7ughQEZMOqXAtmWLSsvP4bvTXv6RrQ==,
-            }
-        dependencies:
-            body-parser: 1.20.2
-            fluent-ffmpeg: 2.1.2
-            mime-types: 2.1.35
-            polka: 0.5.2
-        transitivePeerDependencies:
-            - supports-color
         dev: false
 
     /@clack/core@0.3.3:
@@ -2069,6 +2039,7 @@ packages:
         cpu: [arm64]
         os: [darwin]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@ffmpeg-installer/darwin-x64@4.1.0:
@@ -2079,6 +2050,7 @@ packages:
         cpu: [x64]
         os: [darwin]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@ffmpeg-installer/ffmpeg@1.1.0:
@@ -2095,6 +2067,7 @@ packages:
             '@ffmpeg-installer/linux-x64': 4.1.0
             '@ffmpeg-installer/win32-ia32': 4.1.0
             '@ffmpeg-installer/win32-x64': 4.1.0
+        dev: false
 
     /@ffmpeg-installer/linux-arm64@4.1.4:
         resolution:
@@ -2104,6 +2077,7 @@ packages:
         cpu: [arm64]
         os: [linux]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@ffmpeg-installer/linux-arm@4.1.3:
@@ -2114,6 +2088,7 @@ packages:
         cpu: [arm]
         os: [linux]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@ffmpeg-installer/linux-ia32@4.1.0:
@@ -2124,6 +2099,7 @@ packages:
         cpu: [ia32]
         os: [linux]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@ffmpeg-installer/linux-x64@4.1.0:
@@ -2134,6 +2110,7 @@ packages:
         cpu: [x64]
         os: [linux]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@ffmpeg-installer/win32-ia32@4.1.0:
@@ -2144,6 +2121,7 @@ packages:
         cpu: [ia32]
         os: [win32]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@ffmpeg-installer/win32-x64@4.1.0:
@@ -2154,6 +2132,7 @@ packages:
         cpu: [x64]
         os: [win32]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@gar/promisify@1.1.3:

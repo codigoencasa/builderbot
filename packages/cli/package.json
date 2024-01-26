@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/cli",
-    "version": "0.1.1-alpha.1+11f7eab",
+    "version": "0.1.2-alpha.0",
     "description": "",
     "main": "dist/index.cjs",
     "types": "dist/index.d.ts",
