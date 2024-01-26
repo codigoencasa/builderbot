@@ -1,0 +1,6 @@
+- revisar los packages de context dialogflows (cambiar los nombres para evitar confusion)
+- terminar wrapper `database`
+- terminar wrapper `provider`
+- asegurar el covergage 90%
+- cambiar los startes
+- cambiar el CONTRIBUTING.md

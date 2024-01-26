@@ -69,6 +69,7 @@
     "packages/database-json",
     "packages/database-postgres",
     "packages/eslint-plugin-bot-whatsapp-ts",
+    "packages/provider",
     "packages/provider-meta",
     "packages/provider-bailey",
     "packages/provider-baileys",

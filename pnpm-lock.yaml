@@ -216,8 +216,8 @@ importers:
     packages/contexts-dialogflow:
         dependencies:
             '@bot-whatsapp/bot':
-                specifier: '*'
-                version: 0.1.33
+                specifier: workspace:*
+                version: link:../bot
             '@google-cloud/dialogflow':
                 specifier: ^6.2.0
                 version: 6.3.0
@@ -256,8 +256,8 @@ importers:
     packages/contexts-dialogflow-cx:
         dependencies:
             '@bot-whatsapp/bot':
-                specifier: '*'
-                version: 0.1.33
+                specifier: workspace:*
+                version: link:../bot
             '@google-cloud/dialogflow-cx':
                 specifier: ^4.3.1
                 version: 4.3.1
@@ -532,8 +532,8 @@ importers:
     packages/provider:
         dependencies:
             '@bot-whatsapp/bot':
-                specifier: ^0.1.3-alpha.0
-                version: 0.1.33
+                specifier: workspace:*
+                version: link:../bot
             '@bot-whatsapp/provider-baileys':
                 specifier: ^0.1.3-alpha.0
                 version: link:../provider-baileys
@@ -600,8 +600,8 @@ importers:
                 version: 2.1.2
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: ^0.1.3-alpha.0
-                version: 0.1.33
+                specifier: workspace:*
+                version: link:../bot
             '@hapi/boom':
                 specifier: ^10.0.1
                 version: 10.0.1
@@ -670,8 +670,8 @@ importers:
                 version: 2.2.1
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: ^0.1.3-alpha.0
-                version: 0.1.33
+                specifier: workspace:*
+                version: link:../bot
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
                 version: 23.0.7(rollup@4.9.5)
@@ -734,8 +734,8 @@ importers:
                 version: 0.5.2
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: ^0.1.3-alpha.0
-                version: 0.1.33
+                specifier: workspace:*
+                version: link:../bot
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
                 version: 23.0.7(rollup@4.9.5)
@@ -795,8 +795,8 @@ importers:
                 version: 5.0.21(typescript@5.3.3)
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: ^0.1.3-alpha.0
-                version: 0.1.33
+                specifier: workspace:*
+                version: link:../bot
             '@rollup/plugin-commonjs':
                 specifier: ^25.0.7
                 version: 25.0.7(rollup@4.9.5)
@@ -838,8 +838,8 @@ importers:
                 version: 1.23.0
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: ^0.1.3-alpha.0
-                version: 0.1.33
+                specifier: workspace:*
+                version: link:../bot
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
                 version: 23.0.7(rollup@4.9.5)
@@ -884,8 +884,8 @@ importers:
                 version: 1.28.4(puppeteer-core@21.9.0)(typescript@5.3.3)
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: ^0.1.3-alpha.0
-                version: 0.1.33
+                specifier: workspace:*
+                version: link:../bot
             '@rollup/plugin-commonjs':
                 specifier: ^25.0.7
                 version: 25.0.7(rollup@4.9.5)
@@ -1655,14 +1655,6 @@ packages:
                 integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==,
             }
         dev: true
-
-    /@bot-whatsapp/bot@0.1.33:
-        resolution:
-            {
-                integrity: sha512-PHM4pe0wx8IUipL37O+rcx2a36HMBzgPQt7Sto3EH7Fndqj7bwsmmhKTzAtGDsja4NOlecjz2bh8fjC1aI9Faw==,
-            }
-        dependencies:
-            dotenv: 16.3.1
 
     /@bot-whatsapp/cli@0.1.38:
         resolution:

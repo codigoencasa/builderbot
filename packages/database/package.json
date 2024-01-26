@@ -1,5 +1,5 @@
 {
-    "name": "database-ts",
+    "name": "@bot-whatsapp/database",
     "version": "0.1.0-alpha.0",
     "description": "Esto es el conector a  mysql, pg, mongo",
     "keywords": [],
