@@ -34,6 +34,8 @@
     "create": "node ./packages/create-bot-whatsapp/bin/create.js",
     "dev:debug": "node --inspect ./example-app/app.js",
     "dev": "node ./example-app/app.js",
+    "publish:canary": "npx lerna publish from-package --canary",
+    "publish:version": "npx lerna publish from-package --canary",
     "prepare": "npx husky install",
     "preinstall": "npx only-allow pnpm",
     "release": "standard-version -- --prerelease --global"
