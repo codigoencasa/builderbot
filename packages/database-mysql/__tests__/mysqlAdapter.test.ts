@@ -1,6 +1,7 @@
+import { spy } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { spy } from 'sinon'
+
 import { MysqlAdapter } from '../src/'
 
 const mockCredentials = {
