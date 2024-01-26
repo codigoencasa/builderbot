@@ -40,7 +40,7 @@ export class DialogFlowCXContext {
      */
     init = () => {
         const googleKeyFilePath = join(process.cwd(), 'google-key.json')
-        let credentials: DialogFlowCredentials = this.getCredentials(googleKeyFilePath)
+        const credentials: DialogFlowCredentials = this.getCredentials(googleKeyFilePath)
 
         if (!credentials) {
             throw new Error('Google key configuration not found')

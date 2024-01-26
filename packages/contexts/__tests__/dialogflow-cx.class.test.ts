@@ -1,8 +1,9 @@
 import { ProviderClass } from '@bot-whatsapp/bot'
+import { join } from 'path'
+import { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { stub } from 'sinon'
-import { join } from 'path'
+
 import { DialogFlowCXContext } from '../src/index'
 import { DialogFlowContextOptions, DialogFlowCredentials } from '../src/types'
 
