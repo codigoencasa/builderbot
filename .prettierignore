@@ -9,3 +9,4 @@ packages/bot-ts/
 *.cjs
 *.md
 *.json
+/.nx/cache

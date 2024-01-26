@@ -10,7 +10,8 @@
     "type": "module",
     "scripts": {
         "build": "rimraf dist && rollup --config",
-        "test": "npx uvu -r tsm ./__tests__"
+        "test": "npx uvu -r tsm ./__tests__",
+        "test:coverage": "npx c8 npm run test"
     },
     "files": [
         "./dist/"
@@ -28,7 +29,7 @@
         ".": {
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
-            "require": "./lib/index.cjs"
+            "require": "./dist/index.cjs"
         },
         "./mock": {
             "types": "./dist/memory.d.ts",

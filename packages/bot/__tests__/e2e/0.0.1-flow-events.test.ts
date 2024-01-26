@@ -1,7 +1,7 @@
 import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { clear, delay, setup } from '../../_mock_/env'
+import { clear, delay, setup } from '../../__mock__/env'
 import { EVENTS, addKeyword, createBot, createFlow } from '../../src'
 import { generateRefprovider } from '../../src/utils'
 

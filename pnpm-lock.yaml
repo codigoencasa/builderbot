@@ -297,7 +297,7 @@ importers:
         dependencies:
             '@bot-whatsapp/cli':
                 specifier: ^0.1.1-alpha.1+11f7eab
-                version: 0.1.37
+                version: 0.1.38
         devDependencies:
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
@@ -734,8 +734,8 @@ importers:
                 version: 0.5.2
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: ^0.1.1-alpha.1+11f7eab
-                version: 0.1.33
+                specifier: workspace:*
+                version: link:../bot
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
                 version: 23.0.7(rollup@4.9.5)
@@ -838,8 +838,8 @@ importers:
                 version: 1.23.0
         devDependencies:
             '@bot-whatsapp/bot':
-                specifier: ^0.1.1-alpha.1+11f7eab
-                version: 0.1.33
+                specifier: workspace:*
+                version: link:../bot
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
                 version: 23.0.7(rollup@4.9.5)
@@ -881,7 +881,7 @@ importers:
         dependencies:
             '@wppconnect-team/wppconnect':
                 specifier: ^1.28.4
-                version: 1.28.4(typescript@5.3.3)
+                version: 1.28.4(puppeteer-core@21.9.0)(typescript@5.3.3)
         devDependencies:
             '@bot-whatsapp/bot':
                 specifier: workspace:*
@@ -919,6 +919,9 @@ importers:
             proxyquire:
                 specifier: ^2.1.3
                 version: 2.1.3
+            puppeteer-core:
+                specifier: ^21.9.0
+                version: 21.9.0
             qr-image:
                 specifier: ^3.2.0
                 version: 3.2.0
@@ -1660,11 +1663,12 @@ packages:
             }
         dependencies:
             dotenv: 16.3.1
+        dev: false
 
-    /@bot-whatsapp/cli@0.1.37:
+    /@bot-whatsapp/cli@0.1.38:
         resolution:
             {
-                integrity: sha512-H6/AE4tkLEGCUzVdyxpnnQ55HeTwB2aqJBWUAwQZZZNTTWC8bhQTrUASyhnSnT2b07z9XdJKnkstI9SjzFC+aw==,
+                integrity: sha512-dnvwoDU1DWaE35YbkWTT0F7LyQ0oRQ9Jb4Ha2oCyNoQB3Lk06tmZT8RcU0vRybdSaVPblmv5BAF+Zngqp3XCJQ==,
             }
         hasBin: true
         dependencies:
@@ -3403,7 +3407,6 @@ packages:
             yargs: 17.7.2
         transitivePeerDependencies:
             - supports-color
-        dev: false
 
     /@rollup/plugin-commonjs@23.0.7(rollup@4.9.5):
         resolution:
@@ -4634,7 +4637,6 @@ packages:
             {
                 integrity: sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==,
             }
-        dev: false
 
     /@tufjs/canonical-json@1.0.0:
         resolution:
@@ -5131,7 +5133,6 @@ packages:
         requiresBuild: true
         dependencies:
             '@types/node': 20.11.5
-        dev: false
         optional: true
 
     /@typescript-eslint/eslint-plugin@6.19.0(@typescript-eslint/parser@6.19.0)(eslint@8.52.0)(typescript@5.3.3):
@@ -5377,7 +5378,7 @@ packages:
             - utf-8-validate
         dev: false
 
-    /@wppconnect-team/wppconnect@1.28.4(typescript@5.3.3):
+    /@wppconnect-team/wppconnect@1.28.4(puppeteer-core@21.9.0)(typescript@5.3.3):
         resolution:
             {
                 integrity: sha512-Fq4XWP98++vwTVTuD65jw2tPNmhRmELM9VB7y38gY9VJyBssyxxONnVZhzvbTJeApTTumwSy5FwST0JzCkX8+Q==,
@@ -5399,7 +5400,7 @@ packages:
             lookpath: 1.2.2
             mime-types: 2.1.35
             puppeteer: 21.7.0(typescript@5.3.3)
-            puppeteer-extra: 3.3.6(puppeteer-core@20.9.0)(puppeteer@21.7.0)
+            puppeteer-extra: 3.3.6(puppeteer-core@21.9.0)(puppeteer@21.7.0)
             puppeteer-extra-plugin-stealth: 2.11.2(puppeteer-extra@3.3.6)
             puppeteer-extra-plugin-user-data-dir: 2.4.1(puppeteer-extra@3.3.6)
             puppeteer-extra-plugin-user-preferences: 2.4.1(puppeteer-extra@3.3.6)
@@ -5922,7 +5923,6 @@ packages:
         engines: { node: '>=4' }
         dependencies:
             tslib: 2.6.2
-        dev: false
 
     /async@3.2.3:
         resolution:
@@ -6026,7 +6026,6 @@ packages:
             {
                 integrity: sha512-fpWrvyVHEKyeEvbKZTVOeZF3VSKKWtJxFIxX/jaVPf+cLbGUSitjb49pHLqPV2BUNNZ0LcoeEGfE/YCpyDYHIw==,
             }
-        dev: false
 
     /balanced-match@1.0.2:
         resolution:
@@ -6046,7 +6045,6 @@ packages:
                 integrity: sha512-8PzkB0arJFV4jJWSGOYR+OEic6aeKMu/osRhBULN6RY0ykby6LKhbmuQ5ublvaas5BOwboah5D87nrHyuh8PPA==,
             }
         engines: { node: '>=10.0.0' }
-        dev: false
 
     /before-after-hook@2.2.3:
         resolution:
@@ -6225,7 +6223,6 @@ packages:
             {
                 integrity: sha512-VO9Ht/+p3SN7SKWqcrgEzjGbRSJYTx+Q1pTQC0wrWqHx0vpJraQ6GtHx8tvcg1rlK1byhU5gccxgOgj7B0TDkQ==,
             }
-        dev: false
 
     /buffer-equal-constant-time@1.0.1:
         resolution:
@@ -6690,6 +6687,18 @@ packages:
             mitt: 3.0.1
             urlpattern-polyfill: 9.0.0
         dev: false
+
+    /chromium-bidi@0.5.4(devtools-protocol@0.0.1232444):
+        resolution:
+            {
+                integrity: sha512-p9CdiHl0xNh4P7oVa44zXgJJw+pvnHXFDB+tVdo25xaPLgQDVf2kQO+TDxD2fp2Evqi7vs/vGRINMzl1qJrWiw==,
+            }
+        peerDependencies:
+            devtools-protocol: '*'
+        dependencies:
+            devtools-protocol: 0.0.1232444
+            mitt: 3.0.1
+            urlpattern-polyfill: 9.0.0
 
     /ci-info@3.9.0:
         resolution:
@@ -7559,7 +7568,6 @@ packages:
             node-fetch: 2.7.0
         transitivePeerDependencies:
             - encoding
-        dev: false
 
     /cross-spawn@7.0.3:
         resolution:
@@ -7632,7 +7640,6 @@ packages:
                 integrity: sha512-MZd3VlchQkp8rdend6vrx7MmVDJzSNTBvghvKjirLkD+WTChA3KUf0jkE68Q4UyctNqI11zZO9/x2Yx+ub5Cvg==,
             }
         engines: { node: '>= 14' }
-        dev: false
 
     /dateformat@3.0.3:
         resolution:
@@ -7819,7 +7826,6 @@ packages:
             ast-types: 0.13.4
             escodegen: 2.1.0
             esprima: 4.0.1
-        dev: false
 
     /delayed-stream@1.0.0:
         resolution:
@@ -7917,6 +7923,12 @@ packages:
                 integrity: sha512-nEzHZteIUZfGCZtTiS1fRpC8UZmsfD1SiyPvaUNvS13dvKf666OAm8YTi0+Ca3n1nLEyu49Cy4+dPWpaHFJk9g==,
             }
         dev: false
+
+    /devtools-protocol@0.0.1232444:
+        resolution:
+            {
+                integrity: sha512-pM27vqEfxSxRkTMnF+XCmxSEb6duO5R+t8A9DEEJgy4Wz2RVanje2mmj99B6A3zv2r/qGfYlOvYznUhuokizmg==,
+            }
 
     /devtools-protocol@0.0.981744:
         resolution:
@@ -8635,7 +8647,6 @@ packages:
             esutils: 2.0.3
         optionalDependencies:
             source-map: 0.6.1
-        dev: false
 
     /eslint-import-resolver-node@0.3.9:
         resolution:
@@ -8980,7 +8991,6 @@ packages:
             '@types/yauzl': 2.10.3
         transitivePeerDependencies:
             - supports-color
-        dev: false
 
     /fast-deep-equal@3.1.3:
         resolution:
@@ -8994,7 +9004,6 @@ packages:
             {
                 integrity: sha512-/d9sfos4yxzpwkDkuN7k2SqFKtYNmCTzgfEpz82x34IM9/zc8KGxQoXg1liNC/izpRM/MBdt44Nmx41ZWqk+FQ==,
             }
-        dev: false
 
     /fast-glob@3.3.2:
         resolution:
@@ -9071,7 +9080,6 @@ packages:
             }
         dependencies:
             pend: 1.2.0
-        dev: false
 
     /fecha@4.2.3:
         resolution:
@@ -9395,7 +9403,6 @@ packages:
             graceful-fs: 4.2.11
             jsonfile: 4.0.0
             universalify: 0.1.2
-        dev: false
 
     /fs-minipass@2.1.0:
         resolution:
@@ -9648,7 +9655,6 @@ packages:
             fs-extra: 8.1.0
         transitivePeerDependencies:
             - supports-color
-        dev: false
 
     /git-cz@4.9.0:
         resolution:
@@ -10558,7 +10564,6 @@ packages:
             {
                 integrity: sha512-PuExPYUiu6qMBQb4l06ecm6T6ujzhmh+MeJcW9wa89PoAz5pvd4zPgN5WJV104mb6S2T1AwNIAaB70JNrLQWhg==,
             }
-        dev: false
 
     /ip@2.0.0:
         resolution:
@@ -12590,7 +12595,6 @@ packages:
             {
                 integrity: sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==,
             }
-        dev: false
 
     /mixin-object@2.0.1:
         resolution:
@@ -12854,7 +12858,6 @@ packages:
                 integrity: sha512-dBpDMdxv9Irdq66304OLfEmQ9tbNRFnFTuZiLo+bD+r332bBmMJ8GBLXklIXXgxd3+v9+KUnZaUR5PJMa75Gsg==,
             }
         engines: { node: '>= 0.4.0' }
-        dev: false
 
     /nise@5.1.7:
         resolution:
@@ -13822,7 +13825,6 @@ packages:
             socks-proxy-agent: 8.0.2
         transitivePeerDependencies:
             - supports-color
-        dev: false
 
     /pac-resolver@7.0.0:
         resolution:
@@ -13834,7 +13836,6 @@ packages:
             degenerator: 5.0.1
             ip: 1.1.8
             netmask: 2.0.2
-        dev: false
 
     /package-json@6.5.0:
         resolution:
@@ -14091,7 +14092,6 @@ packages:
             {
                 integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==,
             }
-        dev: false
 
     /pg-cloudflare@1.1.1:
         resolution:
@@ -14547,7 +14547,6 @@ packages:
                 integrity: sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==,
             }
         engines: { node: '>=0.4.0' }
-        dev: false
 
     /promise-inflight@1.0.1:
         resolution:
@@ -14729,7 +14728,6 @@ packages:
             socks-proxy-agent: 8.0.2
         transitivePeerDependencies:
             - supports-color
-        dev: false
 
     /proxy-from-env@1.1.0:
         resolution:
@@ -14819,6 +14817,25 @@ packages:
             - supports-color
             - utf-8-validate
         dev: false
+
+    /puppeteer-core@21.9.0:
+        resolution:
+            {
+                integrity: sha512-QgowcczLAoLWlV38s3y3VuEvjJGfKU5rR6Q23GUbiGOaiQi+QpaWQ+aXdzP9LHVSUPmHdAaWhcvMztYSw3f8gQ==,
+            }
+        engines: { node: '>=16.13.2' }
+        dependencies:
+            '@puppeteer/browsers': 1.9.1
+            chromium-bidi: 0.5.4(devtools-protocol@0.0.1232444)
+            cross-fetch: 4.0.0
+            debug: 4.3.4
+            devtools-protocol: 0.0.1232444
+            ws: 8.16.0
+        transitivePeerDependencies:
+            - bufferutil
+            - encoding
+            - supports-color
+            - utf-8-validate
 
     /puppeteer-extra-plugin-stealth@2.11.2(puppeteer-extra@3.3.6):
         resolution:
@@ -14937,6 +14954,33 @@ packages:
             deepmerge: 4.3.1
             puppeteer: 21.7.0(typescript@5.3.3)
             puppeteer-core: 20.9.0(typescript@5.3.3)
+        transitivePeerDependencies:
+            - supports-color
+        dev: false
+
+    /puppeteer-extra@3.3.6(puppeteer-core@21.9.0)(puppeteer@21.7.0):
+        resolution:
+            {
+                integrity: sha512-rsLBE/6mMxAjlLd06LuGacrukP2bqbzKCLzV1vrhHFavqQE/taQ2UXv3H5P0Ls7nsrASa+6x3bDbXHpqMwq+7A==,
+            }
+        engines: { node: '>=8' }
+        peerDependencies:
+            '@types/puppeteer': '*'
+            puppeteer: '*'
+            puppeteer-core: '*'
+        peerDependenciesMeta:
+            '@types/puppeteer':
+                optional: true
+            puppeteer:
+                optional: true
+            puppeteer-core:
+                optional: true
+        dependencies:
+            '@types/debug': 4.1.12
+            debug: 4.3.4
+            deepmerge: 4.3.1
+            puppeteer: 21.7.0(typescript@5.3.3)
+            puppeteer-core: 21.9.0
         transitivePeerDependencies:
             - supports-color
         dev: false
@@ -15070,7 +15114,6 @@ packages:
             {
                 integrity: sha512-kJt5qhMxoszgU/62PLP1CJytzd2NKetjSRnyuj31fDd3Rlcz3fzlFdFLD1SItunPwyqEOkca6GbV612BWfaBag==,
             }
-        dev: false
 
     /queue@6.0.2:
         resolution:
@@ -16409,7 +16452,6 @@ packages:
         dependencies:
             fast-fifo: 1.3.2
             queue-tick: 1.0.1
-        dev: false
 
     /string-argv@0.3.2:
         resolution:
@@ -16703,7 +16745,6 @@ packages:
             mkdirp-classic: 0.5.3
             pump: 3.0.0
             tar-stream: 3.1.6
-        dev: false
 
     /tar-stream@2.2.0:
         resolution:
@@ -16727,7 +16768,6 @@ packages:
             b4a: 1.6.4
             fast-fifo: 1.3.2
             streamx: 2.15.6
-        dev: false
 
     /tar@6.1.11:
         resolution:
@@ -17310,7 +17350,6 @@ packages:
         dependencies:
             buffer: 5.7.1
             through: 2.3.8
-        dev: false
 
     /undici-types@5.26.5:
         resolution:
@@ -17513,7 +17552,6 @@ packages:
             {
                 integrity: sha512-WHN8KDQblxd32odxeIgo83rdVDE2bvdkb86it7bMhYZwWKJz0+O0RK/eZiHYnM+zgt/U7hAHOlCQGfjjvSkw2g==,
             }
-        dev: false
 
     /utf8-byte-length@1.0.4:
         resolution:
@@ -18017,7 +18055,6 @@ packages:
                 optional: true
             utf-8-validate:
                 optional: true
-        dev: false
 
     /ws@8.5.0:
         resolution:
@@ -18179,7 +18216,6 @@ packages:
         dependencies:
             buffer-crc32: 0.2.13
             fd-slicer: 1.1.0
-        dev: false
 
     /yocto-queue@0.1.0:
         resolution:

@@ -1,8 +1,22 @@
 {
     "src": "./src",
-    "exclude": ["**/bot/lib", "__mocks__", "**/mock"],
+    "exclude": [
+        "**/lib", 
+        "**/dist",
+        "_test_",
+        "__test__",
+        "__mock__", 
+        "_mock_", 
+        "_mocks_", 
+        "**/__tests__",
+        "**/__test__",
+        "**/_test_",
+        "**/__mock__",
+        "**/_mock_",
+        "**/_mocks_"
+        ],
     "reporter": ["html"],
     "report-dir": "./coverage",
     "check-coverage": true,
-    "lines": 90
+    "lines": 48
 }

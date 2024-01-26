@@ -21,7 +21,7 @@ export interface IMessageOptions {
 
 class TwilioProvider extends ProviderClass {
     public http: TwilioWebHookServer
-    protected vendor: Vendor<twilio.Twilio>
+    public vendor: Vendor<twilio.Twilio>
     private vendorNumber: string
     private publicUrl: string
 

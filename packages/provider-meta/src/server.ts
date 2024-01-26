@@ -136,7 +136,7 @@ class MetaWebHookServer extends EventEmitter {
     /**
      * Iniciar el servidor HTTP
      */
-    protected start() {
+    start() {
         this.server.listen(this.metaPort, () => {
             console.log(`[meta]: Agregar esta url "Webhook"`)
             console.log(`[meta]: POST http://localhost:${this.metaPort}/webhook`)
@@ -145,7 +145,7 @@ class MetaWebHookServer extends EventEmitter {
         this.emit('ready')
     }
 
-    public stop(): Promise<void> {
+    stop(): Promise<void> {
         return new Promise((resolve, reject) => {
             this.server.server.close((err) => {
                 if (err) {

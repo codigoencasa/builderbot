@@ -117,7 +117,7 @@ class TwilioWebHookServer extends EventEmitter {
     /**
      * Iniciar el servidor HTTP
      */
-    protected start(): void {
+    start(): void {
         this.twilioServer.listen(this.twilioPort, () => {
             console.log(``)
             console.log(`[Twilio]: Agregar esta url "WHEN A MESSAGE COMES IN"`)
@@ -128,7 +128,7 @@ class TwilioWebHookServer extends EventEmitter {
         this.emit('ready')
     }
 
-    protected stop(): Promise<void> {
+    stop(): Promise<void> {
         return new Promise((resolve, reject) => {
             this.twilioServer.server.close((err) => {
                 if (err) {

@@ -1,7 +1,7 @@
 import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 import { addKeyword, createBot, createFlow, EVENTS } from '../../src'
-import { setup, clear, delay } from '../../_mock_/env'
+import { setup, clear, delay } from '../../__mock__/env'
 
 const testSuite = suite('Flujo: manejo de goto')
 

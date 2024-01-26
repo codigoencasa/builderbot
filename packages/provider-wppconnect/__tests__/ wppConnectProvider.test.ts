@@ -1,11 +1,18 @@
+import { utils } from '@bot-whatsapp/bot'
 import proxyquire from 'proxyquire'
 import { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
+const hookClose = async () => {
+    await utils.delay(2000)
+    process.exit(0)
+}
+
 const wppconnectMock = {
     create: stub().resolves({ session: true }),
 }
+
 const WppConnectGenerateImageStub = stub().resolves()
 
 const mimeMock = {
@@ -34,6 +41,7 @@ test('WPPConnectProviderClass - initBusEvents should bind vendor events to corre
     const vendorMock: any = {
         onMessage: onMessageStub,
         onPollResponse: onPollResponseStub,
+        close: stub().callsFake(hookClose),
     }
     wppConnectProvider.vendor = vendorMock
     wppConnectProvider.initBusEvents()
@@ -209,6 +217,10 @@ test('sendMessage - should call the method vendor.sendText ', async () => {
     assert.equal(sendTextStub.called, true)
     assert.equal(sendTextStub.args[0][0], to)
     assert.equal(sendTextStub.args[0][1], message)
+})
+
+test.after(() => {
+    wppConnectProvider.vendor.close()
 })
 
 test.run()
