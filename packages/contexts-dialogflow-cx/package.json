@@ -1,5 +1,5 @@
 {
-    "name": "@bot-whatsapp/contexts",
+    "name": "@bot-whatsapp/contexts-dialogflow-cx",
     "version": "0.1.0-alpha.0",
     "description": "contexts typescript",
     "author": "Leifer Mendez <leifer33@gmail.com>",
@@ -30,7 +30,7 @@
     },
     "dependencies": {
         "@bot-whatsapp/bot": "*",
-        "@google-cloud/dialogflow": "^6.2.0"
+        "@google-cloud/dialogflow-cx": "^4.3.1"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^23.0.7",

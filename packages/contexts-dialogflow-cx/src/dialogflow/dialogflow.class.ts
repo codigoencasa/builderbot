@@ -1,5 +1,5 @@
 import { CoreClass } from '@bot-whatsapp/bot'
-import dialogflow from '@google-cloud/dialogflow'
+import { SessionsClient } from '@google-cloud/dialogflow-cx'
 import { existsSync, readFileSync } from 'fs'
 import { join } from 'path'
 
@@ -42,7 +42,7 @@ export class DialogFlowContext {
             },
         }
 
-        this.sessionClient = new dialogflow.SessionsClient(this.configuration)
+        this.sessionClient = new SessionsClient(this.configuration)
     }
 
     /**

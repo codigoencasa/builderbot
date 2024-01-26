@@ -77,7 +77,7 @@
     "packages/provider-wppconnect",
     "packages/provider-venom",
     "packages/contexts-dialogflow",
-    "packages/contexts"
+    "packages/contexts-dialogflow-cx"
 ],
   "devDependencies": {
     "@commitlint/config-conventional": "^18.4.4",

@@ -18,7 +18,7 @@
         "packages/provider-wppconnect",
         "packages/provider-venom",
         "packages/contexts-dialogflow",
-        "packages/contexts"
+        "packages/contexts-dialogflow-cx"
         // "packages/provider",
     ],
     "npmClient": "pnpm"
