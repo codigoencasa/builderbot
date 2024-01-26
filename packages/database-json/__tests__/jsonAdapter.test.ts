@@ -2,7 +2,6 @@ import { promises as fsPromises } from 'fs'
 import { join } from 'path'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-
 import { JsonFileAdapter } from '../src'
 import { HistoryEntry, JsonFileAdapterOptions } from '../src/types'
 
@@ -76,6 +75,7 @@ test('getPrevByNumber - returns the correct entry for valid history', async () =
 })
 
 test('getPrevByNumber - returns undefined for empty history', async () => {
+    jsonFileAdapter['readFileAndParse'] = async () => []
     const result = await jsonFileAdapter.getPrevByNumber('system')
     assert.equal(result, undefined)
 })
@@ -95,6 +95,14 @@ test.skip('save adds an entry to the file', async () => {
     assert.equal(parsedContent.length, 1)
     assert.equal(parsedContent[0].keyword, entry.keyword)
     await fsPromises.unlink(testFilePath)
+})
+
+test('init should return is existsSync false', async () => {
+    jsonFileAdapter['pathFile'] = 'nonExistingFilePath'
+    const existsSync = () => false
+    jsonFileAdapter['existsSync'] = existsSync
+    const result = await jsonFileAdapter['init']()
+    assert.equal(result, undefined)
 })
 
 test.run()

@@ -88,6 +88,23 @@ test('getPrevByNumber - getPrevByNumber returns the previous history entry', asy
     assert.is(result?.refSerialize, undefined)
 })
 
+test('getPrevByNumber - It should return error', async () => {
+    const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
+    postgreSQLAdapter['db'] = {
+        query: async () => {
+            throw new Error('Error!!')
+        },
+    }
+    try {
+        const from = '123456789'
+        await postgreSQLAdapter.getPrevByNumber(from)
+        assert.unreachable('An error was expected, but it did not occur')
+    } catch (error) {
+        assert.is(error instanceof Error, true)
+        assert.is(error.message, 'Error!!')
+    }
+})
+
 test('getContact - It should return undefined', async () => {
     const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
     postgreSQLAdapter['db'] = {
@@ -118,6 +135,26 @@ test('getContact - It I should return a contact', async () => {
     assert.is(result?.values, contactMock.values)
 })
 
+test('getPrevByNumber - It should return error', async () => {
+    const mock = {
+        ...historyMock,
+        phone: contactMock.phone,
+    }
+    const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
+    postgreSQLAdapter['db'] = {
+        query: async () => {
+            throw new Error('Error!!')
+        },
+    }
+    try {
+        await postgreSQLAdapter.getContact(mock)
+        assert.unreachable('An error was expected, but it did not occur')
+    } catch (error) {
+        assert.is(error instanceof Error, true)
+        assert.is(error.message, 'Error!!')
+    }
+})
+
 test('save method saves history entry', async () => {
     const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
     postgreSQLAdapter['db'] = {
@@ -142,6 +179,7 @@ test('checkTableExistsAndSP - creates or checks tables and stored procedures', a
     await postgreSQLAdapter.checkTableExistsAndSP()
     assert.ok(querySpy)
 })
+
 test('createSP - creates or checks tables and stored procedures', async () => {
     const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
     postgreSQLAdapter['db'] = {

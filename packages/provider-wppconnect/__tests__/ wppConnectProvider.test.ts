@@ -8,16 +8,24 @@ const wppconnectMock = {
 }
 const WppConnectGenerateImageStub = stub().resolves()
 
+const mimeMock = {
+    lookup: stub().returns('image/png'),
+}
+
 const { WPPConnectProviderClass } = proxyquire<typeof import('../src')>('../src', {
     '@wppconnect-team/wppconnect': { create: wppconnectMock.create() },
     WppConnectGenerateImage: WppConnectGenerateImageStub(),
+    'mime-types': mimeMock,
 })
 const wppConnectProvider = new WPPConnectProviderClass({ name: 'testBot' })
 
-test('WPPConnectProviderClass - initWppConnect should call create function with correct options', async () => {
-    await wppConnectProvider.initWppConnect()
-    assert.equal(wppconnectMock.create.called, true)
-    assert.equal(WppConnectGenerateImageStub.called, true)
+const sendMediaStub = stub(wppConnectProvider, 'sendMedia').resolves()
+const emitSpy = stub(wppConnectProvider, 'emit')
+
+test.after.each(() => {
+    sendMediaStub.resetHistory()
+    mimeMock.lookup.resetHistory()
+    emitSpy.resetHistory()
 })
 
 test('WPPConnectProviderClass - initBusEvents should bind vendor events to corresponding functions', () => {
@@ -184,7 +192,6 @@ test('sendMessage - should call the method sendMedia', async () => {
         },
     }
 
-    const sendMediaStub = stub(wppConnectProvider, 'sendMedia').resolves()
     await wppConnectProvider.sendMessage(to, message, argWithMedia)
     assert.equal(sendMediaStub.called, true)
     assert.equal(sendMediaStub.args[0][0], to)

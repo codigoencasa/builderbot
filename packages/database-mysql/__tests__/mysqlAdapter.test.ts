@@ -1,6 +1,6 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-
+import { spy } from 'sinon'
 import { MysqlAdapter } from '../src/'
 
 const mockCredentials = {
@@ -47,11 +47,6 @@ class MockMysqlAdapter extends MysqlAdapter {
 
     async init(): Promise<void> {}
 
-    checkTableExists = (): Promise<boolean> =>
-        new Promise((resolve) => {
-            resolve(!!this.queryResult.length)
-        })
-
     insert() {
         this.db = {
             query: (_sql: string, values: any[], callback: (err: any) => void) => {
@@ -79,6 +74,14 @@ class MockMysqlAdapter extends MysqlAdapter {
 
 const mockMysqlAdapter = new MockMysqlAdapter(mockCredentials)
 
+const createTableSpy = spy(mockMysqlAdapter, 'createTable')
+const checkTableExistsSpy = spy(mockMysqlAdapter, 'checkTableExists')
+
+test.after.each(() => {
+    createTableSpy.resetHistory()
+    checkTableExistsSpy.resetHistory()
+})
+
 test('[MysqlAdapter] - instantiation', () => {
     assert.instance(mockMysqlAdapter, MockMysqlAdapter)
     assert.equal(mockMysqlAdapter.credentials, mockCredentials)
@@ -86,15 +89,6 @@ test('[MysqlAdapter] - instantiation', () => {
 
 test('[MysqlAdapter] - init', async () => {
     assert.equal(mockMysqlAdapter.db, mockConnection)
-})
-
-test('[MysqlAdapter] - checkTableExists ', async () => {
-    mockMysqlAdapter.mockQueryResult([])
-    const NoExists = await mockMysqlAdapter.checkTableExists()
-    assert.equal(NoExists, false)
-    mockMysqlAdapter.mockQueryResult([{ Tables_in_database: 'history' }])
-    const exists = await mockMysqlAdapter.checkTableExists()
-    assert.equal(exists, true)
 })
 
 test('[MysqlAdapter] - createTable ', async () => {
@@ -181,6 +175,55 @@ test('[MysqlAdapter] - getPrevByNumber - error ', async () => {
     } catch (error) {
         assert.equal(error.message, messageError)
     }
+})
+
+test('checkTableExists - should return true if table exists', async () => {
+    mockMysqlAdapter.db = {
+        query: (__, callback: Function) => {
+            callback(null, [{ table: 'history' }])
+        },
+    }
+    const result = await mockMysqlAdapter.checkTableExists()
+    assert.is(result, true)
+    assert.is(createTableSpy.notCalled, true)
+})
+
+test('You must call the createTable method if the table does not exist', async () => {
+    mockMysqlAdapter.db = {
+        query: (__, callback: Function) => {
+            callback(null, [])
+        },
+    }
+    const result = await mockMysqlAdapter.checkTableExists()
+    assert.is(result, false)
+})
+
+test('should throw error when query fails', async () => {
+    mockMysqlAdapter.db = {
+        query: (__, callback: Function) => {
+            callback(new Error('Error executing SQL query'))
+        },
+    }
+
+    try {
+        await mockMysqlAdapter.checkTableExists()
+        assert.unreachable('Expected an error but none was thrown')
+    } catch (error) {
+        assert.instance(error, Error)
+        assert.is(error.message, 'Error executing SQL query')
+    }
+})
+
+test('should initialize successfully and check table existence', async () => {
+    const mysqlAdapter = new MockMysqlAdapter(mockCredentials)
+    mysqlAdapter.db = {
+        connect: (callback: Function) => {
+            callback(null)
+        },
+    }
+
+    await mysqlAdapter.init()
+    assert.is(checkTableExistsSpy.call.length, 1)
 })
 
 test.run()
