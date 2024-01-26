@@ -30,5 +30,5 @@
         "rimraf": "^5.0.5",
         "rollup-plugin-typescript2": "^0.36.0"
     },
-    "gitHead": "11f7eab33e9d1a5eaf8bf566e89a41d90ccee1a8"
+    "gitHead": "cb94c90c05492a02dda63a8f48e661bf2995d4fb"
 }
