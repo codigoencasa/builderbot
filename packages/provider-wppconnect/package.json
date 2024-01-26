@@ -10,7 +10,8 @@
     "type": "module",
     "scripts": {
         "build": "rimraf dist && rollup --config",
-        "test": "npx uvu -r tsm ./__tests__"
+        "test": "npx uvu -r tsm ./__tests__",
+        "test:coverage": "npx c8  npm run test"
     },
     "files": [
         "dist"
