@@ -20,7 +20,7 @@ export interface IMessageOptions {
 }
 
 class TwilioProvider extends ProviderClass {
-    public twilioServer: TwilioWebHookServer
+    public http: TwilioWebHookServer
     protected vendor: Vendor<twilio.Twilio>
     private vendorNumber: string
     private publicUrl: string
@@ -36,13 +36,13 @@ class TwilioProvider extends ProviderClass {
         this.publicUrl = publicUrl
 
         this.vendor = twilio(accountSid, authToken)
-        this.twilioServer = new TwilioWebHookServer(port)
+        this.http = new TwilioWebHookServer(port)
         this.vendorNumber = parseNumber(vendorNumber)
 
-        this.twilioServer.start()
+        this.http.start()
         const listEvents = this.busEvents()
         for (const { event, func } of listEvents) {
-            this.twilioServer.on(event, func)
+            this.http.on(event, func)
         }
     }
 
