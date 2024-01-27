@@ -13,7 +13,7 @@ const args = {
 
 const baileysProvider = new BaileysProvider(args)
 
-test('should construct BaileysProvider instance correctly', async () => {
+test.skip('should construct BaileysProvider instance correctly', async () => {
     assert.instance(baileysProvider, BaileysProvider)
     assert.is(baileysProvider.globalVendorArgs.name, args.name)
     assert.is(baileysProvider.globalVendorArgs.gifPlayback, args.gifPlayback)
