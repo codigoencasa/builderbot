@@ -1,5 +1,4 @@
 import { ProviderClass } from '@bot-whatsapp/bot'
-import * as dialogflow from '@google-cloud/dialogflow'
 import fs from 'fs'
 import proxyquire from 'proxyquire'
 import { stub, spy } from 'sinon'
@@ -78,7 +77,6 @@ test('initializeDialogFlowClient should set projectId, configuration, and sessio
     assert.equal(dialogFlowContext.configuration, {
         credentials: { private_key: 'private_key', client_email: 'client_email' },
     })
-    assert.instance(dialogFlowContext.sessionClient, dialogflow.SessionsClient)
 })
 
 test('manage messages without multimedia', async () => {

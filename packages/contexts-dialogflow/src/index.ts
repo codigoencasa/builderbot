@@ -1,1 +1,1 @@
-export { DialogFlowContext } from './dialogflow'
+export { DialogFlowCXContext, createBotDialog } from './dialogflow-cx'

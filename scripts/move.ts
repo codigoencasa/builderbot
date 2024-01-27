@@ -28,9 +28,9 @@ const listLib: { name: string }[] = [
     // {
     //     name: 'database'
     // },
-    {
-        name: 'provider',
-    },
+    // {
+    //     name: 'provider',
+    // },
     {
         name: 'provider-baileys',
     },
@@ -45,6 +45,12 @@ const listLib: { name: string }[] = [
     },
     {
         name: 'provider-wppconnect',
+    },
+    {
+        name: 'contexts-dialogflow',
+    },
+    {
+        name: 'contexts',
     },
     // {
     //     name:'contexts'

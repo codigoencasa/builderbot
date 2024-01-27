@@ -60,3 +60,4 @@ yarn-error.log
 **/tokens/**
 .nx/*
 nonExistingFilePath
+*.opus
