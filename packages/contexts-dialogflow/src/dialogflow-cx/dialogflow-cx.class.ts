@@ -21,25 +21,28 @@ export class DialogFlowCXContext {
     }
     projectId: string | null = null
     sessionClient = null
-
+    googleKeyJson: string | undefined = process.env.GOOGLE_KEY_JSON
     constructor(_database, _provider, _optionsDX = {}) {
         this.coreInstance = new CoreClass(null, _database, _provider, null)
         this.optionsDX = { ...this.optionsDX, ..._optionsDX }
     }
 
+    getCredentials(googleKeyFilePath: string): DialogFlowCredentials | null {
+        if (existsSync(googleKeyFilePath)) {
+            const rawJson = readFileSync(googleKeyFilePath, 'utf-8')
+            return JSON.parse(rawJson) as DialogFlowCredentials
+        }
+
+        return this.googleKeyJson ? JSON.parse(this.googleKeyJson) : null
+    }
     /**
      * Verificar conexión con servicio de DialogFlow
      */
     init = () => {
-        let credentials: DialogFlowCredentials
         const googleKeyFilePath = join(process.cwd(), 'google-key.json')
+        const credentials: DialogFlowCredentials = this.getCredentials(googleKeyFilePath)
 
-        if (existsSync(googleKeyFilePath)) {
-            const rawJson = readFileSync(googleKeyFilePath, 'utf-8')
-            credentials = JSON.parse(rawJson) as DialogFlowCredentials
-        } else if (process.env.GOOGLE_KEY_JSON) {
-            credentials = JSON.parse(process.env.GOOGLE_KEY_JSON)
-        } else {
+        if (!credentials) {
             throw new Error('Google key configuration not found')
         }
 

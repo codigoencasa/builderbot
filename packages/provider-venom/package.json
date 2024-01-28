@@ -29,18 +29,23 @@
     },
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
     "devDependencies": {
-        "@bot-whatsapp/bot": "^0.1.3-alpha.0",
+        "@bot-whatsapp/bot": "workspace:*",
         "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@types/mime-types": "^2.1.4",
         "@types/node": "^20.11.5",
+        "@types/proxyquire": "^1.3.31",
         "@types/qr-image": "^3.2.9",
+        "@types/sinon": "^17.0.3",
         "mime-types": "^2.1.35",
         "pino": "^8.17.2",
+        "proxyquire": "^2.1.3",
         "qr-image": "^3.2.0",
         "rimraf": "^5.0.5",
-        "rollup-plugin-typescript2": "^0.36.0"
+        "rollup-plugin-typescript2": "^0.36.0",
+        "sino": "^0.0.3",
+        "sinon": "^17.0.1"
     },
     "dependencies": {
         "venom-bot": "^5.0.21"

@@ -1,5 +1,4 @@
 import { ProviderClass } from '@bot-whatsapp/bot'
-import * as dialogflow from '@google-cloud/dialogflow'
 import fs from 'fs'
 import proxyquire from 'proxyquire'
 import { stub, spy } from 'sinon'
@@ -78,7 +77,38 @@ test('initializeDialogFlowClient should set projectId, configuration, and sessio
     assert.equal(dialogFlowContext.configuration, {
         credentials: { private_key: 'private_key', client_email: 'client_email' },
     })
-    assert.instance(dialogFlowContext.sessionClient, dialogflow.SessionsClient)
+})
+
+test('manage messages without multimedia', async () => {
+    const messageCtxInComming = {
+        from: 'user123',
+        body: 'Hola',
+    }
+    const dialogFlowContext = new DialogFlowContext(mockDatabase, mockProvider, optionsDX)
+    dialogFlowContext.sessionClient = {
+        projectAgentSessionPath: () => 'session123',
+        detectIntent: async () => {
+            return [
+                {
+                    queryResult: {
+                        fulfillmentMessages: [
+                            {
+                                message: 'text',
+                                text: { text: ['¡Hola, cómo estás?'] },
+                            },
+                        ],
+                    },
+                },
+            ]
+        },
+    }
+    dialogFlowContext.coreInstance.sendFlowSimple = (messages, from) => {
+        assert.equal(messages.length, 1)
+        assert.is(messages[0].answer, '¡Hola, cómo estás?')
+        assert.is(from, 'user123')
+    }
+
+    await dialogFlowContext.handleMsg(messageCtxInComming)
 })
 
 test.run()
