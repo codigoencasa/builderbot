@@ -86,7 +86,7 @@ export class DialogFlowContext {
 
         const [single] = (await this.sessionClient.detectIntent(reqDialog)) || [null]
 
-        const listMessages = single.queryResult.responseMessages.map((res) => {
+        const listMessages = single?.queryResult?.responseMessages?.map((res) => {
             if (res.message === 'text') {
                 return { answer: res.text.text[0] }
             }
