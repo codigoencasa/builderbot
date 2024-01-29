@@ -1,10 +1,11 @@
+import { existsSync, unlinkSync } from 'fs-extra'
+import { join } from 'path'
 import proxyquire from 'proxyquire'
 import { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
+
 import { Response } from '../src/types'
-import { join } from 'path'
-import { existsSync, unlinkSync } from 'fs-extra'
 
 const fsMock = {
     writeFile: stub(),
