@@ -1,7 +1,12 @@
 class IdleState {
     indexCb = new Map()
 
+    /**
+     *
+     * @param param0
+     */
     setIdleTime = ({ from, inRef, timeInSeconds, cb }) => {
+        cb = cb ?? (() => {})
         const startTime = new Date().getTime()
         const endTime = startTime + timeInSeconds * 1000
 
@@ -24,21 +29,41 @@ class IdleState {
             inRef,
             cb,
             stop: (ctxInComming) => {
-                cb({ ...ctxInComming, next: false, inRef })
                 clearInterval(interval)
+                cb({ ...ctxInComming, next: false, inRef })
             },
         })
     }
 
+    /**
+     *
+     * @param param0
+     * @returns
+     */
+    get = ({ from, inRef }) => {
+        try {
+            const queueCb = this.indexCb.get(from) ?? []
+            const isHas = queueCb.findIndex((i) => i.inRef !== inRef) !== -1
+            return isHas
+        } catch (err) {
+            console.error(`Error Get ctxInComming: `, err)
+            return null
+        }
+    }
+
+    /**
+     *
+     * @param ctxInComming
+     */
     stop = (ctxInComming) => {
         try {
             const queueCb = this.indexCb.get(ctxInComming.from) ?? []
             for (const iterator of queueCb) {
                 iterator.stop(ctxInComming)
             }
+            this.indexCb.set(ctxInComming.from, [])
         } catch (err) {
-            console.log(err)
-            return null
+            console.error(err)
         }
     }
 }
