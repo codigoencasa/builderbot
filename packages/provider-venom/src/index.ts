@@ -203,7 +203,6 @@ class VenomProvider extends ProviderClass {
     sendMedia = async (number: string, mediaUrl: string, text: string) => {
         const fileDownloaded = await utils.generalDownload(mediaUrl)
         const mimeType = mime.lookup(fileDownloaded)
-
         if (`${mimeType}`.includes('image')) return this.sendImage(number, fileDownloaded, text)
         if (`${mimeType}`.includes('video')) return this.sendVideo(number, fileDownloaded, text)
         if (`${mimeType}`.includes('audio')) {
