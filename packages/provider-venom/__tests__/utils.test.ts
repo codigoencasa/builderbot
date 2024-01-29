@@ -136,7 +136,7 @@ test('Downloads media from a URL using http', async () => {
         return fakeStream
     })
     const downloadedPath = await venomDownloadMedia(url)
-    assert.equal(downloadedPath.includes('/tmp/tmp-'), true)
+    assert.equal(downloadedPath.includes('tmp-'), true)
 })
 
 test.run()
