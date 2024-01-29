@@ -2,8 +2,9 @@ import proxyquire from 'proxyquire'
 import { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-
 import { Response } from '../src/types'
+import { join } from 'path'
+import { existsSync, unlinkSync } from 'fs-extra'
 
 const fsMock = {
     writeFile: stub(),
@@ -98,6 +99,19 @@ test('WppConnectGenerateImage - should handle an invalid base64 string and retur
     const result = await WppConnectGenerateImage(base64String, name)
     assert.ok(result instanceof Error)
     assert.equal(result.message, 'Invalid input string')
+})
+
+test('WppConnectGenerateImage - generates an image from base64 string', async () => {
+    const base64String =
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/l8c3gAAAABJRU5ErkJggg=='
+    const imageName = 'qr.png'
+    const imagePath = join(process.cwd(), imageName)
+    utilsMock.cleanImage.call((__, _, callback) => callback(null))
+    await WppConnectGenerateImage(base64String, imageName)
+    assert.ok(existsSync(imagePath))
+    unlinkSync(imagePath)
+    assert.not.ok(existsSync(imagePath))
+    assert.ok(utilsMock.cleanImage.called)
 })
 
 test.run()
