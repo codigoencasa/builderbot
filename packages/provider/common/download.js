@@ -3,7 +3,7 @@ const { tmpdir } = require('os')
 const http = require('follow-redirects').http
 const https = require('follow-redirects').https
 const { rename, createWriteStream, existsSync } = require('fs')
-const { extname } = require('path')
+const { extname, basename, parse } = require('path')
 
 /**
  * Extrar el mimetype from buffer
@@ -30,8 +30,8 @@ const generalDownload = async (url) => {
     const handleDownload = () => {
         const checkProtocol = url.includes('https:')
         const handleHttp = checkProtocol ? https : http
-
-        const name = `tmp-${Date.now()}-dat`
+        const fileName = basename(new URL(url).pathname)
+        const name = parse(fileName).name
         const fullPath = `${tmpdir()}/${name}`
         const file = createWriteStream(fullPath)
 
