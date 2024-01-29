@@ -14,6 +14,8 @@ export class DialogFlowContext {
     sessionClient = null
     optionsDX: DialogFlowContextOptions = {
         language: 'es',
+        location: '',
+        agentId: '',
     }
 
     constructor(_database, _provider, _optionsDX = {}) {
@@ -65,14 +67,13 @@ export class DialogFlowContext {
         const languageCode = this.optionsDX.language
         const { from, body } = messageCtxInComming
 
-        let customPayload = {}
-
         /**
          * 📄 Creamos session de contexto basado en el numero de la persona
          * para evitar este problema.
          * https://github.com/codigoencasa/bot-whatsapp/pull/140
          */
         const session = this.sessionClient.projectAgentSessionPath(this.projectId, from)
+
         const reqDialog = {
             session,
             queryInput: {
@@ -85,44 +86,29 @@ export class DialogFlowContext {
 
         const [single] = (await this.sessionClient.detectIntent(reqDialog)) || [null]
 
-        const { queryResult } = single
-
-        const msgPayload = queryResult?.fulfillmentMessages?.find((a) => a.message === 'payload')
-
-        // Revisamos si el dialogFlow tiene multimedia
-        if (msgPayload && msgPayload?.payload) {
-            const { fields } = msgPayload.payload
-            const mapButtons = fields?.buttons?.listValue?.values.map((m) => {
-                return { body: m?.structValue?.fields?.body?.stringValue }
-            })
-
-            customPayload = {
-                options: {
-                    media: fields?.media?.stringValue,
-                    buttons: mapButtons,
-                },
+        const listMessages = single.queryResult.responseMessages.map((res) => {
+            if (res.message === 'text') {
+                return { answer: res.text.text[0] }
             }
 
-            const ctxFromDX = {
-                ...customPayload,
-                answer: fields?.answer?.stringValue,
-            }
-            this.coreInstance([ctxFromDX], from)
-            return
-        }
-
-        /* const ctxFromDX = {
-            answer: queryResult?.fulfillmentText,
-        } */
-
-        const messagesFromCX = queryResult['fulfillmentMessages']
-            .map((a) => {
-                if (a.message === 'text') {
-                    return { answer: a.text.text[0] }
+            if (res.message === 'payload') {
+                const { media = null, buttons = [], answer = '' } = res.payload.fields
+                const buttonsArray =
+                    buttons?.listValue?.values?.map((btnValue): { body: string } => {
+                        const { stringValue } = btnValue.structValue.fields.body
+                        return { body: stringValue }
+                    }) || []
+                return {
+                    answer: answer?.stringValue || '',
+                    options: {
+                        media: media?.stringValue,
+                        buttons: buttonsArray,
+                    },
                 }
-            })
-            .filter((e) => e)
+            }
+            return { answer: '' }
+        })
 
-        this.coreInstance.sendFlowSimple(messagesFromCX, from)
+        this.coreInstance.sendFlowSimple(listMessages, from)
     }
 }

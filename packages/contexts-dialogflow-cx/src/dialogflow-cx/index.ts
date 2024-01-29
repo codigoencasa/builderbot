@@ -1,4 +1,4 @@
-import { DialogFlowContext } from './dialogflow.class'
+import { DialogFlowContext } from './dialogflow-cx.class'
 
 /**
  * Crear instancia de clase Bot

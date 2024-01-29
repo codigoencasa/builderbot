@@ -1,5 +1,7 @@
 export interface DialogFlowContextOptions {
-    language?: string
+    language: string
+    location: string
+    agentId: string
 }
 
 export interface DialogFlowCredentials {

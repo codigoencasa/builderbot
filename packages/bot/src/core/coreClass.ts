@@ -52,6 +52,7 @@ class CoreClass extends EventEmitter {
             concurrencyLimit: 15,
         },
     }
+
     constructor(_flow: any, _database: any, _provider: any, _args: CoreClassArgs) {
         super()
         this.flowClass = _flow
