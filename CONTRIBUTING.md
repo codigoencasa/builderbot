@@ -81,7 +81,7 @@ npm run pre-copy
 npm start
 ```
 En el caso de MySql y Mongo, necesitarás especificar en el archivo app.js los datos de la conexión, por ejemplo, para MySql:
-```
+```js
 const BaileysProvider = require('@bot-whatsapp/provider/baileys')
 const MySQLAdapter = require('@bot-whatsapp/database/mysql')
 

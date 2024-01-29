@@ -54,6 +54,7 @@ yarn-error.log
 **_IGNORE_**
 # end managed
 
+/packages/provider-wppconnect/bot/__mock__/*.opus
 /packages/provider-wppconnect/tokens
 /packages/provider-wppconnect/ruta-de-prueba
 
