@@ -1,8 +1,8 @@
 import { utils } from '@bot-whatsapp/bot'
+import proxyquire from 'proxyquire'
+import { spy, stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { spy, stub } from 'sinon'
-import proxyquire from 'proxyquire'
 const mimeMock = {
     lookup: stub(),
 }
