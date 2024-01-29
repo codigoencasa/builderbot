@@ -3,6 +3,7 @@ const { ProviderClass } = require('@bot-whatsapp/bot')
 
 const TwilioWebHookServer = require('./server')
 const { parseNumber } = require('./utils')
+const { encryptData } = require('../../common/hash')
 
 /**
  * ⚙️TwilioProvider: Es un provedor que te ofrece enviar
@@ -68,7 +69,8 @@ class TwilioProvider extends ProviderClass {
      */
     sendMedia = async (number, message, mediaInput = null) => {
         if (!mediaInput) throw new Error(`MEDIA_INPUT_NULL_: ${mediaInput}`)
-        const urlEncode = `${this.publicUrl}/tmp?path=${encodeURIComponent(mediaInput)}`
+        const ecrypPath = encryptData(encodeURIComponent(mediaInput))
+        const urlEncode = `${this.publicUrl}/tmp?path=${ecrypPath}`
         const regexUrl = /^(?!https?:\/\/)[^\s]+$/
 
         const urlNotice = [
