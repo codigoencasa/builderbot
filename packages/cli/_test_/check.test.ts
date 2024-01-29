@@ -11,11 +11,21 @@ test('checkNodeVersion', async () => {
     assert.ok(result.pass, 'La versión de Node.js debería ser 18 o superior')
 })
 
-test('checkOs', async () => {
+test('checkOs - returns the operating system correctly  not Windows systems', async () => {
+    const originalPlatform = process.platform
+    Object.defineProperty(process, 'platform', { value: 'linux' })
+
+    const result = await checkOs()
+    assert.is(result, 'OS: linux (revisar documentación)')
+    Object.defineProperty(process, 'platform', { value: originalPlatform })
+})
+
+test('checkOs - returns the operating system correctly on Windows systems', async () => {
+    const originalPlatform = process.platform
+    Object.defineProperty(process, 'platform', { value: 'win32' })
     const osMessage = await checkOs()
-    assert.type(checkOs, 'function')
-    assert.type(osMessage, 'string')
     assert.match(osMessage, /OS: win32/, 'El sistema operativo debería ser win32')
+    Object.defineProperty(process, 'platform', { value: originalPlatform })
 })
 
 test('checkGit', async () => {

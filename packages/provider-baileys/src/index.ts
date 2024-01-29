@@ -78,12 +78,11 @@ class BaileysProvider extends ProviderClass {
                     creds: state.creds,
                     keys: makeCacheableSignalKeyStore(state.keys, loggerBaileys),
                 },
-                browser: ['Chrome (Linux)', '', ''],
+                browser: ['Ubuntu', 'Chrome', '20.0.04'],
                 syncFullHistory: false,
                 generateHighQualityLinkPreview: true,
                 getMessage: this.getMessage,
             })
-
             this.store?.bind(sock.ev)
 
             if (this.globalVendorArgs.usePairingCode && !sock.authState.creds.registered) {
@@ -278,7 +277,6 @@ class BaileysProvider extends ProviderClass {
     protected initBusEvents = (_sock: WASocket) => {
         this.vendor = _sock
         const listEvents = this.busEvents()
-
         for (const { event, func } of listEvents) {
             this.vendor.ev.on(event, func)
         }

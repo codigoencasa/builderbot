@@ -38,6 +38,14 @@ test('sendMessageToApi - should send a message to API', async () => {
     const response = await metaProvider.sendMessageToApi(mockMessageBody)
     assert.equal(response, mockResponseData)
 })
+test('sendMessageToApi - should send a message to API', async () => {
+    try {
+        httpsMock.post.rejects(new Error('Error!'))
+        await metaProvider.sendMessageToApi(mockMessageBody)
+    } catch (error) {
+        assert.equal(error.message, 'Error!')
+    }
+})
 
 test('busEvents - should return an array with correct events and functions', () => {
     const events = metaProvider.busEvents()

@@ -7,7 +7,8 @@
     "type": "module",
     "scripts": {
         "build": "rimraf dist && rollup --config",
-        "test": "npx uvu -r tsm ./_test_"
+        "test": "npx uvu -r tsm ./_test_",
+        "test:coverage": "npx c8 npm run test"
     },
     "devDependencies": {
         "@clack/prompts": "^0.7.0",

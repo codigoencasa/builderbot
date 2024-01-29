@@ -79,7 +79,7 @@ test('writeFilePromise - should resolve to true on success', async () => {
     assert.equal(result, true)
 })
 
-test('should reject with error message on file write error', async () => {
+test('writeFilePromise - should reject with error message on file write error', async () => {
     const matches: RegExpMatchArray | null = ['match1', 'match2', 'match3']
     const response: Response = {
         type: matches[1],
