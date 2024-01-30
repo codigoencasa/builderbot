@@ -1,5 +1,5 @@
 import { Pool } from 'pg'
-import * as sinon from 'sinon'
+import { spy, stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
@@ -53,7 +53,7 @@ test('init() debería establecer correctamente la conexión y llamar a checkTabl
     const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
 
     assert.is(postgreSQLAdapter.db, undefined)
-    const checkTableExistsAndSPSpy = sinon.spy(postgreSQLAdapter, 'checkTableExistsAndSP')
+    const checkTableExistsAndSPSpy = spy(postgreSQLAdapter, 'checkTableExistsAndSP')
 
     await postgreSQLAdapter.init()
     assert.ok(postgreSQLAdapter.db)
@@ -135,7 +135,7 @@ test('getContact - It I should return a contact', async () => {
     assert.is(result?.values, contactMock.values)
 })
 
-test('getPrevByNumber - It should return error', async () => {
+test('getContact - It should return error', async () => {
     const mock = {
         ...historyMock,
         phone: contactMock.phone,
@@ -162,7 +162,7 @@ test('save method saves history entry', async () => {
             return { rows: [], rowCount: 1 }
         },
     }
-    const querySpy = sinon.spy(postgreSQLAdapter['db'], 'query')
+    const querySpy = spy(postgreSQLAdapter['db'], 'query')
     await postgreSQLAdapter.save(historyMock)
     assert.is(postgreSQLAdapter.listHistory.length, 1)
     assert.ok(querySpy)
@@ -175,7 +175,7 @@ test('checkTableExistsAndSP - creates or checks tables and stored procedures', a
             return { rows: [], rowCount: 1 }
         },
     }
-    const querySpy = sinon.spy(postgreSQLAdapter['db'], 'query')
+    const querySpy = spy(postgreSQLAdapter['db'], 'query')
     await postgreSQLAdapter.checkTableExistsAndSP()
     assert.ok(querySpy)
 })
@@ -187,9 +187,65 @@ test('createSP - creates or checks tables and stored procedures', async () => {
             return { rows: [], rowCount: 1 }
         },
     }
-    const querySpy = sinon.spy(postgreSQLAdapter['db'], 'query')
+    const querySpy = spy(postgreSQLAdapter['db'], 'query')
     await postgreSQLAdapter.createSP()
     assert.ok(querySpy)
+})
+
+test('saveContact - deberia guardar un contacto', async () => {
+    const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
+    postgreSQLAdapter['db'] = {
+        query: async () => {
+            return { rows: [], rowCount: 1 }
+        },
+    }
+    const getContactStub = stub().resolves(contactMock)
+    postgreSQLAdapter.getContact = getContactStub
+    const querySpy = spy(postgreSQLAdapter['db'], 'query')
+    await postgreSQLAdapter.saveContact(historyMock)
+    assert.equal(getContactStub.args[0][0], historyMock)
+    assert.ok(querySpy)
+})
+
+test('saveContact - deberia guardar un contacto', async () => {
+    const dataMock = {
+        ...historyMock,
+        action: 'B',
+    }
+    const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
+    postgreSQLAdapter['db'] = {
+        query: async () => {
+            return { rows: [], rowCount: 1 }
+        },
+    }
+    const getContactStub = stub().resolves(contactMock)
+    postgreSQLAdapter.getContact = getContactStub
+    const querySpy = spy(postgreSQLAdapter['db'], 'query')
+    await postgreSQLAdapter.saveContact(dataMock)
+    assert.equal(getContactStub.args[0][0], dataMock)
+    assert.ok(querySpy)
+})
+
+test('saveContact - It should return error', async () => {
+    const mock = {
+        ...historyMock,
+        phone: contactMock.phone,
+    }
+    const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
+    postgreSQLAdapter['db'] = {
+        query: async () => {
+            throw new Error('Error!!')
+        },
+    }
+    try {
+        const getContactStub = stub().resolves(contactMock)
+        postgreSQLAdapter.getContact = getContactStub
+        await postgreSQLAdapter.saveContact(mock)
+        assert.unreachable('An error was expected, but it did not occur')
+    } catch (error) {
+        assert.is(error instanceof Error, true)
+        assert.is(error.message, 'Error!!')
+    }
 })
 
 test.run()

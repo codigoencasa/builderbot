@@ -35,7 +35,7 @@ test.after.each(() => {
     sendStub.resetHistory()
 })
 
-test('VenomProvider se inicializa correctamente', async () => {
+test('VenomProvider - initializes correctly', async () => {
     venomProvider.init = initStub.resolves(true)
     await venomProvider.init()
     assert.equal(initStub.called, true)
@@ -54,7 +54,7 @@ test('venomProvider - initBusEvents should bind vendor events to corresponding f
     assert.equal(onMessageStub.called, true)
 })
 
-test('generateQr - La generación de QR se realiza correctamente', async () => {
+test('generateQr - QR generation is done correctly', async () => {
     const payloadEmit = {
         instructions: [
             'Debes escanear el QR Code para iniciar bot.qr.png',
@@ -70,7 +70,7 @@ test('generateQr - La generación de QR se realiza correctamente', async () => {
     assert.equal(emitStub.args[0][1], payloadEmit)
 })
 
-test('busEvents - onMessage deberia returnar undefined', async () => {
+test('busEvents - onMessage I should return undefined', async () => {
     const payload: any = {
         from: 'status@broadcast',
         type: 'image',
@@ -80,7 +80,7 @@ test('busEvents - onMessage deberia returnar undefined', async () => {
     assert.equal(emitStub.args[0], undefined)
 })
 
-test('busEvents - onMessage deberia returnar undefined', async () => {
+test('busEvents - onMessage I should return undefined', async () => {
     const payload: any = {
         from: '123@g.us',
         type: 'image',
@@ -235,7 +235,7 @@ test('sendMessage - should call the method sendMedia', async () => {
     assert.equal(sendMediaStub.args[0][2], message)
 })
 
-test('sendMessage - should call the method  sendText ', async () => {
+test('sendMessage - should call the method sendText ', async () => {
     const to = '+123456789'
     const message = 'Test message'
     const argWithMedia: any = {}

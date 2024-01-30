@@ -64,7 +64,7 @@ class PostgreSQLAdapter {
             const result = await this.db.query(query, [from])
             return result.rows[0]
         } catch (error) {
-            console.error('Error al obtener contacto por número:', error)
+            console.error('Error al obtener contacto por número:', error.mesage)
             throw error
         }
     }
