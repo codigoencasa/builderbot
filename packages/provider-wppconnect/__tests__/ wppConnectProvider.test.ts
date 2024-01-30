@@ -16,7 +16,7 @@ const wppconnectMock = {
 const WppConnectGenerateImageStub = stub().resolves()
 
 const mimeMock = {
-    lookup: stub().returns('image/png'),
+    lookup: stub(),
 }
 
 const { WPPConnectProviderClass } = proxyquire<typeof import('../src')>('../src', {
@@ -28,11 +28,17 @@ const wppConnectProvider = new WPPConnectProviderClass({ name: 'testBot' })
 
 const sendMediaStub = stub(wppConnectProvider, 'sendMedia').resolves()
 const emitSpy = stub(wppConnectProvider, 'emit')
+const vendorSendImageStub = stub()
+const sendImageStub = stub()
+const emitStub = stub()
 
 test.after.each(() => {
     sendMediaStub.resetHistory()
     mimeMock.lookup.resetHistory()
     emitSpy.resetHistory()
+    vendorSendImageStub.resetHistory()
+    sendImageStub.resetHistory()
+    emitStub.resetHistory()
 })
 
 test('WPPConnectProviderClass - initBusEvents should bind vendor events to corresponding functions', () => {
@@ -50,7 +56,6 @@ test('WPPConnectProviderClass - initBusEvents should bind vendor events to corre
 })
 
 test('sendButtons should emit a notice and call vendor.sendText with correct parameters', async () => {
-    const emitStub = stub()
     const sendTextStub = stub().resolves('success')
     wppConnectProvider.emit = emitStub
     wppConnectProvider.vendor.sendText = sendTextStub
@@ -144,11 +149,10 @@ test('sendImage - should call vendor.sendImage with correct parameters', async (
     const number = '+123456789'
     const filePath = 'image.jpg'
     const text = 'This is an image'
-    const sendImageStub = stub().resolves('success')
-    wppConnectProvider.vendor.sendImage = sendImageStub
+    wppConnectProvider.vendor.sendImage = vendorSendImageStub.resolves('success')
     await wppConnectProvider.sendImage(number, filePath, text)
-    assert.is(sendImageStub.calledOnce, true)
-    assert.is(sendImageStub.calledWithExactly(number, filePath, 'image-name', text), true)
+    assert.is(vendorSendImageStub.calledOnce, true)
+    assert.is(vendorSendImageStub.calledWithExactly(number, filePath, 'image-name', text), true)
 })
 
 test('sendFile - should call vendor.sendFile with correct parameters', async () => {
@@ -217,6 +221,117 @@ test('sendMessage - should call the method vendor.sendText ', async () => {
     assert.equal(sendTextStub.called, true)
     assert.equal(sendTextStub.args[0][0], to)
     assert.equal(sendTextStub.args[0][1], message)
+})
+
+test('busEvents - onMessage deberia returnar undefined', async () => {
+    const payload: any = {
+        from: 'status@broadcast',
+        type: 'image',
+    }
+    wppConnectProvider.emit = emitStub
+    wppConnectProvider.busEvents()[0].func(payload)
+    assert.equal(emitStub.args[0], undefined)
+})
+
+test('busEvents - onMessage deberia returnar undefined', async () => {
+    const payload: any = {
+        from: '123@g.us',
+        type: 'image',
+    }
+    wppConnectProvider.emit = emitStub
+    wppConnectProvider.busEvents()[0].func(payload)
+    assert.equal(emitStub.args[0], undefined)
+})
+
+test('busEvents - onMessage I should build the body suit for the guy imagen', async () => {
+    const payload: any = {
+        from: '+123456789',
+        type: 'image',
+    }
+    wppConnectProvider.emit = emitStub
+    wppConnectProvider.busEvents()[0].func(payload)
+    assert.equal(emitStub.args[0][0], 'message')
+    assert.equal(emitStub.args[0][1].from, payload.from)
+    assert.ok(emitStub.args[0][1].body.includes('_event_media_'))
+    assert.ok(emitStub.called)
+})
+
+test('busEvents - onMessage I should build the body suit for the guy document', async () => {
+    const payload: any = {
+        from: '+123456789',
+        type: 'document',
+    }
+    wppConnectProvider.emit = emitStub
+    wppConnectProvider.busEvents()[0].func(payload)
+    assert.equal(emitStub.args[0][0], 'message')
+    assert.equal(emitStub.args[0][1].from, payload.from)
+})
+
+test('busEvents - onMessage I should build the body suit for the guy ptt', async () => {
+    const payload: any = {
+        from: '+123456789',
+        type: 'ptt',
+    }
+    wppConnectProvider.emit = emitStub
+    wppConnectProvider.busEvents()[0].func(payload)
+    assert.equal(emitStub.args[0][0], 'message')
+    assert.equal(emitStub.args[0][1].from, payload.from)
+    assert.ok(emitStub.args[0][1].body.includes('_event_voice_note_'))
+})
+
+test('busEvents - onMessage I should build the body suit for the guy ptt', async () => {
+    const payload: any = {
+        from: '+123456789',
+        type: 'ptt',
+    }
+    wppConnectProvider.emit = emitStub
+    wppConnectProvider.busEvents()[0].func(payload)
+    assert.equal(emitStub.args[0][0], 'message')
+    assert.equal(emitStub.args[0][1].from, payload.from)
+    assert.ok(emitStub.args[0][1].body.includes('_event_voice_note_'))
+})
+
+test('busEvents - onMessage I should build the bodysuit for the guy lat y lng', async () => {
+    const payload: any = {
+        from: '+123456789',
+        lat: '1224',
+        lng: '1224',
+    }
+    wppConnectProvider.emit = emitStub
+    wppConnectProvider.busEvents()[0].func(payload)
+    assert.equal(emitStub.args[0][0], 'message')
+    assert.equal(emitStub.args[0][1].from, payload.from)
+    assert.ok(emitStub.args[0][1].body.includes('_event_location_'))
+})
+
+test('busEvents - onPollResponse I should build the body and send the message', async () => {
+    const payload: any = {
+        selectedOptions: [{ name: 'Option11' }],
+        msgId: { _serialized: 'msgIdSerialized' },
+        sender: '+123456789',
+        chatId: 'chatId123',
+        timestamp: 1234567890,
+    }
+    const getContactStub = stub()
+    wppConnectProvider.vendor.getContact = getContactStub.resolves('22822')
+    wppConnectProvider.emit = emitStub
+    wppConnectProvider.busEvents()[1].func(payload)
+    assert.equal(getContactStub.args[0][0], payload.chatId)
+})
+
+test('busEvents - onPollResponse I should build the body and send the message', async () => {
+    const payload: any = {
+        selectedOptions: [],
+        msgId: null,
+        sender: '+123456789',
+        chatId: 'chatId123',
+        timestamp: 1234567890,
+    }
+    const getContactStub = stub()
+    wppConnectProvider.vendor.getContact = getContactStub.resolves(null)
+    wppConnectProvider.emit = emitStub
+    wppConnectProvider.busEvents()[1].func(payload)
+    assert.equal(getContactStub.args[0][0], payload.chatId)
 })
 
 test.after(() => {

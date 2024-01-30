@@ -94,7 +94,6 @@ class WPPConnectProviderClass extends ProviderClass {
                         payload = { ...payload, body: utils.generateRefprovider('_event_location_') }
                     }
                 }
-
                 // Emitir el evento "message" con el payload modificado
                 this.emit('message', payload)
             },
@@ -233,7 +232,6 @@ class WPPConnectProviderClass extends ProviderClass {
     sendMedia = async (number: any, mediaUrl: string, text: any) => {
         const fileDownloaded = await utils.generalDownload(mediaUrl)
         const mimeType = mime.lookup(fileDownloaded)
-
         if (`${mimeType}`.includes('image')) return this.sendImage(number, fileDownloaded, text)
         if (`${mimeType}`.includes('video')) return this.sendVideo(number, fileDownloaded, text)
         if (`${mimeType}`.includes('audio')) {
