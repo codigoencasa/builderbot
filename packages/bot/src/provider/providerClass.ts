@@ -6,8 +6,9 @@ const NODE_ENV = process.env.NODE_ENV || 'dev'
 
 class ProviderClass extends EventEmitter {
     protected vendor: Vendor = {}
+    globalVendorArgs: any
 
-    public async sendMessage<K = any>(userId: string | number, message: any, args?: any): Promise<K> {
+    public async sendMessage<K = any>(userId: string, message: any, args?: any): Promise<K> {
         if (NODE_ENV !== 'production') {
             console.log('[sendMessage]', { userId, message, args })
         }
