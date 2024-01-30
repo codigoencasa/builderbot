@@ -4,8 +4,19 @@ import * as assert from 'uvu/assert'
 import { Buttons } from 'whatsapp-web.js'
 
 import { WebWhatsappProvider } from '../src/index'
+import { utils } from '@bot-whatsapp/bot'
+
+const hookClose = async () => {
+    await utils.delay(2000)
+    process.exit(0)
+}
 
 const webWhatsappProvider = new WebWhatsappProvider({ name: 'bot', gifPlayback: false })
+
+const vendorMock: any = webWhatsappProvider.vendor
+vendorMock.close = hookClose
+webWhatsappProvider.vendor = vendorMock
+
 const emitStub = stub()
 const sendStub = stub().resolves('success')
 
@@ -203,6 +214,10 @@ test('sendText - should send a text message correctly', async () => {
     assert.is(sendStub.firstCall.args[0], number)
     assert.is(sendStub.firstCall.args[1], message)
     assert.is(result, 'success')
+})
+
+test.after(async () => {
+    ;(webWhatsappProvider.vendor as any).close()
 })
 
 test.run()

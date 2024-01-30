@@ -28,7 +28,7 @@
     "copy.lib": "tsm ./scripts/move.ts",
     "test.unit": "node ./node_modules/uvu/bin.js packages test -i bot-ts -i bot -i cli -i create-bot-whatsapp -i provider-twilio -i provider -i contexts -i database -i database-mongo -i database-mysql -i database-ts -i database-json -i database-postgres",
     "test.e2e": "node ./node_modules/uvu/bin.js __test__ ",
-    "test.coverage": "npx c8 npm run test.unit",
+    "test.coverage": "npx lerna-lcov-aggregate",
     "test": "npx lerna run test",
     "cli": "node ./packages/cli/bin/cli.cjs",
     "create": "node ./packages/create-bot-whatsapp/bin/create.js",
