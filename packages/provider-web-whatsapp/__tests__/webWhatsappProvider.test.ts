@@ -216,8 +216,6 @@ test('sendText - should send a text message correctly', async () => {
     assert.is(result, 'success')
 })
 
-test.after(async () => {
-    ;(webWhatsappProvider.vendor as any).close()
-})
+test.after(async () => (webWhatsappProvider.vendor as any).close())
 
 test.run()
