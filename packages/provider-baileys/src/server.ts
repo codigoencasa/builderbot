@@ -45,7 +45,8 @@ class BaileyHttpServer extends EventEmitter {
     /**
      * Iniciar el servidor HTTP
      */
-    start(vendor: BotCtxMiddleware) {
+    start(vendor: BotCtxMiddleware, port?: number) {
+        if (port) this.port = port
         this.server.use(async (req, _, next) => {
             req[idCtxBot] = vendor
             if (req[idCtxBot]) return next()

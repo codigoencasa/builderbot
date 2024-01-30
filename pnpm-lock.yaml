@@ -49,6 +49,9 @@ importers:
             lerna:
                 specifier: ^8.0.2
                 version: 8.0.2
+            lerna-lcov-aggregate:
+                specifier: ^1.0.0
+                version: 1.0.0
             nx:
                 specifier: ^17.2.8
                 version: 17.2.8
@@ -12106,6 +12109,19 @@ packages:
         dev: false
         optional: true
 
+    /lerna-lcov-aggregate@1.0.0:
+        resolution:
+            {
+                integrity: sha512-7et3jb2Ituh2PZ8UrEoA1cfB2+WyQ0pxZjvcX0wRi4EX4ZYo2nVby2vNL34tf19IpuVD3zdWUAzyrT4SEMInFQ==,
+            }
+        engines: { node: '>=12.0' }
+        hasBin: true
+        dependencies:
+            chalk: 4.1.2
+            glob: 7.2.3
+            n-readlines: 1.0.1
+        dev: true
+
     /lerna@8.0.2:
         resolution:
             {
@@ -13473,6 +13489,14 @@ packages:
             seq-queue: 0.0.5
             sqlstring: 2.3.3
         dev: false
+
+    /n-readlines@1.0.1:
+        resolution:
+            {
+                integrity: sha512-z4SyAIVgMy7CkgsoNw7YVz40v0g4+WWvvqy8+ZdHrCtgevcEO758WQyrYcw3XPxcLxF+//RszTz/rO48nzD0wQ==,
+            }
+        engines: { node: '>=6.x.x' }
+        dev: true
 
     /named-placeholders@1.1.3:
         resolution:

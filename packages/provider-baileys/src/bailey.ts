@@ -138,7 +138,6 @@ class BaileysProvider extends ProviderClass {
                     this.emit('ready', true)
                     this.emit('host', host)
                     this.initBusEvents(sock)
-                    this.initHttpServer()
                 }
 
                 /** QR Code */
@@ -169,12 +168,16 @@ class BaileysProvider extends ProviderClass {
         }
     }
 
-    protected initHttpServer() {
+    /**
+     *
+     * @param port
+     */
+    initHttpServer(port: number) {
         const methods: BotCtxMiddleware = {
             sendMessage: this.sendMessage,
             provider: this.vendor,
         }
-        this.http.start(methods)
+        this.http.start(methods, port)
     }
 
     /**
