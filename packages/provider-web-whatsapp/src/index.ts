@@ -94,7 +94,7 @@ class WebWhatsappProvider extends ProviderClass {
                     return
                 }
                 payload.from = wwebCleanNumber(payload.from, true)
-                if (payload._data.lat && payload._data.lng) {
+                if (payload?._data?.lat && payload?._data?.lng) {
                     payload = { ...payload, body: utils.generateRefprovider('_event_location_') }
                 }
 
