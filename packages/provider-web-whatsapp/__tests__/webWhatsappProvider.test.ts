@@ -1,8 +1,9 @@
-import { spy, stub } from 'sinon'
+import { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { WebWhatsappProvider } from '../src/index'
 import { Buttons } from 'whatsapp-web.js'
+
+import { WebWhatsappProvider } from '../src/index'
 
 const webWhatsappProvider = new WebWhatsappProvider({ name: 'bot', gifPlayback: false })
 const emitStub = stub()

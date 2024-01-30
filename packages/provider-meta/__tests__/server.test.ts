@@ -29,13 +29,13 @@ test('start -should start MetaWebHookServer and emit "ready"', async () => {
 
 test('tokenIsValid - method should return true for valid token', () => {
     const metaWebHookServer = new MetaWebHookServer('valid-jwt', '123', 'v1', 'valid-token')
-    const result = metaWebHookServer.tokenIsValid('subscribe', 'valid-token')
+    const result = metaWebHookServer['tokenIsValid']('subscribe', 'valid-token')
     assert.equal(result, true)
 })
 
 test('tokenIsValid method should return false for invalid token', () => {
     const metaWebHookServer = new MetaWebHookServer('valid-jwt', '123', 'v1', 'valid-token')
-    const result = metaWebHookServer.tokenIsValid('subscribe', 'invalid-token')
+    const result = metaWebHookServer['tokenIsValid']('subscribe', 'invalid-token')
     assert.equal(result, false)
 })
 
@@ -43,7 +43,7 @@ test('verifyToken - should return 403 and "No token!" if mode or token are missi
     const metaWebHookServer = new MetaWebHookServer('valid-jwt', '123', 'v1', 'valid-token')
     const req = { query: {} }
 
-    metaWebHookServer.verifyToken(req, resMock)
+    metaWebHookServer['verifyToken'](req, resMock)
     assert.is(resMock.statusCode, 403)
     assert.is(resMock.end.calledWith('No token!'), true)
 })
@@ -51,7 +51,7 @@ test('verifyToken - should return 403 and "No token!" if mode or token are missi
 test('verifyToken - should return 403 and "Invalid token!" if token is invalid', () => {
     const metaWebHookServer = new MetaWebHookServer('valid-jwt', '123', 'v1', 'valid-token')
     const req = { query: { 'hub.mode': 'subscribe', 'hub.verify_token': 'invalid-token' } }
-    metaWebHookServer.verifyToken(req, resMock)
+    metaWebHookServer['verifyToken'](req, resMock)
     assert.is(resMock.statusCode, 403)
     assert.is(resMock.end.calledWith('Invalid token!'), true)
 })
@@ -62,7 +62,7 @@ test('verifyToken - should return 200 and the challenge if token is valid', () =
     const req = {
         query: { 'hub.mode': 'subscribe', 'hub.verify_token': 'valid-token', 'hub.challenge': challengeValue },
     }
-    metaWebHookServer.verifyToken(req, resMock)
+    metaWebHookServer['verifyToken'](req, resMock)
     assert.is(resMock.statusCode, 200)
     assert.is(resMock.end.calledWith(challengeValue), true)
 })
@@ -70,7 +70,7 @@ test('verifyToken - should return 200 and the challenge if token is valid', () =
 test('emptyCtrl - should call res.end with an empty string', () => {
     const metaWebHookServer = new MetaWebHookServer('valid-jwt', '123', 'v1', 'valid-token')
     const req = {}
-    metaWebHookServer.emptyCtrl(req, resMock)
+    metaWebHookServer['emptyCtrl'](req, resMock)
     assert.is(resMock.end.calledWith(''), true)
 })
 
@@ -84,7 +84,7 @@ test('processMessage emits the correct message', () => {
         body: 'Hello!',
         pushName: 'John Doe',
     }
-    server.processMessage(message)
+    server['processMessage'](message)
     assert.equal(mockEmit.calledWith('message', message), true)
 })
 
@@ -110,7 +110,7 @@ test('incomingMsg - incomingMsg should process messages correctly', async () => 
     }
 
     const enqueueStub = spy(server['messageQueue'], 'enqueue')
-    await server.incomingMsg(req, resMock)
+    await server['incomingMsg'](req, resMock)
     assert.equal(resMock.statusCode, 200)
     assert.ok(resMock.end.calledWith('Messages enqueued'))
     assert.ok(enqueueStub.called)
@@ -135,7 +135,7 @@ test('incomingMsg - No debe llamar el metodo messageQueuey retornar el mensaje e
         },
     }
     const enqueueStub = spy(server['messageQueue'], 'enqueue')
-    await server.incomingMsg(req, resMock)
+    await server['incomingMsg'](req, resMock)
     assert.equal(resMock.statusCode, 200)
     assert.ok(resMock.end.calledWith('empty endpoint'))
     assert.ok(enqueueStub.notCalled)

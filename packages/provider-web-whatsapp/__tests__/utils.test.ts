@@ -1,10 +1,11 @@
-import { stub } from 'sinon'
-import { test } from 'uvu'
-import * as assert from 'uvu/assert'
-import { wwebCleanNumber, wwebDownloadMedia, wwebGenerateImage, wwebIsValidNumber } from '../src/utils'
 import EventEmitter from 'events'
 import { existsSync, unlinkSync } from 'fs-extra'
 import { join } from 'path'
+import { stub } from 'sinon'
+import { test } from 'uvu'
+import * as assert from 'uvu/assert'
+
+import { wwebCleanNumber, wwebDownloadMedia, wwebGenerateImage, wwebIsValidNumber } from '../src/utils'
 
 const utilsMock = {
     cleanImage: stub(),

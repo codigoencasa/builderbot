@@ -474,6 +474,9 @@ importers:
             '@types/pg':
                 specifier: ^8.10.9
                 version: 8.10.9
+            '@types/sinon':
+                specifier: ^17.0.3
+                version: 17.0.3
             kleur:
                 specifier: ^4.1.5
                 version: 4.1.5
