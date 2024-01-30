@@ -876,6 +876,9 @@ importers:
             '@types/sharp':
                 specifier: ^0.32.0
                 version: 0.32.0
+            '@types/sinon':
+                specifier: ^17.0.3
+                version: 17.0.3
             mime-types:
                 specifier: ^2.1.35
                 version: 2.1.35
@@ -891,6 +894,9 @@ importers:
             rollup-plugin-typescript2:
                 specifier: ^0.36.0
                 version: 0.36.0(rollup@4.9.5)(typescript@5.3.3)
+            sinon:
+                specifier: ^17.0.1
+                version: 17.0.1
 
     packages/provider-wppconnect:
         dependencies:
