@@ -1,10 +1,10 @@
+import { utils } from '@bot-whatsapp/bot'
 import { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 import { Buttons } from 'whatsapp-web.js'
 
 import { WebWhatsappProvider } from '../src/index'
-import { utils } from '@bot-whatsapp/bot'
 
 const hookClose = async () => {
     await utils.delay(2000)
