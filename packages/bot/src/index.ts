@@ -58,7 +58,10 @@ const createFlow = (args: TFlow[]): FlowClass => {
  * Depdendiendo del Provider puedes pasar argumentos
  * Ver Documentacion
  */
-const createProvider = <T extends ProviderClass>(providerClass: new (args: any) => T, args: any = null): T => {
+const createProvider = <T extends ProviderClass, K = typeof ProviderClass.prototype.globalVendorArgs>(
+    providerClass: new (args: K) => T,
+    args: K = null
+): T => {
     const providerInstance = new providerClass(args)
     if (!(providerClass.prototype instanceof ProviderClass)) {
         throw new Error('El provider no implementa ProviderClass')

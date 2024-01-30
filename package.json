@@ -95,6 +95,7 @@
     "husky": "^8.0.3",
     "install": "^0.13.0",
     "lerna": "^8.0.2",
+    "lerna-lcov-aggregate": "^1.0.0",
     "nx": "^17.2.8",
     "only-allow": "^1.2.1",
     "prettier": "^2.8.8",

@@ -15,7 +15,7 @@
         "**/_mock_",
         "**/_mocks_"
         ],
-    "reporter": ["html"],
+    "reporter": ["html","lcov"],
     "report-dir": "./coverage",
     "check-coverage": true,
     "lines": 65

@@ -4,3 +4,5 @@
 - asegurar el covergage 90%
 - cambiar los startes
 - cambiar el CONTRIBUTING.md
+- cambiar contexto de sendMessage en los providers
+- todos los providers deben tener "globalVendorArgs"

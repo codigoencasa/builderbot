@@ -24,6 +24,7 @@ class MetaProvider extends ProviderClass {
         this.jwtToken = jwtToken
         this.numberId = numberId
         this.version = version
+        //TODO esta dependencia debe moverse
         this.http = new MetaWebHookServer(jwtToken, numberId, version, verifyToken, port)
         this.http.start()
 

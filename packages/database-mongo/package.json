@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/database-mongo",
-    "version": "0.1.2-alpha.0",
+    "version": "0.1.3-alpha.3",
     "description": "Esto es el conector a mongo DB",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",

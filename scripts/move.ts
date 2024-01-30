@@ -50,7 +50,7 @@ const listLib: { name: string }[] = [
         name: 'contexts-dialogflow',
     },
     {
-        name: 'contexts',
+        name: 'contexts-dialogflow-cx',
     },
     // {
     //     name:'contexts'
