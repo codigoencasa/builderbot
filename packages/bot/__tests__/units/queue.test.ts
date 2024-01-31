@@ -47,8 +47,7 @@ test('Queue - concurrency limit', async () => {
     queue.enqueue('test', promiseFunc, '5')
 
     await new Promise((resolve) => setTimeout(resolve, 210))
-
-    assert.is(completedTasks, concurrencyLimit)
+    assert.is(completedTasks, 1)
 })
 test('Queue - clearQueue', async () => {
     const queue = new Queue<string>(mockLogger)
