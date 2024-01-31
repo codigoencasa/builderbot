@@ -223,7 +223,7 @@ test('sendMessage - should call the method vendor.sendText ', async () => {
     assert.equal(sendTextStub.args[0][1], message)
 })
 
-test('busEvents - onMessage deberia returnar undefined', async () => {
+test('busEvents - onMessage should return undefined', async () => {
     const payload: any = {
         from: 'status@broadcast',
         type: 'image',
@@ -233,7 +233,7 @@ test('busEvents - onMessage deberia returnar undefined', async () => {
     assert.equal(emitStub.args[0], undefined)
 })
 
-test('busEvents - onMessage deberia returnar undefined', async () => {
+test('busEvents - onMessage should return undefined', async () => {
     const payload: any = {
         from: '123@g.us',
         type: 'image',

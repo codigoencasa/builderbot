@@ -70,7 +70,6 @@ class TwilioProvider extends ProviderClass {
         const ecrypPath = utils.encryptData(encodeURIComponent(mediaInput))
         const urlEncode = `${this.publicUrl}/tmp?path=${ecrypPath}`
         const regexUrl = /^(?!https?:\/\/)[^\s]+$/
-
         const urlNotice = [
             `[NOTA]: Estas intentando enviar una fichero que esta en local.`,
             `[NOTA]: Para que esto funcione con Twilio necesitas que el fichero este en una URL publica`,
@@ -84,8 +83,8 @@ class TwilioProvider extends ProviderClass {
             mediaInput.includes('0.0.0.0') ||
             regexUrl.test(mediaInput)
         ) {
-            console.log(urlNotice)
             mediaInput = urlEncode
+            console.log(urlNotice)
         }
 
         number = parseNumber(number)

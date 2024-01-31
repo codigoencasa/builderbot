@@ -1,30 +1,45 @@
-import { spy } from 'sinon'
+import * as sinon from 'sinon'
 import { test } from 'uvu'
-import * as assert from 'uvu/assert'
 
 import { processDynamicFlowAwait } from '../src/rules/processDynamicFlowAwait'
-import { INode } from '../src/types'
+import { Context, INode } from '../src/types'
 
-test('processDynamicFlowAwait should report issue when not inside AwaitExpression', () => {
-    const node: INode = {
-        type: 'CallExpression',
-        callee: { property: { name: 'flowDynamic' } },
-        parent: {
-            type: 'test',
+const createMockNode = (type: string, calleeName?: string): INode => ({
+    type,
+    callee: {
+        property: {
+            name: calleeName,
         },
-    }
+    },
+    parent: null as any,
+})
 
-    const context = {
-        report: (options) => {
-            assert.equal(options.node, node)
-            assert.equal(options.message, 'Please use "await" before "flowDynamic" function')
-        },
+test('processDynamicFlowAwait - should report an error if endFlow is not inside a ReturnStatement', () => {
+    const node = createMockNode('CallExpression', 'addAction')
+    const parentNode = createMockNode('SomeOtherType')
+    const context: Context = {
+        report: sinon.fake(),
     }
-
-    const reportSpy = spy(context, 'report')
+    node.parent = parentNode
 
     processDynamicFlowAwait(context)['CallExpression[callee.name="flowDynamic"]'](node)
-    assert.ok(reportSpy)
+    sinon.assert.calledOnceWithExactly(context.report as sinon.SinonSpy, {
+        node,
+        message: 'Please use "await" before "flowDynamic" function',
+        fix: sinon.match.func,
+    })
+})
+
+test('processDynamicFlowAwait - return', () => {
+    const node = createMockNode('CallExpression', 'someOtherFunction')
+    const parentNode = createMockNode('SomeOtherType')
+    const context: Context = {
+        report: sinon.fake(),
+    }
+    node.parent = parentNode
+
+    processDynamicFlowAwait(context)['CallExpression[callee.name="flowDynamic"]'](node)
+    sinon.assert.notCalled(context.report as sinon.SinonSpy)
 })
 
 test.run()
