@@ -51,8 +51,9 @@ class TwilioWebHookServer extends EventEmitter {
             body: body.Body,
         }
 
-        if (body.NumMedia !== '0' && body.MediaContentType0) {
-            const type = body.MediaContentType0.split('/')[0]
+        if (body?.NumMedia !== '0' && body?.MediaContentType0) {
+            const type = body?.MediaContentType0.split('/')[0]
+            console.log('type--->', type)
             switch (type) {
                 case 'audio':
                     payload.body = utils.generateRefprovider('_event_voice_note_')

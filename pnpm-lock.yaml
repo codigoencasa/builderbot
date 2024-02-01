@@ -93,7 +93,7 @@ importers:
                 version: 2.1.2
             follow-redirects:
                 specifier: ^1.15.5
-                version: 1.15.5
+                version: 1.15.5(debug@4.3.4)
             mime-types:
                 specifier: ^2.1.35
                 version: 2.1.35
@@ -400,15 +400,24 @@ importers:
             '@types/node':
                 specifier: ^20.11.0
                 version: 20.11.5
+            '@types/sinon':
+                specifier: ^17.0.3
+                version: 17.0.3
             kleur:
                 specifier: ^4.1.5
                 version: 4.1.5
+            mongodb-memory-server:
+                specifier: ^9.1.6
+                version: 9.1.6
             rimraf:
                 specifier: ^3.0.2
                 version: 3.0.2
             rollup-plugin-typescript2:
                 specifier: ^0.36.0
                 version: 0.36.0(rollup@4.9.5)(typescript@5.3.3)
+            sinon:
+                specifier: ^17.0.1
+                version: 17.0.1
             tslib:
                 specifier: ^2.6.2
                 version: 2.6.2
@@ -2744,7 +2753,6 @@ packages:
         requiresBuild: true
         dependencies:
             sparse-bitfield: 3.0.3
-        dev: false
         optional: true
 
     /@nodelib/fs.scandir@2.1.5:
@@ -5141,7 +5149,6 @@ packages:
             {
                 integrity: sha512-xTE1E+YF4aWPJJeUzaZI5DRntlkY3+BCVJi0axFptnjGmAoWxkyREIh/XMrfxVLejwQxMCfDXdICo0VLxThrog==,
             }
-        dev: false
 
     /@types/whatwg-url@8.2.2:
         resolution:
@@ -5151,7 +5158,6 @@ packages:
         dependencies:
             '@types/node': 20.11.5
             '@types/webidl-conversions': 7.0.0
-        dev: false
 
     /@types/yauzl@2.10.3:
         resolution:
@@ -5987,6 +5993,15 @@ packages:
         dependencies:
             tslib: 2.6.2
 
+    /async-mutex@0.4.1:
+        resolution:
+            {
+                integrity: sha512-WfoBo4E/TbCX1G95XTjbWTE3X2XLG0m1Xbv2cwOtuPdyH9CZvnaA5nCt1ucjaKEgW2A5IF71hxrRhr83Je5xjA==,
+            }
+        dependencies:
+            tslib: 2.6.2
+        dev: true
+
     /async@2.6.4:
         resolution:
             {
@@ -6090,7 +6105,7 @@ packages:
                 integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==,
             }
         dependencies:
-            follow-redirects: 1.15.5
+            follow-redirects: 1.15.5(debug@4.3.4)
         transitivePeerDependencies:
             - debug
         dev: true
@@ -6101,7 +6116,7 @@ packages:
                 integrity: sha512-Ii012v05KEVuUoFWmMW/UQv9aRIc3ZwkWDcM+h5Il8izZCtRVpDUfwpoFf7eOtajT3QiGR4yDUx7lPqHJULgbg==,
             }
         dependencies:
-            follow-redirects: 1.15.5
+            follow-redirects: 1.15.5(debug@4.3.4)
             form-data: 4.0.0
             proxy-from-env: 1.1.0
         transitivePeerDependencies:
@@ -6334,6 +6349,14 @@ packages:
         dependencies:
             buffer: 5.7.1
         dev: false
+
+    /bson@5.5.1:
+        resolution:
+            {
+                integrity: sha512-ix0EwukN2EpC0SRWIj/7B5+A6uQMQy6KMREI9qQqvgpkV2frH63T0UDVd1SYedL6dNCmDBYB3QtXi4ISk9YT+g==,
+            }
+        engines: { node: '>=14.20.1' }
+        dev: true
 
     /buffer-crc32@0.2.13:
         resolution:
@@ -6641,7 +6664,6 @@ packages:
                 integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==,
             }
         engines: { node: '>=10' }
-        dev: false
 
     /camelcase@7.0.1:
         resolution:
@@ -9658,7 +9680,7 @@ packages:
             }
         dev: false
 
-    /follow-redirects@1.15.5:
+    /follow-redirects@1.15.5(debug@4.3.4):
         resolution:
             {
                 integrity: sha512-vSFWUON1B+yAw1VN4xMfxgn5fTUiaOzAJCKBwIIgT/+7CuGy9+r+5gITvP62j3RmaD5Ph65UaERdOSRGUzZtgw==,
@@ -9669,6 +9691,8 @@ packages:
         peerDependenciesMeta:
             debug:
                 optional: true
+        dependencies:
+            debug: 4.3.4
 
     /for-each@0.3.3:
         resolution:
@@ -12900,7 +12924,6 @@ packages:
                 integrity: sha512-ZS4Bp4r/Zoeq6+NLJpP+0Zzm0pR8whtGPf1XExKLJBAczGMnSi3It14OiNCStjQjM6NU1okjQGSxgEZN8eBYKg==,
             }
         requiresBuild: true
-        dev: false
         optional: true
 
     /meow@12.1.1:
@@ -13335,7 +13358,53 @@ packages:
         dependencies:
             '@types/whatwg-url': 8.2.2
             whatwg-url: 11.0.0
-        dev: false
+
+    /mongodb-memory-server-core@9.1.6:
+        resolution:
+            {
+                integrity: sha512-3H/dq5II+XcSbK80hicMw4zFlDxcpjt4oWJq76RlOVuLoaf3AFqVheR6Vqx9ymlIqER4Jni58FMCIIRbesia1A==,
+            }
+        engines: { node: '>=14.20.1' }
+        dependencies:
+            async-mutex: 0.4.1
+            camelcase: 6.3.0
+            debug: 4.3.4
+            find-cache-dir: 3.3.2
+            follow-redirects: 1.15.5(debug@4.3.4)
+            https-proxy-agent: 7.0.2
+            mongodb: 5.9.2
+            new-find-package-json: 2.0.0
+            semver: 7.5.4
+            tar-stream: 3.1.6
+            tslib: 2.6.2
+            yauzl: 2.10.0
+        transitivePeerDependencies:
+            - '@aws-sdk/credential-providers'
+            - '@mongodb-js/zstd'
+            - kerberos
+            - mongodb-client-encryption
+            - snappy
+            - supports-color
+        dev: true
+
+    /mongodb-memory-server@9.1.6:
+        resolution:
+            {
+                integrity: sha512-gzcpgGYlPhuKmria37W+bvYy6W+OkX2UVG7MoP41OWFvQv2Hn7A+fLXkV+lsMmhog1lMQprdV6AR+gixgheLaw==,
+            }
+        engines: { node: '>=14.20.1' }
+        requiresBuild: true
+        dependencies:
+            mongodb-memory-server-core: 9.1.6
+            tslib: 2.6.2
+        transitivePeerDependencies:
+            - '@aws-sdk/credential-providers'
+            - '@mongodb-js/zstd'
+            - kerberos
+            - mongodb-client-encryption
+            - snappy
+            - supports-color
+        dev: true
 
     /mongodb@4.11.0:
         resolution:
@@ -13371,6 +13440,37 @@ packages:
         transitivePeerDependencies:
             - aws-crt
         dev: false
+
+    /mongodb@5.9.2:
+        resolution:
+            {
+                integrity: sha512-H60HecKO4Bc+7dhOv4sJlgvenK4fQNqqUIlXxZYQNbfEWSALGAwGoyJd/0Qwk4TttFXUOHJ2ZJQe/52ScaUwtQ==,
+            }
+        engines: { node: '>=14.20.1' }
+        peerDependencies:
+            '@aws-sdk/credential-providers': ^3.188.0
+            '@mongodb-js/zstd': ^1.0.0
+            kerberos: ^1.0.0 || ^2.0.0
+            mongodb-client-encryption: '>=2.3.0 <3'
+            snappy: ^7.2.2
+        peerDependenciesMeta:
+            '@aws-sdk/credential-providers':
+                optional: true
+            '@mongodb-js/zstd':
+                optional: true
+            kerberos:
+                optional: true
+            mongodb-client-encryption:
+                optional: true
+            snappy:
+                optional: true
+        dependencies:
+            bson: 5.5.1
+            mongodb-connection-string-url: 2.6.0
+            socks: 2.7.1
+        optionalDependencies:
+            '@mongodb-js/saslprep': 1.1.4
+        dev: true
 
     /mpg123-decoder@0.4.12:
         resolution:
@@ -13568,6 +13668,18 @@ packages:
                 integrity: sha512-dBpDMdxv9Irdq66304OLfEmQ9tbNRFnFTuZiLo+bD+r332bBmMJ8GBLXklIXXgxd3+v9+KUnZaUR5PJMa75Gsg==,
             }
         engines: { node: '>= 0.4.0' }
+
+    /new-find-package-json@2.0.0:
+        resolution:
+            {
+                integrity: sha512-lDcBsjBSMlj3LXH2v/FW3txlh2pYTjmbOXPYJD93HI5EwuLzI11tdHSIpUMmfq/IOsldj4Ps8M8flhm+pCK4Ew==,
+            }
+        engines: { node: '>=12.22.0' }
+        dependencies:
+            debug: 4.3.4
+        transitivePeerDependencies:
+            - supports-color
+        dev: true
 
     /nise@5.1.7:
         resolution:
@@ -17241,7 +17353,6 @@ packages:
         requiresBuild: true
         dependencies:
             memory-pager: 1.5.0
-        dev: false
         optional: true
 
     /spawn-please@2.0.2:
@@ -17991,7 +18102,6 @@ packages:
         engines: { node: '>=12' }
         dependencies:
             punycode: 2.3.1
-        dev: false
 
     /traverse@0.3.9:
         resolution:
@@ -18785,7 +18895,6 @@ packages:
                 integrity: sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==,
             }
         engines: { node: '>=12' }
-        dev: false
 
     /whatsapp-web.js@1.23.0:
         resolution:
@@ -18821,7 +18930,6 @@ packages:
         dependencies:
             tr46: 3.0.0
             webidl-conversions: 7.0.0
-        dev: false
 
     /whatwg-url@5.0.0:
         resolution:

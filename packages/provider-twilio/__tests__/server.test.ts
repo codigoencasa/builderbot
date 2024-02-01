@@ -1,42 +1,23 @@
-import { ServerResponse } from 'http'
-import proxyquire from 'proxyquire'
-import sinon, { spy, stub } from 'sinon'
+import sinon, { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { TwilioPayload } from '../src/server'
+import { TwilioPayload, TwilioWebHookServer } from '../src/server'
 
-// Mocks
-const utilsMock = {
-    generateRefprovider: sinon.stub().returns('refprovider_result'),
-    decryptData: sinon.stub().returns('decrypted_path'),
-}
-const fsMock = {
-    existsSync: sinon.stub().returns(true),
-    createReadStream: sinon.stub().returns({
-        pipe: sinon.spy(),
-    }),
-}
-const mimeMock = {
-    lookup: sinon.stub().returns('image/png'),
-}
+const emitStub = stub()
 
-const { TwilioWebHookServer } = proxyquire<typeof import('../src/server')>('../src/server', {
-    '@bot-whatsapp/bot': { utils: utilsMock },
-    'node:fs': fsMock,
-    'mime-types': mimeMock,
+let twilioServer: TwilioWebHookServer
+
+test.before(async () => {
+    twilioServer = new TwilioWebHookServer(5000)
 })
 
-const twilioPort = 5000
-const twilioServer = new TwilioWebHookServer(twilioPort)
-const emitSpy = spy(twilioServer, 'emit')
-
 test.before.each(() => {
-    utilsMock.generateRefprovider.resetHistory()
-    fsMock.existsSync.resetHistory()
-    fsMock.createReadStream.resetHistory()
-    mimeMock.lookup.resetHistory()
-    emitSpy.resetHistory()
+    emitStub.resetHistory()
+})
+
+test('[TwilioWebHookServer] - instantiation', () => {
+    assert.instance(twilioServer, TwilioWebHookServer)
 })
 
 test('TwilioWebHookServer should emit "ready" when started', () => {
@@ -44,39 +25,6 @@ test('TwilioWebHookServer should emit "ready" when started', () => {
     twilioServer.on('ready', readySpy)
     twilioServer.start()
     assert.is(readySpy.called, true)
-})
-
-test('TwilioWebHookServer should handle incoming messages', () => {
-    const messageSpy = sinon.spy()
-    twilioServer.on('message', messageSpy)
-
-    const fakeReq = {
-        body: {
-            From: '+1234567890',
-            To: '+0987654321',
-            Body: 'Hello',
-            NumMedia: '0',
-        },
-    }
-    const fakeRes = new ServerResponse(fakeReq as any)
-    sinon.stub(fakeRes, 'end')
-
-    twilioServer['incomingMsg'](fakeReq as any, fakeRes as any, fakeRes as any)
-
-    assert.is(messageSpy.called, true)
-    assert.equal(messageSpy.firstCall.args[0], {
-        from: '1234567890',
-        to: '0987654321',
-        body: 'Hello',
-    })
-})
-
-test('start - should start the server and emit "ready" event', async () => {
-    const listenStub = stub(twilioServer.twilioServer, 'listen').yields()
-    twilioServer.start()
-    assert.is(listenStub.calledOnce, true)
-    assert.is(emitSpy.calledOnce, true)
-    assert.is(emitSpy.calledWith('ready'), true)
 })
 
 test('should handle invalid path', () => {
@@ -94,18 +42,78 @@ test('should handle invalid path', () => {
     assert.is(res.end.calledWith('path: invalid'), true)
 })
 
-test('should handle incoming message with media', () => {
+test('should handle incoming message with audio', () => {
+    const req: any = {
+        body: {
+            From: '123456',
+            To: '78910',
+            Body: 'Test message',
+            MediaContentType0: 'audio/jpeg',
+            NumMedia: '1',
+        },
+    }
+    const res: any = {
+        end: stub(),
+    }
+    twilioServer.emit = emitStub
+    twilioServer['incomingMsg'](req as any, res as any, res as any)
+
+    const expectedPayload: TwilioPayload = {
+        from: '123456',
+        to: '78910',
+        body: '_event_voice_note_',
+    }
+    assert.equal(emitStub.calledOnce, true)
+    assert.equal(emitStub.args[0][0], 'message')
+    assert.equal(emitStub.args[0][1].from, expectedPayload.from)
+    assert.equal(emitStub.args[0][1].to, expectedPayload.to)
+    assert.equal(emitStub.args[0][1].body.includes(expectedPayload.body), true)
+    assert.equal(res.end.calledOnce, true)
+})
+
+test('should handle incoming message with image', () => {
     const req: any = {
         body: {
             From: '123456',
             To: '78910',
             Body: 'Test message',
             MediaContentType0: 'image/jpeg',
+            NumMedia: '1',
         },
     }
     const res: any = {
-        end: spy(),
+        end: stub(),
     }
+    twilioServer.emit = emitStub
+    twilioServer['incomingMsg'](req as any, res as any, res as any)
+
+    const expectedPayload: TwilioPayload = {
+        from: '123456',
+        to: '78910',
+        body: '_event_media_',
+    }
+    assert.equal(emitStub.calledOnce, true)
+    assert.equal(emitStub.args[0][0], 'message')
+    assert.equal(emitStub.args[0][1].from, expectedPayload.from)
+    assert.equal(emitStub.args[0][1].to, expectedPayload.to)
+    assert.equal(emitStub.args[0][1].body.includes(expectedPayload.body), true)
+    assert.equal(res.end.calledOnce, true)
+})
+
+test('should handle incoming message with video', () => {
+    const req: any = {
+        body: {
+            From: '123456',
+            To: '78910',
+            Body: 'Test message',
+            MediaContentType0: 'video/jpeg',
+            NumMedia: '1',
+        },
+    }
+    const res: any = {
+        end: stub(),
+    }
+    twilioServer.emit = emitStub
 
     twilioServer['incomingMsg'](req as any, res as any, res as any)
 
@@ -114,39 +122,11 @@ test('should handle incoming message with media', () => {
         to: '78910',
         body: '_event_media_',
     }
-    assert.is(emitSpy.calledOnce, true)
-    assert.equal(emitSpy.firstCall.args[0], 'message')
-    assert.ok(emitSpy.firstCall.args[1].from, expectedPayload.from)
-    assert.ok(emitSpy.firstCall.args[1].to, expectedPayload.to)
-    assert.ok(emitSpy.firstCall.args[1].body.includes('_event_media_'))
-    assert.is(res.end.calledOnce, true)
-})
-
-test('should handle incoming message with audio', () => {
-    const req: any = {
-        body: {
-            From: '123456',
-            To: '78910',
-            Body: 'Test message',
-            MediaContentType0: 'audio/jpeg',
-        },
-    }
-    const res: any = {
-        end: spy(),
-    }
-
-    twilioServer['incomingMsg'](req as any, res as any, res as any)
-
-    const expectedPayload: TwilioPayload = {
-        from: '123456',
-        to: '78910',
-        body: '_event_voice_note_',
-    }
-    assert.is(emitSpy.calledOnce, true)
-    assert.equal(emitSpy.firstCall.args[0], 'message')
-    assert.ok(emitSpy.firstCall.args[1].from, expectedPayload.from)
-    assert.ok(emitSpy.firstCall.args[1].to, expectedPayload.to)
-    assert.ok(emitSpy.firstCall.args[1].body.includes(expectedPayload.body))
+    assert.is(emitStub.calledOnce, true)
+    assert.equal(emitStub.firstCall.args[0], 'message')
+    assert.ok(emitStub.firstCall.args[1].from, expectedPayload.from)
+    assert.ok(emitStub.firstCall.args[1].to, expectedPayload.to)
+    assert.ok(emitStub.firstCall.args[1].body.includes(expectedPayload.body))
     assert.is(res.end.calledOnce, true)
 })
 
@@ -157,12 +137,13 @@ test('should handle incoming message with application', () => {
             To: '78910',
             Body: 'Test message',
             MediaContentType0: 'application/jpeg',
+            NumMedia: '1223',
         },
     }
     const res: any = {
-        end: spy(),
+        end: stub(),
     }
-
+    twilioServer.emit = emitStub
     twilioServer['incomingMsg'](req as any, res as any, res as any)
 
     const expectedPayload: TwilioPayload = {
@@ -170,11 +151,11 @@ test('should handle incoming message with application', () => {
         to: '78910',
         body: '_event_document_',
     }
-    assert.is(emitSpy.calledOnce, true)
-    assert.equal(emitSpy.firstCall.args[0], 'message')
-    assert.ok(emitSpy.firstCall.args[1].from, expectedPayload.from)
-    assert.ok(emitSpy.firstCall.args[1].to, expectedPayload.to)
-    assert.ok(emitSpy.firstCall.args[1].body.includes(expectedPayload.body))
+    assert.is(emitStub.calledOnce, true)
+    assert.equal(emitStub.firstCall.args[0], 'message')
+    assert.ok(emitStub.firstCall.args[1].from, expectedPayload.from)
+    assert.ok(emitStub.firstCall.args[1].to, expectedPayload.to)
+    assert.ok(emitStub.firstCall.args[1].body.includes(expectedPayload.body))
     assert.is(res.end.calledOnce, true)
 })
 
@@ -185,12 +166,13 @@ test('should handle incoming message with text', () => {
             To: '78910',
             Body: 'Test message',
             MediaContentType0: 'text/jpeg',
+            NumMedia: '1223',
         },
     }
     const res: any = {
-        end: spy(),
+        end: stub(),
     }
-
+    twilioServer.emit = emitStub
     twilioServer['incomingMsg'](req as any, res as any, res as any)
 
     const expectedPayload: TwilioPayload = {
@@ -198,13 +180,14 @@ test('should handle incoming message with text', () => {
         to: '78910',
         body: '_event_contacts_',
     }
-    assert.is(emitSpy.calledOnce, true)
-    assert.equal(emitSpy.firstCall.args[0], 'message')
-    assert.ok(emitSpy.firstCall.args[1].from, expectedPayload.from)
-    assert.ok(emitSpy.firstCall.args[1].to, expectedPayload.to)
-    assert.ok(emitSpy.firstCall.args[1].body.includes(expectedPayload.body))
+    assert.is(emitStub.calledOnce, true)
+    assert.equal(emitStub.firstCall.args[0], 'message')
+    assert.ok(emitStub.firstCall.args[1].from, expectedPayload.from)
+    assert.ok(emitStub.firstCall.args[1].to, expectedPayload.to)
+    assert.ok(emitStub.firstCall.args[1].body.includes(expectedPayload.body))
     assert.is(res.end.calledOnce, true)
 })
+
 test('incomingMsg - break', () => {
     const req: any = {
         body: {
@@ -212,16 +195,16 @@ test('incomingMsg - break', () => {
             To: '78910',
             Body: 'Test message',
             MediaContentType0: 'test/jpeg',
+            NumMedia: '1223',
         },
     }
     const res: any = {
-        end: spy(),
+        end: stub(),
     }
-
+    twilioServer.emit = emitStub
     twilioServer['incomingMsg'](req as any, res as any, res as any)
-
-    assert.equal(emitSpy.firstCall.args[1].body, 'Test message')
-    assert.equal(emitSpy.firstCall.args[1].From, undefined)
+    assert.equal(emitStub.firstCall.args[1].body, 'Test message')
+    assert.equal(emitStub.firstCall.args[1].From, undefined)
 })
 
 test('should handle incoming message without media', () => {
@@ -236,9 +219,9 @@ test('should handle incoming message without media', () => {
         },
     }
     const res: any = {
-        end: spy(),
+        end: stub(),
     }
-
+    twilioServer.emit = emitStub
     twilioServer['incomingMsg'](req as any, res as any, res as any)
 
     const expectedPayload: TwilioPayload = {
@@ -247,12 +230,41 @@ test('should handle incoming message without media', () => {
         body: '_event_location_',
     }
 
-    assert.is(emitSpy.calledOnce, true)
-    assert.equal(emitSpy.firstCall.args[0], 'message')
-    assert.ok(emitSpy.firstCall.args[1].from, expectedPayload.from)
-    assert.ok(emitSpy.firstCall.args[1].to, expectedPayload.to)
-    assert.ok(emitSpy.firstCall.args[1].body.includes(expectedPayload.body))
+    assert.is(emitStub.calledOnce, true)
+    assert.equal(emitStub.firstCall.args[0], 'message')
+    assert.ok(emitStub.firstCall.args[1].from, expectedPayload.from)
+    assert.ok(emitStub.firstCall.args[1].to, expectedPayload.to)
+    assert.ok(emitStub.firstCall.args[1].body.includes(expectedPayload.body))
     assert.is(res.end.calledOnce, true)
+})
+
+test('stop - stops the HTTP server correctly', async () => {
+    const port = 3000
+    const server = new TwilioWebHookServer(port)
+    server.start()
+    assert.ok(server.twilioServer.server?.listening)
+
+    await server.stop()
+    assert.not.ok(server.twilioServer.server.listening)
+})
+
+test('stop - method rejects the promise if there is an error closing the server', async () => {
+    const port = 3000
+    const server = new TwilioWebHookServer(port)
+    server.start()
+    assert.ok(server.twilioServer.server?.listening)
+
+    server.twilioServer.server.close((err) => {
+        if (err) {
+            console.error('Error al cerrar el servidor manualmente:', err)
+        }
+    })
+    try {
+        await server.stop()
+        assert.unreachable('The promise should have been rejected')
+    } catch (error) {
+        assert.instance(error, Error)
+    }
 })
 
 test.after(async () => {

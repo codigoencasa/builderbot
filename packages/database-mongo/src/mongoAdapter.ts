@@ -15,6 +15,7 @@ class MongoAdapter {
         try {
             const client = new MongoClient(this.credentials.dbUri, {})
             await client.connect()
+
             console.log('🆗 Conexión Correcta DB')
             const db = client.db(this.credentials.dbName)
             this.db = db

@@ -64,3 +64,5 @@ nonExistingFilePath
 *.opus 
 
 /packages/provider-web-whatsapp/bot.qr.png
+/packages/bot/__mock__/*.opus
+/packages/provider-web-whatsapp/.wwebjs_auth/*

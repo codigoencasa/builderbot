@@ -13,7 +13,6 @@ const processStateUpdateAwait = (context: any) => {
                 const rangeStart = node.range[0] - 6 // Longitud de "await "
                 const rangeEnd = node.range[0]
                 const parentNodeText = sourceCode.getText().substring(rangeStart, rangeEnd)
-                console.log('parentNodeText.includes ', parentNodeText.includes('await'))
                 if (parentNodeText.includes('await')) {
                     return
                 }
@@ -24,7 +23,6 @@ const processStateUpdateAwait = (context: any) => {
             if (!isInsideAddActionOrAddAnswer(node)) {
                 return
             }
-
             // Verificar si el nodo padre es 'AwaitExpression', de lo contrario se reporta
             if (parentNode.type !== 'AwaitExpression') {
                 context.report({
