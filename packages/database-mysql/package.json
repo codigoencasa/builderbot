@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/database-mysql",
-    "version": "0.1.3-alpha.3",
+    "version": "0.1.3-alpha.4",
     "description": "Esto es el conector a Mysql",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
