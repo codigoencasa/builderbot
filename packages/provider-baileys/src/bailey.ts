@@ -475,11 +475,7 @@ class BaileysProvider extends ProviderClass {
      * @example await sendMessage('+XXXXXXXXXXX', 'Hello World')
      */
 
-    sendMessage = async (
-        numberIn: string | number,
-        message: string,
-        { options }: { options: SendOptions }
-    ): Promise<any> => {
+    sendMessage = async (numberIn: string | number, message: string, options: SendOptions): Promise<any> => {
         const number = baileyCleanNumber(`${numberIn}`)
 
         if (options.buttons?.length) return this.sendButtons(number, message, options.buttons)
