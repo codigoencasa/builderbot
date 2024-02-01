@@ -1,24 +1,24 @@
 import { utils } from '@bot-whatsapp/bot'
 import { stub } from 'sinon'
-import { test } from 'uvu'
+import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 import { Buttons } from 'whatsapp-web.js'
 
 import { WebWhatsappProvider } from '../src/index'
 
 const hookClose = async () => {
-    await utils.delay(5000)
+    await utils.delay(2000)
     process.exit(0)
 }
 
-const webWhatsappProvider = new WebWhatsappProvider({ name: 'bot', gifPlayback: false })
+const test = suite('Provider Web Whatsapp')
 
-const vendorMock: any = webWhatsappProvider.vendor
-vendorMock.close = stub().callsFake(hookClose)
-webWhatsappProvider.vendor = vendorMock
+const webWhatsappProvider = new WebWhatsappProvider({ name: 'bot', gifPlayback: false })
 
 const emitStub = stub()
 const sendStub = stub().resolves('success')
+
+webWhatsappProvider.vendor.destroy = stub().callsFake(hookClose)
 
 test.after.each(() => {
     sendStub.resetHistory()
@@ -210,14 +210,15 @@ test('sendText - should send a text message correctly', async () => {
     const webWhatsappProvider = new WebWhatsappProvider({ name: 'bot', gifPlayback: false })
     webWhatsappProvider.vendor.sendMessage = sendStub
     const result = await webWhatsappProvider.sendText(number, message)
+
     assert.is(sendStub.calledOnce, true)
     assert.is(sendStub.firstCall.args[0], number)
     assert.is(sendStub.firstCall.args[1], message)
     assert.is(result, 'success')
 })
 
-// test.after(async () => {
-//     await (webWhatsappProvider.vendor as any).close()
-// })
+test.after(() => {
+    webWhatsappProvider.vendor.destroy()
+})
 
 test.run()

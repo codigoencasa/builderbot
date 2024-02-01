@@ -12,11 +12,6 @@ const utilsMock = {
     cleanImage: stub(),
 }
 
-// const hookClose = async () => {
-//     await utils.delay(5000)
-//     process.exit(0)
-// }
-
 const httpsMock = {
     get: stub(),
 }

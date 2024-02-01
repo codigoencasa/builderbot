@@ -3,7 +3,7 @@ import { urlencoded, json } from 'body-parser'
 import { createReadStream } from 'fs'
 import { EventEmitter } from 'node:events'
 import { join } from 'path'
-import polka, { Polka } from 'polka'
+import polka, { type Polka } from 'polka'
 
 import { BaileysProvider } from './bailey'
 import { BotCtxMiddleware } from './type'

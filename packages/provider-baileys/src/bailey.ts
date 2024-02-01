@@ -24,7 +24,7 @@ import {
     useMultiFileAuthState,
 } from './baileyWrapper'
 import { BaileyHttpServer } from './server'
-import { BotCtxMiddleware, GlobalVendorArgs, SendOptions } from './type'
+import { BotCtxMiddleware, ButtonOption, GlobalVendorArgs, SendOptions } from './type'
 import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber } from './utils'
 
 const logger = new Console({
@@ -303,6 +303,7 @@ class BaileysProvider extends ProviderClass {
     protected getMessage = async (key: { remoteJid: string; id: string }) => {
         if (this.store) {
             const msg = await this.store.loadMessage(key.remoteJid, key.id)
+            console.log('msg--->', msg?.message)
             return msg?.message || undefined
         }
         // only if store is present
@@ -417,7 +418,7 @@ class BaileysProvider extends ProviderClass {
      * @example await sendMessage("+XXXXXXXXXXX", "Your Text", "Your Footer", [{"buttonId": "id", "buttonText": {"displayText": "Button"}, "type": 1}])
      */
 
-    sendButtons = async (number: string, text: string, buttons: any[]) => {
+    sendButtons = async (number: string, text: string, buttons: ButtonOption[]) => {
         this.emit(
             'notice',
             [
@@ -426,8 +427,7 @@ class BaileysProvider extends ProviderClass {
             ].join('\n')
         )
         const numberClean = baileyCleanNumber(number)
-
-        const templateButtons = buttons.map((btn: { body: any }, i: any) => ({
+        const templateButtons = buttons.map((btn: { body }, i: any) => ({
             buttonId: `id-btn-${i}`,
             buttonText: { displayText: btn.body },
             type: 1,
@@ -568,7 +568,6 @@ class BaileysProvider extends ProviderClass {
         stickerOptions: Partial<IStickerOptions>,
         messages: any = null
     ) => {
-        console.log('url--->', url)
         const sticker = new Sticker(url, {
             ...stickerOptions,
             quality: 50,
