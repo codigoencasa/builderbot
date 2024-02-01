@@ -1,4 +1,4 @@
-import { utils } from '@bot-whatsapp/bot'
+// import { utils } from '@bot-whatsapp/bot'
 import { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
@@ -6,10 +6,10 @@ import { Buttons } from 'whatsapp-web.js'
 
 import { WebWhatsappProvider } from '../src/index'
 
-const hookClose = async () => {
-    await utils.delay(5000)
-    process.exit(0)
-}
+// const hookClose = async () => {
+//     await utils.delay(5000)
+//     process.exit(0)
+// }
 
 // const webWhatsappProvider = new WebWhatsappProvider({ name: 'bot', gifPlayback: false })
 

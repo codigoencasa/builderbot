@@ -1,3 +1,4 @@
+// import { utils } from '@bot-whatsapp/bot'
 import EventEmitter from 'events'
 import { existsSync, unlinkSync } from 'fs-extra'
 import { join } from 'path'
@@ -6,16 +7,15 @@ import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
 import { wwebCleanNumber, wwebDownloadMedia, wwebGenerateImage, wwebIsValidNumber } from '../src/utils'
-import { utils } from '@bot-whatsapp/bot'
 
 const utilsMock = {
     cleanImage: stub(),
 }
 
-const hookClose = async () => {
-    await utils.delay(5000)
-    process.exit(0)
-}
+// const hookClose = async () => {
+//     await utils.delay(5000)
+//     process.exit(0)
+// }
 
 const httpsMock = {
     get: stub(),
