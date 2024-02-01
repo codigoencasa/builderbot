@@ -1,26 +1,15 @@
-import { copy } from 'fs-extra'
 import { join } from 'path'
+import { rimraf } from 'rimraf'
 
 const PACKAGES_PATH: string = join(process.cwd(), 'packages')
-const NAME_PREFIX: string = '@bot-whatsapp'
-
-const [, , appDir]: string[] = process.argv
-
-interface CopyLibPkgOptions {
-    overwrite: boolean
-}
 
 /**
- * copiar dist
+ * limpiar los dist
  * @param pkgName
- * @param to
  */
-const copyLibPkg = async (pkgName: string, to: string): Promise<void> => {
+const deleteDist = async (pkgName: string): Promise<void> => {
     const FROM: string = join(PACKAGES_PATH, pkgName)
-    const TO: string = join(process.cwd(), to, 'node_modules', NAME_PREFIX, pkgName)
-    const options: CopyLibPkgOptions = { overwrite: true }
-    await copy(join(FROM, 'dist'), join(TO, 'dist'), options)
-    await copy(join(FROM, 'package.json'), join(TO, 'package.json'))
+    await rimraf(join(FROM, 'dist'))
 }
 
 const listLib: { name: string }[] = [
@@ -54,12 +43,9 @@ const listLib: { name: string }[] = [
 ]
 
 const main = async (): Promise<void> => {
-    if (!appDir) {
-        throw new Error('appDir is not specified in the arguments.')
-    }
     for (const iterator of listLib) {
-        await copyLibPkg(iterator.name, appDir)
-        console.log(`${iterator.name}: Copiado ✅`)
+        await deleteDist(iterator.name)
+        console.log(`${iterator.name}: Limpiar ✅`)
     }
 }
 

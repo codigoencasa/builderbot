@@ -64,6 +64,9 @@ importers:
             pretty-quick:
                 specifier: ^3.1.3
                 version: 3.1.3(prettier@2.8.8)
+            rimraf:
+                specifier: ^5.0.5
+                version: 5.0.5
             rollup:
                 specifier: ^4.9.3
                 version: 4.9.3
@@ -607,6 +610,9 @@ importers:
             '@ffmpeg-installer/ffmpeg':
                 specifier: ^1.1.0
                 version: 1.1.0
+            '@types/polka':
+                specifier: ^0.5.7
+                version: 0.5.7
             '@whiskeysockets/baileys':
                 specifier: ^6.6.0
                 version: 6.6.0
@@ -635,15 +641,9 @@ importers:
             '@types/node':
                 specifier: ^20.11.0
                 version: 20.11.5
-            '@types/polka':
-                specifier: ^0.5.7
-                version: 0.5.7
             '@types/qr-image':
                 specifier: ^3.2.9
                 version: 3.2.9
-            '@types/sharp':
-                specifier: ^0.32.0
-                version: 0.32.0
             body-parser:
                 specifier: ^1.20.2
                 version: 1.20.2
@@ -671,15 +671,9 @@ importers:
 
     packages/provider-meta:
         dependencies:
-            '@types/axios':
-                specifier: ^0.14.0
-                version: 0.14.0
             body-parser:
                 specifier: ^1.20.2
                 version: 1.20.2
-            crypto:
-                specifier: ^1.0.1
-                version: 1.0.1
             form-data:
                 specifier: ^4.0.0
                 version: 4.0.0
@@ -793,9 +787,6 @@ importers:
             '@types/sinon':
                 specifier: ^17.0.3
                 version: 17.0.3
-            '@types/twilio':
-                specifier: ^3.19.3
-                version: 3.19.3
             proxyquire:
                 specifier: ^2.1.3
                 version: 2.1.3
@@ -897,9 +888,6 @@ importers:
             '@types/qr-image':
                 specifier: ^3.2.9
                 version: 3.2.9
-            '@types/sharp':
-                specifier: ^0.32.0
-                version: 0.32.0
             '@types/sinon':
                 specifier: ^17.0.3
                 version: 17.0.3
@@ -1975,6 +1963,7 @@ packages:
         requiresBuild: true
         dependencies:
             tslib: 2.6.2
+        dev: false
         optional: true
 
     /@esbuild/android-arm@0.15.18:
@@ -2300,6 +2289,7 @@ packages:
         requiresBuild: true
         optionalDependencies:
             '@img/sharp-libvips-darwin-arm64': 1.0.1
+        dev: false
         optional: true
 
     /@img/sharp-darwin-x64@0.33.2:
@@ -2314,6 +2304,7 @@ packages:
         requiresBuild: true
         optionalDependencies:
             '@img/sharp-libvips-darwin-x64': 1.0.1
+        dev: false
         optional: true
 
     /@img/sharp-libvips-darwin-arm64@1.0.1:
@@ -2325,6 +2316,7 @@ packages:
         cpu: [arm64]
         os: [darwin]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@img/sharp-libvips-darwin-x64@1.0.1:
@@ -2336,6 +2328,7 @@ packages:
         cpu: [x64]
         os: [darwin]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@img/sharp-libvips-linux-arm64@1.0.1:
@@ -2347,6 +2340,7 @@ packages:
         cpu: [arm64]
         os: [linux]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@img/sharp-libvips-linux-arm@1.0.1:
@@ -2358,6 +2352,7 @@ packages:
         cpu: [arm]
         os: [linux]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@img/sharp-libvips-linux-s390x@1.0.1:
@@ -2369,6 +2364,7 @@ packages:
         cpu: [s390x]
         os: [linux]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@img/sharp-libvips-linux-x64@1.0.1:
@@ -2380,6 +2376,7 @@ packages:
         cpu: [x64]
         os: [linux]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@img/sharp-libvips-linuxmusl-arm64@1.0.1:
@@ -2391,6 +2388,7 @@ packages:
         cpu: [arm64]
         os: [linux]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@img/sharp-libvips-linuxmusl-x64@1.0.1:
@@ -2402,6 +2400,7 @@ packages:
         cpu: [x64]
         os: [linux]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@img/sharp-linux-arm64@0.33.2:
@@ -2416,6 +2415,7 @@ packages:
         requiresBuild: true
         optionalDependencies:
             '@img/sharp-libvips-linux-arm64': 1.0.1
+        dev: false
         optional: true
 
     /@img/sharp-linux-arm@0.33.2:
@@ -2430,6 +2430,7 @@ packages:
         requiresBuild: true
         optionalDependencies:
             '@img/sharp-libvips-linux-arm': 1.0.1
+        dev: false
         optional: true
 
     /@img/sharp-linux-s390x@0.33.2:
@@ -2444,6 +2445,7 @@ packages:
         requiresBuild: true
         optionalDependencies:
             '@img/sharp-libvips-linux-s390x': 1.0.1
+        dev: false
         optional: true
 
     /@img/sharp-linux-x64@0.33.2:
@@ -2458,6 +2460,7 @@ packages:
         requiresBuild: true
         optionalDependencies:
             '@img/sharp-libvips-linux-x64': 1.0.1
+        dev: false
         optional: true
 
     /@img/sharp-linuxmusl-arm64@0.33.2:
@@ -2472,6 +2475,7 @@ packages:
         requiresBuild: true
         optionalDependencies:
             '@img/sharp-libvips-linuxmusl-arm64': 1.0.1
+        dev: false
         optional: true
 
     /@img/sharp-linuxmusl-x64@0.33.2:
@@ -2486,6 +2490,7 @@ packages:
         requiresBuild: true
         optionalDependencies:
             '@img/sharp-libvips-linuxmusl-x64': 1.0.1
+        dev: false
         optional: true
 
     /@img/sharp-wasm32@0.33.2:
@@ -2498,6 +2503,7 @@ packages:
         requiresBuild: true
         dependencies:
             '@emnapi/runtime': 0.45.0
+        dev: false
         optional: true
 
     /@img/sharp-win32-ia32@0.33.2:
@@ -2509,6 +2515,7 @@ packages:
         cpu: [ia32]
         os: [win32]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@img/sharp-win32-x64@0.33.2:
@@ -2520,6 +2527,7 @@ packages:
         cpu: [x64]
         os: [win32]
         requiresBuild: true
+        dev: false
         optional: true
 
     /@isaacs/cliui@8.0.2:
@@ -4717,18 +4725,6 @@ packages:
             }
         dev: true
 
-    /@types/axios@0.14.0:
-        resolution:
-            {
-                integrity: sha512-KqQnQbdYE54D7oa/UmYVMZKq7CO4l8DEENzOKc4aBRwxCXSlJXGz83flFx5L7AWrOQnmuN3kVsRdt+GZPPjiVQ==,
-            }
-        deprecated: This is a stub types definition for axios (https://github.com/mzabriskie/axios). axios provides its own type definitions, so you don't need @types/axios installed!
-        dependencies:
-            axios: 1.6.5
-        transitivePeerDependencies:
-            - debug
-        dev: false
-
     /@types/body-parser@1.19.5:
         resolution:
             {
@@ -4737,7 +4733,6 @@ packages:
         dependencies:
             '@types/connect': 3.4.38
             '@types/node': 20.11.5
-        dev: true
 
     /@types/caseless@0.12.5:
         resolution:
@@ -4753,7 +4748,6 @@ packages:
             }
         dependencies:
             '@types/node': 20.11.5
-        dev: true
 
     /@types/cross-spawn@6.0.6:
         resolution:
@@ -4790,7 +4784,6 @@ packages:
             '@types/qs': 6.9.11
             '@types/range-parser': 1.2.7
             '@types/send': 0.17.4
-        dev: true
 
     /@types/express@4.17.21:
         resolution:
@@ -4802,7 +4795,6 @@ packages:
             '@types/express-serve-static-core': 4.17.41
             '@types/qs': 6.9.11
             '@types/serve-static': 1.15.5
-        dev: true
 
     /@types/fluent-ffmpeg@2.1.24:
         resolution:
@@ -4844,7 +4836,6 @@ packages:
             {
                 integrity: sha512-D0CFMMtydbJAegzOyHjtiKPLlvnm3iTZyZRSZoLq2mRhDdmLfIWOCYPfQJ4cu2erKghU++QvjcUjp/5h7hESpA==,
             }
-        dev: true
 
     /@types/istanbul-lib-coverage@2.0.5:
         resolution:
@@ -4904,14 +4895,12 @@ packages:
             {
                 integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==,
             }
-        dev: true
 
     /@types/mime@3.0.4:
         resolution:
             {
                 integrity: sha512-iJt33IQnVRkqeqC7PzBHPTC6fDlRNRW8vjrgqtScAhrmMwe8c4Eo7+fUGTa+XdWrpEgpyKWMYmi2dIwMAYRzPw==,
             }
-        dev: true
 
     /@types/minimatch@3.0.5:
         resolution:
@@ -4986,7 +4975,6 @@ packages:
             '@types/express-serve-static-core': 4.17.41
             '@types/node': 20.11.5
             '@types/trouter': 3.1.4
-        dev: true
 
     /@types/prompts@2.4.9:
         resolution:
@@ -5019,14 +5007,12 @@ packages:
             {
                 integrity: sha512-oGk0gmhnEJK4Yyk+oI7EfXsLayXatCWPHary1MtcmbAifkobT9cM9yutG/hZKIseOU0MqbIwQ/u2nn/Gb+ltuQ==,
             }
-        dev: true
 
     /@types/range-parser@1.2.7:
         resolution:
             {
                 integrity: sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==,
             }
-        dev: true
 
     /@types/request@2.48.12:
         resolution:
@@ -5071,7 +5057,6 @@ packages:
         dependencies:
             '@types/mime': 1.3.5
             '@types/node': 20.11.5
-        dev: true
 
     /@types/serve-static@1.15.5:
         resolution:
@@ -5082,17 +5067,6 @@ packages:
             '@types/http-errors': 2.0.4
             '@types/mime': 3.0.4
             '@types/node': 20.11.5
-        dev: true
-
-    /@types/sharp@0.32.0:
-        resolution:
-            {
-                integrity: sha512-OOi3kL+FZDnPhVzsfD37J88FNeZh6gQsGcLc95NbeURRGvmSjeXiDcyWzF2o3yh/gQAUn2uhh/e+CPCa5nwAxw==,
-            }
-        deprecated: This is a stub types definition. sharp provides its own type definitions, so you do not need this installed.
-        dependencies:
-            sharp: 0.33.2
-        dev: true
 
     /@types/sinon@17.0.3:
         resolution:
@@ -5129,20 +5103,6 @@ packages:
             {
                 integrity: sha512-4YIL/2AvvZqKBWenjvEpxpblT2KGO6793ipr5QS7/6DpQ3O3SwZGgNGWezxf3pzeYZc24a2pJIrR/+Jxh/wYNQ==,
             }
-        dev: true
-
-    /@types/twilio@3.19.3:
-        resolution:
-            {
-                integrity: sha512-W53Z0TDCu6clZ5CzTWHRPnpQAad+AANglx6WiQ4Mkxxw21o4BYBx5EhkfR6J4iYqY58rtWB3r8kDGJ4y1uTUGQ==,
-            }
-        deprecated: This is a stub types definition. twilio provides its own type definitions, so you do not need this installed.
-        dependencies:
-            twilio: 4.20.0
-        transitivePeerDependencies:
-            - debug
-            - supports-color
-        dev: true
 
     /@types/webidl-conversions@7.0.0:
         resolution:
@@ -7836,14 +7796,6 @@ packages:
         engines: { node: '>=12' }
         dependencies:
             type-fest: 1.4.0
-        dev: false
-
-    /crypto@1.0.1:
-        resolution:
-            {
-                integrity: sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig==,
-            }
-        deprecated: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
         dev: false
 
     /css-select@5.1.0:
@@ -17067,6 +17019,7 @@ packages:
             '@img/sharp-wasm32': 0.33.2
             '@img/sharp-win32-ia32': 0.33.2
             '@img/sharp-win32-x64': 0.33.2
+        dev: false
 
     /shebang-command@2.0.0:
         resolution:

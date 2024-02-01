@@ -29,9 +29,7 @@
         "url": "https://github.com/vicente1992/bot-whatsapp/issues"
     },
     "dependencies": {
-        "@types/axios": "^0.14.0",
         "body-parser": "^1.20.2",
-        "crypto": "^1.0.1",
         "form-data": "^4.0.0",
         "mime-types": "^2.1.35",
         "polka": "^0.5.2",
