@@ -25,31 +25,31 @@ test.before.each(() => {
     httpsMock.get.resetHistory()
 })
 
-test.skip('wwebCleanNumber - cleans the number without appending "@c.us" if full flag is true', () => {
+test('wwebCleanNumber - cleans the number without appending "@c.us" if full flag is true', () => {
     const inputNumber = '1234567890'
     const cleanedNumber = wwebCleanNumber(inputNumber, true)
     assert.is(cleanedNumber, '1234567890')
 })
 
-test.skip('Cleans the number and appends "@c.us" if full flag is false', () => {
+test('Cleans the number and appends "@c.us" if full flag is false', () => {
     const inputNumber = '1234567890'
     const cleanedNumber = wwebCleanNumber(inputNumber)
     assert.is(cleanedNumber, '1234567890@c.us')
 })
 
-test.skip('wwebIsValidNumber - debería devolver true para un número válido', () => {
+test('wwebIsValidNumber - debería devolver true para un número válido', () => {
     const rawNumber = '12345'
     const result = wwebIsValidNumber(rawNumber)
     assert.is(result, true)
 })
 
-test.skip('wwebIsValidNumber - debería devolver false para un número que contiene el patrón "@g.us"', () => {
+test('wwebIsValidNumber - debería devolver false para un número que contiene el patrón "@g.us"', () => {
     const rawNumber = '12345@g.us'
     const result = wwebIsValidNumber(rawNumber)
     assert.is(result, false)
 })
 
-test.skip('wwebGenerateImage - Generates an image from base64 string', async () => {
+test('wwebGenerateImage - Generates an image from base64 string', async () => {
     const base64String =
         'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/l8c3gAAAABJRU5ErkJggg=='
     const imageName = 'qr.png'
@@ -62,7 +62,7 @@ test.skip('wwebGenerateImage - Generates an image from base64 string', async () 
     assert.ok(utilsMock.cleanImage.called)
 })
 
-test.skip('Downloads media from a URL using http', async () => {
+test('Downloads media from a URL using http', async () => {
     const fakeResponse: any = new EventEmitter() as any
     fakeResponse.headers = { 'content-type': 'image/png' }
     const fileName = '2whHCbI.png'

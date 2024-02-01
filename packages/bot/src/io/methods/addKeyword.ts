@@ -9,7 +9,10 @@ import { generateRef } from '../../utils/hash'
  * @param options
  * @returns
  */
-const addKeyword = <P = any, B = any>(keyword: string | string[], options?: ActionPropertiesKeyword): TFlow<P, B> => {
+const addKeyword = <P = any, B = any>(
+    keyword: string | [string, ...string[]],
+    options?: ActionPropertiesKeyword
+): TFlow<P, B> => {
     if (typeof keyword !== 'string' && !Array.isArray(keyword)) {
         throw new Error('DEBE_SER_STRING_ARRAY_REGEX')
     }

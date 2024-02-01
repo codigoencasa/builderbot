@@ -1,31 +1,30 @@
-// import { utils } from '@bot-whatsapp/bot'
+import { utils } from '@bot-whatsapp/bot'
 import { stub } from 'sinon'
-import { test } from 'uvu'
+import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 import { Buttons } from 'whatsapp-web.js'
 
 import { WebWhatsappProvider } from '../src/index'
 
-// const hookClose = async () => {
-//     await utils.delay(5000)
-//     process.exit(0)
-// }
+const hookClose = async () => {
+    await utils.delay(2000)
+    process.exit(0)
+}
 
-// const webWhatsappProvider = new WebWhatsappProvider({ name: 'bot', gifPlayback: false })
+const test = suite('Provider Web Whatsapp')
 
-// const vendorMock: any = webWhatsappProvider.vendor
-// vendorMock.close = stub().callsFake(hookClose)
-// webWhatsappProvider.vendor = vendorMock
+const webWhatsappProvider = new WebWhatsappProvider({ name: 'bot', gifPlayback: false })
 
-// const emitStub = stub()
-// const sendStub = stub().resolves('success')
+const emitStub = stub()
+const sendStub = stub().resolves('success')
 
-// test.after.each(() => {
-//     sendStub.resetHistory()
-//     emitStub.resetHistory()
-// })
+;(webWhatsappProvider.vendor.destroy = stub().callsFake(hookClose)),
+    test.after.each(() => {
+        sendStub.resetHistory()
+        emitStub.resetHistory()
+    })
 
-test.skip('sendMessage - should call the method sendButtons', async () => {
+test('sendMessage - should call the method sendButtons', async () => {
     const to = '+123456789'
     const message = 'Test message'
     const argWithButtons: any = {
@@ -41,7 +40,7 @@ test.skip('sendMessage - should call the method sendButtons', async () => {
     assert.equal(sendButtonsStub.args[0][2], argWithButtons.options.buttons)
 })
 
-test.skip('sendMessage - should call the method sendMedia', async () => {
+test('sendMessage - should call the method sendMedia', async () => {
     const to = '+123456789'
     const message = 'Test message'
     const argWithMedia: any = {
@@ -57,7 +56,7 @@ test.skip('sendMessage - should call the method sendMedia', async () => {
     assert.equal(sendMediaStub.args[0][2], message)
 })
 
-test.skip('sendMessage - should call the method  sendText ', async () => {
+test('sendMessage - should call the method  sendText ', async () => {
     const to = '+123456789'
     const message = 'Test message'
     const argWithMedia: any = {}
@@ -68,7 +67,7 @@ test.skip('sendMessage - should call the method  sendText ', async () => {
     assert.equal(sendTextStub.args[0][1], message)
 })
 
-test.skip('busEvents - auth_failure emitir el payload', async () => {
+test('busEvents - auth_failure emitir el payload', async () => {
     const payload: any = {
         from: 'status@broadcast',
         type: 'auth_failure',
@@ -80,7 +79,7 @@ test.skip('busEvents - auth_failure emitir el payload', async () => {
     assert.equal(emitStub.args[0][1].type, payload.type)
 })
 
-test.skip('busEvents - qr issue the payload', async () => {
+test('busEvents - qr issue the payload', async () => {
     const payload: any = {
         type: 'qr',
     }
@@ -97,7 +96,7 @@ test.skip('busEvents - qr issue the payload', async () => {
     assert.equal(emitStub.args[0][1], dataSpect)
 })
 
-test.skip('busEvents - qr issue the payload', async () => {
+test('busEvents - qr issue the payload', async () => {
     const payload: any = {
         type: 'ready',
     }
@@ -111,7 +110,7 @@ test.skip('busEvents - qr issue the payload', async () => {
     assert.equal(emitStub.args[1][1], dataSpect)
 })
 
-test.skip('busEvents - message should return undefined', async () => {
+test('busEvents - message should return undefined', async () => {
     const payload: any = {
         from: 'status@broadcast',
         type: 'image',
@@ -121,7 +120,7 @@ test.skip('busEvents - message should return undefined', async () => {
     assert.equal(emitStub.args[0], undefined)
 })
 
-test.skip('busEvents - message should return undefined', async () => {
+test('busEvents - message should return undefined', async () => {
     const payload: any = {
         from: '123@g.us',
         type: 'image',
@@ -131,7 +130,7 @@ test.skip('busEvents - message should return undefined', async () => {
     assert.equal(emitStub.args[0], undefined)
 })
 
-test.skip('busEvents - message I should build the bodysuit for the guy lat y lng', async () => {
+test('busEvents - message I should build the bodysuit for the guy lat y lng', async () => {
     const payload: any = {
         from: '+123456789',
         _data: {
@@ -146,7 +145,7 @@ test.skip('busEvents - message I should build the bodysuit for the guy lat y lng
     assert.ok(emitStub.args[0][1].body.includes('_event_location_'))
 })
 
-test.skip('busEvents - message I should build the body suit for the guy imagen', async () => {
+test('busEvents - message I should build the body suit for the guy imagen', async () => {
     const payload: any = {
         from: '+123456789',
         type: 'image',
@@ -161,7 +160,7 @@ test.skip('busEvents - message I should build the body suit for the guy imagen',
     assert.ok(emitStub.called)
 })
 
-test.skip('busEvents - message I should build the body suit for the guy document', async () => {
+test('busEvents - message I should build the body suit for the guy document', async () => {
     const payload: any = {
         from: '+123456789',
         _data: {
@@ -175,7 +174,7 @@ test.skip('busEvents - message I should build the body suit for the guy document
     assert.ok(emitStub.called)
 })
 
-test.skip('busEvents - message I should build the body suit for the guy ptt', async () => {
+test('busEvents - message I should build the body suit for the guy ptt', async () => {
     const payload: any = {
         from: '+123456789',
         _data: {
@@ -189,7 +188,7 @@ test.skip('busEvents - message I should build the body suit for the guy ptt', as
     assert.ok(emitStub.called)
 })
 
-test.skip('sendButtons - should send a buttons message correctly', async () => {
+test('sendButtons - should send a buttons message correctly', async () => {
     const number = '+1234567890'
     const message = 'Mensaje con botones'
     const buttons: any = [{ body: 'Botón 1' }, { body: 'Botón 2' }]
@@ -204,20 +203,21 @@ test.skip('sendButtons - should send a buttons message correctly', async () => {
     assert.is(result, 'success')
 })
 
-test.skip('sendText - should send a text message correctly', async () => {
+test('sendText - should send a text message correctly', async () => {
     const number = '+1234567890'
     const message = 'Mensaje con botones'
     const webWhatsappProvider = new WebWhatsappProvider({ name: 'bot', gifPlayback: false })
     webWhatsappProvider.vendor.sendMessage = sendStub
     const result = await webWhatsappProvider.sendText(number, message)
+
     assert.is(sendStub.calledOnce, true)
     assert.is(sendStub.firstCall.args[0], number)
     assert.is(sendStub.firstCall.args[1], message)
     assert.is(result, 'success')
 })
 
-// test.after(async () => {
-//     await (webWhatsappProvider.vendor as any).close()
-// })
+test.after(() => {
+    webWhatsappProvider.vendor.destroy()
+})
 
 test.run()
