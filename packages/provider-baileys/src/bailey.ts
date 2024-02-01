@@ -476,10 +476,11 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendMessage = async (numberIn: string | number, message: string, options: SendOptions): Promise<any> => {
+        const { buttons, media, ...otherOptions } = options
+        const mergedOptions = { ...otherOptions }
         const number = baileyCleanNumber(`${numberIn}`)
-
-        if (options.buttons?.length) return this.sendButtons(number, message, options.buttons)
-        if (options.media) return this.sendMedia(number, options.media, message)
+        if (mergedOptions.buttons?.length) return this.sendButtons(number, message, mergedOptions.buttons)
+        if (mergedOptions.media) return this.sendMedia(number, mergedOptions.media, message)
         return this.sendText(number, message)
     }
 
