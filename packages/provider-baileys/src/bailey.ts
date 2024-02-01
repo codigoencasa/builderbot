@@ -568,6 +568,7 @@ class BaileysProvider extends ProviderClass {
         stickerOptions: Partial<IStickerOptions>,
         messages: any = null
     ) => {
+        console.log('url--->', url)
         const sticker = new Sticker(url, {
             ...stickerOptions,
             quality: 50,
