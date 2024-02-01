@@ -20,9 +20,9 @@ class PostgreSQLAdapter {
             console.log('🆗 Conexión Correcta DB')
             this.checkTableExistsAndSP()
             return true
-        } catch (e) {
-            console.log('Error', e)
-            return
+        } catch (error) {
+            console.log('Error', error)
+            throw error
         }
     }
 
@@ -53,6 +53,7 @@ class PostgreSQLAdapter {
             console.log('🆗 Historico creado con exito')
         } catch (error) {
             console.error('Error al registrar la entrada del historial:', error)
+            throw error
         }
         this.listHistory.push(ctx)
     }
@@ -107,6 +108,7 @@ class PostgreSQLAdapter {
             console.log('🆗 Tabla contact existe o fue creada con éxito')
         } catch (error) {
             console.error('🚫 Error al crear la tabla contact:', error)
+            throw error
         }
 
         const history = `
@@ -127,6 +129,7 @@ class PostgreSQLAdapter {
             console.log('🆗 Tabla history existe o fue creada con éxito')
         } catch (error) {
             console.error('🚫 Error al crear la tabla de history:', error)
+            throw error
         }
 
         await this.createSP()
@@ -161,6 +164,7 @@ class PostgreSQLAdapter {
             console.log('🆗 Procedimiento almacenado de contacto existe o fue creada con éxito')
         } catch (error) {
             console.error('🚫 Error al crear el procedimiento almacenado de contacto:', error)
+            throw error
         }
 
         const sp_suhc = `
@@ -198,6 +202,7 @@ class PostgreSQLAdapter {
             console.log('🆗 Procedimiento almacenado de historico existe o fue creada con éxito')
         } catch (error) {
             console.error('🚫 Error al crear el procedimiento almacenado de historico:', error)
+            throw error
         }
     }
 }

@@ -192,7 +192,7 @@ test('createSP - creates or checks tables and stored procedures', async () => {
     assert.ok(querySpy)
 })
 
-test('saveContact - deberia guardar un contacto', async () => {
+test('saveContact - I should save a contact', async () => {
     const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
     postgreSQLAdapter['db'] = {
         query: async () => {
@@ -241,6 +241,58 @@ test('saveContact - It should return error', async () => {
         const getContactStub = stub().resolves(contactMock)
         postgreSQLAdapter.getContact = getContactStub
         await postgreSQLAdapter.saveContact(mock)
+        assert.unreachable('An error was expected, but it did not occur')
+    } catch (error) {
+        assert.is(error instanceof Error, true)
+        assert.is(error.message, 'Error!!')
+    }
+})
+
+test('save - It should return error', async () => {
+    const mock = {
+        ...historyMock,
+        phone: contactMock.phone,
+    }
+    const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
+    postgreSQLAdapter['db'] = {
+        query: async () => {
+            throw new Error('Error!!')
+        },
+    }
+    try {
+        await postgreSQLAdapter.save(mock)
+        assert.unreachable('An error was expected, but it did not occur')
+    } catch (error) {
+        assert.is(error instanceof Error, true)
+        assert.is(error.message, 'Error!!')
+    }
+})
+
+test('checkTableExistsAndSP - It should return error', async () => {
+    const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
+    postgreSQLAdapter['db'] = {
+        query: async () => {
+            throw new Error('Error!!')
+        },
+    }
+    try {
+        await postgreSQLAdapter.checkTableExistsAndSP()
+        assert.unreachable('An error was expected, but it did not occur')
+    } catch (error) {
+        assert.is(error instanceof Error, true)
+        assert.is(error.message, 'Error!!')
+    }
+})
+
+test('createSP - It should return error', async () => {
+    const postgreSQLAdapter = new PostgreSQLAdapter(credentials)
+    postgreSQLAdapter['db'] = {
+        query: async () => {
+            throw new Error('Error!!')
+        },
+    }
+    try {
+        await postgreSQLAdapter.createSP()
         assert.unreachable('An error was expected, but it did not occur')
     } catch (error) {
         assert.is(error instanceof Error, true)
