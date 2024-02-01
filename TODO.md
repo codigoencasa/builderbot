@@ -6,3 +6,10 @@
 - cambiar el CONTRIBUTING.md
 - cambiar contexto de sendMessage en los providers
 - todos los providers deben tener "globalVendorArgs"
+- hacer que los addKeyowrd([]) ni ('')
+- EVENTS.WELCOME no lo completa
+- todos los providers envien la propiedad "name"
+- state.get<generico> o 
+- https://github.com/codigoencasa/bot-whatsapp/pull/977#issuecomment-1920056490
+- mirar este PR https://github.com/codigoencasa/bot-whatsapp/pull/965/files
+- todos los provider necesitan tener initHttpServer ya se default o no si es grauitos
