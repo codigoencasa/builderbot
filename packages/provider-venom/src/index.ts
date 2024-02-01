@@ -220,11 +220,11 @@ class VenomProvider extends ProviderClass {
      * @param {*} param2
      * @returns
      */
-    async sendMessage(
+    sendMessage = async (
         userId: string,
         message: string,
         arg: { options: { buttons: any[]; media: string } }
-    ): Promise<any> {
+    ): Promise<any> => {
         const number = venomCleanNumber(userId)
         if (arg?.options?.buttons?.length) return this.sendButtons(number, message, arg?.options.buttons)
         if (arg?.options?.media) return this.sendMedia(number, arg?.options.media, message)

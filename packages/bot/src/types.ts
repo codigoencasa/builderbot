@@ -69,8 +69,8 @@ export type FlowDynamicMessage = {
  */
 export type BotState = {
     update: (props: { [key: string]: any }) => Promise<void>
-    getMyState: <K>() => { [key: string]: any | K }
-    get: (prop: string) => any
+    getMyState: <K = any>() => { [key: string]: K }
+    get: <K = any>(prop: string) => K
     getAllState: () => { [key: string]: any }
     clear: () => void
 }

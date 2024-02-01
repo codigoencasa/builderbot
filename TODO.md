@@ -13,3 +13,4 @@
 - https://github.com/codigoencasa/bot-whatsapp/pull/977#issuecomment-1920056490
 - mirar este PR https://github.com/codigoencasa/bot-whatsapp/pull/965/files
 - todos los provider necesitan tener initHttpServer ya se default o no si es grauitos
+- verificar todos "sendMessage" sendMessage = async (numberIn: string | number, message: string, { options }: { options: SendOptions }):
