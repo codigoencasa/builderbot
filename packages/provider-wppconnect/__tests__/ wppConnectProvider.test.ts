@@ -5,7 +5,7 @@ import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
 const hookClose = async () => {
-    await utils.delay(2000)
+    await utils.delay(3000)
     process.exit(0)
 }
 
