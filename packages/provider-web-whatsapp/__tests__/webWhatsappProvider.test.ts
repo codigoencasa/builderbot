@@ -18,11 +18,12 @@ const webWhatsappProvider = new WebWhatsappProvider({ name: 'bot', gifPlayback: 
 const emitStub = stub()
 const sendStub = stub().resolves('success')
 
-;(webWhatsappProvider.vendor.destroy = stub().callsFake(hookClose)),
-    test.after.each(() => {
-        sendStub.resetHistory()
-        emitStub.resetHistory()
-    })
+webWhatsappProvider.vendor.destroy = stub().callsFake(hookClose)
+
+test.after.each(() => {
+    sendStub.resetHistory()
+    emitStub.resetHistory()
+})
 
 test('sendMessage - should call the method sendButtons', async () => {
     const to = '+123456789'
