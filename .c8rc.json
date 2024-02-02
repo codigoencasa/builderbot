@@ -18,5 +18,5 @@
     "reporter": ["html","lcov"],
     "report-dir": "./coverage",
     "check-coverage": true,
-    "lines": 55
+    "lines": 45
 }

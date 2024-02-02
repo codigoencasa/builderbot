@@ -7,7 +7,7 @@ import { Buttons } from 'whatsapp-web.js'
 import { WebWhatsappProvider } from '../src/index'
 
 const hookClose = async () => {
-    await utils.delay(2000)
+    await utils.delay(3000)
     process.exit(0)
 }
 
