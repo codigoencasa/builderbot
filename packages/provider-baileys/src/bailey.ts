@@ -90,7 +90,6 @@ class BaileysProvider extends ProviderClass {
                 getMessage: this.getMessage,
             })
             this.store?.bind(sock.ev)
-
             if (this.globalVendorArgs.usePairingCode && !sock.authState.creds.registered) {
                 if (this.globalVendorArgs.phoneNumber) {
                     await sock.waitForConnectionUpdate((update) => !!update.qr)
@@ -303,7 +302,6 @@ class BaileysProvider extends ProviderClass {
     protected getMessage = async (key: { remoteJid: string; id: string }) => {
         if (this.store) {
             const msg = await this.store.loadMessage(key.remoteJid, key.id)
-            console.log('msg--->', msg?.message)
             return msg?.message || undefined
         }
         // only if store is present

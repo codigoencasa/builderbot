@@ -4,6 +4,7 @@ import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 import { BaileysProvider } from '../src'
 import { ButtonOption, SendOptions } from '../src/type'
+import { WASocket } from '../src/baileyWrapper'
 
 const hookClose = async () => {
     await utils.delay(2000)
@@ -13,7 +14,7 @@ const hookClose = async () => {
 const args = {
     name: 'TestBot',
     gifPlayback: true,
-    usePairingCode: false,
+    usePairingCode: true,
     phoneNumber: '+1234567890',
     useBaileysStore: true,
 }
@@ -259,7 +260,6 @@ test('getMessage - deberia retornar un objeto vacio', async () => {
         id: '1234567890',
     }
     const message = await baileysProvider['getMessage'](key)
-    console.log(message)
     assert.equal(message, undefined)
 })
 
@@ -277,7 +277,238 @@ test('getMessage - deberia retornar el mensaje de hola Mundo', async () => {
     assert.equal(loadMessageStub.args[0][1], key.id)
 })
 
-// TODO: Seguir test de getMesage
+test('initBusEvents asigna correctamente los eventos al socket', () => {
+    const socketStub = {
+        ev: {
+            on: stub(),
+        },
+    } as any
+    baileysProvider['initBusEvents'](socketStub as WASocket)
+    assert.equal(socketStub.ev.on.called, true)
+})
+
+test('busEvents - messages.upsert should not broadcast a message', () => {
+    const payload: any = {
+        type: 'test',
+        messages: [{ message: { protocolMessage: { type: 'EPHEMERAL_SETTING' } } }],
+    }
+    baileysProvider.emit = emitStub
+    baileysProvider['busEvents']()[0].func(payload)
+    assert.equal(emitStub.notCalled, true)
+})
+
+test('busEvents - messages.upsert should not broadcast a message', () => {
+    const payload: any = {
+        type: 'notify',
+        messages: [{ message: { protocolMessage: { type: 'EPHEMERAL_SETTING' } } }],
+    }
+    baileysProvider.emit = emitStub
+    baileysProvider['busEvents']()[0].func(payload)
+    assert.equal(emitStub.notCalled, true)
+})
+
+test('busEvents - messages.upsert should broadcast a location message', () => {
+    const payload: any = {
+        type: 'notify',
+        messages: [
+            {
+                message: {
+                    protocolMessage: { type: 'OTHER' },
+                    locationMessage: { degreesLatitude: 11223, degreesLongitude: 11223 },
+                },
+                extendedTextMessage: { text: 'Hello' },
+                pushName: 'test',
+                key: { remoteJid: '133354' },
+            },
+        ],
+    }
+    const expectedEmit = {
+        message: {
+            protocolMessage: { type: 'OTHER' },
+            locationMessage: { degreesLatitude: 11223, degreesLongitude: 11223 },
+        },
+    }
+    baileysProvider.emit = emitStub
+    baileysProvider['busEvents']()[0].func(payload)
+    assert.equal(emitStub.args[0][0], 'message')
+    assert.equal(emitStub.args[0][1].message, expectedEmit.message)
+    assert.equal(emitStub.args[0][1].body.includes('_event_location_'), true)
+})
+
+test('busEvents - messages.upsert should broadcast a video message', () => {
+    const payload: any = {
+        type: 'notify',
+        messages: [
+            {
+                message: {
+                    protocolMessage: { type: 'OTHER' },
+                    videoMessage: 'videp.mp4',
+                },
+                extendedTextMessage: { text: 'Hello' },
+                pushName: 'test',
+                key: { remoteJid: '133354' },
+            },
+        ],
+    }
+    const expectedEmit = {
+        message: {
+            protocolMessage: { type: 'OTHER' },
+            videoMessage: 'videp.mp4',
+        },
+    }
+    baileysProvider.emit = emitStub
+    baileysProvider['busEvents']()[0].func(payload)
+    assert.equal(emitStub.args[0][0], 'message')
+    assert.equal(emitStub.args[0][1].message, expectedEmit.message)
+    assert.equal(emitStub.args[0][1].body.includes('_event_media_'), true)
+})
+
+test('busEvents - messages.upsert should broadcast a sticker message', () => {
+    const payload: any = {
+        type: 'notify',
+        messages: [
+            {
+                message: {
+                    protocolMessage: { type: 'OTHER' },
+                    stickerMessage: 'sticker.png',
+                },
+                extendedTextMessage: { text: 'Hello' },
+                pushName: 'test',
+                key: { remoteJid: '133354' },
+            },
+        ],
+    }
+    const expectedEmit = {
+        message: {
+            protocolMessage: { type: 'OTHER' },
+            stickerMessage: 'sticker.png',
+        },
+    }
+    baileysProvider.emit = emitStub
+    baileysProvider['busEvents']()[0].func(payload)
+    assert.equal(emitStub.args[0][0], 'message')
+    assert.equal(emitStub.args[0][1].message, expectedEmit.message)
+    assert.equal(emitStub.args[0][1].body.includes('_event_media_'), true)
+})
+
+test('busEvents - messages.upsert should broadcast a image message', () => {
+    const payload: any = {
+        type: 'notify',
+        messages: [
+            {
+                message: {
+                    protocolMessage: { type: 'OTHER' },
+                    imageMessage: 'image.png',
+                },
+                extendedTextMessage: { text: 'Hello' },
+                pushName: 'test',
+                key: { remoteJid: '133354' },
+            },
+        ],
+    }
+    const expectedEmit = {
+        message: {
+            protocolMessage: { type: 'OTHER' },
+            imageMessage: 'image.png',
+        },
+    }
+    baileysProvider.emit = emitStub
+    baileysProvider['busEvents']()[0].func(payload)
+    assert.equal(emitStub.args[0][0], 'message')
+    assert.equal(emitStub.args[0][1].message, expectedEmit.message)
+    assert.equal(emitStub.args[0][1].body.includes('_event_media_'), true)
+})
+
+test('busEvents -  messages.upsert should broadcast a audio message', () => {
+    const payload: any = {
+        type: 'notify',
+        messages: [
+            {
+                message: {
+                    protocolMessage: { type: 'OTHER' },
+                    audioMessage: 'audio.mp3',
+                },
+                extendedTextMessage: { text: 'Hello' },
+                pushName: 'test',
+                key: { remoteJid: '133354' },
+            },
+        ],
+    }
+    const expectedEmit = {
+        message: {
+            protocolMessage: { type: 'OTHER' },
+            audioMessage: 'audio.mp3',
+        },
+    }
+    baileysProvider.emit = emitStub
+    baileysProvider['busEvents']()[0].func(payload)
+    assert.equal(emitStub.args[0][0], 'message')
+    assert.equal(emitStub.args[0][1].message, expectedEmit.message)
+})
+
+test('busEvents - messages.upsert should broadcast a document message', () => {
+    const payload: any = {
+        type: 'notify',
+        messages: [
+            {
+                message: {
+                    protocolMessage: { type: 'OTHER' },
+                    documentMessage: 'document.pdf',
+                },
+                extendedTextMessage: { text: 'Hello' },
+                pushName: 'test',
+                key: { remoteJid: '133354' },
+            },
+        ],
+    }
+    const expectedEmit = {
+        message: {
+            protocolMessage: { type: 'OTHER' },
+            documentMessage: 'document.pdf',
+        },
+    }
+    baileysProvider.emit = emitStub
+    baileysProvider['busEvents']()[0].func(payload)
+    assert.equal(emitStub.args[0][0], 'message')
+    assert.equal(emitStub.args[0][1].message, expectedEmit.message)
+    assert.equal(emitStub.args[0][1].body.includes('_event_document_'), true)
+})
+
+test('busEvents - messages.update should broadcast a document message', () => {
+    const message = [
+        {
+            key: { remoteJid: '@s.whatsapp.net' },
+            update: {
+                pollUpdates: [
+                    {
+                        pollUpdateMessageKey: { remoteJid: '@s.whatsapp.net', id: 1 },
+                    },
+                ],
+            },
+        },
+    ]
+
+    const getMessageStub = stub().resolves(true)
+    baileysProvider['getMessage'] = getMessageStub
+    baileysProvider.emit = emitStub
+
+    baileysProvider['busEvents']()[1].func(message)
+    assert.equal(getMessageStub.args[0][0], { remoteJid: '@s.whatsapp.net' })
+})
+
+test('initHttpServer - debería iniciar el servidor HTTP correctamente', async () => {
+    const startStub = stub()
+
+    const testPort = 3000
+    if (baileysProvider.http) {
+        baileysProvider.http.start = startStub
+    }
+    baileysProvider.sendMessage = sendStub
+
+    baileysProvider.initHttpServer(testPort)
+    assert.equal(startStub.called, true)
+    await baileysProvider.http?.server.server?.close()
+})
 
 test.after.each(() => {
     hookClose().then()
