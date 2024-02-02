@@ -2,9 +2,10 @@ import { utils } from '@bot-whatsapp/bot'
 import { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
+
 import { BaileysProvider } from '../src'
-import { ButtonOption, SendOptions } from '../src/type'
 import { WASocket } from '../src/baileyWrapper'
+import { ButtonOption, SendOptions } from '../src/type'
 
 const hookClose = async () => {
     await utils.delay(2000)

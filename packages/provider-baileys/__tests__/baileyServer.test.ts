@@ -1,5 +1,6 @@
-import { test } from 'uvu'
 import * as assert from 'assert'
+import { test } from 'uvu'
+
 import { BaileyHttpServer } from '../src/server'
 
 const baileyHttpServer = new BaileyHttpServer(3000)
