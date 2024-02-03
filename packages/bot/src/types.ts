@@ -192,5 +192,11 @@ export interface TFlow<P = any, B = any> {
         actionProps: ActionPropertiesGeneric | CallbackFunction<P, B>,
         cb?: CallbackFunction<P, B>
     ) => TFlow<P, B>
+    addMessage: (
+        answer: string | string[],
+        options?: ActionPropertiesKeyword | null,
+        cb?: CallbackFunction<P, B> | null,
+        nested?: TFlow<P, B> | TFlow<P, B>[] | null
+    ) => TFlow<P, B>
     toJson: () => TContext[]
 }

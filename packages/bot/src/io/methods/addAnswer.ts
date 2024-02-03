@@ -91,10 +91,23 @@ const addAnswer =
 
         const ctx = ctxAnswer()
 
+        /**
+         * TODO esto es un demo solo he agregado addMessage
+         */
         return {
             ctx,
             ref: ctx.ref,
             addAnswer: addAnswer(ctx),
+            addMessage: (
+                answer: string,
+                options?: ActionPropertiesKeyword | null,
+                cb?: CallbackFunction<P, B> | null
+            ): TFlow<P, B> => {
+                const _cb: CallbackFunction<P, B> = async (_, { flowDynamic }) => {
+                    await flowDynamic(answer)
+                }
+                return addAnswer(ctx)('__call_action__', null, _cb as CallbackFunction<P, B>).addAction(options, cb)
+            },
             addAction: (
                 cb: CallbackFunction<P, B> = () => {},
                 flagCb: CallbackFunction<P, B> = () => {}
