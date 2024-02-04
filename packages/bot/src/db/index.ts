@@ -1,10 +1,11 @@
 interface Context {
     from: string
-    keyword?: string
+    keyword: string
+    answer: string
 }
 
 class MemoryDBClass {
-    private listHistory: Context[] = []
+    public listHistory: Context[] = []
 
     constructor() {}
 

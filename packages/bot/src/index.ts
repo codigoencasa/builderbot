@@ -58,7 +58,7 @@ const createFlow = (args: TFlow[]): FlowClass => {
  * Depdendiendo del Provider puedes pasar argumentos
  * Ver Documentacion
  */
-const createProvider = <T extends ProviderClass, K = typeof ProviderClass.prototype.globalVendorArgs>(
+const createProvider = <T = ProviderClass, K = typeof ProviderClass.prototype.globalVendorArgs>(
     providerClass: new (args: K) => T,
     args: K = null
 ): T => {

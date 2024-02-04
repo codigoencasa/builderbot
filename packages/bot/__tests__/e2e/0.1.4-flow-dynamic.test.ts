@@ -111,7 +111,7 @@ suiteCase(`Responder con un "string"`, async ({ database, provider }) => {
 suiteCase(`Responder con un "array"`, async ({ database, provider }) => {
     const flow = addKeyword(['hola'])
         .addAnswer('Como vas?', null, async (_, { flowDynamic }) => {
-            return flowDynamic(['Todo bien!', 'trabajando'])
+            return flowDynamic([{ body: 'Todo bien!' }, { body: 'trabajando' }])
         })
         .addAnswer('y vos?')
 

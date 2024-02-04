@@ -1,10 +1,12 @@
 import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { setup, clear, delay } from '../../__mock__/env'
+import { setup, clear, delay, parseAnswers } from '../../__mock__/env'
 import { addKeyword, createBot, createFlow } from '../../src'
+import { ProviderMock } from '../../src/provider/providerMock'
+import { MemoryDBClass } from '../../src/db'
 
-const testSuite = suite('Flujo: Simple')
+const testSuite = suite<{ provider: ProviderMock; database: MemoryDBClass }>('Flujo: Simple')
 
 testSuite.before.each(setup)
 testSuite.after.each(clear)
@@ -25,9 +27,10 @@ testSuite(`Responder a "hola"`, async (context) => {
 
     await delay(50)
 
-    assert.is('Buenas!', database.listHistory[0].answer)
-    assert.is('Como vamos!', database.listHistory[1].answer)
-    assert.is(undefined, database.listHistory[2])
+    const dbParse = parseAnswers(database.listHistory)
+    assert.is('Buenas!', dbParse[0].answer)
+    assert.is('Como vamos!', dbParse[1].answer)
+    assert.is(undefined, dbParse[2])
 })
 
 testSuite.skip(`NO responder a "pepe"`, async (context) => {

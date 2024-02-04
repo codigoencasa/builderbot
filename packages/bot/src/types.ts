@@ -55,6 +55,7 @@ export type BotContext = {
  */
 export type FlowDynamicMessage = {
     body: string
+    buttons?: Button[]
     delay?: number
     media?: string
 }
@@ -94,7 +95,7 @@ export type DynamicBlacklist = {
  * @property {any} extensions - Extensiones del bot.
  */
 export type BotMethods<P = {}, B = {}> = {
-    flowDynamic: (messages: string | string[] | FlowDynamicMessage[], opts?: { delay: number }) => Promise<void>
+    flowDynamic: (messages: string | FlowDynamicMessage[], opts?: { delay: number }) => Promise<void>
     gotoFlow: (flow: TFlow<P>) => Promise<void>
     endFlow: (message?: string) => void
     fallBack: (message?: string) => void
@@ -130,7 +131,7 @@ export type CallbackFunction<P, B> = (context: BotContext, methods: BotMethods<P
  */
 export interface TCTXoptions extends ActionPropertiesKeyword {
     media?: null | string
-    buttons?: any[]
+    buttons?: Button[]
     capture?: boolean
     child?: null | any
     delay?: number
@@ -191,12 +192,6 @@ export interface TFlow<P = any, B = any> {
     addAction: (
         actionProps: ActionPropertiesGeneric | CallbackFunction<P, B>,
         cb?: CallbackFunction<P, B>
-    ) => TFlow<P, B>
-    addMessage: (
-        answer: string | string[],
-        options?: ActionPropertiesKeyword | null,
-        cb?: CallbackFunction<P, B> | null,
-        nested?: TFlow<P, B> | TFlow<P, B>[] | null
     ) => TFlow<P, B>
     toJson: () => TContext[]
 }

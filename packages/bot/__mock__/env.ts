@@ -5,7 +5,7 @@ interface Callbacks {
     ref: () => number
 }
 
-interface Answer {
+type Answer = {
     answer: string
     ref: string
 }
@@ -36,12 +36,13 @@ class MockFlow {
  * Prepare environment for the test
  * @param context The test context
  */
-const setup = async (context: any): Promise<void> => {
+const setup = async (context: { [key: string]: any }): Promise<void> => {
     context.provider = new ProviderMock()
     context.database = new MemoryDBClass()
     context.flow = new MockFlow()
     await delay(10)
 }
+//__call_action__ __goto_flow__ __capture_only_intended__
 
 const clear = async (context: any): Promise<void> => {
     context.provider = null
@@ -49,8 +50,18 @@ const clear = async (context: any): Promise<void> => {
     context.flow = null
 }
 
+/**
+ *
+ * @param answers
+ * @returns
+ */
+const parseAnswers = (answers: any[]) => {
+    return answers
+    // return answers.filter((a) => !a.answer.includes('__call_action__') && !a.answer.includes('__goto_flow__') && !a.answer.includes('__capture_only_intended__'))
+}
+
 const delay = (ms: number): Promise<void> => {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-export { setup, clear, delay }
+export { setup, clear, delay, parseAnswers }
