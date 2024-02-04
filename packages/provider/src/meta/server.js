@@ -145,7 +145,7 @@ class MetaWebHookServer extends EventEmitter {
                         from: message.from,
                         url: audioUrl,
                         to,
-                        body: generateRefprovider('_event_audio_'),
+                        body: generateRefprovider('_event_voice_note_'),
                         pushName,
                     }
                     break

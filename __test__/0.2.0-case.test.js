@@ -99,6 +99,7 @@ suiteCase(`Encadenanos addAction con captures and gotoFlow`, async ({ database, 
         .addAction({ ref: `1111111111111111111` }, async (ctx, { flowDynamic }) => {
             await flowDynamic(`Chao!`)
         })
+
     await createBot({
         database,
         flow: createFlow([flujoPrincipal, flujoSegundario, flujoTercero]),
