@@ -15,3 +15,4 @@
 - [ ] mirar este PR https://github.com/codigoencasa/bot-whatsapp/pull/965/files
 - [ ] revisar test.skip
 - [ ] cambiar el CONTRIBUTING.md
+- [ ] eslinter nueva regla flowDynamic seguido de un endFLow  no sirve el endFlow entonces la idae esuqe diga que no puede usar juntoss

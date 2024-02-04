@@ -95,7 +95,7 @@ export type DynamicBlacklist = {
  */
 export type BotMethods<P = {}, B = {}> = {
     flowDynamic: (messages: string | string[] | FlowDynamicMessage[], opts?: { delay: number }) => Promise<void>
-    gotoFlow: (flow: TFlow<P>) => Promise<void>
+    gotoFlow: (flow: TFlow<P>, step?:number) => Promise<void>
     endFlow: (message?: string) => void
     fallBack: (message?: string) => void
     provider: P
