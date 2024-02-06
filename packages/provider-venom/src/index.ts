@@ -4,6 +4,8 @@ import { createWriteStream } from 'fs'
 import mime from 'mime-types'
 import venom from 'venom-bot'
 
+import { VenomHttpServer } from './server'
+import { BotCtxMiddleware } from './types'
 import { venomCleanNumber, venomGenerateImage, venomisValidNumber } from './utils'
 
 const logger = new Console({
@@ -16,12 +18,26 @@ const logger = new Console({
  * https://github.com/orkestral/venom
  */
 class VenomProvider extends ProviderClass {
-    globalVendorArgs = { name: `bot`, gifPlayback: false }
+    globalVendorArgs = { name: `bot`, gifPlayback: false, port: 3000 }
     vendor: venom.Whatsapp
+    http: VenomHttpServer | undefined
     constructor(args: { name: string; gifPlayback: boolean }) {
         super()
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
+        this.http = new VenomHttpServer(this.globalVendorArgs.name, this.globalVendorArgs.port)
         this.init().then(() => this.initBusEvents())
+    }
+
+    /**
+     *
+     * @param port
+     */
+    initHttpServer(port: number) {
+        const methods: BotCtxMiddleware = {
+            sendMessage: this.sendMessage,
+            provider: this.vendor,
+        }
+        this.http.start(methods, port)
     }
 
     /**

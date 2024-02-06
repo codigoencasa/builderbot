@@ -4,6 +4,8 @@ import { createWriteStream, readFileSync } from 'fs'
 import mime from 'mime-types'
 import WAWebJS, { Client, LocalAuth, MessageMedia, Buttons } from 'whatsapp-web.js'
 
+import { WebWhatsappHttpServer } from './server'
+import { BotCtxMiddleware } from './types'
 import { wwebCleanNumber, wwebGenerateImage, wwebIsValidNumber } from './utils'
 
 const logger = new Console({
@@ -16,8 +18,9 @@ const logger = new Console({
  * https://github.com/pedroslopez/whatsapp-web.js
  */
 class WebWhatsappProvider extends ProviderClass {
-    globalVendorArgs = { name: `bot`, gifPlayback: false }
+    globalVendorArgs = { name: `bot`, gifPlayback: false, port: 3000 }
     vendor: Client
+    http: WebWhatsappHttpServer | undefined
     constructor(args: { name: string; gifPlayback: boolean }) {
         super()
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
@@ -31,7 +34,7 @@ class WebWhatsappProvider extends ProviderClass {
                 //executablePath: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
             },
         })
-
+        this.http = new WebWhatsappHttpServer(this.globalVendorArgs.name, this.globalVendorArgs.port)
         const listEvents = this.busEvents()
 
         for (const { event, func } of listEvents) {
@@ -50,6 +53,18 @@ class WebWhatsappProvider extends ProviderClass {
                 ],
             })
         })
+    }
+
+    /**
+     *
+     * @param port
+     */
+    initHttpServer(port: number) {
+        const methods: BotCtxMiddleware = {
+            sendMessage: this.sendMessage,
+            provider: this.vendor,
+        }
+        this.http.start(methods, port)
     }
 
     /**

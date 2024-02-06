@@ -29,8 +29,10 @@
         "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
+        "@types/body-parser": "^1.19.5",
         "@types/mime-types": "^2.1.4",
         "@types/node": "^20.11.5",
+        "@types/polka": "^0.5.7",
         "@types/proxyquire": "^1.3.31",
         "@types/qr-image": "^3.2.9",
         "@types/sinon": "^17.0.3",
@@ -44,7 +46,9 @@
         "sinon": "^17.0.1"
     },
     "dependencies": {
-        "@wppconnect-team/wppconnect": "^1.28.4"
+        "@wppconnect-team/wppconnect": "^1.28.4",
+        "body-parser": "^1.20.2",
+        "polka": "^0.5.2"
     },
     "gitHead": "cb94c90c05492a02dda63a8f48e661bf2995d4fb"
 }

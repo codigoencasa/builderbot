@@ -217,6 +217,20 @@ test('sendText - should send a text message correctly', async () => {
     assert.is(result, 'success')
 })
 
+test('initHttpServer - debería iniciar el servidor HTTP correctamente', async () => {
+    const startStub = stub()
+
+    const testPort = 3000
+    if (webWhatsappProvider.http) {
+        webWhatsappProvider.http.start = startStub
+    }
+    webWhatsappProvider.sendMessage = sendStub
+
+    webWhatsappProvider.initHttpServer(testPort)
+    assert.equal(startStub.called, true)
+    await webWhatsappProvider.http?.server.server?.close()
+})
+
 test.after(() => {
     webWhatsappProvider.vendor.destroy()
 })
