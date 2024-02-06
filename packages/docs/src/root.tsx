@@ -89,7 +89,7 @@ export default component$(() => {
         {
             title: 'Comunidad',
             list: [
-                { name: 'Colabores', link: '/docs/contributing' },
+                { name: 'Colaboradores', link: '/docs/contributing' },
                 { name: 'Unirme al proyecto', link: '/docs/join' },
             ],
         },
