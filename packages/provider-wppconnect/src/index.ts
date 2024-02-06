@@ -2,6 +2,8 @@ import { ProviderClass, utils } from '@bot-whatsapp/bot'
 import { Message, Whatsapp, create, defaultLogger } from '@wppconnect-team/wppconnect'
 import mime from 'mime-types'
 
+import { WPPConnectHttpServer } from './server'
+import { BotCtxMiddleware } from './types'
 import { WppConnectGenerateImage, WppConnectValidNumber, WppConnectCleanNumber } from './utils'
 
 /**
@@ -11,14 +13,27 @@ import { WppConnectGenerateImage, WppConnectValidNumber, WppConnectCleanNumber }
  */
 defaultLogger.transports.forEach((t) => (t.silent = true)) //<==
 class WPPConnectProviderClass extends ProviderClass {
-    globalVendorArgs = { name: 'bot' }
+    globalVendorArgs = { name: 'bot', port: 3000 }
     vendor: Whatsapp
     wppConnectProvider: any
-
+    http: WPPConnectHttpServer | undefined
     constructor(args: { name: string }) {
         super()
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
         this.initWppConnect().then()
+        this.http = new WPPConnectHttpServer(this.globalVendorArgs.name, this.globalVendorArgs.port)
+    }
+
+    /**
+     *
+     * @param port
+     */
+    initHttpServer(port: number) {
+        const methods: BotCtxMiddleware = {
+            sendMessage: this.sendMessage,
+            provider: this.vendor,
+        }
+        this.http.start(methods, port)
     }
 
     /**
