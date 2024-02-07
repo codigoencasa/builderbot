@@ -11,9 +11,9 @@ export interface DialogFlowCredentials {
 }
 
 export interface DialogFlowCXContextOptions {
-    language: string
     location: string
     agentId: string
+    language?: string
 }
 
 export interface MessageContextIncoming {
@@ -33,4 +33,10 @@ export interface DialogResponseMessage {
 export enum Message {
     PAYLOAD = 'payload',
     TEXT = 'text',
+}
+
+export interface ParamsDialogFlowCX {
+    database: any
+    provider: any
+    options: DialogFlowCXContextOptions
 }

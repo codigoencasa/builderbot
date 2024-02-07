@@ -3,12 +3,11 @@ import { SessionsClient } from '@google-cloud/dialogflow-cx'
 import { existsSync, readFileSync } from 'fs'
 import { join } from 'path'
 
-import { DialogFlowContextOptions, DialogFlowCredentials, MessageContextIncoming } from '../types'
+import { DialogFlowContextOptions, DialogFlowCredentials, Message, MessageContextIncoming } from '../types'
 
 const GOOGLE_ACCOUNT_PATH = join(process.cwd(), 'google-key.json')
 
-export class DialogFlowContext {
-    private coreInstance: CoreClass
+export class DialogFlowContext extends CoreClass {
     projectId: string | null = null
     configuration = null
     sessionClient = null
@@ -19,8 +18,9 @@ export class DialogFlowContext {
     }
 
     constructor(_database, _provider, _optionsDX = {}) {
-        this.coreInstance = new CoreClass(null, _database, _provider, null)
+        super(null, _database, _provider, null)
         this.optionsDX = { ...this.optionsDX, ..._optionsDX }
+        this.init()
     }
 
     loadCredentials = (): DialogFlowCredentials | null => {
@@ -37,14 +37,14 @@ export class DialogFlowContext {
         const { project_id, private_key, client_email } = credentials
 
         this.projectId = project_id
-        this.configuration = {
+        const configuration = {
             credentials: {
                 private_key,
                 client_email,
             },
+            apiEndpoint: `${this.optionsDX.location}-dialogflow.googleapis.com`,
         }
-
-        this.sessionClient = new SessionsClient(this.configuration)
+        this.sessionClient = new SessionsClient({ ...configuration })
     }
 
     /**
@@ -72,26 +72,33 @@ export class DialogFlowContext {
          * para evitar este problema.
          * https://github.com/codigoencasa/bot-whatsapp/pull/140
          */
-        const session = this.sessionClient.projectAgentSessionPath(this.projectId, from)
+        // const session = this.sessionClient.projectAgentSessionPath(this.projectId, from)
+
+        const session = this.sessionClient.projectLocationAgentSessionPath(
+            this.projectId,
+            this.optionsDX.location,
+            this.optionsDX.agentId,
+            from
+        )
 
         const reqDialog = {
             session,
             queryInput: {
                 text: {
                     text: body,
-                    languageCode,
                 },
+                languageCode,
             },
         }
 
         const [single] = (await this.sessionClient.detectIntent(reqDialog)) || [null]
 
         const listMessages = single?.queryResult?.responseMessages?.map((res) => {
-            if (res.message === 'text') {
+            if (res.message === Message.TEXT) {
                 return { answer: res.text.text[0] }
             }
 
-            if (res.message === 'payload') {
+            if (res.message === Message.PAYLOAD) {
                 const { media = null, buttons = [], answer = '' } = res.payload.fields
                 const buttonsArray =
                     buttons?.listValue?.values?.map((btnValue): { body: string } => {
@@ -109,6 +116,6 @@ export class DialogFlowContext {
             return { answer: '' }
         })
 
-        this.coreInstance.sendFlowSimple(listMessages, from)
+        this.sendFlowSimple(listMessages, from)
     }
 }
