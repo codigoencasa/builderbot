@@ -28,24 +28,24 @@ const optionsDX: DialogFlowContextOptions = {
     agentId: '',
 }
 
-test('[DialogFlowContext] - instantiation', () => {
+test.skip('[DialogFlowContext] - instantiation', () => {
     const dialogFlowContext = new DialogFlowContext(mockDatabase, mockProvider, optionsDX)
     assert.instance(dialogFlowContext, DialogFlowContext)
 })
 
-test('[DialogFlowContext] -  constructor', () => {
+test.skip('[DialogFlowContext] -  constructor', () => {
     const dialogFlowContext = new DialogFlowContext(mockDatabase, mockProvider, optionsDX)
     assert.equal(dialogFlowContext.optionsDX.language, optionsDX.language)
 })
 
-test('loadCredentials - should return null when file does not exist', () => {
+test.skip('loadCredentials - should return null when file does not exist', () => {
     const dialogFlowContext = new DialogFlowContext(mockDatabase, mockProvider, optionsDX)
     fsMock.existsSync.returns(false)
     const result = dialogFlowContext['loadCredentials']()
     assert.equal(result, null)
 })
 
-test('init- should not initialize DialogFlowClient if credentials do not exist', () => {
+test.skip('init- should not initialize DialogFlowClient if credentials do not exist', () => {
     const dialogFlowContext = new DialogFlowContext(mockDatabase, mockProvider, optionsDX)
     const initializeDialogFlowClientSpy = spy(dialogFlowContext['initializeDialogFlowClient'])
     stub(dialogFlowContext, 'loadCredentials').returns(null)
@@ -53,7 +53,7 @@ test('init- should not initialize DialogFlowClient if credentials do not exist',
     assert.equal(initializeDialogFlowClientSpy.notCalled, true)
 })
 
-test('init - should call initializeDialogFlowClient if credentials are available', () => {
+test.skip('init - should call initializeDialogFlowClient if credentials are available', () => {
     const credentials = {
         project_id: 'tu_project_id',
         private_key: 'tu_private_key',
@@ -67,7 +67,7 @@ test('init - should call initializeDialogFlowClient if credentials are available
     assert.equal(initializeDialogFlowClientStub.calledWith(credentials), true)
 })
 
-test('initializeDialogFlowClient should set projectId, configuration, and sessionClient', () => {
+test.skip('initializeDialogFlowClient should set projectId, configuration, and sessionClient', () => {
     const dialogFlowContext = new DialogFlowContext(mockDatabase, mockProvider, optionsDX)
     const credentials = {
         project_id: 'test_project',

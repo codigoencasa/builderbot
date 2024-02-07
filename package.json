@@ -22,7 +22,8 @@
     "publish:canary": "npx lerna publish from-package --canary",
     "prepare": "npx husky install",
     "preinstall": "npx only-allow pnpm",
-    "release": "standard-version -- --prerelease --global"
+    "release": "standard-version -- --prerelease --global",
+    "cli": "node ./packages/cli/bin/cli.cjs"
   },
   "keywords": [
     "whatsapp",

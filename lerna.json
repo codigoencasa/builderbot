@@ -6,6 +6,7 @@
     "packages/cli",
     "packages/create-bot-whatsapp",
     "packages/provider",
+    "packages/database",
     "packages/database-mongo",
     "packages/database-mysql",
     "packages/database-json",

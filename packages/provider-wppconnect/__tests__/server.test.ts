@@ -1,7 +1,7 @@
 import * as assert from 'assert'
 import { test } from 'uvu'
 
-import { BaileyHttpServer, handleCtx } from '../src/server'
+import { WPPConnectHttpServer, handleCtx } from '../src/server'
 
 const mockRequest = {}
 const mockResponse = {
@@ -12,18 +12,17 @@ const mockResponse = {
     },
 }
 
-const baileyHttpServer = new BaileyHttpServer(3000)
+const wPPConnectHttpServer = new WPPConnectHttpServer('bot', 3000)
 
-test('BaileyHttpServer debe construirse correctamente', () => {
-    assert.ok(baileyHttpServer instanceof BaileyHttpServer)
-    assert.ok(baileyHttpServer.server !== undefined)
-    assert.strictEqual(baileyHttpServer.port, 3000)
+test('webWhatsappHttpServer debe construirse correctamente', () => {
+    assert.ok(wPPConnectHttpServer instanceof WPPConnectHttpServer)
+    assert.ok(wPPConnectHttpServer.server !== undefined)
+    assert.strictEqual(wPPConnectHttpServer.port, 3000)
 })
 
 test('start debe actualizar el puerto correctamente si se proporciona un valor', () => {
-    baileyHttpServer.start(undefined as any, 4000)
-
-    assert.strictEqual(baileyHttpServer.port, 4000)
+    wPPConnectHttpServer.start(undefined as any, 4000)
+    assert.strictEqual(wPPConnectHttpServer.port, 4000)
 })
 
 test('handleCtx - function should call provided function with correct arguments', () => {
@@ -39,10 +38,8 @@ test('handleCtx - function should call provided function with correct arguments'
 })
 
 test('stop method should close the server without error', async () => {
-    const server = new BaileyHttpServer(500)
-    server['start'](undefined as any)
-    await server.stop()
-    assert.equal(server.server.server?.listening, false)
+    await wPPConnectHttpServer.stop()
+    assert.equal(wPPConnectHttpServer.server?.server?.listening, false)
 })
 
 test.run()

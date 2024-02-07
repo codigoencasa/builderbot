@@ -246,4 +246,18 @@ test('sendMessage - should call the method sendText ', async () => {
     assert.equal(sendStub.args[0][1], message)
 })
 
+test('initHttpServer - debería iniciar el servidor HTTP correctamente', async () => {
+    const startStub = stub()
+
+    const testPort = 3000
+    if (venomProvider.http) {
+        venomProvider.http.start = startStub
+    }
+    venomProvider.sendMessage = sendStub
+
+    venomProvider.initHttpServer(testPort)
+    assert.equal(startStub.called, true)
+    await venomProvider.http?.server.server?.close()
+})
+
 test.run()

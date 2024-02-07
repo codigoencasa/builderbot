@@ -31,7 +31,7 @@ const emitSpy = stub(wppConnectProvider, 'emit')
 const vendorSendImageStub = stub()
 const sendImageStub = stub()
 const emitStub = stub()
-
+const sendStub = stub().resolves('success')
 test.after.each(() => {
     sendMediaStub.resetHistory()
     mimeMock.lookup.resetHistory()
@@ -39,6 +39,7 @@ test.after.each(() => {
     vendorSendImageStub.resetHistory()
     sendImageStub.resetHistory()
     emitStub.resetHistory()
+    sendStub.resetHistory()
 })
 
 test('WPPConnectProviderClass - initBusEvents should bind vendor events to corresponding functions', () => {
@@ -332,6 +333,20 @@ test('busEvents - onPollResponse I should build the body and send the message', 
     wppConnectProvider.emit = emitStub
     wppConnectProvider.busEvents()[1].func(payload)
     assert.equal(getContactStub.args[0][0], payload.chatId)
+})
+
+test('initHttpServer - debería iniciar el servidor HTTP correctamente', async () => {
+    const startStub = stub()
+
+    const testPort = 3000
+    if (wppConnectProvider.http) {
+        wppConnectProvider.http.start = startStub
+    }
+    wppConnectProvider.sendMessage = sendStub
+
+    wppConnectProvider.initHttpServer(testPort)
+    assert.equal(startStub.called, true)
+    await wppConnectProvider.http?.server.server?.close()
 })
 
 test.after(() => {
