@@ -1,14 +1,15 @@
 import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
+
+import { setup, clear, delay, parseAnswers } from '../../__mock__/env'
 import { addKeyword, createBot, createFlow, EVENTS } from '../../src'
-import { setup, clear, delay } from '../../__mock__/env'
 
 const testSuite = suite('Flujo: manejo de goto')
 
 testSuite.before.each(setup)
 testSuite.after.each(clear)
 
-const fakeHTTP = async (fakeData, ms = 50) => {
+const fakeHTTP = async (fakeData: string, ms = 50) => {
     await delay(ms)
     return Promise.resolve(fakeData)
 }
@@ -38,7 +39,7 @@ testSuite('Debe saltar de flujo siguiente', async ({ database, provider }) => {
     })
 
     await delay(100)
-    const history = database.listHistory.map((item) => item.answer)
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
     assert.is('Buenas', history[0])
     assert.is('Usuario registrado DEMO', history[1])
     assert.is('Hola usuario registrado', history[2])
@@ -74,7 +75,7 @@ testSuite('Debe saltar de flujo con capture sin flowDynamic', async ({ database,
     })
 
     await delay(50)
-    const history = database.listHistory.map((item) => item.answer)
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
     assert.is('Buenas', history[0])
     assert.is('ping', history[1])
     assert.is('Hola usuario registrado', history[2])
@@ -88,10 +89,12 @@ testSuite('Debe saltar de flujo con capture con flowDynamic', async ({ database,
         .addAnswer('como estas usuario registrado')
 
     const welcomeFlow = addKeyword(['hola'])
-        .addAnswer('Buenas', { capture: true }, async (_, { gotoFlow, flowDynamic }) => {
+        .addAnswer('Buenas', { capture: true }, async (_, { flowDynamic }) => {
             await delay(10)
-            await flowDynamic('Usuario registrado DEMO', { continue: false })
-            await gotoFlow(userRegisteredFlow)
+            await flowDynamic('Usuario registrado DEMO')
+        })
+        .addAction((_, { gotoFlow }) => {
+            return gotoFlow(userRegisteredFlow)
         })
         .addAnswer('este mensaje no debería existir')
 
@@ -106,19 +109,20 @@ testSuite('Debe saltar de flujo con capture con flowDynamic', async ({ database,
         body: 'hola',
     })
 
-    await provider.delaySendMessage(10, 'message', {
+    await provider.delaySendMessage(50, 'message', {
         from: '000',
         body: 'ping',
     })
 
-    await delay(50)
-    const history = database.listHistory.map((item) => item.answer)
+    await delay(500)
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
     assert.is('Buenas', history[0])
     assert.is('ping', history[1])
     assert.is('Usuario registrado DEMO', history[2])
-    assert.is('Hola usuario registrado', history[3])
-    assert.is('como estas usuario registrado', history[4])
-    assert.is(undefined, history[5])
+    assert.is('__call_action__', history[3])
+    assert.is('Hola usuario registrado', history[4])
+    assert.is('como estas usuario registrado', history[5])
+    assert.is(undefined, history[6])
 })
 
 //Issue https://github.com/codigoencasa/bot-whatsapp/issues/865#issuecomment-1747772797
@@ -161,7 +165,7 @@ testSuite('Debe de continuar el el encadenamiento', async ({ database, provider 
     })
 
     await delay(2000)
-    const history = database.listHistory.map((item) => item.answer)
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
     assert.is('__call_action__', history[0])
     assert.is('Elegir cartera', history[1])
     assert.is('__capture_only_intended__', history[2])
@@ -229,7 +233,7 @@ testSuite('Debe de continuar el el encadenamiento con procesos async', async ({ 
     })
 
     await delay(5000)
-    const history = database.listHistory.map((item) => item.answer)
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
     assert.is('__call_action__', history[0])
     assert.is('__capture_only_intended__', history[1])
     assert.is('__capture_only_intended__', history[2])
@@ -260,7 +264,7 @@ testSuite('Debe respectar el delay del node previo', async ({ database, provider
     })
 
     await delay(2000)
-    const history = database.listHistory.map((item) => item.answer)
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
     assert.is('__call_action__', history[0])
     assert.is('Buenas ping debe espera 1segundo', history[1])
     assert.is('Pong con delay 1 segundo', history[2])
