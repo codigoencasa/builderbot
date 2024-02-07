@@ -51,6 +51,9 @@ const listLib: { name: string }[] = [
     {
         name: 'contexts-dialogflow-cx',
     },
+    {
+        name: 'database',
+    },
 ]
 
 const main = async (): Promise<void> => {
