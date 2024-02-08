@@ -3,22 +3,23 @@ import { isInsideAddActionOrAddAnswer } from '../utils'
 
 const processEndFlowWithFlowDynamic = (context: Context) => {
     return {
-        'CallExpression[callee.name="gotoFlow"]'(node: INode) {
-            const parentNode = node.parent
+        'CallExpression[callee.name="endFlow"]'(node: INode) {
+            const functionArguments = node.arguments
 
             // Verificar si estamos dentro de un 'addAction' o 'addAnswer'
             if (!isInsideAddActionOrAddAnswer(node)) {
                 return
             }
 
-            // Verificar si nodo padre es de tipo ReturnStatement, si no lo es, reportar
-            if (parentNode.type !== 'ReturnStatement') {
+            // Verificar si los argumentos incluyen tanto flowDynamic como endFlow
+            const includesFlowDynamic = functionArguments.some((arg: { name: string }) => arg.name === 'flowDynamic')
+            const includesEndFlow = functionArguments.some((arg: { name: string }) => arg.name === 'endFlow')
+
+            if (includesFlowDynamic && includesEndFlow) {
                 context.report({
                     node,
-                    message: 'Please ensure "gotoFlow" function is returned',
-                    fix: function (fixer) {
-                        return fixer.insertTextBefore(node, 'return ')
-                    },
+                    message:
+                        'Please do not use endFlow in the same execution context as flowDynamic. Alternatively add an addAction((_,{endFlow})=> endFlow())',
                 })
             }
         },

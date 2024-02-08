@@ -5,6 +5,7 @@ export interface INode {
             name?: string
         }
     }
+    arguments?: any
     parent?: Parent
 }
 
@@ -20,7 +21,7 @@ export interface Parent {
 export interface ReportOptions {
     node: INode
     message: string
-    fix: (fixer: any) => void
+    fix?: (fixer: any) => void
 }
 
 export interface Context {

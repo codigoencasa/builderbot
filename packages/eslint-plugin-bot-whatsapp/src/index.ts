@@ -2,6 +2,7 @@ import { rulesRecommended } from './configs/recommended'
 import {
     processDynamicFlowAwait,
     processEndFlowReturn,
+    processEndFlowWithFlowDynamic,
     processFallBackReturn,
     processGotoFlowReturn,
     processStateUpdateAwait,
@@ -40,6 +41,12 @@ const rules = {
             fixable: 'code',
         },
         create: processStateUpdateAwait,
+    },
+    'func-prefix-endflow-flowdynamic': {
+        meta: {
+            fixable: 'code',
+        },
+        create: processEndFlowWithFlowDynamic,
     },
 }
 
