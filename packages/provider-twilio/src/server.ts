@@ -37,6 +37,7 @@ class TwilioWebHookServer extends EventEmitter {
             from: parseNumber(body.From),
             to: parseNumber(body.To),
             body: body.Body,
+            name: `${body?.ProfileName}`,
         }
 
         if (body?.NumMedia !== '0' && body?.MediaContentType0) {

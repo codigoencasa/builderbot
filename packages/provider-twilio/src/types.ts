@@ -21,10 +21,12 @@ export interface TwilioRequestBody {
     MediaContentType0?: string
     Latitude?: string
     Longitude?: string
+    ProfileName?: string
 }
 
 export interface TwilioPayload {
     from: string
     to: string
     body: string
+    name: string
 }

@@ -96,17 +96,22 @@ class VenomProvider extends ProviderClass {
     busEvents = () => [
         {
             event: 'onMessage',
-            func: (payload: venom.Message & { lat?: string; lng?: string }) => {
+            func: (payload: venom.Message & { lat?: string; lng?: string; name: string }) => {
                 if (payload.from === 'status@broadcast') {
                     return
                 }
                 if (!venomisValidNumber(payload.from)) {
                     return
                 }
+
                 payload.from = venomCleanNumber(payload.from, true)
+                payload.name = `${payload?.author}`
 
                 if (payload.hasOwnProperty('type') && ['image', 'video'].includes(payload.type)) {
-                    payload = { ...payload, body: utils.generateRefprovider('_event_media_') }
+                    payload = {
+                        ...payload,
+                        body: utils.generateRefprovider('_event_media_'),
+                    }
                 }
 
                 if (payload.hasOwnProperty('type') && ['document'].includes(payload.type)) {

@@ -1,6 +1,6 @@
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
 import { Vendor } from '@bot-whatsapp/bot/dist/provider/providerClass'
-import { SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { BotCtxMiddleware, SendOptions } from '@bot-whatsapp/bot/dist/types'
 import { Boom } from '@hapi/boom'
 import { Console } from 'console'
 import { createWriteStream, readFileSync, existsSync, PathOrFileDescriptor } from 'fs'
@@ -25,7 +25,7 @@ import {
     useMultiFileAuthState,
 } from './baileyWrapper'
 import { BaileyHttpServer } from './server'
-import { BotCtxMiddleware, ButtonOption, GlobalVendorArgs } from './type'
+import { ButtonOption, GlobalVendorArgs } from './type'
 import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber } from './utils'
 
 const logger = new Console({

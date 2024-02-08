@@ -17,6 +17,7 @@ export interface Message {
     to: string
     body: string
     pushName: string
+    name: string
     url?: string
     payload?: string
     title_button_reply?: string

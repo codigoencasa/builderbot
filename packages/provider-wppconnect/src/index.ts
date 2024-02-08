@@ -85,7 +85,7 @@ class WPPConnectProviderClass extends ProviderClass {
     busEvents = () => [
         {
             event: 'onMessage',
-            func: (payload: Message & { lat?: string; lng?: string }) => {
+            func: (payload: Message & { lat?: string; lng?: string; name: string }) => {
                 if (payload.from === 'status@broadcast') {
                     return
                 }
@@ -93,6 +93,7 @@ class WPPConnectProviderClass extends ProviderClass {
                     return
                 }
                 payload.from = WppConnectCleanNumber(payload.from, false)
+                payload.name = `${payload?.author}`
 
                 if (payload.hasOwnProperty('type') && ['image', 'video'].includes(payload.type)) {
                     payload = { ...payload, body: utils.generateRefprovider('_event_media_') }

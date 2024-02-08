@@ -20,6 +20,7 @@ export const processIncomingMessage = async ({
                 from: message.from,
                 to,
                 body: message.text?.body,
+                name: pushName,
                 pushName,
             }
             break
@@ -33,6 +34,7 @@ export const processIncomingMessage = async ({
                 title_button_reply: message.interactive?.button_reply?.title,
                 title_list_reply: message.interactive?.list_reply?.title,
                 pushName,
+                name: pushName,
             }
             break
         }
@@ -45,6 +47,7 @@ export const processIncomingMessage = async ({
                 payload: message.button?.payload,
                 title_button_reply: message.button?.payload,
                 pushName,
+                name: pushName,
             }
             break
         }
@@ -57,6 +60,7 @@ export const processIncomingMessage = async ({
                 to,
                 body: utils.generateRefprovider('_event_media_'),
                 pushName,
+                name: pushName,
             }
             break
         }
@@ -69,6 +73,7 @@ export const processIncomingMessage = async ({
                 to,
                 body: utils.generateRefprovider('_event_document_'),
                 pushName,
+                name: pushName,
             }
             break
         }
@@ -81,6 +86,7 @@ export const processIncomingMessage = async ({
                 to,
                 body: utils.generateRefprovider('_event_media_'),
                 pushName,
+                name: pushName,
             }
             break
         }
@@ -93,6 +99,7 @@ export const processIncomingMessage = async ({
                 longitude: message.location.longitude,
                 body: utils.generateRefprovider('_event_location_'),
                 pushName,
+                name: pushName,
             }
             break
         }
@@ -105,6 +112,7 @@ export const processIncomingMessage = async ({
                 to,
                 body: utils.generateRefprovider('_event_audio_'),
                 pushName,
+                name: pushName,
             }
             break
         }
@@ -116,6 +124,7 @@ export const processIncomingMessage = async ({
                 id: message.sticker.id,
                 body: utils.generateRefprovider('_event_media_'),
                 pushName,
+                name: pushName,
             }
             break
         }
@@ -132,6 +141,7 @@ export const processIncomingMessage = async ({
                 to,
                 body: utils.generateRefprovider('_event_contacts_'),
                 pushName,
+                name: pushName,
             }
             break
         }
@@ -146,6 +156,7 @@ export const processIncomingMessage = async ({
                 },
                 body: utils.generateRefprovider('_event_order_'),
                 pushName,
+                name: pushName,
             }
             break
         }

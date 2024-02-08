@@ -101,7 +101,9 @@ class WebWhatsappProvider extends ProviderClass {
         },
         {
             event: 'message',
-            func: (payload: WAWebJS.Message & { _data: { lng?: string; lat?: string; type?: string } }) => {
+            func: (
+                payload: WAWebJS.Message & { _data: { lng?: string; lat?: string; type?: string }; name: string }
+            ) => {
                 if (payload.from === 'status@broadcast') {
                     return
                 }
@@ -110,6 +112,8 @@ class WebWhatsappProvider extends ProviderClass {
                     return
                 }
                 payload.from = wwebCleanNumber(payload.from, true)
+                payload.name = `${payload?.author}`
+
                 if (payload?._data?.lat && payload?._data?.lng) {
                     payload = { ...payload, body: utils.generateRefprovider('_event_location_') }
                 }
