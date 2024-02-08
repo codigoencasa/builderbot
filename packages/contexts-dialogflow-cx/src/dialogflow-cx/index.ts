@@ -1,4 +1,4 @@
-import { DialogFlowContext } from './dialogflow-cx.class'
+import { DialogFlowContextCX } from './dialogflow-cx.class'
 import { ParamsDialogFlowCX } from '../types'
 
 /**
@@ -7,6 +7,6 @@ import { ParamsDialogFlowCX } from '../types'
  * @returns
  */
 const createBotDialog = async ({ database, provider, options }: ParamsDialogFlowCX) =>
-    new DialogFlowContext(database, provider, options)
+    new DialogFlowContextCX(database, provider, options)
 
 export { createBotDialog }

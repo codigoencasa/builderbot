@@ -159,7 +159,7 @@ suiteCase(`flowDynamic con capture`, async ({ database, provider }) => {
     assert.is('Gracias por tu email se ha validado de manera correcta', getHistory[4])
     assert.is(MOCK_VALUES[1], getHistory[5])
     assert.is(MOCK_VALUES[2], getHistory[6])
-    assert.is('20', getHistory[7])
+    assert.is('20', getHistory[7]) //TODO:Este punto falla en los test
     assert.is('Ups creo que no eres mayor de edad', getHistory[8])
     assert.is('18', getHistory[9])
     assert.is('Bien tu edad es correcta!', getHistory[10])
