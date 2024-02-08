@@ -13,7 +13,7 @@ const resMock = {
 test('should create MetaWebHookServer instance', async () => {
     const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3001)
     server.start()
-    assert.is(server['metaPort'], 3001)
+    assert.is(server['port'], 3001)
     assert.is(server['jwtToken'], 'jwtToken')
     await server.stop()
 })

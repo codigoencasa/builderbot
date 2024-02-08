@@ -1,5 +1,3 @@
-import { ProviderClass } from '@bot-whatsapp/bot'
-
 export interface GlobalVendorArgs {
     name: string
     gifPlayback: boolean
@@ -13,5 +11,3 @@ export interface GlobalVendorArgs {
 export interface ButtonOption {
     body: string
 }
-
-export type BotCtxMiddleware = Partial<ProviderClass & { provider: any }>

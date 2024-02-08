@@ -1,40 +1,28 @@
 import { utils } from '@bot-whatsapp/bot'
+import { BotCtxMiddleware } from '@bot-whatsapp/bot/dist/types'
 import { urlencoded, json } from 'body-parser'
 import mime from 'mime-types'
 import { EventEmitter } from 'node:events'
 import { existsSync, createReadStream } from 'node:fs'
 import polka, { Middleware, Polka } from 'polka'
 
+import { TwilioRequestBody, TwilioPayload } from './types'
 import { parseNumber } from './utils'
 
-export interface TwilioRequestBody {
-    From: string
-    To: string
-    Body: string
-    NumMedia: string
-    MediaContentType0?: string
-    Latitude?: string
-    Longitude?: string
-}
-
-export interface TwilioPayload {
-    from: string
-    to: string
-    body: string
-}
+const idCtxBot = 'ctx-bot'
 
 /**
  * Encargado de levantar un servidor HTTP con una hook url
  * [POST] /twilio-hook
  */
 class TwilioWebHookServer extends EventEmitter {
-    public twilioServer: Polka
-    public twilioPort: number
+    public server: Polka
+    public port: number
 
     constructor(twilioPort: number) {
         super()
-        this.twilioServer = this.buildHTTPServer()
-        this.twilioPort = twilioPort
+        this.server = this.buildHTTPServer()
+        this.port = twilioPort
     }
 
     /**
@@ -117,11 +105,19 @@ class TwilioWebHookServer extends EventEmitter {
     /**
      * Iniciar el servidor HTTP
      */
-    start(): void {
-        this.twilioServer.listen(this.twilioPort, () => {
+    start(vendor: BotCtxMiddleware, port?: number) {
+        if (port) this.port = port
+
+        this.server.use(async (req, _, next) => {
+            req[idCtxBot] = vendor
+            if (req[idCtxBot]) return next()
+            return next()
+        })
+
+        this.server.listen(this.port, () => {
             console.log(``)
             console.log(`[Twilio]: Agregar esta url "WHEN A MESSAGE COMES IN"`)
-            console.log(`[Twilio]: POST http://localhost:${this.twilioPort}/twilio-hook`)
+            console.log(`[Twilio]: POST http://localhost:${this.port}/twilio-hook`)
             console.log(`[Twilio]: Más información en la documentación`)
             console.log(``)
         })
@@ -130,7 +126,7 @@ class TwilioWebHookServer extends EventEmitter {
 
     stop(): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.twilioServer.server.close((err) => {
+            this.server.server.close((err) => {
                 if (err) {
                     reject(err)
                 } else {
@@ -141,4 +137,4 @@ class TwilioWebHookServer extends EventEmitter {
     }
 }
 
-export { TwilioWebHookServer }
+export { TwilioWebHookServer, TwilioPayload }

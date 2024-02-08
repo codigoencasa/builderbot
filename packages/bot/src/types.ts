@@ -3,6 +3,7 @@
  */
 
 import type { IdleState } from './context'
+import { ProviderClass } from './provider'
 import type { Queue } from './utils'
 
 export type Button = {
@@ -201,3 +202,5 @@ export interface SendOptions {
     media?: string
     [key: string]: any
 }
+
+export type BotCtxMiddleware = Partial<ProviderClass & { provider: any }>

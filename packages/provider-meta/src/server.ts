@@ -1,3 +1,4 @@
+import { BotCtxMiddleware } from '@bot-whatsapp/bot/dist/types'
 import { urlencoded, json } from 'body-parser'
 import { EventEmitter } from 'node:events'
 import polka, { Polka } from 'polka'
@@ -6,9 +7,10 @@ import Queue from 'queue-promise'
 import { Message } from './types'
 import { processIncomingMessage } from './utils'
 
+const idCtxBot = 'ctx-bot'
 class MetaWebHookServer extends EventEmitter {
     public server: Polka
-    public metaPort: number
+    public port: number
     private token: string
     private jwtToken: string
     private numberId: string
@@ -17,7 +19,7 @@ class MetaWebHookServer extends EventEmitter {
 
     constructor(jwtToken: string, numberId: string, version: string, token: string, metaPort: number = 3000) {
         super()
-        this.metaPort = metaPort
+        this.port = metaPort
         this.token = token
         this.jwtToken = jwtToken
         this.numberId = numberId
@@ -136,10 +138,18 @@ class MetaWebHookServer extends EventEmitter {
     /**
      * Iniciar el servidor HTTP
      */
-    start() {
-        this.server.listen(this.metaPort, () => {
+    start(vendor: BotCtxMiddleware, port?: number) {
+        if (port) this.port = port
+
+        this.server.use(async (req, _, next) => {
+            req[idCtxBot] = vendor
+            if (req[idCtxBot]) return next()
+            return next()
+        })
+
+        this.server.listen(this.port, () => {
             console.log(`[meta]: Agregar esta url "Webhook"`)
-            console.log(`[meta]: POST http://localhost:${this.metaPort}/webhook`)
+            console.log(`[meta]: POST http://localhost:${this.port}/webhook`)
             console.log(`[meta]: Más información en la documentación`)
         })
         this.emit('ready')

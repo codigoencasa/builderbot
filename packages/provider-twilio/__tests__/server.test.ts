@@ -23,7 +23,7 @@ test('[TwilioWebHookServer] - instantiation', () => {
 test('TwilioWebHookServer should emit "ready" when started', () => {
     const readySpy = sinon.spy()
     twilioServer.on('ready', readySpy)
-    twilioServer.start()
+    twilioServer.start({})
     assert.is(readySpy.called, true)
 })
 
@@ -239,10 +239,10 @@ test('should handle incoming message without media', () => {
 })
 
 test('stop - stops the HTTP server correctly', async () => {
-    assert.ok(twilioServer.twilioServer.server?.listening)
+    assert.ok(twilioServer.server.server?.listening)
 
     await twilioServer.stop()
-    assert.not.ok(twilioServer.twilioServer.server.listening)
+    assert.not.ok(twilioServer.server.server.listening)
 })
 
 test.run()

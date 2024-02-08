@@ -1,4 +1,5 @@
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
+import { BotCtxMiddleware, SendOptions } from '@bot-whatsapp/bot/dist/types'
 import axios from 'axios'
 import FormData from 'form-data'
 import { createReadStream } from 'fs'
@@ -7,7 +8,6 @@ import Queue from 'queue-promise'
 
 import { MetaWebHookServer } from './server'
 import { Localization, MetaProviderOptions, Reaction, TextMessageBody } from './types'
-import { SendOptions } from '@bot-whatsapp/bot/dist/types'
 
 const URL = `https://graph.facebook.com`
 
@@ -16,6 +16,7 @@ const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000
 class MetaProvider extends ProviderClass {
     http: MetaWebHookServer | undefined
     jwtToken: string | undefined
+    verifyToken: string | undefined
     numberId: string | undefined
     version: string = 'v16.0'
     queue: Queue
@@ -25,9 +26,8 @@ class MetaProvider extends ProviderClass {
         this.jwtToken = jwtToken
         this.numberId = numberId
         this.version = version
-        //TODO esta dependencia debe moverse
-        this.http = new MetaWebHookServer(jwtToken, numberId, version, verifyToken, port)
-        this.http.start()
+        this.verifyToken = verifyToken
+        this.initHttpServer(port)
 
         const listEvents = this.busEvents()
 
@@ -39,6 +39,15 @@ class MetaProvider extends ProviderClass {
             interval: 100,
             start: true,
         })
+    }
+
+    initHttpServer(port: number) {
+        this.http = new MetaWebHookServer(this.jwtToken, this.numberId, this.version, this.verifyToken, port)
+        const methods: BotCtxMiddleware = {
+            sendMessage: this.sendMessage,
+            provider: this.vendor,
+        }
+        this.http.start(methods, port)
     }
 
     /**

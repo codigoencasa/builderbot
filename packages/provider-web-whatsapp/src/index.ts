@@ -1,4 +1,5 @@
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
+import { SendOptions } from '@bot-whatsapp/bot/dist/types'
 import { Console } from 'console'
 import { createWriteStream, readFileSync } from 'fs'
 import mime from 'mime-types'
@@ -7,7 +8,6 @@ import WAWebJS, { Client, LocalAuth, MessageMedia, Buttons } from 'whatsapp-web.
 import { WebWhatsappHttpServer } from './server'
 import { BotCtxMiddleware } from './types'
 import { wwebCleanNumber, wwebGenerateImage, wwebIsValidNumber } from './utils'
-import { SendOptions } from '@bot-whatsapp/bot/dist/types'
 
 const logger = new Console({
     stdout: createWriteStream('./log'),

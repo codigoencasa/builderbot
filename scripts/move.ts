@@ -40,6 +40,9 @@ const listLib: { name: string }[] = [
         name: 'provider-venom',
     },
     {
+        name: 'provider-meta',
+    },
+    {
         name: 'provider-web-whatsapp',
     },
     {

@@ -1,23 +1,11 @@
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
 import { Vendor } from '@bot-whatsapp/bot/dist/provider/providerClass'
-import { Button, SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { BotCtxMiddleware, SendOptions } from '@bot-whatsapp/bot/dist/types'
 import twilio from 'twilio'
 
 import { TwilioWebHookServer } from './server'
+import { ITwilioProviderOptions } from './types'
 import { parseNumber } from './utils'
-
-export interface ITwilioProviderOptions {
-    accountSid: string
-    authToken: string
-    vendorNumber: string
-    port?: number
-    publicUrl?: string
-}
-
-export interface IMessageOptions {
-    buttons?: Button[]
-    media?: string
-}
 
 class TwilioProvider extends ProviderClass {
     public http: TwilioWebHookServer
@@ -36,10 +24,8 @@ class TwilioProvider extends ProviderClass {
         this.publicUrl = publicUrl
 
         this.vendor = twilio(accountSid, authToken)
-        this.http = new TwilioWebHookServer(port)
         this.vendorNumber = parseNumber(vendorNumber)
-
-        this.http.start()
+        this.initHttpServer(port)
         const listEvents = this.busEvents()
         for (const { event, func } of listEvents) {
             this.http.on(event, func)
@@ -105,6 +91,16 @@ class TwilioProvider extends ProviderClass {
             ].join('\n')
         )
     }
+
+    initHttpServer(port: number) {
+        this.http = new TwilioWebHookServer(port)
+        const methods: BotCtxMiddleware = {
+            sendMessage: this.sendMessage,
+            provider: this.vendor,
+        }
+        this.http.start(methods, port)
+    }
+
     sendMessage = async (number: string, message: string, options: SendOptions): Promise<any> => {
         options = { ...options, ...options['options'] }
         number = parseNumber(`${number}`)

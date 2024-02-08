@@ -1,3 +1,4 @@
+import { BotCtxMiddleware } from '@bot-whatsapp/bot/dist/types'
 import { WASocket } from '@whiskeysockets/baileys'
 import { urlencoded, json } from 'body-parser'
 import { createReadStream } from 'fs'
@@ -6,7 +7,6 @@ import { join } from 'path'
 import polka, { type Polka } from 'polka'
 
 import { BaileysProvider } from './bailey'
-import { BotCtxMiddleware } from './type'
 
 const idCtxBot = 'ctx-bot'
 

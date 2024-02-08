@@ -1,11 +1,11 @@
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
+import { SendOptions } from '@bot-whatsapp/bot/dist/types'
 import { Message, Whatsapp, create, defaultLogger } from '@wppconnect-team/wppconnect'
 import mime from 'mime-types'
 
 import { WPPConnectHttpServer } from './server'
 import { BotCtxMiddleware } from './types'
 import { WppConnectGenerateImage, WppConnectValidNumber, WppConnectCleanNumber } from './utils'
-import { SendOptions } from '@bot-whatsapp/bot/dist/types'
 
 /**
  * ⚙️ WppConnectProvider: Es una clase tipo adaptador

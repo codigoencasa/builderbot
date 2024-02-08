@@ -459,7 +459,7 @@ test('sendMsg should call sendButtons when options.buttons is provided', async (
             { id: '2', title: 'Button 2' },
         ],
     }
-    await metaProvider.sendMsg(number, message, { options })
+    await metaProvider.sendMessage(number, message, { options })
     assert.equal(sendButtonsStub.calledOnce, true)
     const expectedArgs = [number, message, options.buttons]
     assert.equal(JSON.stringify(sendButtonsStub.firstCall.args), JSON.stringify(expectedArgs))
@@ -475,7 +475,7 @@ test('sendMsg should call sendMedia when options.media is provided', async () =>
         media: 'https://example.com/image.jpg',
     }
 
-    await metaProvider.sendMsg(number, message, { options })
+    await metaProvider.sendMessage(number, message, { options })
     assert.equal(sendMediaStub.calledOnce, true)
 
     const expectedArgs = [number, message, options.media]
