@@ -7,7 +7,7 @@ import { DialogFlowContextOptions, DialogFlowCredentials, Message, MessageContex
 
 const GOOGLE_ACCOUNT_PATH = join(process.cwd(), 'google-key.json')
 
-export class DialogFlowContext extends CoreClass {
+export class DialogFlowContextCX extends CoreClass {
     projectId: string | null = null
     configuration = null
     sessionClient = null
@@ -24,11 +24,6 @@ export class DialogFlowContext extends CoreClass {
     }
 
     loadCredentials = (): DialogFlowCredentials | null => {
-        if (!existsSync(GOOGLE_ACCOUNT_PATH)) {
-            console.log(`[ERROR]: No se encontró ${GOOGLE_ACCOUNT_PATH}`)
-            return null
-        }
-
         const rawJson = readFileSync(GOOGLE_ACCOUNT_PATH, 'utf-8')
         return JSON.parse(rawJson) as DialogFlowCredentials
     }
@@ -51,11 +46,11 @@ export class DialogFlowContext extends CoreClass {
      * Verificar conexión con servicio de DialogFlow
      */
     init = () => {
-        const credentials = this.loadCredentials()
-
-        if (credentials) {
-            this.initializeDialogFlowClient(credentials)
+        if (!this.existsCredential()) {
+            throw new Error(`No se encontró ${GOOGLE_ACCOUNT_PATH}`)
         }
+        const credentials = this.loadCredentials()
+        this.initializeDialogFlowClient(credentials)
     }
 
     /**
@@ -72,14 +67,8 @@ export class DialogFlowContext extends CoreClass {
          * para evitar este problema.
          * https://github.com/codigoencasa/bot-whatsapp/pull/140
          */
-        // const session = this.sessionClient.projectAgentSessionPath(this.projectId, from)
 
-        const session = this.sessionClient.projectLocationAgentSessionPath(
-            this.projectId,
-            this.optionsDX.location,
-            this.optionsDX.agentId,
-            from
-        )
+        const session = this.createSession(from)
 
         const reqDialog = {
             session,
@@ -91,9 +80,9 @@ export class DialogFlowContext extends CoreClass {
             },
         }
 
-        const [single] = (await this.sessionClient.detectIntent(reqDialog)) || [null]
+        const { queryResult } = await this.detectIntent(reqDialog)
 
-        const listMessages = single?.queryResult?.responseMessages?.map((res) => {
+        const listMessages = queryResult?.responseMessages?.map((res) => {
             if (res.message === Message.TEXT) {
                 return { answer: res.text.text[0] }
             }
@@ -117,5 +106,19 @@ export class DialogFlowContext extends CoreClass {
         })
 
         this.sendFlowSimple(listMessages, from)
+    }
+
+    private existsCredential(): boolean {
+        return existsSync(GOOGLE_ACCOUNT_PATH)
+    }
+
+    private createSession(from: string): string {
+        const { location, agentId } = this.optionsDX
+        return this.sessionClient.projectLocationAgentSessionPath(this.projectId, location, agentId, from)
+    }
+
+    private async detectIntent(reqDialog: any): Promise<any> {
+        const [single] = (await this.sessionClient.detectIntent(reqDialog)) || [null]
+        return single
     }
 }

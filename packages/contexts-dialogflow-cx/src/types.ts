@@ -1,3 +1,5 @@
+import { Button } from '@bot-whatsapp/bot/dist/types'
+
 export interface DialogFlowContextOptions {
     language: string
     location: string
@@ -26,7 +28,7 @@ export interface DialogResponseMessage {
     answer: string
     options?: {
         media?: string
-        buttons?: { body: string }[]
+        buttons?: Button[]
     }
 }
 

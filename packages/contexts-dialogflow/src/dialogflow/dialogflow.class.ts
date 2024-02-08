@@ -57,7 +57,7 @@ export class DialogFlowContext extends CoreClass {
          * para evitar este problema.
          * https://github.com/codigoencasa/bot-whatsapp/pull/140
          */
-        const session = this.sessionClient.projectAgentSessionPath(this.projectId, from)
+        const session = this.createSession(from)
 
         const reqDialog = {
             session,
@@ -69,9 +69,7 @@ export class DialogFlowContext extends CoreClass {
             },
         }
 
-        const [single] = (await this.sessionClient.detectIntent(reqDialog)) || [null]
-
-        const { queryResult } = single
+        const { queryResult } = await this.detectIntent(reqDialog)
 
         const msgPayload = queryResult?.fulfillmentMessages?.find((a) => a.message === Message.PAYLOAD)
 
@@ -120,5 +118,14 @@ export class DialogFlowContext extends CoreClass {
 
     private initializeSessionClient(configuration: { credentials: { private_key: string; client_email: string } }) {
         this.sessionClient = new SessionsClient({ ...configuration })
+    }
+
+    private createSession(from: string): string {
+        return this.sessionClient.projectAgentSessionPath(this.projectId, from)
+    }
+
+    private async detectIntent(reqDialog: any): Promise<any> {
+        const [single] = (await this.sessionClient.detectIntent(reqDialog)) || [null]
+        return single
     }
 }
