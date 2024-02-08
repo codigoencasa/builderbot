@@ -1,6 +1,6 @@
 {
     "name": "@bot-whatsapp/provider",
-    "version": "0.1.3-alpha.9",
+    "version": "0.1.3-alpha.10",
     "description": "Esto es el conector a Twilio, Meta, etc...",
     "keywords": [],
     "author": "",
