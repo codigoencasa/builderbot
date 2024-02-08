@@ -1,7 +1,7 @@
 - [x] EVENTS.WELCOME no lo completa
 - [x] verificar todos "sendMessage" sendMessage = async (numberIn: string | number, message: string, { options }: { options: SendOptions }):
 - [x] todos los provider necesitan tener initHttpServer ya se default o no si es grauitos
-- [ ] todos los providers envien la propiedad "name"
+- [x] todos los providers envien la propiedad "name"
 - [x] revisar los packages de context dialogflows
 - [x] cambiar contexto de sendMessage en los providers
 - [x] state.get<generico> o 
