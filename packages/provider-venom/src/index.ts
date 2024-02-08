@@ -7,6 +7,7 @@ import venom from 'venom-bot'
 import { VenomHttpServer } from './server'
 import { BotCtxMiddleware } from './types'
 import { venomCleanNumber, venomGenerateImage, venomisValidNumber } from './utils'
+import { SendOptions } from '@bot-whatsapp/bot/dist/types'
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/venom.log`),
@@ -236,14 +237,10 @@ class VenomProvider extends ProviderClass {
      * @param {*} param2
      * @returns
      */
-    sendMessage = async (
-        userId: string,
-        message: string,
-        arg: { options: { buttons: any[]; media: string } }
-    ): Promise<any> => {
-        const number = venomCleanNumber(userId)
-        if (arg?.options?.buttons?.length) return this.sendButtons(number, message, arg?.options.buttons)
-        if (arg?.options?.media) return this.sendMedia(number, arg?.options.media, message)
+    sendMessage = async (number: string, message: string, options: SendOptions): Promise<any> => {
+        number = venomCleanNumber(number)
+        if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
+        if (options?.media) return this.sendMedia(number, options.media, message)
         return this.vendor.sendText(number, message)
     }
 }

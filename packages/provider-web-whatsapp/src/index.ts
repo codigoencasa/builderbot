@@ -7,6 +7,7 @@ import WAWebJS, { Client, LocalAuth, MessageMedia, Buttons } from 'whatsapp-web.
 import { WebWhatsappHttpServer } from './server'
 import { BotCtxMiddleware } from './types'
 import { wwebCleanNumber, wwebGenerateImage, wwebIsValidNumber } from './utils'
+import { SendOptions } from '@bot-whatsapp/bot/dist/types'
 
 const logger = new Console({
     stdout: createWriteStream('./log'),
@@ -194,7 +195,7 @@ class WebWhatsappProvider extends ProviderClass {
      * @param {*} text
      * @returns
      */
-    sendImage = async (number: string, filePath: string, caption: undefined) => {
+    sendImage = async (number: string, filePath: string, caption: string) => {
         const base64 = readFileSync(filePath, { encoding: 'base64' })
         const mimeType = mime.lookup(filePath)
         const media = new MessageMedia(`${mimeType}`, base64)
@@ -209,7 +210,7 @@ class WebWhatsappProvider extends ProviderClass {
      * @returns
      */
 
-    sendAudio = async (number: string, filePath: string, caption: undefined) => {
+    sendAudio = async (number: string, filePath: string, caption: string) => {
         const base64 = readFileSync(filePath, { encoding: 'base64' })
         const mimeType = mime.lookup(filePath)
         const media = new MessageMedia(`${mimeType}`, base64)
@@ -253,7 +254,7 @@ class WebWhatsappProvider extends ProviderClass {
      * @param {*} message
      * @returns
      */
-    sendMedia = async (number: string, mediaUrl: string, text: undefined) => {
+    sendMedia = async (number: string, mediaUrl: string, text: string) => {
         const fileDownloaded = await utils.generalDownload(mediaUrl)
         const mimeType = mime.lookup(fileDownloaded)
 
@@ -282,8 +283,8 @@ class WebWhatsappProvider extends ProviderClass {
      * @param {*} param2
      * @returns
      */
-    sendMessage = async (userId: string, message: any, { options }: any): Promise<any> => {
-        const number = wwebCleanNumber(userId)
+    sendMessage = async (number: string, message: string, options: SendOptions): Promise<any> => {
+        number = wwebCleanNumber(number)
         if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
         if (options?.media) return this.sendMedia(number, options.media, message)
         return this.sendText(number, message)

@@ -1,3 +1,4 @@
+import { SendOptions } from '@bot-whatsapp/bot/dist/types'
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
 import { Vendor } from '@bot-whatsapp/bot/dist/provider/providerClass'
 import { Boom } from '@hapi/boom'
@@ -24,7 +25,7 @@ import {
     useMultiFileAuthState,
 } from './baileyWrapper'
 import { BaileyHttpServer } from './server'
-import { BotCtxMiddleware, ButtonOption, GlobalVendorArgs, SendOptions } from './type'
+import { BotCtxMiddleware, ButtonOption, GlobalVendorArgs } from './type'
 import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber } from './utils'
 
 const logger = new Console({
@@ -472,7 +473,7 @@ class BaileysProvider extends ProviderClass {
      * @example await sendMessage('+XXXXXXXXXXX', 'Hello World')
      */
 
-    sendMessage = async (numberIn: string | number, message: string, options: SendOptions): Promise<any> => {
+    sendMessage = async (numberIn: string, message: string, options: SendOptions): Promise<any> => {
         options = { ...options, ...options['options'] }
         const number = baileyCleanNumber(`${numberIn}`)
         if (options.buttons?.length) return this.sendButtons(number, message, options.buttons)

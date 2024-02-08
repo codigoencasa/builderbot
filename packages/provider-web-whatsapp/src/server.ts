@@ -28,7 +28,7 @@ export class WebWhatsappHttpServer extends EventEmitter {
         return polka()
             .use(urlencoded({ extended: true }))
             .use(json())
-            .get('/qr', this.indexHome)
+            .get('/', this.indexHome)
     }
 
     /**
@@ -44,8 +44,7 @@ export class WebWhatsappHttpServer extends EventEmitter {
         })
 
         this.server.listen(this.port, () => {
-            console.log(`[WebWhatsapp]: GET http://localhost:${this.port}/qr`)
-            console.log(`[WebWhatsapp]: POST http://localhost:${this.port}/message`)
+            console.log(`[WebWhatsapp]: GET http://localhost:${this.port}`)
         })
     }
 

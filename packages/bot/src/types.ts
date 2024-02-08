@@ -195,3 +195,9 @@ export interface TFlow<P = any, B = any> {
     ) => TFlow<P, B>
     toJson: () => TContext[]
 }
+
+export interface SendOptions {
+    buttons?: Button[]
+    media?: string
+    [key: string]: any
+}

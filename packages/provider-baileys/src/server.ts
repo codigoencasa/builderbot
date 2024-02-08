@@ -39,7 +39,7 @@ class BaileyHttpServer extends EventEmitter {
         return polka()
             .use(urlencoded({ extended: true }))
             .use(json())
-            .get('/qr', this.indexHome)
+            .get('/', this.indexHome)
     }
 
     /**
@@ -54,8 +54,7 @@ class BaileyHttpServer extends EventEmitter {
         })
 
         this.server.listen(this.port, () => {
-            console.log(`[bailey]: GET http://localhost:${this.port}/`)
-            console.log(`[bailey]: POST http://localhost:${this.port}/message`)
+            console.log(`[bailey]: GET http://localhost:${this.port}`)
         })
     }
 

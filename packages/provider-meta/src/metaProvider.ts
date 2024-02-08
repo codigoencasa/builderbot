@@ -7,6 +7,7 @@ import Queue from 'queue-promise'
 
 import { MetaWebHookServer } from './server'
 import { Localization, MetaProviderOptions, Reaction, TextMessageBody } from './types'
+import { SendOptions } from '@bot-whatsapp/bot/dist/types'
 
 const URL = `https://graph.facebook.com`
 
@@ -34,9 +35,9 @@ class MetaProvider extends ProviderClass {
             this.http.on(event, func)
         }
         this.queue = new Queue({
-            concurrent: 1, // Cantidad de tareas que se ejecutarán en paralelo
-            interval: 100, // Intervalo entre tareas
-            start: true, // Iniciar la cola automáticamente
+            concurrent: 1,
+            interval: 100,
+            start: true,
         })
     }
 
@@ -66,9 +67,9 @@ class MetaProvider extends ProviderClass {
      * Sends a message with metadata to the API.
      *
      * @param {Object} body - The body of the message.
-     * @return {Promise} A Promise that resolves when the message is sent.
+     * @return {void} A Promise that resolves when the message is sent.
      */
-    sendMessageMeta(body: TextMessageBody) {
+    sendMessageMeta(body: TextMessageBody): void {
         return this.queue.add(() => this.sendMessageToApi(body))
     }
 
@@ -78,7 +79,7 @@ class MetaProvider extends ProviderClass {
      * @param {Object} body - The body of the message.
      * @return {Object} The response data from the API.
      */
-    async sendMessageToApi(body: TextMessageBody) {
+    async sendMessageToApi(body: TextMessageBody): Promise<any> {
         try {
             const response = await axios.post(`${URL}/${this.version}/${this.numberId}/messages`, body, {
                 headers: {
@@ -526,9 +527,10 @@ class MetaProvider extends ProviderClass {
      * @param {*} param2
      * @returns
      */
-    sendMsg = async (number: string, message: string, arg: { options?: any }) => {
-        if (arg?.options?.buttons?.length) return this.sendButtons(number, message, arg?.options.buttons)
-        if (arg?.options?.media) return this.sendMedia(number, message, arg?.options.media)
+    sendMessage = async (number: string, message: string, options: SendOptions): Promise<any> => {
+        options = { ...options, ...options['options'] }
+        if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
+        if (options?.media) return this.sendMedia(number, message, options.media)
 
         this.sendtext(number, message)
     }

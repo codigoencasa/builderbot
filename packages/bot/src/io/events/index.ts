@@ -7,15 +7,11 @@ import { eventTemplate, REGEX_EVENT_TEMPLATE } from './eventTemplate'
 import { eventVoiceNote, REGEX_EVENT_VOICE_NOTE } from './eventVoiceNote'
 import { eventWelcome } from './eventWelcome'
 
-type EventFunctionList = {
-    [key: string]: string
-}
-
 type EventFunctionRegex = {
     [key: string]: RegExp
 }
 
-const LIST_ALL: EventFunctionList = {
+const LIST_ALL = {
     WELCOME: eventWelcome(),
     MEDIA: eventMedia(),
     LOCATION: eventLocation(),

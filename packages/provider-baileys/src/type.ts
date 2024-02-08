@@ -14,10 +14,4 @@ export interface ButtonOption {
     body: string
 }
 
-export interface SendOptions {
-    buttons?: ButtonOption[]
-    media?: string
-    [key: string]: any
-}
-
 export type BotCtxMiddleware = Partial<ProviderClass & { provider: any }>

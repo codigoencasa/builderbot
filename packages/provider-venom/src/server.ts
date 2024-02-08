@@ -28,7 +28,7 @@ export class VenomHttpServer extends EventEmitter {
         return polka()
             .use(urlencoded({ extended: true }))
             .use(json())
-            .get('/qr', this.indexHome)
+            .get('/', this.stactiMiddleware)
     }
 
     /**
@@ -44,8 +44,7 @@ export class VenomHttpServer extends EventEmitter {
         })
 
         this.server.listen(this.port, () => {
-            console.log(`[Venom]: GET http://localhost:${this.port}/qr`)
-            console.log(`[Venom]: POST http://localhost:${this.port}/message`)
+            console.log(`[Venom]: GET http://localhost:${this.port}`)
         })
     }
 
@@ -54,7 +53,7 @@ export class VenomHttpServer extends EventEmitter {
      * @param _
      * @param res
      */
-    protected indexHome = (_, res) => {
+    protected stactiMiddleware: polka.Middleware<any, any, any, any> = (_, res) => {
         const qrPath = join(process.cwd(), `${this.#botName}.qr.png`)
         const fileStream = createReadStream(qrPath)
         res.writeHead(200, { 'Content-Type': 'image/png' })

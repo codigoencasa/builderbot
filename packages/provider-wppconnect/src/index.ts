@@ -5,6 +5,7 @@ import mime from 'mime-types'
 import { WPPConnectHttpServer } from './server'
 import { BotCtxMiddleware } from './types'
 import { WppConnectGenerateImage, WppConnectValidNumber, WppConnectCleanNumber } from './utils'
+import { SendOptions } from '@bot-whatsapp/bot/dist/types'
 
 /**
  * ⚙️ WppConnectProvider: Es una clase tipo adaptador
@@ -264,10 +265,9 @@ class WPPConnectProviderClass extends ProviderClass {
      * @param {*} param2
      * @returns
      */
-    async sendMessage(to: string, message: string, arg: any): Promise<any> {
-        const number = to
-        if (arg?.options?.buttons?.length) return this.sendButtons(number, message, arg?.options.buttons)
-        if (arg?.options?.media) return this.sendMedia(number, arg?.options.media, message)
+    sendMessage = async (number: string, message: string, options: SendOptions): Promise<any> => {
+        if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
+        if (options?.media) return this.sendMedia(number, options.media, message)
         return this.vendor.sendText(number, message)
     }
 }
