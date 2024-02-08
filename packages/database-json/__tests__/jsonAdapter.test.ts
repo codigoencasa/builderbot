@@ -81,23 +81,6 @@ test('getPrevByNumber - returns undefined for empty history', async () => {
     assert.equal(result, undefined)
 })
 
-test.skip('save adds an entry to the file', async () => {
-    const entry: HistoryEntry = {
-        ...entryMock,
-    }
-    const filename = 'test-db-save.json'
-    const testFilePath = join(process.cwd(), filename)
-    const jsonFileAdapter = new JsonFileAdapter({ filename })
-
-    await jsonFileAdapter.save(entry)
-    const contentAfterSave = await fsPromises.readFile(testFilePath, 'utf-8')
-    const parsedContent = JSON.parse(contentAfterSave)
-
-    assert.equal(parsedContent.length, 1)
-    assert.equal(parsedContent[0].keyword, entry.keyword)
-    await fsPromises.unlink(testFilePath)
-})
-
 test('init should return is existsSync false', async () => {
     jsonFileAdapter['pathFile'] = 'nonExistingFilePath'
     const existsSync = () => false

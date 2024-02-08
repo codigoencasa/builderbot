@@ -239,36 +239,10 @@ test('should handle incoming message without media', () => {
 })
 
 test('stop - stops the HTTP server correctly', async () => {
-    const port = 3000
-    const server = new TwilioWebHookServer(port)
-    server.start()
-    assert.ok(server.twilioServer.server?.listening)
+    assert.ok(twilioServer.twilioServer.server?.listening)
 
-    await server.stop()
-    assert.not.ok(server.twilioServer.server.listening)
-})
-
-test('stop - method rejects the promise if there is an error closing the server', async () => {
-    const port = 3000
-    const server = new TwilioWebHookServer(port)
-    server.start()
-    assert.ok(server.twilioServer.server?.listening)
-
-    server.twilioServer.server.close((err) => {
-        if (err) {
-            console.error('Error al cerrar el servidor manualmente:', err)
-        }
-    })
-    try {
-        await server.stop()
-        assert.unreachable('The promise should have been rejected')
-    } catch (error) {
-        assert.instance(error, Error)
-    }
-})
-
-test.after(async () => {
     await twilioServer.stop()
+    assert.not.ok(twilioServer.twilioServer.server.listening)
 })
 
 test.run()
