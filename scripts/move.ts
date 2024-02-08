@@ -57,6 +57,9 @@ const listLib: { name: string }[] = [
     {
         name: 'database',
     },
+    {
+        name: 'eslint-plugin-bot-whatsapp',
+    },
 ]
 
 const main = async (): Promise<void> => {

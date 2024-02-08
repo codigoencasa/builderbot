@@ -11,7 +11,7 @@
     "packages/database-mysql",
     "packages/database-json",
     "packages/database-postgres",
-    "packages/eslint-plugin-bot-whatsapp-ts",
+    "packages/eslint-plugin-bot-whatsapp",
     "packages/provider-meta",
     "packages/provider-baileys",
     "packages/provider-twilio",
