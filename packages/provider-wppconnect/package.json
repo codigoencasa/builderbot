@@ -14,7 +14,7 @@
         "test:coverage": "npx c8 npm run test"
     },
     "files": [
-        "dist"
+        "./dist/"
     ],
     "repository": {
         "type": "git",

@@ -13,7 +13,7 @@
         "test": "__tests__"
     },
     "files": [
-        "src"
+        "./dist/"
     ],
     "repository": {
         "type": "git",

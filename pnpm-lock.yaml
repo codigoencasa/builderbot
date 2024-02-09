@@ -702,6 +702,9 @@ importers:
             '@rollup/plugin-commonjs':
                 specifier: ^23.0.7
                 version: 23.0.7(rollup@4.9.5)
+            '@rollup/plugin-json':
+                specifier: ^6.1.0
+                version: 6.1.0(rollup@4.9.5)
             '@rollup/plugin-node-resolve':
                 specifier: ^15.2.3
                 version: 15.2.3(rollup@4.9.5)

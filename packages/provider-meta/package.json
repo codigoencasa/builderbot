@@ -13,7 +13,7 @@
         "test": "__tests__"
     },
     "files": [
-        "src"
+        "./dist/"
     ],
     "repository": {
         "type": "git",
@@ -38,6 +38,7 @@
     "devDependencies": {
         "@bot-whatsapp/bot": "workspace:*",
         "@rollup/plugin-commonjs": "^23.0.7",
+        "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-terser": "^0.4.4",
         "@types/node": "^20.11.0",

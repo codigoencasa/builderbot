@@ -15,7 +15,7 @@ export default {
     plugins: [
         commonjs(),
         nodeResolve({
-            resolveOnly: ['!rpt2'],
+            resolveOnly: (module) => !/pg/i.test(module),
         }),
         typescript(),
         terser(),

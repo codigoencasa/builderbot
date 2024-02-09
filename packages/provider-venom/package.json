@@ -9,7 +9,7 @@
     "types": "dist/index.d.ts",
     "type": "module",
     "files": [
-        "dist"
+        "./dist/"
     ],
     "scripts": {
         "build": "rimraf dist && rollup --config",

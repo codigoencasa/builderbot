@@ -10,5 +10,10 @@ export default {
             exports: 'named',
         },
     ],
-    plugins: [nodeResolve({ resolveOnly: ['!rpt2'] }), typescript()],
+    plugins: [
+        nodeResolve({
+            resolveOnly: (module) => !/@google-cloud|@bot-whatsapp\/bot/i.test(module),
+        }),
+        typescript(),
+    ],
 }
