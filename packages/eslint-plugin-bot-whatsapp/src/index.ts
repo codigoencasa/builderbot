@@ -9,7 +9,9 @@ import {
 } from './rules'
 
 const configs = {
-    recommended: rulesRecommended,
+    recommended: {
+        rules: rulesRecommended,
+    },
 }
 const rules = {
     'func-prefix-goto-flow-return': {

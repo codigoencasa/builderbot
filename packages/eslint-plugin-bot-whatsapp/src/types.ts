@@ -1,6 +1,7 @@
 export interface INode {
     type: string
     callee?: {
+        name: string
         property?: {
             name?: string
         }
@@ -10,6 +11,7 @@ export interface INode {
 }
 
 export interface Parent {
+    arguments: any
     type: string
     callee?: {
         property?: {
@@ -25,5 +27,6 @@ export interface ReportOptions {
 }
 
 export interface Context {
+    getAncestors?: () => any
     report: (options: ReportOptions) => void
 }

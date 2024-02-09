@@ -40,6 +40,9 @@ const listLib: { name: string }[] = [
     {
         name: 'contexts-dialogflow-cx',
     },
+    {
+        name: 'eslint-plugin-bot-whatsapp',
+    },
 ]
 
 const main = async (): Promise<void> => {

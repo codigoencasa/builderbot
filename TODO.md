@@ -5,8 +5,12 @@
 - [x] revisar los packages de context dialogflows
 - [x] cambiar contexto de sendMessage en los providers
 - [x] state.get<generico> o 
+- [x] eslinter nueva regla flowDynamic seguido de un endFLow  no sirve el endFlow entonces la idae esuqe diga que no puede usar juntoss
 - [ ] todos los providers deben tener "globalVendorArgs"
 - [/] hacer que los addKeyowrd([]) ni ('')
+- [ ] revisar en todos los package.json     "files": [
+        "./dist/"
+    ],
 - [ ] terminar wrapper `database`
 - [ ] terminar wrapper `provider`
 - [ ] cambiar los startes
@@ -15,6 +19,5 @@
 - [ ] mirar este PR https://github.com/codigoencasa/bot-whatsapp/pull/965/files
 - [ ] revisar test.skip
 - [ ] cambiar el CONTRIBUTING.md
-- [x] eslinter nueva regla flowDynamic seguido de un endFLow  no sirve el endFlow entonces la idae esuqe diga que no puede usar juntoss
 
 REVISAR NAME

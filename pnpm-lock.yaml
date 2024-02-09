@@ -522,6 +522,9 @@ importers:
             '@rollup/plugin-terser':
                 specifier: ^0.4.4
                 version: 0.4.4(rollup@4.9.5)
+            '@types/eslint':
+                specifier: ^8.56.2
+                version: 8.56.2
             '@types/node':
                 specifier: ^20.11.0
                 version: 20.11.5
@@ -4818,6 +4821,16 @@ packages:
         dependencies:
             '@types/ms': 0.7.34
         dev: false
+
+    /@types/eslint@8.56.2:
+        resolution:
+            {
+                integrity: sha512-uQDwm1wFHmbBbCZCqAlq6Do9LYwByNZHWzXppSnay9SuwJ+VRbjkbLABer54kcPnMSlG6Fdiy2yaFXm/z9Z5gw==,
+            }
+        dependencies:
+            '@types/estree': 1.0.5
+            '@types/json-schema': 7.0.15
+        dev: true
 
     /@types/estree@1.0.5:
         resolution:

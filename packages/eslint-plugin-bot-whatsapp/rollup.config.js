@@ -1,6 +1,5 @@
 import typescript from 'rollup-plugin-typescript2'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
-import terser from '@rollup/plugin-terser'
 export default {
     input: ['src/index.ts'],
     output: [
@@ -11,11 +10,5 @@ export default {
             exports: 'named',
         },
     ],
-    plugins: [
-        nodeResolve({
-            resolveOnly: ['!rpt2'],
-        }),
-        typescript(),
-        terser(),
-    ],
+    plugins: [nodeResolve(), typescript()],
 }
