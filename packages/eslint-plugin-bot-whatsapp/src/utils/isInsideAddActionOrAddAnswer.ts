@@ -11,7 +11,7 @@ function isInsideAddActionOrAddAnswer(node: INode) {
         ) {
             return true
         }
-        currentNode = currentNode.parent
+        currentNode = currentNode.parent as any
     }
     return false
 }

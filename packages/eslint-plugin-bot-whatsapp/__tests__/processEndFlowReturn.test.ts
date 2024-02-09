@@ -1,5 +1,6 @@
 import * as sinon from 'sinon'
 import { test } from 'uvu'
+import * as assert from 'uvu/assert'
 
 import { processEndFlowReturn } from '../src/rules/processEndFlowReturn'
 import { INode, Context } from '../src/types'
@@ -10,7 +11,7 @@ const createMockNode = (type: string, calleeName?: string): INode => ({
         property: {
             name: calleeName,
         },
-    },
+    } as any,
     parent: null as any,
 })
 
@@ -20,7 +21,7 @@ test('processEndFlowReturn - should report an error if endFlow is not inside a R
     const context: Context = {
         report: sinon.fake(),
     }
-    node.parent = parentNode
+    node.parent = parentNode as any
 
     processEndFlowReturn(context)['CallExpression[callee.name="endFlow"]'](node)
     sinon.assert.calledOnceWithExactly(context.report as sinon.SinonSpy, {
@@ -36,10 +37,41 @@ test('processEndFlowReturn - return', () => {
     const context: Context = {
         report: sinon.fake(),
     }
-    node.parent = parentNode
+    node.parent = parentNode as any
 
     processEndFlowReturn(context)['CallExpression[callee.name="endFlow"]'](node)
     sinon.assert.notCalled(context.report as sinon.SinonSpy)
+})
+
+test('processEndFlowReturn should not report if "state.update" is not accessed', () => {
+    const insertTextBeforeStub = sinon.stub()
+    const reportStub = sinon.stub().callsFake((options: any) => {
+        const fixer = {
+            insertTextBefore: insertTextBeforeStub,
+        }
+        options.fix(fixer)
+    })
+    const mockContext: any = {
+        report: reportStub,
+    }
+    const mockNode: any = {
+        type: 'CallExpression',
+        object: {
+            name: 'state',
+        },
+        parent: {
+            type: 'OtherExpression',
+        },
+        callee: {
+            property: {
+                name: 'addAnswer',
+            },
+        },
+    }
+
+    processEndFlowReturn(mockContext)['CallExpression[callee.name="endFlow"]'](mockNode)
+    assert.equal(mockContext.report.called, true)
+    assert.equal(reportStub.called, true)
 })
 
 test.run()
