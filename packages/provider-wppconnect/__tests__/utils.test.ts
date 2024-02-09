@@ -1,11 +1,17 @@
 import { existsSync, unlinkSync } from 'fs-extra'
 import { join } from 'path'
-import proxyquire from 'proxyquire'
 import { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
 import { Response } from '../src/types'
+import {
+    writeFilePromise,
+    WppConnectGenerateImage,
+    WppConnectCleanNumber,
+    WppConnectValidNumber,
+    notMatches,
+} from '../src/utils'
 
 const fsMock = {
     writeFile: stub(),
@@ -14,12 +20,6 @@ const fsMock = {
 const utilsMock = {
     cleanImage: stub().resolves(),
 }
-
-const { writeFilePromise, WppConnectGenerateImage, WppConnectCleanNumber, WppConnectValidNumber, notMatches } =
-    proxyquire<typeof import('../src/utils')>('../src/utils', {
-        '@bot-whatsapp/bot': { utils: utilsMock },
-        fs: fsMock,
-    })
 
 test.after.each(() => {
     fsMock.writeFile.resetHistory()
