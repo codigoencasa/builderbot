@@ -1,5 +1,6 @@
 import { join } from 'path'
 import { rimraf } from 'rimraf'
+import { readFileSync } from 'fs'
 
 const PACKAGES_PATH: string = join(process.cwd(), 'packages')
 
@@ -12,40 +13,27 @@ const deleteDist = async (pkgName: string): Promise<void> => {
     await rimraf(join(FROM, 'dist'))
 }
 
-const listLib: { name: string }[] = [
-    {
-        name: 'create-bot-whatsapp',
-    },
-    {
-        name: 'bot',
-    },
-    {
-        name: 'provider-baileys',
-    },
-    {
-        name: 'provider-twilio',
-    },
-    {
-        name: 'provider-venom',
-    },
-    {
-        name: 'provider-web-whatsapp',
-    },
-    {
-        name: 'provider-wppconnect',
-    },
-    {
-        name: 'contexts-dialogflow',
-    },
-    {
-        name: 'contexts-dialogflow-cx',
-    },
-    {
-        name: 'eslint-plugin-bot-whatsapp',
-    },
-]
+/**
+ *
+ */
+const getPkgName = () => {
+    try {
+        const pathLerna = join(process.cwd(), 'lerna.json')
+        const json = readFileSync(pathLerna, 'utf8')
+        const lerna = JSON.parse(json)
+        return lerna.packages.map((pkg: string) => {
+            const name = pkg.split('/').pop()
+            return { name }
+        })
+    } catch (error) {
+        console.log(`Error:`, error)
+        return []
+    }
+}
 
 const main = async (): Promise<void> => {
+    const listLib: { name: string }[] = getPkgName()
+
     for (const iterator of listLib) {
         await deleteDist(iterator.name)
         console.log(`${iterator.name}: Limpiar ✅`)

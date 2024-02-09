@@ -1,5 +1,6 @@
 import { copy } from 'fs-extra'
 import { join } from 'path'
+import { readFileSync } from 'fs'
 
 const PACKAGES_PATH: string = join(process.cwd(), 'packages')
 const NAME_PREFIX: string = '@bot-whatsapp'
@@ -23,49 +24,26 @@ const copyLibPkg = async (pkgName: string, to: string): Promise<void> => {
     await copy(join(FROM, 'package.json'), join(TO, 'package.json'))
 }
 
-const listLib: { name: string }[] = [
-    {
-        name: 'create-bot-whatsapp',
-    },
-    {
-        name: 'bot',
-    },
-    {
-        name: 'provider-baileys',
-    },
-    {
-        name: 'provider-twilio',
-    },
-    {
-        name: 'provider-venom',
-    },
-    {
-        name: 'provider-meta',
-    },
-    {
-        name: 'provider-web-whatsapp',
-    },
-    {
-        name: 'provider-wppconnect',
-    },
-    {
-        name: 'contexts-dialogflow',
-    },
-    {
-        name: 'contexts-dialogflow-cx',
-    },
-    {
-        name: 'database',
-    },
-    {
-        name: 'eslint-plugin-bot-whatsapp',
-    },
-]
+const getPkgName = () => {
+    try {
+        const pathLerna = join(process.cwd(), 'lerna.json')
+        const json = readFileSync(pathLerna, 'utf8')
+        const lerna = JSON.parse(json)
+        return lerna.packages.map((pkg: string) => {
+            const name = pkg.split('/').pop()
+            return { name }
+        })
+    } catch (error) {
+        console.log(`Error:`, error)
+        return []
+    }
+}
 
 const main = async (): Promise<void> => {
     if (!appDir) {
         throw new Error('appDir is not specified in the arguments.')
     }
+    const listLib: { name: string }[] = getPkgName()
     for (const iterator of listLib) {
         await copyLibPkg(iterator.name, appDir)
         console.log(`${iterator.name}: Copiado ✅`)
