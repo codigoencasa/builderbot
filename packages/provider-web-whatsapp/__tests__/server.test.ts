@@ -12,17 +12,17 @@ const mockResponse = {
     },
 }
 
-const webWhatsappHttpServer = new WebWhatsappHttpServer('bot', 3000)
+const webWhatsappHttpServer = new WebWhatsappHttpServer('bot', 3006)
 
 test('webWhatsappHttpServer debe construirse correctamente', () => {
     assert.ok(webWhatsappHttpServer instanceof WebWhatsappHttpServer)
     assert.ok(webWhatsappHttpServer.server !== undefined)
-    assert.strictEqual(webWhatsappHttpServer.port, 3000)
+    assert.strictEqual(webWhatsappHttpServer.port, 3006)
 })
 
 test('start debe actualizar el puerto correctamente si se proporciona un valor', () => {
-    webWhatsappHttpServer.start(undefined as any, 4000)
-    assert.strictEqual(webWhatsappHttpServer.port, 4000)
+    webWhatsappHttpServer.start(undefined as any, 4006)
+    assert.strictEqual(webWhatsappHttpServer.port, 4006)
 })
 
 test('handleCtx - function should call provided function with correct arguments', () => {

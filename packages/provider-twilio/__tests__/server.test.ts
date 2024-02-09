@@ -9,7 +9,7 @@ const emitStub = stub()
 let twilioServer: TwilioWebHookServer
 
 test.before(async () => {
-    twilioServer = new TwilioWebHookServer(5000)
+    twilioServer = new TwilioWebHookServer(3004)
 })
 
 test.before.each(() => {
@@ -62,6 +62,7 @@ test('should handle incoming message with audio', () => {
         from: '123456',
         to: '78910',
         body: '_event_voice_note_',
+        name: 'name',
     }
     assert.equal(emitStub.calledOnce, true)
     assert.equal(emitStub.args[0][0], 'message')
@@ -91,6 +92,7 @@ test('should handle incoming message with image', () => {
         from: '123456',
         to: '78910',
         body: '_event_media_',
+        name: 'name',
     }
     assert.equal(emitStub.calledOnce, true)
     assert.equal(emitStub.args[0][0], 'message')
@@ -121,6 +123,7 @@ test('should handle incoming message with video', () => {
         from: '123456',
         to: '78910',
         body: '_event_media_',
+        name: '',
     }
     assert.is(emitStub.calledOnce, true)
     assert.equal(emitStub.firstCall.args[0], 'message')
@@ -150,6 +153,7 @@ test('should handle incoming message with application', () => {
         from: '123456',
         to: '78910',
         body: '_event_document_',
+        name: '',
     }
     assert.is(emitStub.calledOnce, true)
     assert.equal(emitStub.firstCall.args[0], 'message')
@@ -179,6 +183,7 @@ test('should handle incoming message with text', () => {
         from: '123456',
         to: '78910',
         body: '_event_contacts_',
+        name: '',
     }
     assert.is(emitStub.calledOnce, true)
     assert.equal(emitStub.firstCall.args[0], 'message')
@@ -228,6 +233,7 @@ test('should handle incoming message without media', () => {
         from: '123456',
         to: '78910',
         body: '_event_location_',
+        name: '',
     }
 
     assert.is(emitStub.calledOnce, true)

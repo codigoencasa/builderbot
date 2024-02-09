@@ -12,17 +12,17 @@ const mockResponse = {
     },
 }
 
-const wPPConnectHttpServer = new WPPConnectHttpServer('bot', 3000)
+const wPPConnectHttpServer = new WPPConnectHttpServer('bot', 3007)
 
 test('webWhatsappHttpServer debe construirse correctamente', () => {
     assert.ok(wPPConnectHttpServer instanceof WPPConnectHttpServer)
     assert.ok(wPPConnectHttpServer.server !== undefined)
-    assert.strictEqual(wPPConnectHttpServer.port, 3000)
+    assert.strictEqual(wPPConnectHttpServer.port, 3007)
 })
 
 test('start debe actualizar el puerto correctamente si se proporciona un valor', () => {
-    wPPConnectHttpServer.start(undefined as any, 4000)
-    assert.strictEqual(wPPConnectHttpServer.port, 4000)
+    wPPConnectHttpServer.start(undefined as any, 4007)
+    assert.strictEqual(wPPConnectHttpServer.port, 4007)
 })
 
 test('handleCtx - function should call provided function with correct arguments', () => {

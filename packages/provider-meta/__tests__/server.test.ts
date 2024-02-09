@@ -11,18 +11,18 @@ const resMock = {
 }
 
 test('should create MetaWebHookServer instance', async () => {
-    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3001)
-    server.start()
-    assert.is(server['port'], 3001)
+    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3002)
+    server.start({})
+    assert.is(server['port'], 3002)
     assert.is(server['jwtToken'], 'jwtToken')
     await server.stop()
 })
 
 test('start -should start MetaWebHookServer and emit "ready"', async () => {
-    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3002)
+    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3003)
     const emitSpy = stub(server, 'emit')
     const metaServerSpy = stub(server['server'], 'listen')
-    server.start()
+    server.start({})
     assert.equal(emitSpy.calledWith('ready'), true)
     assert.equal(metaServerSpy.called, true)
 })
@@ -75,7 +75,7 @@ test('emptyCtrl - should call res.end with an empty string', () => {
 })
 
 test('processMessage emits the correct message', () => {
-    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3000)
+    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3002)
     const mockEmit = spy(server, 'emit')
     const message: Message = {
         type: 'text',
@@ -83,13 +83,14 @@ test('processMessage emits the correct message', () => {
         to: 'recipient',
         body: 'Hello!',
         pushName: 'John Doe',
+        name: 'name',
     }
     server['processMessage'](message)
     assert.equal(mockEmit.calledWith('message', message), true)
 })
 
 test('incomingMsg - incomingMsg should process messages correctly', async () => {
-    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3000)
+    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3002)
     const message = { type: 'text', from: 'sender', to: 'receiver', body: 'Hello!' }
     const req = {
         body: {
@@ -116,7 +117,7 @@ test('incomingMsg - incomingMsg should process messages correctly', async () => 
     assert.ok(enqueueStub.called)
 })
 test('incomingMsg - No debe llamar el metodo messageQueuey retornar el mensaje empty endpoint ', async () => {
-    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3000)
+    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3002)
     const req = {
         body: {
             entry: [

@@ -5,6 +5,7 @@ import * as assert from 'uvu/assert'
 import { Buttons } from 'whatsapp-web.js'
 
 import { WebWhatsappProvider } from '../src/index'
+import { SendOptions } from '@bot-whatsapp/bot/dist/types'
 
 const hookClose = async () => {
     await utils.delay(3000)
@@ -28,32 +29,28 @@ test.after.each(() => {
 test('sendMessage - should call the method sendButtons', async () => {
     const to = '+123456789'
     const message = 'Test message'
-    const argWithButtons: any = {
-        options: {
-            buttons: ['Button1', 'Button2'],
-        },
+    const argWithButtons: SendOptions = {
+        buttons: [{ body: 'Button1' }, { body: 'Button2' }],
     }
     const sendButtonsStub = stub(webWhatsappProvider, 'sendButtons').resolves()
     await webWhatsappProvider.sendMessage(to, message, argWithButtons)
     assert.equal(sendButtonsStub.called, true)
     assert.equal(sendButtonsStub.args[0][0], `${to}@c.us`)
     assert.equal(sendButtonsStub.args[0][1], message)
-    assert.equal(sendButtonsStub.args[0][2], argWithButtons.options.buttons)
+    assert.equal(sendButtonsStub.args[0][2], argWithButtons.buttons)
 })
 
 test('sendMessage - should call the method sendMedia', async () => {
     const to = '+123456789'
     const message = 'Test message'
-    const argWithMedia: any = {
-        options: {
-            media: 'image.jpg',
-        },
+    const argWithMedia: SendOptions = {
+        media: 'image.jpg',
     }
     const sendMediaStub = stub(webWhatsappProvider, 'sendMedia').resolves()
     await webWhatsappProvider.sendMessage(to, message, argWithMedia)
     assert.equal(sendMediaStub.called, true)
     assert.equal(sendMediaStub.args[0][0], `${to}@c.us`)
-    assert.equal(sendMediaStub.args[0][1], argWithMedia.options.media)
+    assert.equal(sendMediaStub.args[0][1], argWithMedia.media)
     assert.equal(sendMediaStub.args[0][2], message)
 })
 

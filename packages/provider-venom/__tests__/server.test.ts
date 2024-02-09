@@ -12,17 +12,17 @@ const mockResponse = {
     },
 }
 
-const venomHttpServer = new VenomHttpServer('bot', 3000)
+const venomHttpServer = new VenomHttpServer('bot', 3005)
 
 test('VenomHttpServer debe construirse correctamente', () => {
     assert.ok(venomHttpServer instanceof VenomHttpServer)
     assert.ok(venomHttpServer.server !== undefined)
-    assert.strictEqual(venomHttpServer.port, 3000)
+    assert.strictEqual(venomHttpServer.port, 3005)
 })
 
 test('start debe actualizar el puerto correctamente si se proporciona un valor', () => {
-    venomHttpServer.start(undefined as any, 4000)
-    assert.strictEqual(venomHttpServer.port, 4000)
+    venomHttpServer.start(undefined as any, 4005)
+    assert.strictEqual(venomHttpServer.port, 4005)
 })
 
 test('handleCtx - function should call provided function with correct arguments', () => {
@@ -38,7 +38,7 @@ test('handleCtx - function should call provided function with correct arguments'
 })
 
 test('stop method should close the server without error', async () => {
-    const server = new VenomHttpServer('bot', 5000)
+    const server = new VenomHttpServer('bot', 3005)
     server['start'](undefined as any)
     await server.stop()
     assert.equal(server.server.server?.listening, false)

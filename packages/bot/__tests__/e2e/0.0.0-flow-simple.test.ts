@@ -33,7 +33,7 @@ testSuite(`Responder a "hola"`, async (context) => {
     assert.is(undefined, dbParse[2])
 })
 
-testSuite.skip(`NO responder a "pepe"`, async (context) => {
+testSuite(`NO responder a "pepe"`, async (context) => {
     const { database, provider } = context
     const helloFlow = addKeyword('hola').addAnswer('Buenas!').addAnswer('Como vamos!')
 

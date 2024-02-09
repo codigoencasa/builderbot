@@ -12,18 +12,18 @@ const mockResponse = {
     },
 }
 
-const baileyHttpServer = new BaileyHttpServer(3000)
+const baileyHttpServer = new BaileyHttpServer(3001)
 
 test('BaileyHttpServer debe construirse correctamente', () => {
     assert.ok(baileyHttpServer instanceof BaileyHttpServer)
     assert.ok(baileyHttpServer.server !== undefined)
-    assert.strictEqual(baileyHttpServer.port, 3000)
+    assert.strictEqual(baileyHttpServer.port, 3001)
 })
 
 test('start debe actualizar el puerto correctamente si se proporciona un valor', () => {
-    baileyHttpServer.start(undefined as any, 4000)
+    baileyHttpServer.start(undefined as any, 4001)
 
-    assert.strictEqual(baileyHttpServer.port, 4000)
+    assert.strictEqual(baileyHttpServer.port, 4001)
 })
 
 test('handleCtx - function should call provided function with correct arguments', () => {
