@@ -105,7 +105,7 @@ class VenomProvider extends ProviderClass {
                 }
 
                 payload.from = venomCleanNumber(payload.from, true)
-                payload.name = `${payload?.author}`
+                payload.name = `${payload.sender?.pushname}`
 
                 if (payload.hasOwnProperty('type') && ['image', 'video'].includes(payload.type)) {
                     payload = {
@@ -143,7 +143,9 @@ class VenomProvider extends ProviderClass {
 
         for (const { event, func } of listEvents) {
             if (this.vendor[event])
-                this.vendor[event]((payload: venom.Message & { lat?: string; lng?: string }) => func(payload))
+                this.vendor[event]((payload: venom.Message & { lat?: string; lng?: string; name: string }) =>
+                    func(payload)
+                )
         }
     }
 
