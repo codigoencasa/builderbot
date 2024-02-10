@@ -1,5 +1,7 @@
 import { utils } from '@bot-whatsapp/bot'
 import { SendOptions } from '@bot-whatsapp/bot/dist/types'
+import fs from 'fs'
+import mime from 'mime-types'
 import { stub } from 'sinon'
 import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
@@ -226,6 +228,79 @@ test('initHttpServer - debería iniciar el servidor HTTP correctamente', async (
     webWhatsappProvider.initHttpServer(testPort)
     assert.equal(startStub.called, true)
     await webWhatsappProvider.http?.server.server?.close()
+})
+
+test('sendImage  function sends image message with caption', async () => {
+    const to = '1234567890'
+    const string = 'Hello Word!'
+    const image = 'image.png'
+    const pathFile = 'test'
+    const readFileSyncStub = stub(fs, 'readFileSync').returns(image)
+    const mimeStub = stub(mime, 'lookup').returns(pathFile)
+    webWhatsappProvider.vendor.sendMessage = sendStub
+    await webWhatsappProvider.sendImage(to, pathFile, string)
+
+    assert.equal(sendStub.called, true)
+    assert.equal(sendStub.args[0][0], to)
+    assert.equal(sendStub.args[0][1].data, image)
+    assert.equal(sendStub.args[0][1].mimetype, pathFile)
+    readFileSyncStub.restore()
+    mimeStub.restore()
+})
+
+test('sendAudio  function sends audio message with caption', async () => {
+    const to = '1234567890'
+    const string = 'Hello Word!'
+    const audio = 'audio.mp3'
+    const pathFile = 'test'
+    const readFileSyncStub = stub(fs, 'readFileSync').returns(audio)
+    const mimeStub = stub(mime, 'lookup').returns(pathFile)
+    webWhatsappProvider.vendor.sendMessage = sendStub
+    await webWhatsappProvider.sendAudio(to, pathFile, string)
+    assert.equal(sendStub.called, true)
+    assert.equal(sendStub.args[0][0], to)
+    assert.equal(sendStub.args[0][1].data, audio)
+    assert.equal(sendStub.args[0][1].mimetype, pathFile)
+    readFileSyncStub.restore()
+    mimeStub.restore()
+})
+
+test('sendVideo function sends video message with caption', async () => {
+    const to = '1234567890'
+    const video = 'video.mp4'
+    const pathFile = 'test'
+    const readFileSyncStub = stub(fs, 'readFileSync').returns(video)
+    const mimeStub = stub(mime, 'lookup').returns(pathFile)
+    webWhatsappProvider.vendor.sendMessage = sendStub
+    await webWhatsappProvider.sendVideo(to, pathFile)
+    assert.equal(sendStub.called, true)
+    assert.equal(sendStub.args[0][0], to)
+    assert.equal(sendStub.args[0][1].data, video)
+    assert.equal(sendStub.args[0][1].mimetype, pathFile)
+    readFileSyncStub.restore()
+    mimeStub.restore()
+})
+
+test('sendFile  function sends file message with caption', async () => {
+    const to = '1234567890'
+    const file = 'test.pdf'
+    const pathFile = 'test'
+    const readFileSyncStub = stub(fs, 'readFileSync').returns(file)
+    const mimeStub = stub(mime, 'lookup').returns(pathFile)
+    webWhatsappProvider.vendor.sendMessage = sendStub
+    await webWhatsappProvider.sendFile(to, pathFile)
+    assert.equal(sendStub.called, true)
+    assert.equal(sendStub.args[0][0], to)
+    assert.equal(sendStub.args[0][1].data, file)
+    assert.equal(sendStub.args[0][1].mimetype, pathFile)
+    readFileSyncStub.restore()
+    mimeStub.restore()
+})
+
+test('sendRaw   function  call sendMessage', async () => {
+    webWhatsappProvider.vendor.sendMessage = true as any
+    const result = await webWhatsappProvider.sendRaw()
+    assert.equal(result, true)
 })
 
 test.after(() => {

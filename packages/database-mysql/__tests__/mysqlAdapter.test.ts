@@ -1,4 +1,5 @@
-import { spy } from 'sinon'
+import mysql2 from 'mysql2'
+import { spy, stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
@@ -40,6 +41,7 @@ class MockMysqlAdapter extends MysqlAdapter {
     constructor(credentials) {
         super(credentials)
         this.db = mockConnection
+        this.init().then()
     }
 
     mockQueryResult(result) {
@@ -81,6 +83,24 @@ const checkTableExistsSpy = spy(mockMysqlAdapter, 'checkTableExists')
 test.after.each(() => {
     createTableSpy.resetHistory()
     checkTableExistsSpy.resetHistory()
+})
+
+test('init - You should connect to the database', async () => {
+    const createConnectionStub = stub(mysql2 as any, 'createConnection').returns({
+        connect: stub().resolves(null),
+        query: stub().callsFake(() => null),
+    })
+    const databaseManager = new MysqlAdapter(mockCredentials)
+    databaseManager.db.connect = stub().callsFake((callback) => callback(null))
+    const consoleLogSpy = spy(console, 'log')
+    const checkTableExistsSutb = stub().resolves()
+    databaseManager.checkTableExists = checkTableExistsSutb
+    await databaseManager.init()
+    assert.equal(createConnectionStub.called, true)
+    assert.equal(consoleLogSpy.called, true)
+    assert.equal(checkTableExistsSutb.called, true)
+    assert.equal(consoleLogSpy.args[0][0], 'Solicitud de conexión a base de datos exitosa')
+    consoleLogSpy.restore()
 })
 
 test('[MysqlAdapter] - instantiation', () => {

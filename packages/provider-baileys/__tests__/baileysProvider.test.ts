@@ -1,4 +1,5 @@
 import { utils } from '@bot-whatsapp/bot'
+import fs from 'fs'
 import { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
@@ -29,7 +30,7 @@ const sendStub = stub().resolves('success')
 const emitStub = stub()
 const loadMessageStub = stub()
 
-test.after.each(() => {
+test.after.each(async () => {
     sendStub.resetHistory()
     emitStub.resetHistory()
     loadMessageStub.resetHistory()
@@ -509,6 +510,37 @@ test('initHttpServer - debería iniciar el servidor HTTP correctamente', async (
     baileysProvider.initHttpServer(testPort)
     assert.equal(startStub.called, true)
     await baileysProvider.http?.server.server?.close()
+})
+
+test('sendImage function sends image message with caption', async () => {
+    const to = '1234567890'
+    const message = 'Hello Word!'
+    const image = 'image.png'
+    const pathFile = 'test'
+    const readFileSyncStub = stub(fs, 'readFileSync').returns(image)
+    baileysProvider.vendor.sendMessage = sendStub
+    await baileysProvider.sendImage(to, pathFile, message)
+    assert.equal(sendStub.called, true)
+    assert.equal(sendStub.args[0][0], to)
+    assert.equal(sendStub.args[0][1].image, image)
+    assert.equal(sendStub.args[0][1].caption, message)
+    readFileSyncStub.restore()
+})
+
+test('sendVideo  function sends video message with caption', async () => {
+    const to = '1234567890'
+    const message = 'Hello Word!'
+    const video = 'vide.mp4'
+    const pathFile = 'test'
+    const readFileSyncStub = stub(fs, 'readFileSync').returns(video)
+    baileysProvider.vendor.sendMessage = sendStub
+    await baileysProvider.sendVideo(to, pathFile, message)
+    assert.equal(sendStub.called, true)
+    assert.equal(sendStub.args[0][0], to)
+    assert.equal(sendStub.args[0][1].caption, message)
+    assert.equal(sendStub.args[0][1].video, video)
+    assert.equal(sendStub.args[0][1].gifPlayback, true)
+    readFileSyncStub.restore()
 })
 
 test.after.each(() => {
