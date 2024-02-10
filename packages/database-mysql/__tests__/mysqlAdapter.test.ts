@@ -85,7 +85,7 @@ test.after.each(() => {
     checkTableExistsSpy.resetHistory()
 })
 
-test('init() maneja el error de conexión a la base de datos', async () => {
+test('init - You should connect to the database', async () => {
     const createConnectionStub = stub(mysql2 as any, 'createConnection').returns({
         connect: stub().resolves(null),
         query: stub().callsFake(() => null),
