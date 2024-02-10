@@ -1,4 +1,6 @@
 import * as assert from 'assert'
+import fs from 'fs'
+import { spy, stub } from 'sinon'
 import { test } from 'uvu'
 
 import { WPPConnectHttpServer, handleCtx } from '../src/server'
@@ -40,6 +42,30 @@ test('handleCtx - function should call provided function with correct arguments'
 test('stop method should close the server without error', async () => {
     await wPPConnectHttpServer.stop()
     assert.equal(wPPConnectHttpServer.server?.server?.listening, false)
+})
+
+test('indexHome- It should return the type content of the image', async () => {
+    stub(fs, 'createReadStream').returns({ pipe: stub() } as any)
+    const req = {}
+    const res = {
+        writeHead: stub(),
+        pipe: stub(),
+    }
+
+    wPPConnectHttpServer['indexHome'](req, res)
+    assert.equal(res.writeHead.called, true)
+    assert.equal(res.writeHead.firstCall.args[0], 200)
+})
+
+test('start function sets up server and listens on specified port', () => {
+    const port = 3000
+    const vendor = {}
+    const listenStub = stub().callsArg(1)
+    wPPConnectHttpServer.server.listen = listenStub
+    const consoleLogSpy = spy(console, 'log')
+    wPPConnectHttpServer.start(vendor, port)
+    assert.equal(consoleLogSpy.called, true)
+    assert.equal(listenStub.called, true)
 })
 
 test.run()
