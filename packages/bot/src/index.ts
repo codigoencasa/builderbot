@@ -13,7 +13,7 @@ export interface GeneralArgs {
     listEvents?: Record<string, any>
     delay?: number
     globalState?: Record<string, any>
-    extensions?: any[]
+    extensions?: Record<string, any>
     queue?: {
         timeout: number
         concurrencyLimit: number
