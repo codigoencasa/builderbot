@@ -19,17 +19,13 @@ export interface GeneralArgs {
         concurrencyLimit: number
     }
 }
-
-export interface BotCreationArgs {
-    flow: FlowClass
-    database: MemoryDBClass
-    provider: ProviderClass
-}
-
 /**
  * Crear instancia de clase Bot
  */
-const createBot = async ({ flow, database, provider }: BotCreationArgs, args: GeneralArgs = {}): Promise<CoreClass> => {
+const createBot = async <P = ProviderClass, D = MemoryDBClass>(
+    { flow, database, provider }: { flow: FlowClass; database: D; provider: P },
+    args: GeneralArgs = {}
+): Promise<CoreClass> => {
     const defaultArgs: CoreClassArgs = {
         blackList: [],
         listEvents: EVENTS,
