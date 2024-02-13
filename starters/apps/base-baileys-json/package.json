@@ -6,14 +6,15 @@
     "scripts": {
         "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-baileys-json",
-        "start": "node app.js"
+        "start": "node dis/app.js",
+        "dev": "tsm app.ts"
     },
     "keywords": [],
     "dependencies": {
-        "@bot-whatsapp/bot": "latest",
-        "@bot-whatsapp/cli": "latest",
-        "@bot-whatsapp/database": "latest",
-        "@bot-whatsapp/provider": "latest",
+        "@bot-whatsapp/bot": "0.1.3-alpha.12",
+        "@bot-whatsapp/cli": "0.1.3-alpha.12",
+        "@bot-whatsapp/database-json": "0.1.3-alpha.12",
+        "@bot-whatsapp/provider-baileys": "0.1.3-alpha.12",
         "@bot-whatsapp/portal": "latest",
         "mime-types": "2.1.35",
         "@whiskeysockets/baileys": "6.5.0",
@@ -22,7 +23,8 @@
     },
     "devDependencies": {
         "eslint-plugin-bot-whatsapp": "latest",
-        "eslint": "^8.52.0"
+        "eslint": "^8.52.0",
+        "tsm": "^2.3.0"
     },
     "author": "",
     "license": "ISC"
