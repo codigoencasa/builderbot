@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/lerna/schemas/lerna-schema.json",
-  "version": "0.1.3-alpha.12",
+  "version": "0.1.3-alpha.14",
   "packages": [
     "packages/bot",
     "packages/cli",

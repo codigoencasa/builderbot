@@ -17,3 +17,4 @@
 - [ ] mirar este PR https://github.com/codigoencasa/bot-whatsapp/pull/965/files
 - [ ] revisar test.skip
 - [ ] cambiar el CONTRIBUTING.md
+- [ ] hacer pruebas con npm
