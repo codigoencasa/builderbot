@@ -1,9 +1,6 @@
-const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
-
-const QRPortalWeb = require('@bot-whatsapp/portal')
-const BaileysProvider = require('@bot-whatsapp/provider/baileys')
-const MongoAdapter = require('@bot-whatsapp/database/mongo')
-
+import { createBot, createProvider, createFlow, addKeyword } from '@bot-whatsapp/bot'
+import { TwilioProvider } from '@bot-whatsapp/provider-twilio'
+import { MongoAdapter } from '@bot-whatsapp/database-mongo'
 /**
  * Declaramos las conexiones de Mongo
  */
@@ -87,13 +84,17 @@ const main = async () => {
         dbName: MONGO_DB_NAME,
     })
     const adapterFlow = createFlow([flowPrincipal])
-    const adapterProvider = createProvider(BaileysProvider)
+    const adapterProvider = createProvider(TwilioProvider, {
+        accountSid: 'YOUR_ACCOUNT_SID',
+        authToken: 'YOUR_ACCOUNT_TOKEN',
+        vendorNumber: '+14155238886',
+    })
+
     createBot({
         flow: adapterFlow,
         provider: adapterProvider,
         database: adapterDB,
     })
-    QRPortalWeb()
 }
 
 main()

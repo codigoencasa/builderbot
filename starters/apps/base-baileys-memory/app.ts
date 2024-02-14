@@ -1,8 +1,5 @@
-const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
-
-const QRPortalWeb = require('@bot-whatsapp/portal')
-const BaileysProvider = require('@bot-whatsapp/provider/baileys')
-const MockAdapter = require('@bot-whatsapp/database/mock')
+import { createBot, createProvider, createFlow, addKeyword, MemoryDB } from '@bot-whatsapp/bot'
+import { BaileysProvider } from '@bot-whatsapp/provider-baileys'
 
 const flowSecundario = addKeyword(['2', 'siguiente']).addAnswer(['📄 Aquí tenemos el flujo secundario'])
 
@@ -63,17 +60,16 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
     )
 
 const main = async () => {
-    const adapterDB = new MockAdapter()
+    const adapterDB = new MemoryDB()
     const adapterFlow = createFlow([flowPrincipal])
     const adapterProvider = createProvider(BaileysProvider)
+    adapterProvider.initHttpServer(3000)
 
     createBot({
         flow: adapterFlow,
         provider: adapterProvider,
         database: adapterDB,
     })
-
-    QRPortalWeb()
 }
 
 main()

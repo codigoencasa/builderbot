@@ -1,15 +1,5 @@
-const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
-
-const QRPortalWeb = require('@bot-whatsapp/portal')
-const VenomProvider = require('@bot-whatsapp/provider/venom')
-const MongoAdapter = require('@bot-whatsapp/database/mongo')
-
-/**
- * Declaramos las conexiones de Mongo
- */
-
-const MONGO_DB_URI = 'mongodb://0.0.0.0:27017'
-const MONGO_DB_NAME = 'db_bot'
+import { createBot, createProvider, createFlow, addKeyword, MemoryDB } from '@bot-whatsapp/bot'
+import { TwilioProvider } from '@bot-whatsapp/provider-twilio'
 
 /**
  * Aqui declaramos los flujos hijos, los flujos se declaran de atras para adelante, es decir que si tienes un flujo de este tipo:
@@ -82,18 +72,20 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
     )
 
 const main = async () => {
-    const adapterDB = new MongoAdapter({
-        dbUri: MONGO_DB_URI,
-        dbName: MONGO_DB_NAME,
-    })
+    const adapterDB = new MemoryDB()
     const adapterFlow = createFlow([flowPrincipal])
-    const adapterProvider = createProvider(VenomProvider)
+
+    const adapterProvider = createProvider(TwilioProvider, {
+        accountSid: 'YOUR_ACCOUNT_SID',
+        authToken: 'YOUR_ACCOUNT_TOKEN',
+        vendorNumber: '+14155238886',
+    })
+
     createBot({
         flow: adapterFlow,
         provider: adapterProvider,
         database: adapterDB,
     })
-    QRPortalWeb()
 }
 
 main()

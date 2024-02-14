@@ -1,8 +1,5 @@
-const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
-
-const QRPortalWeb = require('@bot-whatsapp/portal')
-const VenomProvider = require('@bot-whatsapp/provider/venom')
-const MockAdapter = require('@bot-whatsapp/database/mock')
+import { createBot, createProvider, createFlow, addKeyword, MemoryDB } from '@bot-whatsapp/bot'
+import { VenomProvider } from '@bot-whatsapp/provider-venom'
 
 /**
  * Aqui declaramos los flujos hijos, los flujos se declaran de atras para adelante, es decir que si tienes un flujo de este tipo:
@@ -75,15 +72,15 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
     )
 
 const main = async () => {
-    const adapterDB = new MockAdapter()
+    const adapterDB = new MemoryDB()
     const adapterFlow = createFlow([flowPrincipal])
     const adapterProvider = createProvider(VenomProvider)
+    adapterProvider.initHttpServer(3000)
     createBot({
         flow: adapterFlow,
         provider: adapterProvider,
         database: adapterDB,
     })
-    QRPortalWeb()
 }
 
 main()

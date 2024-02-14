@@ -1,6 +1,6 @@
 import { createBot, createProvider, createFlow, addKeyword } from '@bot-whatsapp/bot'
-import { BaileysProvider } from '@bot-whatsapp/provider-baileys'
 import { JsonFileAdapter } from '@bot-whatsapp/database-json'
+import { BaileysProvider } from '@bot-whatsapp/provider-baileys'
 
 const flowSecundario = addKeyword(['2', 'siguiente']).addAnswer(['📄 Aquí tenemos el flujo secundario'])
 
@@ -63,11 +63,11 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
 const main = async () => {
     const adapterDB = new JsonFileAdapter()
     const adapterFlow = createFlow([flowPrincipal])
-    const provider = createProvider(BaileysProvider)
-    provider.initHttpServer(3000)
+    const adapterProvider = createProvider(BaileysProvider)
+    adapterProvider.initHttpServer(3000)
     createBot({
         flow: adapterFlow,
-        provider,
+        provider: adapterProvider,
         database: adapterDB,
     })
 }

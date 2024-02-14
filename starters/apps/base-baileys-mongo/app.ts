@@ -1,18 +1,13 @@
-const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
-
-const QRPortalWeb = require('@bot-whatsapp/portal')
-const BaileysProvider = require('@bot-whatsapp/provider/baileys')
-const PostgreSQLAdapter = require('@bot-whatsapp/database/postgres')
+import { createBot, createProvider, createFlow, addKeyword } from '@bot-whatsapp/bot'
+import { BaileysProvider } from '@bot-whatsapp/provider-baileys'
+import { MongoAdapter } from '@bot-whatsapp/database-mongo'
 
 /**
- * Declaramos las conexiones de PostgreSQL
+ * Declaramos las conexiones de Mongo
  */
 
-const POSTGRES_DB_HOST = 'localhost'
-const POSTGRES_DB_USER = 'postgres'
-const POSTGRES_DB_PASSWORD = 'password'
-const POSTGRES_DB_NAME = 'postgres'
-const POSTGRES_DB_PORT = '5432'
+const MONGO_DB_URI = 'mongodb://0.0.0.0:27017'
+const MONGO_DB_NAME = 'db_bot'
 
 /**
  * Aqui declaramos los flujos hijos, los flujos se declaran de atras para adelante, es decir que si tienes un flujo de este tipo:
@@ -85,21 +80,19 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
     )
 
 const main = async () => {
-    const adapterDB = new PostgreSQLAdapter({
-        host: POSTGRES_DB_HOST,
-        user: POSTGRES_DB_USER,
-        database: POSTGRES_DB_NAME,
-        password: POSTGRES_DB_PASSWORD,
-        port: POSTGRES_DB_PORT,
+    const adapterDB = new MongoAdapter({
+        dbUri: MONGO_DB_URI,
+        dbName: MONGO_DB_NAME,
     })
     const adapterFlow = createFlow([flowPrincipal])
     const adapterProvider = createProvider(BaileysProvider)
+    adapterProvider.initHttpServer(3000)
+
     createBot({
         flow: adapterFlow,
         provider: adapterProvider,
         database: adapterDB,
     })
-    QRPortalWeb()
 }
 
 main()

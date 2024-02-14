@@ -1,7 +1,15 @@
-const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
+import { createBot, createProvider, createFlow, addKeyword } from '@bot-whatsapp/bot'
+import { BaileysProvider } from '@bot-whatsapp/provider-baileys'
+import { MysqlAdapter } from '@bot-whatsapp/database-mysql'
 
-const TwilioProvider = require('@bot-whatsapp/provider/twilio')
-const MockAdapter = require('@bot-whatsapp/database/mock')
+/**
+ * Declaramos las conexiones de MySQL
+ */
+const MYSQL_DB_HOST = 'localhost'
+const MYSQL_DB_USER = 'usr'
+const MYSQL_DB_PASSWORD = 'pass'
+const MYSQL_DB_NAME = 'bot'
+const MYSQL_DB_PORT = '3306'
 
 /**
  * Aqui declaramos los flujos hijos, los flujos se declaran de atras para adelante, es decir que si tienes un flujo de este tipo:
@@ -74,15 +82,15 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
     )
 
 const main = async () => {
-    const adapterDB = new MockAdapter()
-    const adapterFlow = createFlow([flowPrincipal])
-
-    const adapterProvider = createProvider(TwilioProvider, {
-        accountSid: 'YOUR_ACCOUNT_SID',
-        authToken: 'YOUR_ACCOUNT_TOKEN',
-        vendorNumber: '+14155238886',
+    const adapterDB = new MysqlAdapter({
+        host: MYSQL_DB_HOST,
+        user: MYSQL_DB_USER,
+        database: MYSQL_DB_NAME,
+        password: MYSQL_DB_PASSWORD,
     })
-
+    const adapterFlow = createFlow([flowPrincipal])
+    const adapterProvider = createProvider(BaileysProvider)
+    adapterProvider.initHttpServer(3000)
     createBot({
         flow: adapterFlow,
         provider: adapterProvider,

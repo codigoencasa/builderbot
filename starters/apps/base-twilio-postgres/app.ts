@@ -1,7 +1,16 @@
-const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
+import { createBot, createProvider, createFlow, addKeyword } from '@bot-whatsapp/bot'
+import { TwilioProvider } from '@bot-whatsapp/provider-twilio'
+import { PostgreSQLAdapter } from '@bot-whatsapp/database-postgres'
 
-const MetaProvider = require('@bot-whatsapp/provider/meta')
-const MockAdapter = require('@bot-whatsapp/database/mock')
+/**
+ * Declaramos las conexiones de PostgreSQL
+ */
+
+const POSTGRES_DB_HOST = 'localhost'
+const POSTGRES_DB_USER = 'postgres'
+const POSTGRES_DB_PASSWORD = 'password'
+const POSTGRES_DB_NAME = 'postgres'
+const POSTGRES_DB_PORT = '5432'
 
 /**
  * Aqui declaramos los flujos hijos, los flujos se declaran de atras para adelante, es decir que si tienes un flujo de este tipo:
@@ -74,16 +83,19 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
     )
 
 const main = async () => {
-    const adapterDB = new MockAdapter()
-    const adapterFlow = createFlow([flowPrincipal])
-
-    const adapterProvider = createProvider(MetaProvider, {
-        jwtToken: 'jwtToken',
-        numberId: 'numberId',
-        verifyToken: 'verifyToken',
-        version: 'v16.0',
+    const adapterDB = new PostgreSQLAdapter({
+        host: POSTGRES_DB_HOST,
+        user: POSTGRES_DB_USER,
+        database: POSTGRES_DB_NAME,
+        password: POSTGRES_DB_PASSWORD,
+        port: +POSTGRES_DB_PORT,
     })
-
+    const adapterFlow = createFlow([flowPrincipal])
+    const adapterProvider = createProvider(TwilioProvider, {
+        accountSid: 'YOUR_ACCOUNT_SID',
+        authToken: 'YOUR_ACCOUNT_TOKEN',
+        vendorNumber: '+14155238886',
+    })
     createBot({
         flow: adapterFlow,
         provider: adapterProvider,

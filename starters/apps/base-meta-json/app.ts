@@ -1,15 +1,6 @@
-const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
-
-const TwilioProvider = require('@bot-whatsapp/provider/twilio')
-const MongoAdapter = require('@bot-whatsapp/database/mongo')
-
-/**
- * Declaramos las conexiones de Mongo
- */
-
-const MONGO_DB_URI = 'mongodb://0.0.0.0:27017'
-const MONGO_DB_NAME = 'db_bot'
-
+import { createBot, createProvider, createFlow, addKeyword } from '@bot-whatsapp/bot'
+import { MetaProvider } from '@bot-whatsapp/provider-meta'
+import { JsonFileAdapter } from '@bot-whatsapp/database-json'
 /**
  * Aqui declaramos los flujos hijos, los flujos se declaran de atras para adelante, es decir que si tienes un flujo de este tipo:
  *
@@ -81,17 +72,15 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
     )
 
 const main = async () => {
-    const adapterDB = new MongoAdapter({
-        dbUri: MONGO_DB_URI,
-        dbName: MONGO_DB_NAME,
-    })
+    const adapterDB = new JsonFileAdapter()
     const adapterFlow = createFlow([flowPrincipal])
-    const adapterProvider = createProvider(TwilioProvider, {
-        accountSid: 'YOUR_ACCOUNT_SID',
-        authToken: 'YOUR_ACCOUNT_TOKEN',
-        vendorNumber: '+14155238886',
-    })
 
+    const adapterProvider = createProvider(MetaProvider, {
+        jwtToken: 'jwtToken',
+        numberId: 'numberId',
+        verifyToken: 'verifyToken',
+        version: 'v16.0',
+    })
     createBot({
         flow: adapterFlow,
         provider: adapterProvider,

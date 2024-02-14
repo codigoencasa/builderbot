@@ -1,7 +1,16 @@
-const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
+import { createBot, createProvider, createFlow, addKeyword } from '@bot-whatsapp/bot'
+import { VenomProvider } from '@bot-whatsapp/provider-venom'
+import { MysqlAdapter } from '@bot-whatsapp/database-mysql'
 
-const MetaProvider = require('@bot-whatsapp/provider/meta')
-const JsonFileAdapter = require('@bot-whatsapp/database/json')
+/**
+ * Declaramos las conexiones de MySQL
+ */
+
+const MYSQL_DB_HOST = 'localhost'
+const MYSQL_DB_USER = 'user'
+const MYSQL_DB_PASSWORD = 'pass'
+const MYSQL_DB_NAME = 'bot'
+const MYSQL_DB_PORT = '3306'
 
 /**
  * Aqui declaramos los flujos hijos, los flujos se declaran de atras para adelante, es decir que si tienes un flujo de este tipo:
@@ -74,16 +83,15 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
     )
 
 const main = async () => {
-    const adapterDB = new JsonFileAdapter()
-    const adapterFlow = createFlow([flowPrincipal])
-
-    const adapterProvider = createProvider(MetaProvider, {
-        jwtToken: 'jwtToken',
-        numberId: 'numberId',
-        verifyToken: 'verifyToken',
-        version: 'v16.0',
+    const adapterDB = new MysqlAdapter({
+        host: MYSQL_DB_HOST,
+        user: MYSQL_DB_USER,
+        database: MYSQL_DB_NAME,
+        password: MYSQL_DB_PASSWORD,
     })
-
+    const adapterFlow = createFlow([flowPrincipal])
+    const adapterProvider = createProvider(VenomProvider)
+    adapterProvider.initHttpServer(3000)
     createBot({
         flow: adapterFlow,
         provider: adapterProvider,
