@@ -2,28 +2,35 @@
     "name": "base-meta-postgres",
     "version": "1.0.0",
     "description": "",
-    "main": "app.js",
+    "main": "dist/app.js",
+    "type": "module",
     "scripts": {
         "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-meta-postgres",
-        "start": "node app.js"
+        "start": "node dist/app.js",
+        "dev": "tsm app.ts",
+        "build": "npx  rollup -c"
     },
     "keywords": [],
     "dependencies": {
-        "body-parser": "^1.20.1",
-        "polka": "^0.5.2",
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
-        "@bot-whatsapp/database": "latest",
-        "@bot-whatsapp/provider": "latest",
+        "@bot-whatsapp/database-postgres": "latest",
+        "@bot-whatsapp/provider-meta": "latest",
         "axios": "^1.2.1",
-        "pg": "^8.11.2",
+        "body-parser": "^1.20.1",
         "form-data": "4.0.0",
+        "pg": "^8.11.2",
+        "polka": "^0.5.2",
         "queue-promise": "2.2.1"
     },
     "devDependencies": {
+        "@rollup/plugin-terser": "^0.4.4",
+        "eslint": "^8.52.0",
         "eslint-plugin-bot-whatsapp": "latest",
-        "eslint": "^8.52.0"
+        "rollup": "^4.10.0",
+        "rollup-plugin-typescript2": "^0.36.0",
+        "tsm": "^2.3.0"
     },
     "author": "",
     "license": "ISC"

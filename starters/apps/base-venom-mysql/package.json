@@ -2,21 +2,21 @@
     "name": "base-venom-mysql",
     "version": "1.0.0",
     "description": "",
-    "main": "app.js",
+    "main": "dist/app.js",
     "type": "module",
     "scripts": {
         "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-venom-mysql",
-        "start": "node dis/app.js",
+        "start": "node dist/app.js",
         "dev": "tsm app.ts",
         "build": "npx  rollup -c"
     },
     "keywords": [],
     "dependencies": {
-        "@bot-whatsapp/bot": "0.1.3-alpha.14",
-        "@bot-whatsapp/cli": "0.1.3-alpha.14",
-        "@bot-whatsapp/database-mysql": "0.1.3-alpha.14",
-        "@bot-whatsapp/provider-venom": "0.1.3-alpha.14",
+        "@bot-whatsapp/bot": "latest",
+        "@bot-whatsapp/cli": "latest",
+        "@bot-whatsapp/database-mysql": "latest",
+        "@bot-whatsapp/provider-venom": "latest",
         "mime-types": "2.1.35",
         "mysql2": "^2.3.3",
         "venom-bot": "5.0.21"
