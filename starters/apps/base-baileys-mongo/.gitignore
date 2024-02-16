@@ -2,3 +2,5 @@ node_modules
 .env
 *_sessions
 *.log
+dist/*
+*.png

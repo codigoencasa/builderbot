@@ -2,27 +2,30 @@
     "name": "base-twilio-mongo",
     "version": "1.0.0",
     "description": "",
-    "main": "app.js",
+    "main": "dist/app.js",
+    "type": "module",
     "scripts": {
         "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-twilio-mongo",
-        "start": "node app.js"
+        "start": "node dist/app.js",
+        "dev": "tsm src/app.ts",
+        "build": "npx  rollup -c"
     },
     "keywords": [],
     "dependencies": {
-        "body-parser": "^1.20.1",
-        "polka": "^0.5.2",
-        "twilio": "4.19.0",
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
-        "@bot-whatsapp/database": "latest",
-        "@bot-whatsapp/provider": "latest",
-        "mime-types": "^2.1.35",
-        "mongodb": "^4.12.1"
+        "@bot-whatsapp/database-mongo": "latest",
+        "@bot-whatsapp/provider-twilio": "latest",
+        "twilio": "4.19.0"
     },
     "devDependencies": {
+        "@rollup/plugin-terser": "^0.4.4",
+        "eslint": "^8.52.0",
         "eslint-plugin-bot-whatsapp": "latest",
-        "eslint": "^8.52.0"
+        "rollup": "^4.10.0",
+        "rollup-plugin-typescript2": "^0.36.0",
+        "tsm": "^2.3.0"
     },
     "author": "",
     "license": "ISC"
