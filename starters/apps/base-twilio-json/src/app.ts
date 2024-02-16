@@ -1,16 +1,6 @@
 import { createBot, createProvider, createFlow, addKeyword } from '@bot-whatsapp/bot'
-import { VenomProvider } from '@bot-whatsapp/provider-venom'
-import { MysqlAdapter } from '@bot-whatsapp/database-mysql'
-
-/**
- * Declaramos las conexiones de MySQL
- */
-
-const MYSQL_DB_HOST = 'localhost'
-const MYSQL_DB_USER = 'user'
-const MYSQL_DB_PASSWORD = 'pass'
-const MYSQL_DB_NAME = 'bot'
-const MYSQL_DB_PORT = '3306'
+import { JsonFileAdapter } from '@bot-whatsapp/database-json'
+import { TwilioProvider } from '@bot-whatsapp/provider-twilio'
 
 /**
  * Aqui declaramos los flujos hijos, los flujos se declaran de atras para adelante, es decir que si tienes un flujo de este tipo:
@@ -83,15 +73,15 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
     )
 
 const main = async () => {
-    const adapterDB = new MysqlAdapter({
-        host: MYSQL_DB_HOST,
-        user: MYSQL_DB_USER,
-        database: MYSQL_DB_NAME,
-        password: MYSQL_DB_PASSWORD,
-    })
+    const adapterDB = new JsonFileAdapter()
     const adapterFlow = createFlow([flowPrincipal])
-    const adapterProvider = createProvider(VenomProvider)
-    adapterProvider.initHttpServer(3000)
+
+    const adapterProvider = createProvider(TwilioProvider, {
+        accountSid: 'YOUR_ACCOUNT_SID',
+        authToken: 'YOUR_ACCOUNT_TOKEN',
+        vendorNumber: '+18667261694',
+    })
+
     createBot({
         flow: adapterFlow,
         provider: adapterProvider,

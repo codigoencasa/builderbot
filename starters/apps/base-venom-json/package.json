@@ -7,8 +7,8 @@
     "scripts": {
         "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-venom-json",
-        "start": "node dis/app.js",
-        "dev": "tsm app.ts",
+        "start": "node dist/app.js",
+        "dev": "tsm src/app.ts",
         "build": "npx  rollup -c"
     },
     "keywords": [],
@@ -16,9 +16,7 @@
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database-json": "latest",
-        "@bot-whatsapp/provider-venom": "latest",
-        "mime-types": "2.1.35",
-        "venom-bot": "5.0.21"
+        "@bot-whatsapp/provider-venom": "latest"
     },
     "devDependencies": {
         "@rollup/plugin-terser": "^0.4.4",

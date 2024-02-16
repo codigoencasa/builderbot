@@ -1,6 +1,6 @@
 import { createBot, createProvider, createFlow, addKeyword } from '@bot-whatsapp/bot'
-import { TwilioProvider } from '@bot-whatsapp/provider-twilio'
 import { MongoAdapter } from '@bot-whatsapp/database-mongo'
+import { TwilioProvider } from '@bot-whatsapp/provider-twilio'
 /**
  * Declaramos las conexiones de Mongo
  */
@@ -87,7 +87,7 @@ const main = async () => {
     const adapterProvider = createProvider(TwilioProvider, {
         accountSid: 'YOUR_ACCOUNT_SID',
         authToken: 'YOUR_ACCOUNT_TOKEN',
-        vendorNumber: '+14155238886',
+        vendorNumber: '+18667261694',
     })
 
     createBot({

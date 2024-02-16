@@ -8,7 +8,7 @@
         "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-baileys-mongo",
         "start": "node dist/app.js",
-        "dev": "tsm app.ts",
+        "dev": "tsm src/app.ts",
         "build": "npx  rollup -c"
     },
     "keywords": [],
@@ -17,11 +17,7 @@
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database-mongo": "latest",
         "@bot-whatsapp/provider-baileys": "latest",
-        "@whiskeysockets/baileys": "6.5.0",
-        "cache-manager": "5.2.4",
-        "mime-types": "2.1.35",
-        "mongodb": "^4.12.1",
-        "wa-sticker-formatter": "4.4.4"
+        "mongodb": "^4.12.1"
     },
     "devDependencies": {
         "@rollup/plugin-terser": "^0.4.4",

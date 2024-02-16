@@ -1,6 +1,6 @@
 import { createBot, createProvider, createFlow, addKeyword } from '@bot-whatsapp/bot'
-import { VenomProvider } from '@bot-whatsapp/provider-venom'
 import { MongoAdapter } from '@bot-whatsapp/database-mongo'
+import { VenomProvider } from '@bot-whatsapp/provider-venom'
 
 /**
  * Declaramos las conexiones de Mongo

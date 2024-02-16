@@ -8,15 +8,14 @@
         "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-wweb-memory",
         "start": "node dist/app.js",
-        "dev": "tsm app.ts",
+        "dev": "tsm src/app.ts",
         "build": "npx rollup -c"
     },
     "keywords": [],
     "dependencies": {
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
-        "@bot-whatsapp/provider-web-whatsapp": "latest",
-        "whatsapp-web.js": "1.23.0"
+        "@bot-whatsapp/provider-web-whatsapp": "latest"
     },
     "devDependencies": {
         "@rollup/plugin-terser": "^0.4.4",

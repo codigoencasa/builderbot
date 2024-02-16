@@ -7,8 +7,8 @@
     "scripts": {
         "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-twilio-mongo",
-        "start": "node dis/app.js",
-        "dev": "tsm app.ts",
+        "start": "node dist/app.js",
+        "dev": "tsm src/app.ts",
         "build": "npx  rollup -c"
     },
     "keywords": [],
@@ -17,10 +17,6 @@
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database-mongo": "latest",
         "@bot-whatsapp/provider-twilio": "latest",
-        "body-parser": "^1.20.1",
-        "mime-types": "^2.1.35",
-        "mongodb": "^4.12.1",
-        "polka": "^0.5.2",
         "twilio": "4.19.0"
     },
     "devDependencies": {

@@ -8,7 +8,7 @@
         "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-wppconnect-json",
         "start": "node dist/app.js",
-        "dev": "tsm app.ts",
+        "dev": "tsm src/app.ts",
         "build": "npx  rollup -c"
     },
     "keywords": [],
@@ -16,9 +16,7 @@
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database-json": "latest",
-        "@bot-whatsapp/provider-wppconnect": "latest",
-        "@wppconnect-team/wppconnect": "1.28.3",
-        "mime-types": "2.1.35"
+        "@bot-whatsapp/provider-wppconnect": "latest"
     },
     "devDependencies": {
         "@rollup/plugin-terser": "^0.4.4",

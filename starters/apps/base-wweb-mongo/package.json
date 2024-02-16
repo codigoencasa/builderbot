@@ -8,7 +8,7 @@
         "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-wweb-mongo",
         "start": "node dist/app.js",
-        "dev": "tsm app.ts",
+        "dev": "tsm src/app.ts",
         "build": "npx rollup -c"
     },
     "keywords": [],
@@ -16,10 +16,8 @@
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database-mongo": "latest",
-        "@bot-whatsapp/provider-web-whatsapp": "latest",
-        "mime-types": "^2.1.35",
-        "mongodb": "^4.12.1",
-        "whatsapp-web.js": "1.23.0"
+        "@bot-whatsapp/provider-web-whatsapp": "latest", 
+        "mongodb": "^4.12.1"
     },
     "devDependencies": {
         "@rollup/plugin-terser": "^0.4.4",

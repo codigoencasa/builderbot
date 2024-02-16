@@ -1,6 +1,28 @@
 import { createBot, createProvider, createFlow, addKeyword } from '@bot-whatsapp/bot'
-import { WPPConnectProviderClass } from '@bot-whatsapp/provider-wppconnect'
-import { JsonFileAdapter } from '@bot-whatsapp/database-json'
+import { PostgreSQLAdapter } from '@bot-whatsapp/database-postgres'
+import { TwilioProvider } from '@bot-whatsapp/provider-twilio'
+
+/**
+ * Declaramos las conexiones de PostgreSQL
+ */
+
+const POSTGRES_DB_HOST = 'localhost'
+const POSTGRES_DB_USER = 'postgres'
+const POSTGRES_DB_PASSWORD = 'password'
+const POSTGRES_DB_NAME = 'postgres'
+const POSTGRES_DB_PORT = '5432'
+
+/**
+ * Aqui declaramos los flujos hijos, los flujos se declaran de atras para adelante, es decir que si tienes un flujo de este tipo:
+ *
+ *          Menu Principal
+ *           - SubMenu 1
+ *             - Submenu 1.1
+ *           - Submenu 2
+ *             - Submenu 2.1
+ *
+ * Primero declaras los submenus 1.1 y 2.1, luego el 1 y 2 y al final el principal.
+ */
 
 const flowSecundario = addKeyword(['2', 'siguiente']).addAnswer(['📄 Aquí tenemos el flujo secundario'])
 
@@ -61,10 +83,19 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
     )
 
 const main = async () => {
-    const adapterDB = new JsonFileAdapter()
+    const adapterDB = new PostgreSQLAdapter({
+        host: POSTGRES_DB_HOST,
+        user: POSTGRES_DB_USER,
+        database: POSTGRES_DB_NAME,
+        password: POSTGRES_DB_PASSWORD,
+        port: +POSTGRES_DB_PORT,
+    })
     const adapterFlow = createFlow([flowPrincipal])
-    const adapterProvider = createProvider(WPPConnectProviderClass)
-    adapterProvider.initHttpServer(3000)
+    const adapterProvider = createProvider(TwilioProvider, {
+        accountSid: 'YOUR_ACCOUNT_SID',
+        authToken: 'YOUR_ACCOUNT_TOKEN',
+        vendorNumber: '+14155238886',
+    })
     createBot({
         flow: adapterFlow,
         provider: adapterProvider,

@@ -7,8 +7,8 @@
     "scripts": {
         "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-twilio-mysql",
-        "start": "node dis/app.js",
-        "dev": "tsm app.ts",
+        "start": "node dist/app.js",
+        "dev": "tsm src/app.ts",
         "build": "npx  rollup -c"
     },
     "keywords": [],
@@ -17,9 +17,7 @@
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database-mysql": "latest",
         "@bot-whatsapp/provider-twilio": "latest",
-        "body-parser": "^1.20.1",
         "mysql2": "^2.3.3",
-        "polka": "^0.5.2",
         "twilio": "4.19.0"
     },
     "devDependencies": {

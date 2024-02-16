@@ -1,28 +1,6 @@
 import { createBot, createProvider, createFlow, addKeyword } from '@bot-whatsapp/bot'
-import { TwilioProvider } from '@bot-whatsapp/provider-twilio'
-import { MysqlAdapter } from '@bot-whatsapp/database-mysql'
-
-/**
- * Declaramos las conexiones de MySQL
- */
-
-const MYSQL_DB_HOST = 'localhost'
-const MYSQL_DB_USER = 'user'
-const MYSQL_DB_PASSWORD = 'pass'
-const MYSQL_DB_NAME = 'bot'
-const MYSQL_DB_PORT = '3306'
-
-/**
- * Aqui declaramos los flujos hijos, los flujos se declaran de atras para adelante, es decir que si tienes un flujo de este tipo:
- *
- *          Menu Principal
- *           - SubMenu 1
- *             - Submenu 1.1
- *           - Submenu 2
- *             - Submenu 2.1
- *
- * Primero declaras los submenus 1.1 y 2.1, luego el 1 y 2 y al final el principal.
- */
+import { JsonFileAdapter } from '@bot-whatsapp/database-json'
+import { WPPConnectProviderClass } from '@bot-whatsapp/provider-wppconnect'
 
 const flowSecundario = addKeyword(['2', 'siguiente']).addAnswer(['📄 Aquí tenemos el flujo secundario'])
 
@@ -83,18 +61,10 @@ const flowPrincipal = addKeyword(['hola', 'ole', 'alo'])
     )
 
 const main = async () => {
-    const adapterDB = new MysqlAdapter({
-        host: MYSQL_DB_HOST,
-        user: MYSQL_DB_USER,
-        database: MYSQL_DB_NAME,
-        password: MYSQL_DB_PASSWORD,
-    })
+    const adapterDB = new JsonFileAdapter()
     const adapterFlow = createFlow([flowPrincipal])
-    const adapterProvider = createProvider(TwilioProvider, {
-        accountSid: 'YOUR_ACCOUNT_SID',
-        authToken: 'YOUR_ACCOUNT_TOKEN',
-        vendorNumber: '+14155238886',
-    })
+    const adapterProvider = createProvider(WPPConnectProviderClass)
+    adapterProvider.initHttpServer(3000)
     createBot({
         flow: adapterFlow,
         provider: adapterProvider,
