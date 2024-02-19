@@ -16,13 +16,7 @@
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database-mongo": "latest",
-        "@bot-whatsapp/provider-meta": "latest",
-        "axios": "^1.2.1",
-        "body-parser": "^1.20.1",
-        "form-data": "4.0.0",
-        "mongodb": "^4.12.1",
-        "polka": "^0.5.2",
-        "queue-promise": "2.2.1"
+        "@bot-whatsapp/provider-meta": "latest"
     },
     "devDependencies": {
         "@rollup/plugin-terser": "^0.4.4",

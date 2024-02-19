@@ -79,7 +79,7 @@ const main = async () => {
     const adapterProvider = createProvider(TwilioProvider, {
         accountSid: 'YOUR_ACCOUNT_SID',
         authToken: 'YOUR_ACCOUNT_TOKEN',
-        vendorNumber: '+18667261694',
+        vendorNumber: '+14155238886',
     })
 
     createBot({

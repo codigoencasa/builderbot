@@ -15,8 +15,7 @@
     "dependencies": {
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
-        "@bot-whatsapp/provider-twilio": "latest",
-        "twilio": "4.19.0"
+        "@bot-whatsapp/provider-twilio": "latest"
     },
     "devDependencies": {
         "@rollup/plugin-terser": "^0.4.4",
