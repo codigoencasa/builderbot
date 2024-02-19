@@ -2,27 +2,29 @@
     "name": "base-bailey-json",
     "version": "1.0.0",
     "description": "",
-    "main": "app.js",
+    "main": "dist/app.js",
+    "type": "module",
     "scripts": {
         "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-baileys-json",
-        "start": "node app.js"
+        "start": "node dist/app.js",
+        "dev": "tsm src/app.ts",
+        "build": "npx  rollup -c"
     },
     "keywords": [],
     "dependencies": {
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
-        "@bot-whatsapp/database": "latest",
-        "@bot-whatsapp/provider": "latest",
-        "@bot-whatsapp/portal": "latest",
-        "mime-types": "2.1.35",
-        "@whiskeysockets/baileys": "6.5.0",
-        "wa-sticker-formatter": "4.4.4",
-        "cache-manager": "5.2.4"
+        "@bot-whatsapp/database-json": "latest",
+        "@bot-whatsapp/provider-baileys": "latest"
     },
     "devDependencies": {
+        "@rollup/plugin-terser": "^0.4.4",
+        "eslint": "^8.52.0",
         "eslint-plugin-bot-whatsapp": "latest",
-        "eslint": "^8.52.0"
+        "rollup": "^4.10.0",
+        "rollup-plugin-typescript2": "^0.36.0",
+        "tsm": "^2.3.0"
     },
     "author": "",
     "license": "ISC"
