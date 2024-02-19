@@ -18,7 +18,6 @@ export default {
         nodeResolve({
             resolveOnly: (module) => !/ffmpeg|@bot-whatsapp\/bot|twilio|sharp/i.test(module),
         }),
-        nodeResolve(),
         commonjs(),
         typescript(),
     ],
