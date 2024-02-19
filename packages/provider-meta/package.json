@@ -33,7 +33,8 @@
         "form-data": "^4.0.0",
         "mime-types": "^2.1.35",
         "polka": "^0.5.2",
-        "queue-promise": "^2.2.1"
+        "queue-promise": "^2.2.1",
+        "axios": "^1.6.5"
     },
     "devDependencies": {
         "@bot-whatsapp/bot": "workspace:*",
@@ -44,7 +45,6 @@
         "@types/node": "^20.11.0",
         "@types/polka": "^0.5.7",
         "@types/sinon": "^17.0.3",
-        "axios": "^1.6.5",
         "kleur": "^4.1.5",
         "proxyquire": "^2.1.3",
         "rimraf": "^3.0.2",
