@@ -18,3 +18,5 @@
 - [ ] revisar test.skip
 - [ ] cambiar el CONTRIBUTING.md
 - [ ] hacer pruebas con npm
+https://discord.com/channels/915193197645402142/970206231849492480/1207695098629070849
+- [ ] Cunado se ejecuta endFlow y luego tiene un capture:true queda esperando la respuesta
