@@ -1,10 +1,12 @@
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
 import { Vendor } from '@bot-whatsapp/bot/dist/provider/providerClass'
-import { BotCtxMiddleware, SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { BotContext, BotCtxMiddleware, SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { tmpdir } from 'os'
+import { join } from 'path'
 import twilio from 'twilio'
 
 import { TwilioWebHookServer } from './server'
-import { ITwilioProviderOptions } from './types'
+import { ITwilioProviderOptions, TwilioRequestBody } from './types'
 import { parseNumber } from './utils'
 
 class TwilioProvider extends ProviderClass {
@@ -112,6 +114,17 @@ class TwilioProvider extends ProviderClass {
             to: `whatsapp:+${number}`,
         })
         return response
+    }
+
+    saveFile = async (ctx: Partial<TwilioRequestBody & BotContext>, options?: { path: string }): Promise<string> => {
+        try {
+            const pathFile = join(options?.path ?? tmpdir())
+            const localPath = await utils.generalDownload(ctx.MediaUrl0, pathFile)
+            return localPath
+        } catch (err) {
+            console.log(`[Error]:`, err)
+            return 'ERROR'
+        }
     }
 }
 

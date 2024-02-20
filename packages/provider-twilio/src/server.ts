@@ -34,6 +34,7 @@ class TwilioWebHookServer extends EventEmitter {
     private incomingMsg: Middleware = (req, res) => {
         const body = req.body as TwilioRequestBody
         const payload: TwilioPayload = {
+            ...req.body,
             from: parseNumber(body.From),
             to: parseNumber(body.To),
             body: body.Body,

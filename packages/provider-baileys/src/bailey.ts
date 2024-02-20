@@ -4,13 +4,13 @@ import { BotCtxMiddleware, SendOptions } from '@bot-whatsapp/bot/dist/types'
 import { Boom } from '@hapi/boom'
 import { Console } from 'console'
 import { createWriteStream, readFileSync, existsSync, PathOrFileDescriptor } from 'fs'
+import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
+import { tmpdir } from 'os'
 import { join } from 'path'
 import pino from 'pino'
 import { rimraf } from 'rimraf'
 import { IStickerOptions, Sticker } from 'wa-sticker-formatter'
-import { writeFile } from 'fs/promises'
-import { tmpdir } from 'os'
 
 import {
     AnyMediaMessageContent,
@@ -581,18 +581,6 @@ class BaileysProvider extends ProviderClass {
         await this.vendor.sendMessage(remoteJid, buffer, { quoted: messages })
     }
 
-    saveFile = async (ctx: WAMessage, options?: { path: string }): Promise<string> => {
-        const mimeType = this.getMimeType(ctx)
-        if (!mimeType) throw new Error('MIME type not found')
-        const extension = mime.extension(mimeType) as string
-        const buffer = await downloadMediaMessage(ctx, 'buffer', {})
-        const fileName = this.generateFileName(extension)
-
-        const pathFile = options?.path ? `${options.path}/${fileName}` : `${tmpdir()}/${fileName}`
-        await writeFile(pathFile, buffer)
-        return pathFile
-    }
-
     private getMimeType = (ctx: WAMessage): string | undefined => {
         const { message } = ctx
         if (!message) return undefined
@@ -602,6 +590,18 @@ class BaileysProvider extends ProviderClass {
     }
 
     private generateFileName = (extension: string): string => `file-${Date.now()}.${extension}`
+
+    saveFile = async (ctx: WAMessage, options?: { path: string }): Promise<string> => {
+        const mimeType = this.getMimeType(ctx)
+        if (!mimeType) throw new Error('MIME type not found')
+        const extension = mime.extension(mimeType) as string
+        const buffer = await downloadMediaMessage(ctx, 'buffer', {})
+        const fileName = this.generateFileName(extension)
+
+        const pathFile = join(options.path ?? tmpdir(), fileName)
+        await writeFile(pathFile, buffer)
+        return pathFile
+    }
 }
 
 export { BaileysProvider, GlobalVendorArgs as BaileysProviderArgs }

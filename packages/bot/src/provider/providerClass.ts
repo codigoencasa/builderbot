@@ -15,6 +15,13 @@ class ProviderClass extends EventEmitter {
         return Promise.resolve(message)
     }
 
+    public async saveFile(ctx: any, options?: { path: string }): Promise<string> {
+        console.log(`ctx`, ctx)
+        console.log(`options`, options)
+        console.log(`Ups it is provider don't implement this function`)
+        return ``
+    }
+
     public getInstance(): Vendor {
         return this.vendor
     }
