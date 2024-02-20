@@ -6,6 +6,7 @@ import { GlobalState, IdleState, SingleState } from '../context'
 import { LIST_REGEX } from '../io/events'
 import FlowClass from '../io/flowClass'
 import { toCtx } from '../io/methods'
+import { GeneralArgs } from '../types'
 import { BlackList, Queue } from '../utils'
 import { delay } from '../utils/delay'
 import { printer } from '../utils/interactive'
@@ -16,18 +17,6 @@ const logger = new Console({
 const loggerQueue = new Console({
     stdout: createWriteStream(`${process.cwd()}/queue.class.log`),
 })
-
-export interface CoreClassArgs {
-    blackList: string[]
-    listEvents: Record<string, any>
-    delay: number
-    globalState: Record<string, any>
-    extensions: Record<string, any>
-    queue: {
-        timeout: number
-        concurrencyLimit: number
-    }
-}
 
 type EventFunction = (msg: { [key: string]: string }) => Promise<any> | void
 
@@ -41,7 +30,7 @@ class CoreClass extends EventEmitter {
     stateHandler = new SingleState()
     globalStateHandler = new GlobalState()
     dynamicBlacklist = new BlackList()
-    generalArgs: CoreClassArgs = {
+    generalArgs: GeneralArgs = {
         blackList: [],
         listEvents: {},
         delay: 0,
@@ -53,7 +42,7 @@ class CoreClass extends EventEmitter {
         },
     }
 
-    constructor(_flow: any, _database: any, _provider: any, _args: CoreClassArgs) {
+    constructor(_flow: any, _database: any, _provider: any, _args: GeneralArgs) {
         super()
         this.flowClass = _flow
         this.databaseClass = _database

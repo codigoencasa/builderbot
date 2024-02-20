@@ -29,7 +29,7 @@
     },
     "devDependencies": {
         "@bot-whatsapp/bot": "workspace:*",
-        "@rollup/plugin-commonjs": "^23.0.7",
+        "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@types/body-parser": "^1.19.5",

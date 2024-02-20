@@ -6,6 +6,18 @@ import type { IdleState } from './context'
 import { ProviderClass } from './provider'
 import type { Queue } from './utils'
 
+export type GeneralArgs = {
+    blackList?: string[]
+    listEvents?: Record<string, any>
+    delay?: number
+    globalState?: Record<string, any>
+    extensions?: Record<string, any>
+    queue?: {
+        timeout: number
+        concurrencyLimit: number
+    }
+}
+
 export type Button = {
     body: string
 }

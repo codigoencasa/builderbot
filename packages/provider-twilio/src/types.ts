@@ -19,6 +19,7 @@ export interface TwilioRequestBody {
     Body: string
     NumMedia: string
     MediaContentType0?: string
+    MediaUrl0?: string
     Latitude?: string
     Longitude?: string
     ProfileName?: string

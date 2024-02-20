@@ -29,7 +29,7 @@
         "url": "https://github.com/vicente1992/bot-whatsapp/issues"
     },
     "devDependencies": {
-        "@rollup/plugin-commonjs": "^23.0.7",
+        "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-terser": "^0.4.4",
         "@types/eslint": "^8.56.2",

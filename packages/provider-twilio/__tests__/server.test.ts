@@ -201,6 +201,7 @@ test('incomingMsg - break', () => {
             Body: 'Test message',
             MediaContentType0: 'test/jpeg',
             NumMedia: '1223',
+            MediaUrl0: '',
         },
     }
     const res: any = {
@@ -209,7 +210,7 @@ test('incomingMsg - break', () => {
     twilioServer.emit = emitStub
     twilioServer['incomingMsg'](req as any, res as any, res as any)
     assert.equal(emitStub.firstCall.args[1].body, 'Test message')
-    assert.equal(emitStub.firstCall.args[1].From, undefined)
+    assert.equal(emitStub.firstCall.args[1].From, '123456')
 })
 
 test('should handle incoming message without media', () => {
