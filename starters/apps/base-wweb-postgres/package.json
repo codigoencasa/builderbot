@@ -16,8 +16,7 @@
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database-postgres": "latest",
-        "@bot-whatsapp/provider-web-whatsapp": "latest",
-        "pg": "^8.11.2"
+        "@bot-whatsapp/provider-web-whatsapp": "latest"
     },
     "devDependencies": {
         "@rollup/plugin-terser": "^0.4.4",

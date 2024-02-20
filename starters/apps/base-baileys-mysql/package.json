@@ -16,8 +16,7 @@
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database-mysql": "latest",
-        "@bot-whatsapp/provider-baileys": "latest",
-        "mysql2": "^2.3.3"
+        "@bot-whatsapp/provider-baileys": "latest"
     },
     "devDependencies": {
         "@rollup/plugin-terser": "^0.4.4",

@@ -16,8 +16,7 @@
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database-mongo": "latest",
-        "@bot-whatsapp/provider-baileys": "latest",
-        "mongodb": "^4.12.1"
+        "@bot-whatsapp/provider-baileys": "latest"
     },
     "devDependencies": {
         "@rollup/plugin-terser": "^0.4.4",
