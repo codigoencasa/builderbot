@@ -598,7 +598,7 @@ class BaileysProvider extends ProviderClass {
         const buffer = await downloadMediaMessage(ctx, 'buffer', {})
         const fileName = this.generateFileName(extension)
 
-        const pathFile = join(options.path ?? tmpdir(), fileName)
+        const pathFile = join(options?.path ?? tmpdir(), fileName)
         await writeFile(pathFile, buffer)
         return pathFile
     }

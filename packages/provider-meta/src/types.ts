@@ -95,3 +95,7 @@ export interface MetaProviderOptions {
     version: string
     port?: number
 }
+
+export interface SaveFileOptions {
+    path?: string
+}

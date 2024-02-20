@@ -686,6 +686,9 @@ importers:
             body-parser:
                 specifier: ^1.20.2
                 version: 1.20.2
+            file-type:
+                specifier: ^19.0.0
+                version: 19.0.0
             form-data:
                 specifier: ^4.0.0
                 version: 4.0.0
@@ -9539,6 +9542,18 @@ packages:
             strtok3: 6.3.0
             token-types: 4.2.1
 
+    /file-type@19.0.0:
+        resolution:
+            {
+                integrity: sha512-s7cxa7/leUWLiXO78DVVfBVse+milos9FitauDLG1pI7lNaJ2+5lzPnr2N24ym+84HVwJL6hVuGfgVE+ALvU8Q==,
+            }
+        engines: { node: '>=18' }
+        dependencies:
+            readable-web-to-node-stream: 3.0.2
+            strtok3: 7.0.0
+            token-types: 5.0.1
+        dev: false
+
     /filelist@1.0.4:
         resolution:
             {
@@ -14935,6 +14950,14 @@ packages:
             }
         engines: { node: '>=8' }
 
+    /peek-readable@5.0.0:
+        resolution:
+            {
+                integrity: sha512-YtCKvLUOvwtMGmrniQPdO7MwPjgkFBtFIrmfSbYmYuq3tKDV/mcfAhBth1+C3ru7uXIZasc/pHnb+YDYNkkj4A==,
+            }
+        engines: { node: '>=14.16' }
+        dev: false
+
     /pend@1.2.0:
         resolution:
             {
@@ -17762,6 +17785,17 @@ packages:
             '@tokenizer/token': 0.3.0
             peek-readable: 4.1.0
 
+    /strtok3@7.0.0:
+        resolution:
+            {
+                integrity: sha512-pQ+V+nYQdC5H3Q7qBZAz/MO6lwGhoC2gOAjuouGf/VO0m7vQRh8QNMl2Uf6SwAtzZ9bOw3UIeBukEGNJl5dtXQ==,
+            }
+        engines: { node: '>=14.16' }
+        dependencies:
+            '@tokenizer/token': 0.3.0
+            peek-readable: 5.0.0
+        dev: false
+
     /stubs@3.0.0:
         resolution:
             {
@@ -18070,6 +18104,17 @@ packages:
         dependencies:
             '@tokenizer/token': 0.3.0
             ieee754: 1.2.1
+
+    /token-types@5.0.1:
+        resolution:
+            {
+                integrity: sha512-Y2fmSnZjQdDb9W4w4r1tswlMHylzWIeOKpx0aZH9BgGtACHhrk3OkT52AzwcuqTRBZtvvnTjDBh8eynMulu8Vg==,
+            }
+        engines: { node: '>=14.16' }
+        dependencies:
+            '@tokenizer/token': 0.3.0
+            ieee754: 1.2.1
+        dev: false
 
     /tough-cookie@2.5.0:
         resolution:
