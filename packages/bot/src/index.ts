@@ -1,32 +1,21 @@
-import { CoreClass, CoreClassArgs } from './core/coreClass'
+import { CoreClass } from './core/coreClass'
 import { MemoryDBClass } from './db'
 import { LIST_ALL as EVENTS } from './io/events'
 import FlowClass from './io/flowClass'
 import { addAnswer } from './io/methods/addAnswer'
 import { addKeyword } from './io/methods/addKeyword'
 import { ProviderClass } from './provider/providerClass'
-import { TFlow } from './types'
+import { GeneralArgs, TFlow } from './types'
 import * as utils from './utils'
 
-export interface GeneralArgs {
-    blackList?: any[]
-    listEvents?: Record<string, any>
-    delay?: number
-    globalState?: Record<string, any>
-    extensions?: Record<string, any>
-    queue?: {
-        timeout: number
-        concurrencyLimit: number
-    }
-}
 /**
  * Crear instancia de clase Bot
  */
 const createBot = async <P = ProviderClass, D = MemoryDBClass>(
     { flow, database, provider }: { flow: FlowClass; database: D; provider: P },
-    args: GeneralArgs = {}
+    args?: GeneralArgs
 ): Promise<CoreClass> => {
-    const defaultArgs: CoreClassArgs = {
+    const defaultArgs: GeneralArgs = {
         blackList: [],
         listEvents: EVENTS,
         delay: 0,
@@ -38,7 +27,7 @@ const createBot = async <P = ProviderClass, D = MemoryDBClass>(
         },
     }
 
-    const combinedArgs: CoreClassArgs = { ...defaultArgs, ...args }
+    const combinedArgs: GeneralArgs = { ...defaultArgs, ...args }
     return new CoreClass(flow, database, provider, combinedArgs)
 }
 

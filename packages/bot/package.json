@@ -12,7 +12,7 @@
         "build": "rimraf dist && rollup --config",
         "test": " npx uvu -r tsm ./__tests__",
         "test:coverage": "npx c8  npm run test",
-        "test:debug": " npx tsm --inspect-brk ../../node_modules/uvu/bin.js ./_test_ flowClass.test.ts"
+        "test:debug": " npx uvu -r tsm ./__tests__ 0.2.2-case.test.ts"
     },
     "files": [
         "./dist/"
