@@ -3,6 +3,7 @@ import fs from 'fs'
 import { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
+
 import { BaileysProvider } from '../src'
 import { WASocket } from '../src/baileyWrapper'
 import { ButtonOption, SendOptions } from '../src/type'

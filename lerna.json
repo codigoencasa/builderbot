@@ -3,7 +3,6 @@
   "version": "0.1.3-alpha.16",
   "packages": [
     "packages/bot",
-    "packages/cli",
     "packages/create-bot-whatsapp",
     "packages/database-mongo",
     "packages/database-mysql",

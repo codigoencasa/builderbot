@@ -8,6 +8,8 @@ import Queue from 'queue-promise'
 
 import { MetaWebHookServer } from './server'
 import { Localization, MetaProviderOptions, Reaction, TextMessageBody } from './types'
+import { join } from 'path'
+import { tmpdir } from 'os'
 
 const URL = `https://graph.facebook.com`
 
@@ -585,6 +587,20 @@ class MetaProvider extends ProviderClass {
             },
         }
         return this.sendMessageMeta(body)
+    }
+
+    saveFile = async (ctx: any, options?: { path: string }): Promise<string> => {
+        console.log('saveFile--->', ctx)
+        console.log('saveFile--->', options)
+        try {
+            const pathFile = join(options?.path ?? tmpdir())
+            console.log(pathFile)
+            const localPath = await utils.generalDownload(`${ctx?.url}`)
+            return localPath
+        } catch (err) {
+            console.log(`[Error]:`, err)
+            return 'ERROR'
+        }
     }
 
     sendFile(to: string, mediaInput: any) {

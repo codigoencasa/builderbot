@@ -4,13 +4,13 @@ import { BotCtxMiddleware, SendOptions } from '@bot-whatsapp/bot/dist/types'
 import { Boom } from '@hapi/boom'
 import { Console } from 'console'
 import { createWriteStream, readFileSync, existsSync, PathOrFileDescriptor } from 'fs'
+import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
+import { tmpdir } from 'os'
 import { join } from 'path'
 import pino from 'pino'
 import { rimraf } from 'rimraf'
 import { IStickerOptions, Sticker } from 'wa-sticker-formatter'
-import { writeFile } from 'fs/promises'
-import { tmpdir } from 'os'
 
 import {
     AnyMediaMessageContent,
