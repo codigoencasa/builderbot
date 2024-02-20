@@ -84,7 +84,7 @@ export const handleCtx =
     ) =>
     (req: any, res: any) => {
         const bot: T | undefined = req[idCtxBot] ?? undefined
-        if (!bot.vendor) {
+        if (!bot?.vendor) {
             const MESSAGE = `must login or scan qr first`
             console.log(MESSAGE)
             return res.end(MESSAGE)
