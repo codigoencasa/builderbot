@@ -119,7 +119,7 @@ class TwilioProvider extends ProviderClass {
     saveFile = async (ctx: Partial<TwilioRequestBody & BotContext>, options?: { path: string }): Promise<string> => {
         try {
             const pathFile = join(options?.path ?? tmpdir())
-            const localPath = await utils.generalDownload(ctx.MediaUrl0, pathFile)
+            const localPath = await utils.generalDownload(`${ctx?.MediaUrl0}`, pathFile)
             return localPath
         } catch (err) {
             console.log(`[Error]:`, err)

@@ -165,8 +165,8 @@ importers:
                 specifier: ^0.7.0
                 version: 0.7.0
             '@rollup/plugin-commonjs':
-                specifier: ^23.0.7
-                version: 23.0.7(rollup@4.9.5)
+                specifier: ^25.0.7
+                version: 25.0.7(rollup@4.9.5)
             '@rollup/plugin-node-resolve':
                 specifier: ^15.2.3
                 version: 15.2.3(rollup@4.9.5)
@@ -229,8 +229,8 @@ importers:
                 version: 6.3.0
         devDependencies:
             '@rollup/plugin-commonjs':
-                specifier: ^23.0.7
-                version: 23.0.7(rollup@4.9.5)
+                specifier: ^25.0.7
+                version: 25.0.7(rollup@4.9.5)
             '@rollup/plugin-node-resolve':
                 specifier: ^15.2.3
                 version: 15.2.3(rollup@4.9.5)
@@ -269,8 +269,8 @@ importers:
                 version: 4.3.1
         devDependencies:
             '@rollup/plugin-commonjs':
-                specifier: ^23.0.7
-                version: 23.0.7(rollup@4.9.5)
+                specifier: ^25.0.7
+                version: 25.0.7(rollup@4.9.5)
             '@rollup/plugin-node-resolve':
                 specifier: ^15.2.3
                 version: 15.2.3(rollup@4.9.5)
@@ -306,8 +306,8 @@ importers:
                 version: link:../cli
         devDependencies:
             '@rollup/plugin-commonjs':
-                specifier: ^23.0.7
-                version: 23.0.7(rollup@4.9.5)
+                specifier: ^25.0.7
+                version: 25.0.7(rollup@4.9.5)
             '@rollup/plugin-node-resolve':
                 specifier: ^15.2.3
                 version: 15.2.3(rollup@4.9.5)
@@ -358,8 +358,8 @@ importers:
     packages/database-json:
         devDependencies:
             '@rollup/plugin-commonjs':
-                specifier: ^23.0.7
-                version: 23.0.7(rollup@4.9.5)
+                specifier: ^25.0.7
+                version: 25.0.7(rollup@4.9.5)
             '@rollup/plugin-node-resolve':
                 specifier: ^15.2.3
                 version: 15.2.3(rollup@4.9.5)
@@ -392,8 +392,8 @@ importers:
                 version: 4.17.2
         devDependencies:
             '@rollup/plugin-commonjs':
-                specifier: ^23.0.7
-                version: 23.0.7(rollup@4.9.5)
+                specifier: ^25.0.7
+                version: 25.0.7(rollup@4.9.5)
             '@rollup/plugin-node-resolve':
                 specifier: ^15.2.3
                 version: 15.2.3(rollup@4.9.5)
@@ -435,8 +435,8 @@ importers:
                 version: 2.3.3
         devDependencies:
             '@rollup/plugin-commonjs':
-                specifier: ^23.0.7
-                version: 23.0.7(rollup@4.9.5)
+                specifier: ^25.0.7
+                version: 25.0.7(rollup@4.9.5)
             '@rollup/plugin-node-resolve':
                 specifier: ^15.2.3
                 version: 15.2.3(rollup@4.9.5)
@@ -475,8 +475,8 @@ importers:
                 version: 8.11.2
         devDependencies:
             '@rollup/plugin-commonjs':
-                specifier: ^23.0.7
-                version: 23.0.7(rollup@4.9.5)
+                specifier: ^25.0.7
+                version: 25.0.7(rollup@4.9.5)
             '@rollup/plugin-node-resolve':
                 specifier: ^15.2.3
                 version: 15.2.3(rollup@4.9.5)
@@ -514,8 +514,8 @@ importers:
     packages/eslint-plugin-bot-whatsapp:
         devDependencies:
             '@rollup/plugin-commonjs':
-                specifier: ^23.0.7
-                version: 23.0.7(rollup@4.9.5)
+                specifier: ^25.0.7
+                version: 25.0.7(rollup@4.9.5)
             '@rollup/plugin-node-resolve':
                 specifier: ^15.2.3
                 version: 15.2.3(rollup@4.9.5)
@@ -563,8 +563,8 @@ importers:
                 version: link:../provider-twilio
         devDependencies:
             '@rollup/plugin-commonjs':
-                specifier: ^23.0.7
-                version: 23.0.7(rollup@4.9.5)
+                specifier: ^25.0.7
+                version: 25.0.7(rollup@4.9.5)
             '@rollup/plugin-json':
                 specifier: ^6.1.0
                 version: 6.1.0(rollup@4.9.5)
@@ -630,8 +630,8 @@ importers:
                 specifier: ^10.0.1
                 version: 10.0.1
             '@rollup/plugin-commonjs':
-                specifier: ^23.0.7
-                version: 23.0.7(rollup@4.9.5)
+                specifier: ^25.0.7
+                version: 25.0.7(rollup@4.9.5)
             '@rollup/plugin-json':
                 specifier: ^6.1.0
                 version: 6.1.0(rollup@4.9.5)
@@ -703,8 +703,8 @@ importers:
                 specifier: workspace:*
                 version: link:../bot
             '@rollup/plugin-commonjs':
-                specifier: ^23.0.7
-                version: 23.0.7(rollup@4.9.5)
+                specifier: ^25.0.7
+                version: 25.0.7(rollup@4.9.5)
             '@rollup/plugin-json':
                 specifier: ^6.1.0
                 version: 6.1.0(rollup@4.9.5)
@@ -770,8 +770,8 @@ importers:
                 specifier: workspace:*
                 version: link:../bot
             '@rollup/plugin-commonjs':
-                specifier: ^23.0.7
-                version: 23.0.7(rollup@4.9.5)
+                specifier: ^25.0.7
+                version: 25.0.7(rollup@4.9.5)
             '@rollup/plugin-json':
                 specifier: ^6.1.0
                 version: 6.1.0(rollup@4.9.5)
@@ -904,8 +904,8 @@ importers:
                 specifier: workspace:*
                 version: link:../bot
             '@rollup/plugin-commonjs':
-                specifier: ^23.0.7
-                version: 23.0.7(rollup@4.9.5)
+                specifier: ^25.0.7
+                version: 25.0.7(rollup@4.9.5)
             '@rollup/plugin-json':
                 specifier: ^6.1.0
                 version: 6.1.0(rollup@4.9.5)
@@ -3512,27 +3512,6 @@ packages:
             yargs: 17.7.2
         transitivePeerDependencies:
             - supports-color
-
-    /@rollup/plugin-commonjs@23.0.7(rollup@4.9.5):
-        resolution:
-            {
-                integrity: sha512-hsSD5Qzyuat/swzrExGG5l7EuIlPhwTsT7KwKbSCQzIcJWjRxiimi/0tyMYY2bByitNb3i1p+6JWEDGa0NvT0Q==,
-            }
-        engines: { node: '>=14.0.0' }
-        peerDependencies:
-            rollup: ^2.68.0||^3.0.0
-        peerDependenciesMeta:
-            rollup:
-                optional: true
-        dependencies:
-            '@rollup/pluginutils': 5.1.0(rollup@4.9.5)
-            commondir: 1.0.1
-            estree-walker: 2.0.2
-            glob: 8.1.0
-            is-reference: 1.2.1
-            magic-string: 0.27.0
-            rollup: 4.9.5
-        dev: true
 
     /@rollup/plugin-commonjs@25.0.7(rollup@4.9.5):
         resolution:
@@ -12745,16 +12724,6 @@ packages:
             {
                 integrity: sha512-vGgr9YUMBfL1izpsb4RASwPz58JSSdmcTocuCs2v0PyGU3e7CDJWuS5psl4O2m9t0CsNemeR+jhxu2xNkXCM2A==,
             }
-        dev: true
-
-    /magic-string@0.27.0:
-        resolution:
-            {
-                integrity: sha512-8UnnX2PeRAPZuN12svgR9j7M1uWMovg/CEnIwIG0LFkXSJJe4PdfUGiTGl8V9bsBHFUtfVINcSyYxd7q+kx9fA==,
-            }
-        engines: { node: '>=12' }
-        dependencies:
-            '@jridgewell/sourcemap-codec': 1.4.15
         dev: true
 
     /magic-string@0.30.5:

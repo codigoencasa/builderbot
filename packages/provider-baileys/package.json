@@ -31,7 +31,7 @@
     "devDependencies": {
         "@bot-whatsapp/bot": "workspace:*",
         "@hapi/boom": "^10.0.1",
-        "@rollup/plugin-commonjs": "^23.0.7",
+        "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@types/mime-types": "^2.1.4",
