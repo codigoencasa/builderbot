@@ -79,10 +79,15 @@ export class WebWhatsappHttpServer extends EventEmitter {
  * @returns
  */
 export const handleCtx =
-    <T extends Pick<WebWhatsappProvider, 'sendMessage'> & { provider: WebWhatsappProvider }>(
+    <T extends Pick<WebWhatsappProvider, 'sendMessage' | 'vendor'> & { provider: WebWhatsappProvider }>(
         ctxPolka: (bot: T | undefined, req: any, res: any) => void
     ) =>
     (req: any, res: any) => {
         const bot: T | undefined = req[idCtxBot] ?? undefined
+        if (!bot.vendor) {
+            const MESSAGE = `must login or scan qr first`
+            console.log(MESSAGE)
+            return res.end(MESSAGE)
+        }
         ctxPolka(bot, req, res)
     }

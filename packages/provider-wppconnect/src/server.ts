@@ -80,10 +80,15 @@ export class WPPConnectHttpServer extends EventEmitter {
  * @returns
  */
 export const handleCtx =
-    <T extends Pick<WPPConnectProviderClass, 'sendMessage'> & { provider: WPPConnectProviderClass }>(
+    <T extends Pick<WPPConnectProviderClass, 'sendMessage' | 'vendor'> & { provider: WPPConnectProviderClass }>(
         ctxPolka: (bot: T | undefined, req: any, res: any) => void
     ) =>
     (req: any, res: any) => {
         const bot: T | undefined = req[idCtxBot] ?? undefined
+        if (!bot.vendor) {
+            const MESSAGE = `must login or scan qr first`
+            console.log(MESSAGE)
+            return res.end(MESSAGE)
+        }
         ctxPolka(bot, req, res)
     }

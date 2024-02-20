@@ -79,10 +79,15 @@ export class VenomHttpServer extends EventEmitter {
  * @returns
  */
 export const handleCtx =
-    <T extends Pick<VenomProvider, 'sendMessage'> & { provider: VenomProvider }>(
+    <T extends Pick<VenomProvider, 'sendMessage' | 'vendor'> & { provider: VenomProvider }>(
         ctxPolka: (bot: T | undefined, req: any, res: any) => void
     ) =>
     (req: any, res: any) => {
         const bot: T | undefined = req[idCtxBot] ?? undefined
+        if (!bot.vendor) {
+            const MESSAGE = `must login or scan qr first`
+            console.log(MESSAGE)
+            return res.end(MESSAGE)
+        }
         ctxPolka(bot, req, res)
     }

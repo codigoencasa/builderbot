@@ -21,3 +21,7 @@
 https://discord.com/channels/915193197645402142/970206231849492480/1207695098629070849
 - [ ] Cunado se ejecuta endFlow y luego tiene un capture:true queda esperando la respuesta
 - [ ] omit cli copy
+- [ ] handleCtx deolver res.end DEBES INICIAR SESION
+- [ ] name qr png en los endpoints
+- [ ] numero host en el ctx
+- [ ] await bot.sendMessage('', '', {})
