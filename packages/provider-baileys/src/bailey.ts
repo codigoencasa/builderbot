@@ -9,6 +9,8 @@ import { join } from 'path'
 import pino from 'pino'
 import { rimraf } from 'rimraf'
 import { IStickerOptions, Sticker } from 'wa-sticker-formatter'
+import { writeFile } from 'fs/promises'
+import { tmpdir } from 'os'
 
 import {
     AnyMediaMessageContent,
@@ -16,7 +18,9 @@ import {
     BaileysEventMap,
     DisconnectReason,
     PollMessageOptions,
+    WAMessage,
     WASocket,
+    downloadMediaMessage,
     getAggregateVotesInPollMessage,
     makeCacheableSignalKeyStore,
     makeInMemoryStore,
@@ -576,6 +580,28 @@ class BaileysProvider extends ProviderClass {
 
         await this.vendor.sendMessage(remoteJid, buffer, { quoted: messages })
     }
+
+    saveFile = async (ctx: WAMessage, options?: { path: string }): Promise<string> => {
+        const mimeType = this.getMimeType(ctx)
+        if (!mimeType) throw new Error('MIME type not found')
+        const extension = mime.extension(mimeType) as string
+        const buffer = await downloadMediaMessage(ctx, 'buffer', {})
+        const fileName = this.generateFileName(extension)
+
+        const pathFile = options?.path ? `${options.path}/${fileName}` : `${tmpdir()}/${fileName}`
+        await writeFile(pathFile, buffer)
+        return pathFile
+    }
+
+    private getMimeType = (ctx: WAMessage): string | undefined => {
+        const { message } = ctx
+        if (!message) return undefined
+
+        const { imageMessage, videoMessage, documentMessage } = message
+        return imageMessage?.mimetype ?? videoMessage?.mimetype ?? documentMessage?.mimetype
+    }
+
+    private generateFileName = (extension: string): string => `file-${Date.now()}.${extension}`
 }
 
 export { BaileysProvider, GlobalVendorArgs as BaileysProviderArgs }

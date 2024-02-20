@@ -10,6 +10,8 @@ import {
     AnyMediaMessageContent,
     AnyMessageContent,
     PollMessageOptions,
+    downloadMediaMessage,
+    WAMessage,
 } from '@whiskeysockets/baileys'
 
 const makeWASocketOther = require('@whiskeysockets/baileys').default
@@ -27,4 +29,6 @@ export {
     AnyMediaMessageContent,
     AnyMessageContent,
     PollMessageOptions,
+    downloadMediaMessage,
+    WAMessage,
 }
