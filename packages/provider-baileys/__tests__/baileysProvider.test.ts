@@ -3,7 +3,6 @@ import fs from 'fs'
 import { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-
 import { BaileysProvider } from '../src'
 import { WASocket } from '../src/baileyWrapper'
 import { ButtonOption, SendOptions } from '../src/type'
@@ -541,6 +540,83 @@ test('sendVideo  function sends video message with caption', async () => {
     assert.equal(sendStub.args[0][1].video, video)
     assert.equal(sendStub.args[0][1].gifPlayback, true)
     readFileSyncStub.restore()
+})
+
+test('generateFileName should return a valid filename with provided extension', () => {
+    const extension = 'txt'
+    const expectedPrefix = 'file-'
+    const fixedTimestamp = 1628739872000
+    const nowStub = stub(Date, 'now').returns(fixedTimestamp)
+    const result = baileysProvider['generateFileName'](extension)
+    assert.ok(result.startsWith(expectedPrefix))
+    assert.ok(result.endsWith(`.${extension}`))
+    assert.is(result.length, expectedPrefix.length + extension.length + 1 + fixedTimestamp.toString().length)
+    nowStub.restore()
+})
+
+test('getMimeType - should return the file type image/jpeg ', () => {
+    const imageMessage = {
+        mimetype: 'image/jpeg',
+    }
+
+    const ctx: any = {
+        message: {
+            imageMessage,
+        },
+    }
+
+    const result = baileysProvider['getMimeType'](ctx)
+    assert.equal(result, 'image/jpeg')
+})
+
+test('getMimeType - should return the file type video/mp4 ', () => {
+    const videoMessage = {
+        mimetype: 'video/mp4',
+    }
+    const ctx: any = {
+        message: {
+            videoMessage,
+        },
+    }
+
+    const result = baileysProvider['getMimeType'](ctx)
+    assert.equal(result, 'video/mp4')
+})
+
+test('getMimeType - should return the file type application/pdf ', () => {
+    const documentMessage = {
+        mimetype: 'application/pdf',
+    }
+    const ctx: any = {
+        message: {
+            documentMessage,
+        },
+    }
+
+    const result = baileysProvider['getMimeType'](ctx)
+    assert.equal(result, 'application/pdf')
+})
+
+test('getMimeType - should return undefined if no message is provided', () => {
+    const ctx: any = { message: undefined }
+    const result = baileysProvider['getMimeType'](ctx)
+    assert.is(result, undefined)
+})
+
+test('saveFile should save the file properly', async () => {
+    try {
+        const ctx: any = {
+            key: {},
+            message: null,
+        }
+        baileysProvider['getMimeType'] = stub().returns(undefined)
+
+        const result = await baileysProvider.saveFile(ctx)
+
+        console.log(result)
+    } catch (error) {
+        assert.equal(error.message, 'MIME type not found')
+    }
 })
 
 test.after.each(() => {

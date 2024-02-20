@@ -16,8 +16,7 @@
         "@bot-whatsapp/bot": "latest",
         "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database-json": "latest",
-        "@bot-whatsapp/provider-meta": "latest",
-        "axios": "^1.2.1"
+        "@bot-whatsapp/provider-meta": "latest"
     },
     "devDependencies": {
         "@rollup/plugin-terser": "^0.4.4",
