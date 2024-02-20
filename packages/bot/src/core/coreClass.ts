@@ -6,10 +6,10 @@ import { GlobalState, IdleState, SingleState } from '../context'
 import { LIST_REGEX } from '../io/events'
 import FlowClass from '../io/flowClass'
 import { toCtx } from '../io/methods'
+import { GeneralArgs } from '../types'
 import { BlackList, Queue } from '../utils'
 import { delay } from '../utils/delay'
 import { printer } from '../utils/interactive'
-import { GeneralArgs } from '../types'
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
