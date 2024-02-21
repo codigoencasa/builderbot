@@ -5,3 +5,7 @@ export interface Response {
 }
 
 export type BotCtxMiddleware = Partial<ProviderClass & { provider: any }>
+
+export interface SaveFileOptions {
+    path?: string
+}

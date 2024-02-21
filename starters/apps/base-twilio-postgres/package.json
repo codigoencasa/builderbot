@@ -8,13 +8,12 @@
         "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-twilio-postgres",
         "start": "node dist/app.js",
-        "dev": "tsm src/app.ts",
+        "dev": "npx tsx src/app.ts",
         "build": "npx  rollup -c"
     },
     "keywords": [],
     "dependencies": {
         "@bot-whatsapp/bot": "latest",
-        "@bot-whatsapp/cli": "latest",
         "@bot-whatsapp/database-postgres": "latest",
         "@bot-whatsapp/provider-twilio": "latest"
     },
@@ -24,7 +23,7 @@
         "eslint-plugin-bot-whatsapp": "latest",
         "rollup": "^4.10.0",
         "rollup-plugin-typescript2": "^0.36.0",
-        "tsm": "^2.3.0"
+        "tsx": "^4.7.1"
     },
     "author": "",
     "license": "ISC"

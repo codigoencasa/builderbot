@@ -1,10 +1,13 @@
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
-import { SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { BotContext, SendOptions } from '@bot-whatsapp/bot/dist/types'
 import { Message, Whatsapp, create, defaultLogger } from '@wppconnect-team/wppconnect'
+import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
+import { tmpdir } from 'os'
+import { join } from 'path'
 
 import { WPPConnectHttpServer } from './server'
-import { BotCtxMiddleware } from './types'
+import { BotCtxMiddleware, SaveFileOptions } from './types'
 import { WppConnectGenerateImage, WppConnectValidNumber, WppConnectCleanNumber } from './utils'
 
 /**
@@ -270,6 +273,23 @@ class WPPConnectProviderClass extends ProviderClass {
         if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
         if (options?.media) return this.sendMedia(number, options.media, message)
         return this.vendor.sendText(number, message)
+    }
+
+    private generateFileName = (extension: string): string => `file-${Date.now()}.${extension}`
+
+    saveFile = async (ctx: Partial<Message & BotContext>, options: SaveFileOptions = {}): Promise<string> => {
+        try {
+            const { mimetype } = ctx
+            const buffer = await this.vendor.decryptFile(ctx as Message)
+            const extension = mime.extension(mimetype) as string
+            const fileName = this.generateFileName(extension)
+            const pathFile = join(options?.path ?? tmpdir(), fileName)
+            await writeFile(pathFile, buffer)
+            return pathFile
+        } catch (err) {
+            console.log(`[Error]:`, err.message)
+            return 'ERROR'
+        }
     }
 }
 

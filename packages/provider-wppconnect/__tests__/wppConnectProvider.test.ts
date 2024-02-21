@@ -1,5 +1,6 @@
 import { utils } from '@bot-whatsapp/bot'
 import { SendOptions } from '@bot-whatsapp/bot/dist/types'
+import fsPromises from 'fs/promises'
 import proxyquire from 'proxyquire'
 import { stub } from 'sinon'
 import { test } from 'uvu'
@@ -348,6 +349,64 @@ test('initHttpServer - debería iniciar el servidor HTTP correctamente', async (
 
 test.after(() => {
     wppConnectProvider.vendor.close()
+})
+
+test('generateFileName should return a valid filename with provided extension', () => {
+    const extension = 'txt'
+    const expectedPrefix = 'file-'
+    const fixedTimestamp = 1628739872000
+    const nowStub = stub(Date, 'now').returns(fixedTimestamp)
+    const result = wppConnectProvider['generateFileName'](extension)
+    assert.ok(result.startsWith(expectedPrefix))
+    assert.ok(result.endsWith(`.${extension}`))
+    assert.is(result.length, expectedPrefix.length + extension.length + 1 + fixedTimestamp.toString().length)
+    nowStub.restore()
+})
+
+test('saveFile  - saves file correctly in path storage', async () => {
+    const ctxMock = { mimetype: 'image/jpeg' }
+    const fileName = `file-${Date.now()}.jpeg`
+    const decryptFileMock = stub().resolves(Buffer.from('file content'))
+    const generateFileNameStub = stub().returns(fileName)
+    wppConnectProvider.vendor['decryptFile'] = decryptFileMock
+    wppConnectProvider['generateFileName'] = generateFileNameStub
+    const readFileSyncStub = stub(fsPromises, 'writeFile')
+    await wppConnectProvider.saveFile(ctxMock, { path: 'storage' })
+
+    assert.equal(decryptFileMock.called, true)
+    assert.equal(decryptFileMock.firstCall.args[0], ctxMock)
+    assert.equal(generateFileNameStub.firstCall.args[0], 'jpeg')
+    readFileSyncStub.restore()
+})
+
+test('saveFile  - saves file correctly in tmpdir', async () => {
+    const ctxMock = { mimetype: 'image/jpeg' }
+    const fileName = `file-${Date.now()}.jpeg`
+    const decryptFileMock = stub().resolves(Buffer.from('file content'))
+    const generateFileNameStub = stub().returns(fileName)
+    wppConnectProvider.vendor['decryptFile'] = decryptFileMock
+    wppConnectProvider['generateFileName'] = generateFileNameStub
+    const readFileSyncStub = stub(fsPromises, 'writeFile')
+    await wppConnectProvider.saveFile(ctxMock)
+
+    assert.equal(decryptFileMock.called, true)
+    assert.equal(decryptFileMock.firstCall.args[0], ctxMock)
+    assert.equal(generateFileNameStub.firstCall.args[0], 'jpeg')
+    readFileSyncStub.restore()
+})
+
+test('saveFile handles errors', async () => {
+    const ctxMock = { mimetype: 'image/jpeg' }
+    const errorMessage = 'Failed to decrypt file'
+    const errorMock = new Error(errorMessage)
+    const decryptFileMock = stub().rejects(errorMock)
+    wppConnectProvider.vendor['decryptFile'] = decryptFileMock
+
+    try {
+        await wppConnectProvider.saveFile(ctxMock, { path: 'storage' })
+    } catch (error) {
+        assert.equal(error.message, errorMessage)
+    }
 })
 
 test.run()

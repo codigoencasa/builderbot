@@ -43,8 +43,7 @@ class MetaWebHookServer extends EventEmitter {
         const { jwtToken, numberId, version } = this
         const messages = body?.entry?.[0]?.changes?.[0]?.value?.messages
         const contacts = req?.body?.entry?.[0]?.changes?.[0]?.value?.contacts
-
-        if (!messages.length) {
+        if (!messages?.length) {
             res.statusCode = 200
             res.end('empty endpoint')
             return
