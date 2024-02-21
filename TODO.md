@@ -11,11 +11,11 @@
 - [/] hacer que los addKeyowrd([]) ni ('')
 - [ ] terminar wrapper `database`
 - [ ] terminar wrapper `provider`
-- [ ] cambiar los startes
-- [ ] asegurar el covergage 90%
+- [X] cambiar los startes
+- [X] asegurar el covergage 90%
 - [ ] https://github.com/codigoencasa/bot-whatsapp/pull/977#issuecomment-1920056490
-- [ ] mirar este PR https://github.com/codigoencasa/bot-whatsapp/pull/965/files
-- [ ] revisar test.skip
+- [X] mirar este PR https://github.com/codigoencasa/bot-whatsapp/pull/965/files
+- [X] revisar test.skip
 - [ ] cambiar el CONTRIBUTING.md
 - [ ] hacer pruebas con npm
 https://discord.com/channels/915193197645402142/970206231849492480/1207695098629070849
@@ -25,3 +25,4 @@ https://discord.com/channels/915193197645402142/970206231849492480/1207695098629
 - [ ] name qr png en los endpoints
 - [ ] numero host en el ctx
 - [ ] await bot.sendMessage('', '', {})
+- [X] omit cli copy

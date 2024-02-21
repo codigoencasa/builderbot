@@ -1,13 +1,17 @@
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
-import { BotCtxMiddleware, SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { BotContext, BotCtxMiddleware, SendOptions } from '@bot-whatsapp/bot/dist/types'
 import axios from 'axios'
 import FormData from 'form-data'
 import { createReadStream } from 'fs'
+import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
+import { tmpdir } from 'os'
+import { join } from 'path'
 import Queue from 'queue-promise'
 
 import { MetaWebHookServer } from './server'
-import { Localization, MetaProviderOptions, Reaction, TextMessageBody } from './types'
+import { Localization, Message, MetaProviderOptions, Reaction, SaveFileOptions, TextMessageBody } from './types'
+import { downloadFile } from './utils'
 
 const URL = `https://graph.facebook.com`
 
@@ -585,6 +589,19 @@ class MetaProvider extends ProviderClass {
             },
         }
         return this.sendMessageMeta(body)
+    }
+
+    saveFile = async (ctx: Partial<Message & BotContext>, options: SaveFileOptions = {}): Promise<string> => {
+        try {
+            const { buffer, extension } = await downloadFile(ctx?.url, this.jwtToken)
+            const fileName = `file-${Date.now()}.${extension}`
+            const pathFile = join(options?.path ?? tmpdir(), fileName)
+            await writeFile(pathFile, buffer)
+            return pathFile
+        } catch (err) {
+            console.log(`[Error]:`, err.message)
+            return 'ERROR'
+        }
     }
 
     sendFile(to: string, mediaInput: any) {

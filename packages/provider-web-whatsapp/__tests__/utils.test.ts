@@ -1,4 +1,3 @@
-// import { utils } from '@bot-whatsapp/bot'
 import EventEmitter from 'events'
 import { existsSync, unlinkSync } from 'fs-extra'
 import { join } from 'path'

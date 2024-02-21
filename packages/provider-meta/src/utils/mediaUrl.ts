@@ -19,7 +19,6 @@ async function getMediaUrl(
                 maxBodyLength: Infinity,
             }
         )
-
         return response.data?.url
     } catch (error) {
         console.error(error.message)

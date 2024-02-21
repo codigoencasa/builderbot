@@ -1,13 +1,9 @@
-import axios from 'axios'
-import * as sinon from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
+import { httpsMock } from '../__mock__/http'
 import { getMediaUrl } from '../src/utils'
 
-const httpsMock = {
-    get: sinon.stub(axios, 'get'),
-}
 const version = 'v1'
 const idMedia = '123'
 const numberId = '456'
@@ -21,10 +17,8 @@ test('getMediaUrl - should return media url correctly', async () => {
         },
     }
 
-    httpsMock.get.returns(Promise.resolve(responseData))
-
+    httpsMock.get.resolves(responseData)
     const result = await getMediaUrl(version, idMedia, numberId, token)
-
     assert.is(result, url)
 })
 
