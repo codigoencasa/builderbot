@@ -26,3 +26,4 @@ https://discord.com/channels/915193197645402142/970206231849492480/1207695098629
 - [ ] numero host en el ctx
 - [ ] await bot.sendMessage('', '', {})
 - [X] omit cli copy
+- [ ] cambiar mensajes a ingles

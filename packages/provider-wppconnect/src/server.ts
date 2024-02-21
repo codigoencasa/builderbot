@@ -86,9 +86,15 @@ export const handleCtx =
     (req: any, res: any) => {
         const bot: T | undefined = req[idCtxBot] ?? undefined
         if (!bot?.vendor) {
-            const MESSAGE = `must login or scan qr first`
-            console.log(MESSAGE)
-            return res.end(MESSAGE)
+            const jsonRaw = {
+                error: `You must first log in by scanning the qr code to be able to use this functionality.`,
+                docs: `https://builderbot.vercel.app/errors`,
+                code: `100`,
+            }
+            console.log(jsonRaw)
+            res.writeHead(200, { 'Content-Type': 'application/json' })
+            const jsonBody = JSON.stringify(jsonRaw)
+            return res.end(jsonBody)
         }
         ctxPolka(bot, req, res)
     }

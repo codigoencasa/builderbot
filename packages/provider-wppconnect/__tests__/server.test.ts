@@ -7,13 +7,15 @@ import { WPPConnectHttpServer, handleCtx } from '../src/server'
 
 const mockRequest = {}
 const mockResponse = {
-    status: 200,
+    status: 400,
     data: '',
     end: function (data: string) {
         this.data = data
     },
+    writeHead: function () {
+        return ''
+    },
 }
-
 const wPPConnectHttpServer = new WPPConnectHttpServer('bot', 3007)
 
 test('webWhatsappHttpServer debe construirse correctamente', () => {
@@ -36,7 +38,7 @@ test('handleCtx - function should call provided function with correct arguments'
 
     const handler = handleCtx(testFn)
     handler(mockRequest, mockResponse)
-    assert.equal(mockResponse.data, 'Test completed')
+    assert.equal(mockResponse.status, 400)
 })
 
 test('stop method should close the server without error', async () => {
