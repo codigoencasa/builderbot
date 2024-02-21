@@ -1,6 +1,6 @@
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
 import { Vendor } from '@bot-whatsapp/bot/dist/provider/providerClass'
-import { BotCtxMiddleware, SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { BotContext, BotCtxMiddleware, SendOptions } from '@bot-whatsapp/bot/dist/types'
 import { Boom } from '@hapi/boom'
 import { Console } from 'console'
 import { createWriteStream, readFileSync, existsSync, PathOrFileDescriptor } from 'fs'
@@ -591,11 +591,11 @@ class BaileysProvider extends ProviderClass {
 
     private generateFileName = (extension: string): string => `file-${Date.now()}.${extension}`
 
-    saveFile = async (ctx: WAMessage, options?: { path: string }): Promise<string> => {
-        const mimeType = this.getMimeType(ctx)
+    saveFile = async (ctx: Partial<WAMessage & BotContext>, options?: { path: string }): Promise<string> => {
+        const mimeType = this.getMimeType(ctx as WAMessage)
         if (!mimeType) throw new Error('MIME type not found')
         const extension = mime.extension(mimeType) as string
-        const buffer = await downloadMediaMessage(ctx, 'buffer', {})
+        const buffer = await downloadMediaMessage(ctx as WAMessage, 'buffer', {})
         const fileName = this.generateFileName(extension)
 
         const pathFile = join(options?.path ?? tmpdir(), fileName)
