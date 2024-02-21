@@ -11,7 +11,7 @@
 - [/] hacer que los addKeyowrd([]) ni ('')
 - [ ] terminar wrapper `database`
 - [ ] terminar wrapper `provider`
-- [ ] cambiar los startes
+- [X] cambiar los startes
 - [X] asegurar el covergage 90%
 - [ ] https://github.com/codigoencasa/bot-whatsapp/pull/977#issuecomment-1920056490
 - [X] mirar este PR https://github.com/codigoencasa/bot-whatsapp/pull/965/files

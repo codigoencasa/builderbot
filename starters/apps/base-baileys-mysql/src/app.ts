@@ -1,6 +1,6 @@
 import { createBot, createProvider, createFlow, addKeyword } from '@bot-whatsapp/bot'
-import { BaileysProvider } from '@bot-whatsapp/provider-baileys'
 import { MysqlAdapter } from '@bot-whatsapp/database-mysql'
+import { BaileysProvider } from '@bot-whatsapp/provider-baileys'
 
 /**
  * Declaramos las conexiones de MySQL

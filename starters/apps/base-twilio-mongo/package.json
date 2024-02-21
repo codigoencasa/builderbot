@@ -8,7 +8,7 @@
         "prestart": "npx eslint . --no-ignore",
         "pre-copy": "cd .. && npm run  copy.lib base-twilio-mongo",
         "start": "node dist/app.js",
-        "dev": "tsm src/app.ts",
+        "dev": "npx tsx src/app.ts",
         "build": "npx  rollup -c"
     },
     "keywords": [],

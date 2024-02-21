@@ -1,6 +1,6 @@
 import { createBot, createProvider, createFlow, addKeyword } from '@bot-whatsapp/bot'
-import { BaileysProvider } from '@bot-whatsapp/provider-baileys'
 import { PostgreSQLAdapter } from '@bot-whatsapp/database-postgres'
+import { BaileysProvider } from '@bot-whatsapp/provider-baileys'
 
 /**
  * Declaramos las conexiones de PostgreSQL
