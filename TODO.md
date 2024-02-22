@@ -7,25 +7,24 @@
 - [x] state.get<generico> o 
 - [x] eslinter nueva regla flowDynamic seguido de un endFLow  no sirve el endFlow entonces la idae esuqe diga que no puede usar juntoss
 - [x] revisar en todos los package.json  dist/
-- [ ] todos los providers deben tener "globalVendorArgs"
+- [x] todos los providers deben tener "globalVendorArgs"
 - [/] hacer que los addKeyowrd([]) ni ('')
-- [ ] terminar wrapper `database`
-- [ ] terminar wrapper `provider`
 - [X] cambiar los startes
 - [X] asegurar el covergage 90%
-- [ ] https://github.com/codigoencasa/bot-whatsapp/pull/977#issuecomment-1920056490
+- [x] https://github.com/codigoencasa/bot-whatsapp/pull/977#issuecomment-1920056490
 - [X] mirar este PR https://github.com/codigoencasa/bot-whatsapp/pull/965/files
 - [X] revisar test.skip
-- [ ] cambiar el CONTRIBUTING.md
-- [ ] hacer pruebas con npm
-https://discord.com/channels/915193197645402142/970206231849492480/1207695098629070849
-- [ ] Cunado se ejecuta endFlow y luego tiene un capture:true queda esperando la respuesta
-- [ ] omit cli copy
-- [ ] handleCtx deolver res.end DEBES INICIAR SESION
-- [ ] name qr png en los endpoints
-- [ ] numero host en el ctx
-- [ ] await bot.sendMessage('', '', {})
+- [x] https://discord.com/channels/915193197645402142/970206231849492480/1207695098629070849
+- [/] Cunado se ejecuta endFlow y luego tiene un capture:true queda esperando la respuesta
+- [x] handleCtx deolver res.end DEBES INICIAR SESION
+- [x] name qr png en los endpoints
+- [x] await bot.sendMessage('', '', {})
 - [X] omit cli copy
+- [x] flowDynamic envia imagenes sin texto
+- [x] https://github.com/codigoencasa/bot-whatsapp/pull/992/files
+- [ ] numero host en el ctx
 - [ ] cambiar mensajes a ingles
-- [ ] flowDynamic envia imagenes sin texto
-- [ ] https://github.com/codigoencasa/bot-whatsapp/pull/992/files
+- [ ] terminar wrapper `database`
+- [ ] terminar wrapper `provider`
+- [ ] hacer pruebas con npm
+- [ ] cambiar el CONTRIBUTING.md

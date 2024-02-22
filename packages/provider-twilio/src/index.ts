@@ -103,7 +103,7 @@ class TwilioProvider extends ProviderClass {
         this.http.start(methods, port)
     }
 
-    sendMessage = async (number: string, message: string, options: SendOptions): Promise<any> => {
+    sendMessage = async (number: string, message: string, options?: SendOptions): Promise<any> => {
         options = { ...options, ...options['options'] }
         number = parseNumber(`${number}`)
         if (options?.buttons?.length) await this.sendButtons()

@@ -8,6 +8,7 @@ import { WebWhatsappProvider } from '.'
 import { BotCtxMiddleware } from './types'
 
 const idCtxBot = 'ctx-bot'
+const idBotName = 'id-bot'
 
 export class WebWhatsappHttpServer extends EventEmitter {
     public server: Polka
@@ -35,10 +36,11 @@ export class WebWhatsappHttpServer extends EventEmitter {
      * Iniciar el servidor HTTP
      */
 
-    start(vendor: BotCtxMiddleware, port?: number) {
+    start(vendor: BotCtxMiddleware, port?: number, args?: { botName: string }) {
         if (port) this.port = port
         this.server.use(async (req, _, next) => {
             req[idCtxBot] = vendor
+            req[idBotName] = args?.botName ?? this.#botName ?? 'bot'
             if (req[idCtxBot]) return next()
             return next()
         })
@@ -53,8 +55,9 @@ export class WebWhatsappHttpServer extends EventEmitter {
      * @param _
      * @param res
      */
-    protected indexHome = (_, res) => {
-        const qrPath = join(process.cwd(), `${this.#botName}.qr.png`)
+    protected indexHome: polka.Middleware = (req, res) => {
+        const botName = req[idCtxBot]
+        const qrPath = join(process.cwd(), `${botName}.qr.png`)
         const fileStream = createReadStream(qrPath)
         res.writeHead(200, { 'Content-Type': 'image/png' })
         fileStream.pipe(res)

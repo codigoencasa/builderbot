@@ -72,11 +72,13 @@ class BaileysProvider extends ProviderClass {
 
         if (this.globalVendorArgs.useBaileysStore) {
             this.store = makeInMemoryStore({ logger: loggerBaileys })
-            this.store.readFromFile(`${NAME_DIR_SESSION}/baileys_store.json`)
+
+            if (this.store?.readFromFile) this.store?.readFromFile(`${NAME_DIR_SESSION}/baileys_store.json`)
+
             setInterval(() => {
                 const path = `${NAME_DIR_SESSION}/baileys_store.json`
                 if (existsSync(NAME_DIR_SESSION)) {
-                    this.store.writeToFile(path)
+                    this.store?.writeToFile(path)
                 }
             }, 10_000)
         }
@@ -477,7 +479,7 @@ class BaileysProvider extends ProviderClass {
      * @example await sendMessage('+XXXXXXXXXXX', 'Hello World')
      */
 
-    sendMessage = async (numberIn: string, message: string, options: SendOptions): Promise<any> => {
+    sendMessage = async (numberIn: string, message: string, options?: SendOptions): Promise<any> => {
         options = { ...options, ...options['options'] }
         const number = baileyCleanNumber(`${numberIn}`)
         if (options.buttons?.length) return this.sendButtons(number, message, options.buttons)

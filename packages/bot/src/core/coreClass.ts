@@ -6,7 +6,7 @@ import { GlobalState, IdleState, SingleState } from '../context'
 import { LIST_REGEX } from '../io/events'
 import FlowClass from '../io/flowClass'
 import { toCtx } from '../io/methods'
-import { GeneralArgs } from '../types'
+import { FlowDynamicMessage, GeneralArgs } from '../types'
 import { BlackList, Queue } from '../utils'
 import { delay } from '../utils/delay'
 import { printer } from '../utils/interactive'
@@ -139,7 +139,7 @@ class CoreClass extends EventEmitter {
             payload: {
                 body: any
                 answer: any
-                media: null
+                media: string
                 buttons: any[]
                 capture: boolean
                 delay: number
@@ -379,18 +379,30 @@ class CoreClass extends EventEmitter {
                 inRef: any,
                 privateOptions: { [x: string]: any; omitEndFlow?: any; idleCtx?: any }
             ) =>
-            async (listMsg = [], options = { continue: true }) => {
+            async (listMessages: string | string[] | FlowDynamicMessage[] = [], options = { continue: true }) => {
                 if (!options.hasOwnProperty('continue')) {
                     options = { ...options, continue: true }
                 }
 
                 flag.flowDynamic = true
 
-                if (!Array.isArray(listMsg)) {
-                    listMsg = [{ body: listMsg, ...options }]
+                if (!Array.isArray(listMessages)) {
+                    listMessages = [{ body: listMessages, ...options }]
                 }
 
-                const parseListMsg = listMsg.map((opt, index) => createCtxMessage(opt, index))
+                const parseListMsg = listMessages.map((opt: FlowDynamicMessage, index: number) => {
+                    const optParse = {
+                        body: opt?.body ?? ' ',
+                        media: opt?.media ?? null,
+                        buttons: opt?.buttons ?? [],
+                        capture: false,
+                        delay: opt?.delay ?? this.generalArgs.delay ?? 0,
+                        keyword: null,
+                        answer: undefined,
+                    }
+
+                    return createCtxMessage(optParse, index)
+                })
 
                 // Si endFlowFlag existe y no se omite la finalización del flujo, no hacer nada.
                 if (endFlowFlag && !privateOptions?.omitEndFlow) {

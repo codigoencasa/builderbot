@@ -540,7 +540,7 @@ class MetaProvider extends ProviderClass {
      * @param {*} param2
      * @returns
      */
-    sendMessage = async (number: string, message: string, options: SendOptions): Promise<any> => {
+    sendMessage = async (number: string, message: string, options?: SendOptions): Promise<any> => {
         options = { ...options, ...options['options'] }
         if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
         if (options?.media) return this.sendMedia(number, message, options.media)

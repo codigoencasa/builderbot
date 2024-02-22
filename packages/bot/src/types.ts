@@ -67,7 +67,7 @@ export type BotContext = {
  * @property {string} [media] - Medio del mensaje.
  */
 export type FlowDynamicMessage = {
-    body: string
+    body?: string
     buttons?: Button[]
     delay?: number
     media?: string

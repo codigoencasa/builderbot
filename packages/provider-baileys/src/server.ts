@@ -9,6 +9,7 @@ import polka, { type Polka } from 'polka'
 import { BaileysProvider } from './bailey'
 
 const idCtxBot = 'ctx-bot'
+const idBotName = 'id-bot'
 
 class BaileyHttpServer extends EventEmitter {
     public server: Polka
@@ -25,8 +26,9 @@ class BaileyHttpServer extends EventEmitter {
      * @param _
      * @param res
      */
-    protected indexHome = (_, res) => {
-        const qrPath = join(process.cwd(), `bot.qr.png`)
+    protected indexHome: polka.Middleware = (req, res) => {
+        const botName = req[idCtxBot]
+        const qrPath = join(process.cwd(), `${botName}.qr.png`)
         const fileStream = createReadStream(qrPath)
         res.writeHead(200, { 'Content-Type': 'image/png' })
         fileStream.pipe(res)
@@ -45,10 +47,11 @@ class BaileyHttpServer extends EventEmitter {
     /**
      * Iniciar el servidor HTTP
      */
-    start(vendor: BotCtxMiddleware, port?: number) {
+    start(vendor: BotCtxMiddleware, port?: number, args?: { botName: string }) {
         if (port) this.port = port
         this.server.use(async (req, _, next) => {
             req[idCtxBot] = vendor
+            req[idBotName] = args?.botName ?? 'bot'
             if (req[idCtxBot]) return next()
             return next()
         })
