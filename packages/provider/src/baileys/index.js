@@ -171,6 +171,8 @@ class BaileysProvider extends ProviderClass {
                 if (type !== 'notify') return
                 const [messageCtx] = messages
 
+                console.log('Hola soy Dinanita', messageCtx)
+
                 if (messageCtx?.message?.protocolMessage?.type === 'EPHEMERAL_SETTING') return
 
                 let payload = {
