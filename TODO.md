@@ -27,3 +27,5 @@ https://discord.com/channels/915193197645402142/970206231849492480/1207695098629
 - [ ] await bot.sendMessage('', '', {})
 - [X] omit cli copy
 - [ ] cambiar mensajes a ingles
+- [ ] flowDynamic envia imagenes sin texto
+- [ ] https://github.com/codigoencasa/bot-whatsapp/pull/992/files

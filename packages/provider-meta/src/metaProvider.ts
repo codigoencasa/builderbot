@@ -6,7 +6,7 @@ import { createReadStream } from 'fs'
 import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
 import { tmpdir } from 'os'
-import { join } from 'path'
+import { join, basename } from 'path'
 import Queue from 'queue-promise'
 
 import { MetaWebHookServer } from './server'
@@ -604,9 +604,39 @@ class MetaProvider extends ProviderClass {
         }
     }
 
-    sendFile(to: string, mediaInput: any) {
-        console.log({ to, mediaInput })
+    sendFile = async (to: string, mediaInput = null) => {
+        if (!mediaInput) throw new Error(`MEDIA_INPUT_NULL_: ${mediaInput}`)
+
+        const formData = new FormData()
+        const mimeType = mime.lookup(mediaInput)
+        formData.append('file', createReadStream(mediaInput), {
+            contentType: mimeType,
+        })
+        formData.append('messaging_product', 'whatsapp')
+
+        const nameOriginal = basename(mediaInput) || 'Doc'
+
+        const {
+            data: { id: mediaId },
+        } = await axios.post(`${URL}/${this.version}/${this.numberId}/media`, formData, {
+            headers: {
+                Authorization: `Bearer ${this.jwtToken}`,
+                ...formData.getHeaders(),
+            },
+        })
+
+        const body = {
+            messaging_product: 'whatsapp',
+            to: to,
+            type: 'document',
+            document: {
+                id: mediaId,
+                filename: nameOriginal,
+            },
+        }
+        return this.sendMessageMeta(body)
     }
+
     sendAudio(to: string, fileOpus: string, text: string) {
         console.log({ to, fileOpus, text })
     }
