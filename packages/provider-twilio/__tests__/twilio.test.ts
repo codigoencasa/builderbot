@@ -3,9 +3,11 @@ import { stub } from 'sinon'
 import twilio from 'twilio'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
+import { TwilioRequestBody } from '../src/types'
 
 const utilsMock = {
     encryptData: stub().returns('kddkdkdk'),
+    generalDownload: stub(),
 }
 const emitStub = stub()
 const sendStub = stub()
@@ -216,6 +218,20 @@ test('sendMedia arroja un error si mediaInput es null', async () => {
         assert.is(error.message, 'MEDIA_INPUT_NULL_: null')
     }
     await twilioProvider.http.stop()
+})
+
+test('Deberia retornar el path en la ruta tpm de la imagen', async () => {
+    const ctx: TwilioRequestBody = {
+        From: '1234',
+        To: '4444',
+        Body: 'Hello',
+        NumMedia: '33344',
+        MediaUrl0: 'http://example.com/file.jpg',
+    }
+    utilsMock.generalDownload.call(() => '/tmp')
+    const result = await twilioProvider.saveFile(ctx)
+    assert.equal(utilsMock.generalDownload.called, true)
+    assert.equal(result.includes('file'), true)
 })
 
 test.after(async () => {
