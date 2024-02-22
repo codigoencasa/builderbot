@@ -55,9 +55,17 @@ export type ActionPropertiesGeneric = Omit<ActionPropertiesKeyword, 'sensitive' 
  */
 export type BotContext = {
     name?: string
+    host?: { phone: string; [key: string]: any }
     idleFallBack?: boolean
     body: string
     from: string
+}
+
+export type MessageContextIncoming = {
+    from: string
+    ref?: string
+    body?: string
+    host?: string
 }
 
 /**

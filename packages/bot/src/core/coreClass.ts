@@ -6,7 +6,7 @@ import { GlobalState, IdleState, SingleState } from '../context'
 import { LIST_REGEX } from '../io/events'
 import FlowClass from '../io/flowClass'
 import { toCtx } from '../io/methods'
-import { FlowDynamicMessage, GeneralArgs } from '../types'
+import { FlowDynamicMessage, GeneralArgs, MessageContextIncoming } from '../types'
 import { BlackList, Queue } from '../utils'
 import { delay } from '../utils/delay'
 import { printer } from '../utils/interactive'
@@ -30,7 +30,7 @@ class CoreClass extends EventEmitter {
     stateHandler = new SingleState()
     globalStateHandler = new GlobalState()
     dynamicBlacklist = new BlackList()
-    generalArgs: GeneralArgs = {
+    generalArgs: GeneralArgs & { host?: string } = {
         blackList: [],
         listEvents: {},
         delay: 0,
@@ -40,6 +40,7 @@ class CoreClass extends EventEmitter {
             timeout: 20000,
             concurrencyLimit: 15,
         },
+        host: undefined,
     }
 
     constructor(_flow: any, _database: any, _provider: any, _args: GeneralArgs) {
@@ -48,6 +49,7 @@ class CoreClass extends EventEmitter {
         this.databaseClass = _database
         this.providerClass = _provider
         this.generalArgs = { ...this.generalArgs, ..._args }
+
         this.dynamicBlacklist.add(this.generalArgs.blackList)
 
         this.queuePrincipal = new Queue(
@@ -87,11 +89,19 @@ class CoreClass extends EventEmitter {
         },
         {
             event: 'message',
-            func: (msg: { from: string; ref?: string; body?: string }) => this.handleMsg(msg),
+            func: (msg: MessageContextIncoming) => this.handleMsg(msg),
+        },
+        {
+            event: 'host',
+            func: (payload: { phone: string }) => this.setHostData(payload),
         },
     ]
 
-    handleMsg = async (messageCtxInComming: { from: string; ref?: string; body?: string }) => {
+    private setHostData = (hostNumber: { phone: string }) => {
+        this.generalArgs.host = hostNumber.phone
+    }
+
+    handleMsg = async (messageCtxInComming: MessageContextIncoming) => {
         logger.log(`[handleMsg]: `, messageCtxInComming)
         idleForCallback.stop(messageCtxInComming)
         const { body, from } = messageCtxInComming
