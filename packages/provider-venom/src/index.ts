@@ -62,7 +62,14 @@ class VenomProvider extends ProviderClass {
             )
 
             this.vendor = client
+            const hostDevice: any = await this.vendor.getHostDevice()
+            const { id, pushname } = hostDevice
+            const host = {
+                name: pushname,
+                phone: id.user,
+            }
             this.emit('ready', true)
+            this.emit('host', host)
         } catch (e) {
             logger.log(e)
             this.emit('auth_failure', {
