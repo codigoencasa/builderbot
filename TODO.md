@@ -22,7 +22,7 @@
 - [X] omit cli copy
 - [x] flowDynamic envia imagenes sin texto
 - [x] https://github.com/codigoencasa/bot-whatsapp/pull/992/files
-- [ ] numero host en el ctx
+- [ ] numero host en el ctx twilio / meta
 - [ ] cambiar mensajes a ingles
 - [ ] terminar wrapper `database`
 - [ ] terminar wrapper `provider`
