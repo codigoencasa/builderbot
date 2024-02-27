@@ -16,6 +16,7 @@ export type GeneralArgs = {
         timeout: number
         concurrencyLimit: number
     }
+    host?: string
 }
 
 export type Button = {

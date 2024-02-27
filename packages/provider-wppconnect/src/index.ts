@@ -67,7 +67,11 @@ class WPPConnectProviderClass extends ProviderClass {
                 },
             })
             this.vendor = session
+            const hostDevice = await session.getWid()
+            const parseNumber = `${hostDevice}`.split('@').shift()
+            const host = { phone: parseNumber }
             this.emit('ready', true)
+            this.emit('host', host)
             this.initBusEvents()
         } catch (error) {
             this.emit('auth_failure', [

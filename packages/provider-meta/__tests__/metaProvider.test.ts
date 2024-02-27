@@ -49,13 +49,15 @@ test('sendMessageToApi - should send a message to API', async () => {
 
 test('busEvents - should return an array with correct events and functions', () => {
     const events = metaProvider.busEvents()
-    assert.equal(events.length, 3)
+    assert.equal(events.length, 4)
     assert.equal(events[0].event, 'auth_failure')
     assert.type(events[0].func, 'function')
     assert.equal(events[1].event, 'ready')
     assert.type(events[1].func, 'function')
     assert.equal(events[2].event, 'message')
     assert.type(events[2].func, 'function')
+    assert.equal(events[3].event, 'host')
+    assert.type(events[3].func, 'function')
 })
 
 test('sendtext - should correctly call sendMessageMeta with the message body', async () => {

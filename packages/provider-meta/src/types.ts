@@ -99,3 +99,15 @@ export interface MetaProviderOptions {
 export interface SaveFileOptions {
     path?: string
 }
+
+export interface WhatsAppProfile {
+    verified_name: string
+    code_verification_status: string
+    display_phone_number: string
+    quality_rating: string
+    platform_type: string
+    throughput: {
+        level: string
+    }
+    id: string
+}

@@ -57,7 +57,7 @@ export class WPPConnectHttpServer extends EventEmitter {
      * @param res
      */
     protected indexHome: polka.Middleware = (req, res) => {
-        const botName = req[idCtxBot]
+        const botName = req[idBotName]
         const qrPath = join(process.cwd(), `${botName}.qr.png`)
         const fileStream = createReadStream(qrPath)
         res.writeHead(200, { 'Content-Type': 'image/png' })

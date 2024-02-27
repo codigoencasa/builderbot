@@ -74,6 +74,12 @@ class MetaProvider extends ProviderClass {
                 this.emit('message', payload)
             },
         },
+        {
+            event: 'host',
+            func: (payload: any) => {
+                this.emit('host', payload)
+            },
+        },
     ]
 
     /**
