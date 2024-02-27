@@ -98,6 +98,10 @@ export type BotState = {
     clear: () => void
 }
 
+export type BotStateStandAlone = Omit<BotState, 'getAllState'>
+
+export type BotStateGlobal = Omit<BotState, 'getMyState'>
+
 export type DynamicBlacklist = {
     add: (phoneNumbers: string | string[]) => string[]
     remove: (phoneNumber: string) => void
@@ -125,9 +129,9 @@ export type BotMethods<P = {}, B = {}> = {
     database: B
     inRef: string
     idle: IdleState
-    state: BotState
+    state: BotStateStandAlone
     blacklist: DynamicBlacklist
-    globalState: BotState
+    globalState: BotStateGlobal
     queue: Queue<any>
     extensions: Record<string, any>
 }
