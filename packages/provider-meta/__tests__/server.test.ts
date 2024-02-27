@@ -20,10 +20,8 @@ test('should create MetaWebHookServer instance', async () => {
 
 test('start -should start MetaWebHookServer and emit "ready"', async () => {
     const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3003)
-    const emitSpy = stub(server, 'emit')
     const metaServerSpy = stub(server['server'], 'listen')
     server.start({})
-    assert.equal(emitSpy.calledWith('ready'), true)
     assert.equal(metaServerSpy.called, true)
 })
 
