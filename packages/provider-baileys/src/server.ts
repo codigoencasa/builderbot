@@ -85,7 +85,9 @@ const handleCtx =
     ) =>
     (req: any, res: any) => {
         const bot: T | undefined = req[idCtxBot] ?? undefined
-        if (!bot?.vendor) {
+        try {
+            ctxPolka(bot, req, res)
+        } catch (err) {
             const jsonRaw = {
                 error: `You must first log in by scanning the qr code to be able to use this functionality.`,
                 docs: `https://builderbot.vercel.app/errors`,
@@ -96,7 +98,6 @@ const handleCtx =
             const jsonBody = JSON.stringify(jsonRaw)
             return res.end(jsonBody)
         }
-        ctxPolka(bot, req, res)
     }
 
 export { BaileyHttpServer, handleCtx }

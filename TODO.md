@@ -29,3 +29,4 @@
 - [ ] hacer pruebas con npm
 - [ ] cambiar el CONTRIBUTING.md
 - [ ] state get('detail.name')
+- [ ] Cambiar todos los mensajes a ingles
