@@ -5,7 +5,7 @@ import polka, { Polka } from 'polka'
 import Queue from 'queue-promise'
 
 import { Message } from './types'
-import { processIncomingMessage } from './utils'
+import { getProfile, processIncomingMessage } from './utils'
 
 const idCtxBot = 'ctx-bot'
 class MetaWebHookServer extends EventEmitter {
@@ -96,7 +96,7 @@ class MetaWebHookServer extends EventEmitter {
      * @param {*} req
      * @param {*} res
      */
-    protected verifyToken = (req, res) => {
+    protected verifyToken = async (req, res) => {
         const { query } = req
         const mode: string = query?.['hub.mode']
         const token: string = query?.['hub.verify_token']
@@ -106,7 +106,6 @@ class MetaWebHookServer extends EventEmitter {
             res.end('No token!')
             return
         }
-
         if (this.tokenIsValid(mode, token)) {
             console.log('Webhook verified')
             res.statusCode = 200
@@ -137,7 +136,7 @@ class MetaWebHookServer extends EventEmitter {
     /**
      * Iniciar el servidor HTTP
      */
-    start(vendor: BotCtxMiddleware, port?: number) {
+    async start(vendor: BotCtxMiddleware, port?: number) {
         if (port) this.port = port
 
         this.server.use(async (req, _, next) => {
@@ -151,7 +150,13 @@ class MetaWebHookServer extends EventEmitter {
             console.log(`[meta]: POST http://localhost:${this.port}/webhook`)
             console.log(`[meta]: Más información en la documentación`)
         })
+        const profile = await getProfile(this.version, this.numberId, this.jwtToken)
+        const host = {
+            ...profile,
+            phone: profile?.display_phone_number,
+        }
         this.emit('ready')
+        this.emit('host', host)
     }
 
     stop(): Promise<void> {
