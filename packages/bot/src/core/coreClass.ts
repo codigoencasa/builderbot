@@ -128,14 +128,14 @@ class CoreClass extends EventEmitter {
         const state = {
             getMyState: this.stateHandler.getMyState(messageCtxInComming.from),
             get: this.stateHandler.get(messageCtxInComming.from),
-            getAllState: this.stateHandler.getAllState,
+            // getAllState: this.stateHandler.getAllState,
             update: this.stateHandler.updateState(messageCtxInComming),
             clear: this.stateHandler.clear(messageCtxInComming.from),
         }
 
         // 📄 Mantener estado global
         const globalState = {
-            getMyState: this.globalStateHandler.getMyState(),
+            // getMyState: this.globalStateHandler.getMyState(),
             get: this.globalStateHandler.get(),
             getAllState: this.globalStateHandler.getAllState,
             update: this.globalStateHandler.updateState(),

@@ -28,3 +28,4 @@
 - [ ] terminar wrapper `provider`
 - [ ] hacer pruebas con npm
 - [ ] cambiar el CONTRIBUTING.md
+- [ ] state get('detail.name')
