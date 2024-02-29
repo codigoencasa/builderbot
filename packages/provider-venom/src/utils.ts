@@ -5,7 +5,7 @@ import * as https from 'https'
 import { tmpdir } from 'os'
 
 const venomCleanNumber = (number: string, full: boolean = false): string => {
-    number = number.replace('@c.us', '')
+    number = number.replace('@c.us', '').replace('+', '')
     number = !full ? `${number}@c.us` : `${number}`
     return number
 }

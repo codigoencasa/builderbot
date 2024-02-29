@@ -6,7 +6,7 @@ import { tmpdir } from 'os'
 import * as qr from 'qr-image'
 
 const wwebCleanNumber = (number: string, full: boolean = false): string => {
-    number = number.replace('@c.us', '')
+    number = number.replace('@c.us', '').replace('+', '')
     number = !full ? `${number}@c.us` : `${number}`
     return number
 }

@@ -9,7 +9,7 @@ import * as qr from 'qr-image'
  * @returns The cleaned number.
  */
 const baileyCleanNumber = (number: string, full: boolean = false): string => {
-    number = number.replace('@s.whatsapp.net', '')
+    number = number.replace('@s.whatsapp.net', '').replace('+', '')
     number = !full ? `${number}@s.whatsapp.net` : number
     return number
 }

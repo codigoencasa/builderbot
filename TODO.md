@@ -30,3 +30,8 @@
 - [ ] cambiar el CONTRIBUTING.md
 - [ ] state get('detail.name')
 - [ ] Cambiar todos los mensajes a ingles
+- [ ] revisar el fallBack
+- [ ] await bot.blacklist.add(`340000000`) //
+- [ ] https://docs.google.com/document/d/1yO-okdcl2BJA_1wYvZRd5C-V5xs9QVlqcDRdDwz47t0/edit#heading=h.twmsbd7b8ybt
+- [] cambiar a `WPPConnectProvider` import { WPPConnectProviderClass } from '@bot-whatsapp/provider-wppconnect';
+- [] cambiar a `JsonFileDB` import { JsonFileDB } from '@bot-whatsapp/database-json';';
