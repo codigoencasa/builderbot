@@ -21,12 +21,12 @@ const mimeMock = {
     lookup: stub(),
 }
 
-const { WPPConnectProviderClass } = proxyquire<typeof import('../src')>('../src', {
+const { WPPConnectProvider } = proxyquire<typeof import('../src')>('../src', {
     '@wppconnect-team/wppconnect': { create: wppconnectMock.create() },
     WppConnectGenerateImage: WppConnectGenerateImageStub(),
     'mime-types': mimeMock,
 })
-const wppConnectProvider = new WPPConnectProviderClass({ name: 'testBot' })
+const wppConnectProvider = new WPPConnectProvider({ name: 'testBot' })
 
 const sendMediaStub = stub()
 const emitSpy = stub(wppConnectProvider, 'emit')

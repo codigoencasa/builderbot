@@ -23,6 +23,7 @@
 - [x] flowDynamic envia imagenes sin texto
 - [x] https://github.com/codigoencasa/bot-whatsapp/pull/992/files
 - [ ] numero host en el ctx twilio / meta
+- [ ] handleCtx twilio / meta
 - [ ] cambiar mensajes a ingles
 - [ ] terminar wrapper `database`
 - [ ] terminar wrapper `provider`
@@ -32,6 +33,8 @@
 - [ ] Cambiar todos los mensajes a ingles
 - [ ] revisar el fallBack
 - [ ] await bot.blacklist.add(`340000000`) //
+- [ ] handler no responder error
 - [ ] https://docs.google.com/document/d/1yO-okdcl2BJA_1wYvZRd5C-V5xs9QVlqcDRdDwz47t0/edit#heading=h.twmsbd7b8ybt
+- [] https://discord.com/channels/915193197645402142/1089893256260759553/1213299228605153290
 - [] cambiar a `WPPConnectProvider` import { WPPConnectProviderClass } from '@bot-whatsapp/provider-wppconnect';
 - [] cambiar a `JsonFileDB` import { JsonFileDB } from '@bot-whatsapp/database-json';';

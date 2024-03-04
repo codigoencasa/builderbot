@@ -4,7 +4,7 @@ import { createReadStream } from 'node:fs'
 import { join } from 'node:path'
 import polka, { Polka } from 'polka'
 
-import { WPPConnectProviderClass } from '.'
+import { WPPConnectProvider } from '.'
 import { BotCtxMiddleware } from './types'
 
 const idCtxBot = 'ctx-bot'
@@ -83,7 +83,7 @@ export class WPPConnectHttpServer extends EventEmitter {
  * @returns
  */
 export const handleCtx =
-    <T extends Pick<WPPConnectProviderClass, 'sendMessage' | 'vendor'> & { provider: WPPConnectProviderClass }>(
+    <T extends Pick<WPPConnectProvider, 'sendMessage' | 'vendor'> & { provider: WPPConnectProvider }>(
         ctxPolka: (bot: T | undefined, req: any, res: any) => void
     ) =>
     (req: any, res: any) => {

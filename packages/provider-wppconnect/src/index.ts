@@ -16,7 +16,7 @@ import { WppConnectGenerateImage, WppConnectValidNumber, WppConnectCleanNumber }
  * https://github.com/wppconnect-team/wppconnect
  */
 defaultLogger.transports.forEach((t) => (t.silent = true)) //<==
-class WPPConnectProviderClass extends ProviderClass {
+class WPPConnectProvider extends ProviderClass {
     globalVendorArgs = { name: 'bot', port: 3000 }
     vendor: Whatsapp
     wppConnectProvider: any
@@ -298,4 +298,4 @@ class WPPConnectProviderClass extends ProviderClass {
     }
 }
 
-export { WPPConnectProviderClass }
+export { WPPConnectProvider }
