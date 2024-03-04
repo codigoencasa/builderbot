@@ -3,7 +3,7 @@ import { join } from 'path'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { JsonFileAdapter } from '../src'
+import { JsonFileDB } from '../src'
 import { HistoryEntry, JsonFileAdapterOptions } from '../src/types'
 
 const entryMock: HistoryEntry = {
@@ -18,7 +18,7 @@ const entryMock: HistoryEntry = {
 }
 
 const jsonFileAdapterOptions: JsonFileAdapterOptions = { filename: 'test-db.json' }
-const jsonFileAdapter = new JsonFileAdapter(jsonFileAdapterOptions)
+const jsonFileAdapter = new JsonFileDB(jsonFileAdapterOptions)
 
 async function fileExists(hasFile: boolean): Promise<boolean> {
     return hasFile
@@ -34,14 +34,14 @@ test.after(async () => {
 })
 
 test('[JsonFileAdapter] - instantiation', () => {
-    assert.instance(jsonFileAdapter, JsonFileAdapter)
+    assert.instance(jsonFileAdapter, JsonFileDB)
     assert.equal(jsonFileAdapter['options'], jsonFileAdapterOptions)
 })
 
 test('#init - creates a file if it does not exist', async () => {
     const filename = 'test.json'
     const testFilePath = join(process.cwd(), filename)
-    const jsonFileAdapter = new JsonFileAdapter({ filename })
+    const jsonFileAdapter = new JsonFileDB({ filename })
     const fileExistsBeforeInit = await fileExists(false)
     assert.is(fileExistsBeforeInit, false)
 

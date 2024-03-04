@@ -3,7 +3,7 @@ import { join } from 'path'
 
 import { HistoryEntry, JsonFileAdapterOptions } from './types'
 
-class JsonFileAdapter {
+class JsonFileDB {
     private pathFile: string
     private listHistory: HistoryEntry[] = []
     private options: JsonFileAdapterOptions = { filename: 'db.json' }
@@ -82,4 +82,4 @@ class JsonFileAdapter {
     }
 }
 
-export { JsonFileAdapter }
+export { JsonFileDB }
