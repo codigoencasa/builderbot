@@ -1,6 +1,6 @@
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
 import { Vendor } from '@bot-whatsapp/bot/dist/provider/providerClass'
-import { BotContext, BotCtxMiddleware, SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { BotContext, BotCtxMiddleware, DynamicBlacklist, SendOptions } from '@bot-whatsapp/bot/dist/types'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import twilio from 'twilio'
@@ -55,8 +55,8 @@ class TwilioProvider extends ProviderClass {
 
     private async sendMedia(number: string, message: string, mediaInput: string | null): Promise<any> {
         if (!mediaInput) throw new Error(`MEDIA_INPUT_NULL_: ${mediaInput}`)
-        const ecrypPath = utils.encryptData(encodeURIComponent(mediaInput))
-        const urlEncode = `${this.publicUrl}/tmp?path=${ecrypPath}`
+        const encryptPath = utils.encryptData(encodeURIComponent(mediaInput))
+        const urlEncode = `${this.publicUrl}/tmp?path=${encryptPath}`
         const regexUrl = /^(?!https?:\/\/)[^\s]+$/
         const urlNotice = [
             `[NOTA]: Estas intentando enviar una fichero que esta en local.`,
@@ -94,11 +94,12 @@ class TwilioProvider extends ProviderClass {
         )
     }
 
-    initHttpServer(port: number) {
+    initHttpServer = (port: number, blacklist?: DynamicBlacklist) => {
         this.http = new TwilioWebHookServer(port)
-        const methods: BotCtxMiddleware = {
+        const methods: BotCtxMiddleware<TwilioProvider> = {
             sendMessage: this.sendMessage,
             provider: this.vendor,
+            blacklist,
         }
         this.http.start(methods, port)
     }

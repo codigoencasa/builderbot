@@ -1,5 +1,5 @@
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
-import { BotContext, SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { BotContext, BotCtxMiddleware, DynamicBlacklist, SendOptions } from '@bot-whatsapp/bot/dist/types'
 import { Console } from 'console'
 import { createWriteStream } from 'fs'
 import { writeFile } from 'fs/promises'
@@ -9,7 +9,7 @@ import { join } from 'path'
 import venom from 'venom-bot'
 
 import { VenomHttpServer } from './server'
-import { BotCtxMiddleware, SaveFileOptions } from './types'
+import { SaveFileOptions } from './types'
 import { venomCleanNumber, venomGenerateImage, venomisValidNumber } from './utils'
 
 const logger = new Console({
@@ -36,10 +36,11 @@ class VenomProvider extends ProviderClass {
      *
      * @param port
      */
-    initHttpServer(port: number) {
-        const methods: BotCtxMiddleware = {
+    initHttpServer = (port: number, blacklist?: DynamicBlacklist) => {
+        const methods: BotCtxMiddleware<VenomProvider> = {
             sendMessage: this.sendMessage,
             provider: this.vendor,
+            blacklist,
         }
         this.http.start(methods, port)
     }

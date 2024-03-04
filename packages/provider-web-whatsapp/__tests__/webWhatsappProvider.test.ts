@@ -29,7 +29,7 @@ test.after.each(() => {
 })
 
 test('sendMessage - should call the method sendButtons', async () => {
-    const to = '+123456789'
+    const to = '123456789'
     const message = 'Test message'
     const argWithButtons: SendOptions = {
         buttons: [{ body: 'Button1' }, { body: 'Button2' }],
@@ -43,7 +43,7 @@ test('sendMessage - should call the method sendButtons', async () => {
 })
 
 test('sendMessage - should call the method sendMedia', async () => {
-    const to = '+123456789'
+    const to = '123456789'
     const message = 'Test message'
     const argWithMedia: SendOptions = {
         media: 'image.jpg',
@@ -57,7 +57,7 @@ test('sendMessage - should call the method sendMedia', async () => {
 })
 
 test('sendMessage - should call the method  sendText ', async () => {
-    const to = '+123456789'
+    const to = '123456789'
     const message = 'Test message'
     const argWithMedia: any = {}
     const sendTextStub = stub(webWhatsappProvider, 'sendText').resolves()
@@ -132,7 +132,7 @@ test('busEvents - message should return undefined', async () => {
 
 test('busEvents - message I should build the bodysuit for the guy lat y lng', async () => {
     const payload: any = {
-        from: '+123456789',
+        from: '123456789',
         _data: {
             lat: '1224',
             lng: '1224',
@@ -147,7 +147,7 @@ test('busEvents - message I should build the bodysuit for the guy lat y lng', as
 
 test('busEvents - message I should build the body suit for the guy imagen', async () => {
     const payload: any = {
-        from: '+123456789',
+        from: '123456789',
         type: 'image',
         _data: {
             type: 'image',
@@ -162,7 +162,7 @@ test('busEvents - message I should build the body suit for the guy imagen', asyn
 
 test('busEvents - message I should build the body suit for the guy document', async () => {
     const payload: any = {
-        from: '+123456789',
+        from: '123456789',
         _data: {
             type: 'document',
         },
@@ -176,7 +176,7 @@ test('busEvents - message I should build the body suit for the guy document', as
 
 test('busEvents - message I should build the body suit for the guy ptt', async () => {
     const payload: any = {
-        from: '+123456789',
+        from: '123456789',
         _data: {
             type: 'ptt',
         },
@@ -189,7 +189,7 @@ test('busEvents - message I should build the body suit for the guy ptt', async (
 })
 
 test('sendButtons - should send a buttons message correctly', async () => {
-    const number = '+1234567890'
+    const number = '1234567890'
     const message = 'Mensaje con botones'
     const buttons: any = [{ body: 'Botón 1' }, { body: 'Botón 2' }]
     const webWhatsappProvider = new WebWhatsappProvider({ name: 'bot', gifPlayback: false })
@@ -204,7 +204,7 @@ test('sendButtons - should send a buttons message correctly', async () => {
 })
 
 test('sendText - should send a text message correctly', async () => {
-    const number = '+1234567890'
+    const number = '1234567890'
     const message = 'Mensaje con botones'
     const webWhatsappProvider = new WebWhatsappProvider({ name: 'bot', gifPlayback: false })
     webWhatsappProvider.vendor.sendMessage = sendStub

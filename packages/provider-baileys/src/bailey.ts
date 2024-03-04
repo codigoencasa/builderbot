@@ -1,6 +1,6 @@
+import type { BotContext, BotCtxMiddleware, DynamicBlacklist, SendOptions } from '@bot-whatsapp/bot/dist/types'
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
 import { Vendor } from '@bot-whatsapp/bot/dist/provider/providerClass'
-import { BotContext, BotCtxMiddleware, SendOptions } from '@bot-whatsapp/bot/dist/types'
 import { Boom } from '@hapi/boom'
 import { Console } from 'console'
 import { createWriteStream, readFileSync, existsSync, PathOrFileDescriptor } from 'fs'
@@ -174,16 +174,14 @@ class BaileysProvider extends ProviderClass {
         }
     }
 
-    /**
-     *
-     * @param port
-     */
-    initHttpServer(port: number) {
-        const methods: BotCtxMiddleware = {
+    initHttpServer = (port: number, blacklist?: DynamicBlacklist) => {
+        const methods: BotCtxMiddleware<BaileysProvider> = {
             sendMessage: this.sendMessage,
             provider: this.vendor,
+            blacklist,
         }
         this.http.start(methods, port)
+        return
     }
 
     /**

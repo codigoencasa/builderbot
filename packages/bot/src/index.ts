@@ -1,5 +1,5 @@
 import { CoreClass } from './core/coreClass'
-import { MemoryDBClass } from './db'
+import { MemoryDB } from './db'
 import { LIST_ALL as EVENTS } from './io/events'
 import FlowClass from './io/flowClass'
 import { addAnswer } from './io/methods/addAnswer'
@@ -11,10 +11,10 @@ import * as utils from './utils'
 /**
  * Crear instancia de clase Bot
  */
-const createBot = async <P = ProviderClass, D = MemoryDBClass>(
+const createBot = async <P extends ProviderClass = any, D extends MemoryDB = any>(
     { flow, database, provider }: { flow: FlowClass; database: D; provider: P },
     args?: GeneralArgs
-): Promise<CoreClass> => {
+): Promise<CoreClass<P, D>> => {
     const defaultArgs: GeneralArgs = {
         blackList: [],
         listEvents: EVENTS,
@@ -28,7 +28,7 @@ const createBot = async <P = ProviderClass, D = MemoryDBClass>(
     }
 
     const combinedArgs: GeneralArgs = { ...defaultArgs, ...args }
-    return new CoreClass(flow, database, provider, combinedArgs)
+    return new CoreClass<P, D>(flow, database, provider, combinedArgs)
 }
 
 /**
@@ -49,7 +49,7 @@ const createProvider = <T = ProviderClass, K = typeof ProviderClass.prototype.gl
 ): T => {
     const providerInstance = new providerClass(args)
     if (!(providerClass.prototype instanceof ProviderClass)) {
-        throw new Error('El provider no implementa ProviderClass')
+        throw new Error('Provider does not implement ProviderClass')
     }
     return providerInstance
 }
@@ -63,6 +63,6 @@ export {
     ProviderClass,
     CoreClass,
     EVENTS,
-    MemoryDBClass as MemoryDB,
+    MemoryDB,
     utils,
 }

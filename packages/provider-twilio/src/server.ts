@@ -8,6 +8,7 @@ import polka, { Middleware, Polka } from 'polka'
 
 import { TwilioRequestBody, TwilioPayload } from './types'
 import { parseNumber } from './utils'
+import type { TwilioProvider } from './'
 
 const idCtxBot = 'ctx-bot'
 
@@ -139,4 +140,35 @@ class TwilioWebHookServer extends EventEmitter {
     }
 }
 
-export { TwilioWebHookServer, TwilioPayload }
+/**
+ *
+ * @param inHandleCtx
+ * @returns
+ */
+const inHandleCtx =
+    <T extends Pick<TwilioProvider, 'sendMessage' | 'vendor'> & { provider: TwilioProvider }>(
+        ctxPolka: (bot: T | undefined, req: any, res: any) => Promise<void>
+    ) =>
+    (req: any, res: any) => {
+        const bot: T | undefined = req[idCtxBot] ?? undefined
+
+        const responseError = (res: any) => {
+            const jsonRaw = {
+                error: `You must first log in by scanning the qr code to be able to use this functionality.`,
+                docs: `https://builderbot.vercel.app/errors`,
+                code: `100`,
+            }
+            console.log(jsonRaw)
+            res.writeHead(400, { 'Content-Type': 'application/json' })
+            const jsonBody = JSON.stringify(jsonRaw)
+            return res.end(jsonBody)
+        }
+
+        try {
+            ctxPolka(bot, req, res).catch(() => responseError(res))
+        } catch (err) {
+            return responseError(res)
+        }
+    }
+
+export { TwilioWebHookServer, TwilioPayload, inHandleCtx }

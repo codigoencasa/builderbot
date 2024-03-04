@@ -228,4 +228,4 @@ export interface SendOptions {
     [key: string]: any
 }
 
-export type BotCtxMiddleware = Partial<ProviderClass & { provider: any; blacklist?: DynamicBlacklist }>
+export type BotCtxMiddleware<P = ProviderClass> = Partial<P & { provider: any; blacklist: DynamicBlacklist }>

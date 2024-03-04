@@ -3,10 +3,10 @@ import * as assert from 'uvu/assert'
 
 import { setup, clear, delay, parseAnswers } from '../../__mock__/env'
 import { addKeyword, createBot, createFlow } from '../../src'
-import { MemoryDBClass } from '../../src/db'
+import { MemoryDB } from '../../src/db'
 import { ProviderMock } from '../../src/provider/providerMock'
 
-const testSuite = suite<{ provider: ProviderMock; database: MemoryDBClass }>('Flujo: Simple')
+const testSuite = suite<{ provider: ProviderMock; database: MemoryDB }>('Flujo: Simple')
 
 testSuite.before.each(setup)
 testSuite.after.each(clear)

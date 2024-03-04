@@ -1,3 +1,4 @@
+import { DynamicBlacklist } from './../types'
 import { Console } from 'console'
 import { createWriteStream } from 'fs'
 import { EventEmitter } from 'node:events'
@@ -10,6 +11,8 @@ import { FlowDynamicMessage, GeneralArgs, MessageContextIncoming } from '../type
 import { BlackList, Queue } from '../utils'
 import { delay } from '../utils/delay'
 import { printer } from '../utils/interactive'
+import { ProviderClass } from '../provider'
+import { MemoryDB } from '../db'
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
@@ -22,10 +25,10 @@ type EventFunction = (msg: { [key: string]: string }) => Promise<any> | void
 
 const idleForCallback = new IdleState()
 
-class CoreClass extends EventEmitter {
+class CoreClass<P extends ProviderClass, D extends MemoryDB> extends EventEmitter {
     flowClass: FlowClass
-    databaseClass: any
-    providerClass: any
+    database: D
+    provider: P
     queuePrincipal: Queue<unknown>
     stateHandler = new SingleState()
     globalStateHandler = new GlobalState()
@@ -43,11 +46,11 @@ class CoreClass extends EventEmitter {
         host: undefined,
     }
 
-    constructor(_flow: any, _database: any, _provider: any, _args: GeneralArgs) {
+    constructor(_flow: any, _database: D, _provider: P, _args: GeneralArgs) {
         super()
         this.flowClass = _flow
-        this.databaseClass = _database
-        this.providerClass = _provider
+        this.database = _database
+        this.provider = _provider
         this.generalArgs = { ...this.generalArgs, ..._args }
 
         this.dynamicBlacklist.add(this.generalArgs.blackList)
@@ -63,7 +66,7 @@ class CoreClass extends EventEmitter {
         if (this.generalArgs.extensions) this.globalStateHandler.RAW = this.generalArgs.extensions
 
         for (const { event, func } of this.listenerBusEvents()) {
-            this.providerClass.on(event, func)
+            this.provider.on(event, func)
         }
     }
 
@@ -111,7 +114,7 @@ class CoreClass extends EventEmitter {
         if (this.dynamicBlacklist.checkIf(from)) return
         if (!body) return
 
-        const prevMsg = await this.databaseClass.getPrevByNumber(from)
+        const prevMsg = await this.database.getPrevByNumber(from)
         const refToContinue = this.flowClass.findBySerialize(prevMsg?.refSerialize)
 
         if (prevMsg?.ref) {
@@ -121,7 +124,7 @@ class CoreClass extends EventEmitter {
                 from,
                 prevRef: prevMsg.refSerialize,
             })
-            await this.databaseClass.save(ctxByNumber)
+            await this.database.save(ctxByNumber)
         }
 
         // 📄 Mantener estado de conversacion por numero
@@ -258,7 +261,7 @@ class CoreClass extends EventEmitter {
                 this.queuePrincipal.setIdsCallbacks(from, listIdsRefCallbacks)
             } else {
                 const lastMessage = messageToSend[messageToSend.length - 1]
-                await this.databaseClass.save({ ...lastMessage, from: numberOrId })
+                await this.database.save({ ...lastMessage, from: numberOrId })
 
                 if (listProcessWait.includes(lastMessage.ref)) {
                     this.queuePrincipal.clearQueue(from)
@@ -290,7 +293,7 @@ class CoreClass extends EventEmitter {
 
         const continueFlow = async (initRef = undefined): Promise<any> => {
             try {
-                const currentPrev = await this.databaseClass.getPrevByNumber(from)
+                const currentPrev = await this.database.getPrevByNumber(from)
 
                 let nextFlow = this.flowClass.find(refToContinue?.ref, true) || []
                 if (initRef && !initRef?.idleFallBack) {
@@ -472,8 +475,8 @@ class CoreClass extends EventEmitter {
                 gotoFlow: false,
             }
 
-            const provider = this.providerClass
-            const database = this.databaseClass
+            const provider = this.provider
+            const database = this.database
 
             if (!this.flowClass.allCallbacks[inRef]) return Promise.resolve()
 
@@ -619,35 +622,21 @@ class CoreClass extends EventEmitter {
      * @param {*} ctxMessage ver más en GLOSSARY.md
      * @returns
      */
-    sendProviderAndSave = async (numberOrId: string, ctxMessage) => {
+    sendProviderAndSave = async (numberOrId: string, ctxMessage: any) => {
         try {
             const { answer } = ctxMessage
             if (answer && answer.length && answer !== '__call_action__' && answer !== '__goto_flow__') {
                 if (answer !== '__capture_only_intended__') {
-                    await this.providerClass.sendMessage(numberOrId, answer, ctxMessage)
+                    await this.provider.sendMessage(numberOrId, answer, ctxMessage)
                     this.emit('send_message', { numberOrId, answer, ctxMessage })
                 }
             }
-            await this.databaseClass.save({ ...ctxMessage, from: numberOrId })
+            await this.database.save({ ...ctxMessage, from: numberOrId })
 
             return Promise.resolve()
         } catch (err) {
             logger.log(`[ERROR ID (${ctxMessage.ref})]: `, err)
             return Promise.reject()
-        }
-    }
-
-    /**
-     * @private
-     * @param {*} message
-     * @param {*} ref
-     */
-    continue = (message: null, ref = false) => {
-        const responde: any = this.flowClass.find(message, ref)
-        if (responde) {
-            this.providerClass.sendMessage(responde.answer)
-            this.databaseClass.saveLog(responde.answer)
-            this.continue(null, responde.ref)
         }
     }
 
@@ -671,5 +660,30 @@ class CoreClass extends EventEmitter {
         }
         return Promise.resolve
     }
+
+    /**
+     *
+     */
+    httpServer = (port: number) => {
+        this.provider.initHttpServer(port, this.dynamicBlacklist)
+    }
+
+    /**
+     *
+     * @param ctxPolka
+     * @returns
+     */
+    handleCtx = (
+        ctxPolka: (
+            bot:
+                | (Pick<typeof this.provider, 'sendMessage' | 'vendor'> & {
+                      provider: typeof this.provider
+                      blacklist: DynamicBlacklist
+                  })
+                | undefined,
+            req: any,
+            res: any
+        ) => Promise<void>
+    ) => this.provider.inHandleCtx(ctxPolka)
 }
 export { CoreClass }

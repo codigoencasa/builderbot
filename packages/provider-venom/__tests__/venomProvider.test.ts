@@ -108,7 +108,7 @@ test('busEvents - onMessage I should build the body suit for the guy imagen', as
 
 test('busEvents - onMessage I should build the body suit for the guy document', async () => {
     const payload: any = {
-        from: '+123456789',
+        from: '123456789',
         type: 'document',
     }
     venomProvider.emit = emitStub
@@ -119,7 +119,7 @@ test('busEvents - onMessage I should build the body suit for the guy document', 
 
 test('busEvents - onMessage I should build the body suit for the guy ptt', async () => {
     const payload: any = {
-        from: '+123456789',
+        from: '123456789',
         type: 'ptt',
     }
     venomProvider.emit = emitStub
@@ -131,7 +131,7 @@ test('busEvents - onMessage I should build the body suit for the guy ptt', async
 
 test('busEvents - onMessage I should build the body suit for the guy ptt', async () => {
     const payload: any = {
-        from: '+123456789',
+        from: '123456789',
         type: 'ptt',
     }
     venomProvider.emit = emitStub
@@ -143,7 +143,7 @@ test('busEvents - onMessage I should build the body suit for the guy ptt', async
 
 test('busEvents - onMessage I should build the bodysuit for the guy lat y lng', async () => {
     const payload: any = {
-        from: '+123456789',
+        from: '123456789',
         lat: '1224',
         lng: '1224',
     }
@@ -207,7 +207,7 @@ test('sendVideo    - should send sendVideoAsGif correctly', async () => {
 })
 
 test('sendMessage - should call the method sendButtons', async () => {
-    const to = '+123456789'
+    const to = '123456789'
     const message = 'Test message'
     const argWithButtons: SendOptions = {
         buttons: [{ body: 'Button1' }, { body: 'Button2' }],
@@ -221,7 +221,7 @@ test('sendMessage - should call the method sendButtons', async () => {
 })
 
 test('sendMessage - should call the method sendMedia', async () => {
-    const to = '+123456789'
+    const to = '123456789'
     const message = 'Test message'
     const argWithMedia: SendOptions = {
         media: 'image.jpg',
@@ -235,7 +235,7 @@ test('sendMessage - should call the method sendMedia', async () => {
 })
 
 test('sendMessage - should call the method sendText ', async () => {
-    const to = '+123456789'
+    const to = '123456789'
     const message = 'Test message'
     const argWithMedia: any = {}
     venomProvider.vendor.sendText = sendStub

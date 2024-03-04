@@ -1,12 +1,11 @@
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
-import { SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { BotCtxMiddleware, DynamicBlacklist, SendOptions } from '@bot-whatsapp/bot/dist/types'
 import { Console } from 'console'
 import { createWriteStream, readFileSync } from 'fs'
 import mime from 'mime-types'
 import WAWebJS, { Client, LocalAuth, MessageMedia, Buttons } from 'whatsapp-web.js'
 
 import { WebWhatsappHttpServer } from './server'
-import { BotCtxMiddleware } from './types'
 import { wwebCleanNumber, wwebGenerateImage, wwebIsValidNumber } from './utils'
 
 const logger = new Console({
@@ -60,10 +59,11 @@ class WebWhatsappProvider extends ProviderClass {
      *
      * @param port
      */
-    initHttpServer(port: number) {
-        const methods: BotCtxMiddleware = {
+    initHttpServer = (port: number, blacklist?: DynamicBlacklist) => {
+        const methods: BotCtxMiddleware<WebWhatsappProvider> = {
             sendMessage: this.sendMessage,
             provider: this.vendor,
+            blacklist,
         }
         this.http.start(methods, port)
     }

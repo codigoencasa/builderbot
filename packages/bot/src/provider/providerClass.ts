@@ -1,4 +1,5 @@
 import { EventEmitter } from 'node:events'
+import { DynamicBlacklist } from '../types'
 
 export type Vendor<T = {}> = {} & T
 
@@ -24,6 +25,44 @@ class ProviderClass extends EventEmitter {
 
     public getInstance(): Vendor {
         return this.vendor
+    }
+
+    public inHandleCtx = <T extends Pick<any, 'sendMessage' | 'vendor'> & { provider: any }>(
+        ctxPolka: (bot: T | undefined, req: any, res: any) => Promise<void>
+    ) => {
+        const responseError = (res: any) => {
+            const jsonRaw = {
+                error: `You must first log in by scanning the qr code to be able to use this functionality.`,
+                docs: `https://builderbot.vercel.app/errors`,
+                code: `100`,
+            }
+            console.log(jsonRaw)
+            res.writeHead(400, { 'Content-Type': 'application/json' })
+            const jsonBody = JSON.stringify(jsonRaw)
+            return res.end(jsonBody)
+        }
+
+        return (req: any, res: any) => {
+            const bot: T | undefined = req['id-ctx-bot'] ?? undefined
+            try {
+                ctxPolka(bot, req, res).catch(() => responseError(res))
+            } catch (err) {
+                const jsonRaw = {
+                    error: `You must first log in by scanning the qr code to be able to use this functionality.`,
+                    docs: `https://builderbot.vercel.app/errors`,
+                    code: `100`,
+                }
+                console.log(jsonRaw)
+                res.writeHead(400, { 'Content-Type': 'application/json' })
+                const jsonBody = JSON.stringify(jsonRaw)
+                return res.end(jsonBody)
+            }
+        }
+    }
+
+    public initHttpServer = (port: number, blacklist?: DynamicBlacklist) => {
+        console.log(`Ups it is provider initHttpServer ${port}`, blacklist)
+        return
     }
 }
 

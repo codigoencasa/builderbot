@@ -73,7 +73,7 @@ test('sendtext - should correctly call sendMessageMeta with the message body', a
             body: message,
         },
     }
-    await metaProvider.sendtext(to, message)
+    await metaProvider.sendText(to, message)
     assert.ok(sendMessageMetaStub.calledWith(expectedBody))
     sendMessageMetaStub.restore()
 })

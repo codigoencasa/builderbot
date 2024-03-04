@@ -6,9 +6,9 @@ import { EventEmitter } from 'node:events'
 import { join } from 'path'
 import polka, { type Polka } from 'polka'
 
-import { BaileysProvider } from './bailey'
+import type { BaileysProvider } from './bailey'
 
-const idCtxBot = 'ctx-bot'
+const idCtxBot = 'id-ctx-bot'
 const idBotName = 'id-bot'
 
 class BaileyHttpServer extends EventEmitter {
@@ -76,18 +76,17 @@ class BaileyHttpServer extends EventEmitter {
 
 /**
  *
- * @param ctxPolka
+ * @param inHandleCtx
  * @returns
  */
-const handleCtx =
+const inHandleCtx =
     <T extends Pick<BaileysProvider, 'sendMessage' | 'vendor'> & { provider: WASocket }>(
-        ctxPolka: (bot: T | undefined, req: any, res: any) => void
+        ctxPolka: (bot: T | undefined, req: any, res: any) => Promise<void>
     ) =>
     (req: any, res: any) => {
         const bot: T | undefined = req[idCtxBot] ?? undefined
-        try {
-            ctxPolka(bot, req, res)
-        } catch (err) {
+
+        const responseError = (res: any) => {
             const jsonRaw = {
                 error: `You must first log in by scanning the qr code to be able to use this functionality.`,
                 docs: `https://builderbot.vercel.app/errors`,
@@ -98,6 +97,12 @@ const handleCtx =
             const jsonBody = JSON.stringify(jsonRaw)
             return res.end(jsonBody)
         }
+
+        try {
+            ctxPolka(bot, req, res).catch(() => responseError(res))
+        } catch (err) {
+            return responseError(res)
+        }
     }
 
-export { BaileyHttpServer, handleCtx }
+export { BaileyHttpServer, inHandleCtx }

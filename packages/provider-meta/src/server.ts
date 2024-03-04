@@ -6,6 +6,7 @@ import Queue from 'queue-promise'
 
 import { Message } from './types'
 import { getProfile, processIncomingMessage } from './utils'
+import type { MetaProvider } from './metaProvider'
 
 const idCtxBot = 'ctx-bot'
 class MetaWebHookServer extends EventEmitter {
@@ -172,4 +173,35 @@ class MetaWebHookServer extends EventEmitter {
     }
 }
 
-export { MetaWebHookServer }
+/**
+ *
+ * @param inHandleCtx
+ * @returns
+ */
+const inHandleCtx =
+    <T extends Pick<MetaProvider, 'sendMessage' | 'vendor'> & { provider: MetaProvider }>(
+        ctxPolka: (bot: T | undefined, req: any, res: any) => Promise<void>
+    ) =>
+    (req: any, res: any) => {
+        const bot: T | undefined = req[idCtxBot] ?? undefined
+
+        const responseError = (res: any) => {
+            const jsonRaw = {
+                error: `You must first log in by scanning the qr code to be able to use this functionality.`,
+                docs: `https://builderbot.vercel.app/errors`,
+                code: `100`,
+            }
+            console.log(jsonRaw)
+            res.writeHead(400, { 'Content-Type': 'application/json' })
+            const jsonBody = JSON.stringify(jsonRaw)
+            return res.end(jsonBody)
+        }
+
+        try {
+            ctxPolka(bot, req, res).catch(() => responseError(res))
+        } catch (err) {
+            return responseError(res)
+        }
+    }
+
+export { MetaWebHookServer, inHandleCtx }

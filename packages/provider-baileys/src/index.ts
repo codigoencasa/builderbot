@@ -1,4 +1,4 @@
-import { handleCtx } from './server'
+import { inHandleCtx } from './server'
 
 export * from './bailey'
-export { handleCtx }
+export { inHandleCtx }

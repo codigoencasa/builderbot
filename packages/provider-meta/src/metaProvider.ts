@@ -1,5 +1,5 @@
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
-import { BotContext, BotCtxMiddleware, SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { BotContext, BotCtxMiddleware, DynamicBlacklist, SendOptions } from '@bot-whatsapp/bot/dist/types'
 import axios from 'axios'
 import FormData from 'form-data'
 import { createReadStream } from 'fs'
@@ -45,11 +45,12 @@ class MetaProvider extends ProviderClass {
         })
     }
 
-    initHttpServer(port: number) {
+    initHttpServer = (port: number, blacklist?: DynamicBlacklist) => {
         this.http = new MetaWebHookServer(this.jwtToken, this.numberId, this.version, this.verifyToken, port)
-        const methods: BotCtxMiddleware = {
+        const methods: BotCtxMiddleware<MetaProvider> = {
             sendMessage: this.sendMessage,
             provider: this.vendor,
+            blacklist,
         }
         this.http.start(methods, port)
     }
@@ -112,7 +113,7 @@ class MetaProvider extends ProviderClass {
         }
     }
 
-    sendtext = async (to: string, message: string) => {
+    sendText = async (to: string, message: string) => {
         const body: TextMessageBody = {
             messaging_product: 'whatsapp',
             recipient_type: 'individual',
@@ -551,7 +552,7 @@ class MetaProvider extends ProviderClass {
         if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
         if (options?.media) return this.sendMedia(number, message, options.media)
 
-        this.sendtext(number, message)
+        this.sendText(number, message)
     }
 
     /**

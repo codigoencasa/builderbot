@@ -1,25 +1,29 @@
-interface Context {
-    from: string
-    keyword: string
-    answer: string
-}
+// export type Context = {
+//     from: string
+//     keyword: string
+//     answer: string
+//     ref?: string
+//     refSerialize?: string
+//     _id?: string
+//     options: { [key: string]: any }
+// }
 
-class MemoryDBClass {
-    public listHistory: Context[] = []
+class MemoryDB {
+    public listHistory: any[] = []
 
     constructor() {}
 
-    getPrevByNumber(from: string): Context | undefined {
+    async getPrevByNumber(from: string): Promise<any> {
         const history = this.listHistory
             .slice()
             .reverse()
-            .filter((i): i is Context & { keyword: string } => !!i.keyword)
+            .filter((i) => !!i.keyword)
         return history.find((a) => a.from === from)
     }
 
-    save(ctx: Context): void {
+    async save(ctx: any): Promise<void> {
         this.listHistory.push(ctx)
     }
 }
 
-export { MemoryDBClass }
+export { MemoryDB }

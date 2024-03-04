@@ -7,7 +7,7 @@ import polka, { Polka } from 'polka'
 import { WebWhatsappProvider } from '.'
 import { BotCtxMiddleware } from './types'
 
-const idCtxBot = 'ctx-bot'
+const idCtxBot = 'id-ctx-bot'
 const idBotName = 'id-bot'
 
 export class WebWhatsappHttpServer extends EventEmitter {
@@ -78,18 +78,17 @@ export class WebWhatsappHttpServer extends EventEmitter {
 
 /**
  *
- * @param ctxPolka
+ * @param inHandleCtx
  * @returns
  */
-export const handleCtx =
+export const inHandleCtx =
     <T extends Pick<WebWhatsappProvider, 'sendMessage' | 'vendor'> & { provider: WebWhatsappProvider }>(
-        ctxPolka: (bot: T | undefined, req: any, res: any) => void
+        ctxPolka: (bot: T | undefined, req: any, res: any) => Promise<void>
     ) =>
     (req: any, res: any) => {
         const bot: T | undefined = req[idCtxBot] ?? undefined
-        try {
-            ctxPolka(bot, req, res)
-        } catch (err) {
+
+        const responseError = (res: any) => {
             const jsonRaw = {
                 error: `You must first log in by scanning the qr code to be able to use this functionality.`,
                 docs: `https://builderbot.vercel.app/errors`,
@@ -99,5 +98,11 @@ export const handleCtx =
             res.writeHead(400, { 'Content-Type': 'application/json' })
             const jsonBody = JSON.stringify(jsonRaw)
             return res.end(jsonBody)
+        }
+
+        try {
+            ctxPolka(bot, req, res).catch(() => responseError(res))
+        } catch (err) {
+            return responseError(res)
         }
     }
