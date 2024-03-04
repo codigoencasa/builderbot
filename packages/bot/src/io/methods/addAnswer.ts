@@ -1,6 +1,13 @@
 import { addChild } from './addChild'
 import { toJson } from './toJson'
-import { TCTXoptions, TContext, TFlow, CallbackFunction, Callbacks, ActionPropertiesKeyword } from '../../types'
+import {
+    TCTXoptions as TCTOptions,
+    TContext,
+    TFlow,
+    CallbackFunction,
+    Callbacks,
+    ActionPropertiesKeyword,
+} from '../../types'
 import flatObject from '../../utils/flattener'
 import { generateRef } from '../../utils/hash'
 
@@ -22,7 +29,7 @@ const _addAnswer =
         nested = nested ?? []
         answer = Array.isArray(answer) ? answer.join('\n') : answer
 
-        const getAnswerOptions = (): TCTXoptions => ({
+        const getAnswerOptions = (): TCTOptions => ({
             media: typeof options?.media === 'string' ? options.media : undefined,
             buttons: Array.isArray(options?.buttons) ? options.buttons : [],
             capture: typeof options?.capture === 'boolean' ? options.capture : false,

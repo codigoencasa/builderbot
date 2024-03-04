@@ -92,7 +92,9 @@ class CoreClass<P extends ProviderClass, D extends MemoryDB> extends EventEmitte
         },
         {
             event: 'message',
-            func: (msg: MessageContextIncoming) => this.handleMsg(msg),
+            func: (msg: MessageContextIncoming) => {
+                return this.handleMsg({ ...msg, host: `${this.generalArgs?.host}` })
+            },
         },
         {
             event: 'host',
@@ -104,10 +106,10 @@ class CoreClass<P extends ProviderClass, D extends MemoryDB> extends EventEmitte
         this.generalArgs.host = hostNumber.phone
     }
 
-    handleMsg = async (messageCtxInComming: MessageContextIncoming) => {
-        logger.log(`[handleMsg]: `, messageCtxInComming)
-        idleForCallback.stop(messageCtxInComming)
-        const { body, from } = messageCtxInComming
+    handleMsg = async (messageCtxInComing: MessageContextIncoming) => {
+        logger.log(`[handleMsg]: `, messageCtxInComing)
+        idleForCallback.stop(messageCtxInComing)
+        const { body, from } = messageCtxInComing
         let msgToSend = []
         let endFlowFlag = false
         const fallBackFlag = false
@@ -129,11 +131,11 @@ class CoreClass<P extends ProviderClass, D extends MemoryDB> extends EventEmitte
 
         // 📄 Mantener estado de conversacion por numero
         const state = {
-            getMyState: this.stateHandler.getMyState(messageCtxInComming.from),
-            get: this.stateHandler.get(messageCtxInComming.from),
+            getMyState: this.stateHandler.getMyState(messageCtxInComing.from),
+            get: this.stateHandler.get(messageCtxInComing.from),
             // getAllState: this.stateHandler.getAllState,
-            update: this.stateHandler.updateState(messageCtxInComming),
-            clear: this.stateHandler.clear(messageCtxInComming.from),
+            update: this.stateHandler.updateState(messageCtxInComing),
+            clear: this.stateHandler.clear(messageCtxInComing.from),
         }
 
         // 📄 Mantener estado global
@@ -223,7 +225,7 @@ class CoreClass<P extends ProviderClass, D extends MemoryDB> extends EventEmitte
             const { ref: prevRef, options: prevOptions } = options.prev || {}
             const { capture, idle } = prevOptions || {}
 
-            if (messageCtxInComming?.ref && idleCtxQueue && messageToSend.length) {
+            if (messageCtxInComing?.ref && idleCtxQueue && messageToSend.length) {
                 return
             }
 
@@ -499,13 +501,13 @@ class CoreClass<P extends ProviderClass, D extends MemoryDB> extends EventEmitte
 
             const runContext = async (continueAfterIdle = false, overCtx: any = {}) => {
                 try {
-                    messageCtxInComming = { ...messageCtxInComming, ...overCtx }
+                    messageCtxInComing = { ...messageCtxInComing, ...overCtx }
 
                     if (options?.idleCtx && !options?.triggerKey) {
                         return
                     }
 
-                    await this.flowClass.allCallbacks[inRef](messageCtxInComming, argsCb)
+                    await this.flowClass.allCallbacks[inRef](messageCtxInComing, argsCb)
                     //Si no hay llamado de fallaback y no hay llamado de flowDynamic y no hay llamado de enflow EL flujo continua
                     if (continueAfterIdle) {
                         idleForCallback.stop({ from })

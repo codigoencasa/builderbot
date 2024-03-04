@@ -211,34 +211,34 @@ class BaileysProvider extends ProviderClass {
                     if (typeof degreesLatitude === 'number' && typeof degreesLongitude === 'number') {
                         payload = {
                             ...payload,
-                            body: utils.generateRefprovider('_event_location_'),
+                            body: utils.generateRefProvider('_event_location_'),
                         }
                     }
                 }
 
                 //Detectar video
                 if (messageCtx.message?.videoMessage) {
-                    payload = { ...payload, body: utils.generateRefprovider('_event_media_') }
+                    payload = { ...payload, body: utils.generateRefProvider('_event_media_') }
                 }
 
                 //Detectar Sticker
                 if (messageCtx.message?.stickerMessage) {
-                    payload = { ...payload, body: utils.generateRefprovider('_event_media_') }
+                    payload = { ...payload, body: utils.generateRefProvider('_event_media_') }
                 }
 
                 //Detectar media
                 if (messageCtx.message?.imageMessage) {
-                    payload = { ...payload, body: utils.generateRefprovider('_event_media_') }
+                    payload = { ...payload, body: utils.generateRefProvider('_event_media_') }
                 }
 
                 //Detectar file
                 if (messageCtx.message?.documentMessage) {
-                    payload = { ...payload, body: utils.generateRefprovider('_event_document_') }
+                    payload = { ...payload, body: utils.generateRefProvider('_event_document_') }
                 }
 
                 //Detectar voice note
                 if (messageCtx.message?.audioMessage) {
-                    payload = { ...payload, body: utils.generateRefprovider('_event_voice_note_') }
+                    payload = { ...payload, body: utils.generateRefProvider('_event_voice_note_') }
                 }
 
                 if (payload.from === 'status@broadcast') return

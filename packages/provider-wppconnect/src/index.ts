@@ -104,19 +104,19 @@ class WPPConnectProvider extends ProviderClass {
                 payload.name = `${payload?.author}`
 
                 if (payload.hasOwnProperty('type') && ['image', 'video'].includes(payload.type)) {
-                    payload = { ...payload, body: utils.generateRefprovider('_event_media_') }
+                    payload = { ...payload, body: utils.generateRefProvider('_event_media_') }
                 }
                 if (payload.hasOwnProperty('type') && ['document'].includes(payload.type)) {
-                    payload = { ...payload, body: utils.generateRefprovider('_event_document_') }
+                    payload = { ...payload, body: utils.generateRefProvider('_event_document_') }
                 }
                 if (payload.hasOwnProperty('type') && ['ptt'].includes(payload.type)) {
-                    payload = { ...payload, body: utils.generateRefprovider('_event_voice_note_') }
+                    payload = { ...payload, body: utils.generateRefProvider('_event_voice_note_') }
                 }
                 if (payload.hasOwnProperty('lat') && payload.hasOwnProperty('lng')) {
                     const lat = payload.lat
                     const lng = payload.lng
                     if (lat !== '' && lng !== '') {
-                        payload = { ...payload, body: utils.generateRefprovider('_event_location_') }
+                        payload = { ...payload, body: utils.generateRefProvider('_event_location_') }
                     }
                 }
                 // Emitir el evento "message" con el payload modificado

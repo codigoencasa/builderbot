@@ -5,20 +5,12 @@ Nos alegra que estés interesado en colaborar en nuestro proyecto. Para hacerlo,
 
 También agradecemos los aportes económicos, que utilizaremos para diversos fines relacionados con el desarrollo y mantenimiento del proyecto. Puedes ver más detalles aquí: __[ver más](https://opencollective.com/bot-whatsapp)__
 
-El lenguaje principal que usamos en este proyecto es __JavaScript__, para que las personas que están comenzando a programar puedan entenderlo más fácilmente.
-
-### 💡 Preguntas frecuentes
-- ¿Cómo puedo hacer aportaciones de código en el proyecto?: [Ver Video](https://youtu.be/Lxt8Acob6aU)
-- ¿Cómo ejecutar el entorno de pruebas?: [Ver Video](https://youtu.be/Mf9V-dloBfk)
-- ¿Cómo crear un nuevo proveedor?: [Ver Video](https://youtu.be/cahK9zH3SI8)
-- ¿Qué son los GithubActions?: [Ver Video](https://youtu.be/nYBEBFKLiqw)
-- ¿Canales de comunicación?: [Discord](https://link.codigoencasa.com/DISCORD)
 
 ------
 
 __Requisitos:__
 Para poder aportar al proyecto necesitarás tener:
-- Node v18 o superior. Puedes descargar Node aquí: __[descargar node](https://nodejs.org/es/download/)__
+- Node v20 o superior. Puedes descargar Node aquí: __[descargar node](https://nodejs.org/es/download/)__
 - __[pnpm](https://pnpm.io/cli/install)__ como administrador de paquetes. Puedes seguir el enlace para saber cómo instalarlo.
 - __[VSCode](https://code.visualstudio.com/download)__ es el editor de código que recomendamos, ya que cuenta con plugins útiles.
 - __[Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits&ssr=false#overview)__ es un plugin de VSCode que te ayudará a crear commits semánticos, siguiendo buenas prácticas.

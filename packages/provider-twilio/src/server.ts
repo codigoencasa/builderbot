@@ -38,6 +38,7 @@ class TwilioWebHookServer extends EventEmitter {
             ...req.body,
             from: parseNumber(body.From),
             to: parseNumber(body.To),
+            host: parseNumber(body.To),
             body: body.Body,
             name: `${body?.ProfileName}`,
         }
@@ -46,17 +47,17 @@ class TwilioWebHookServer extends EventEmitter {
             const type = body?.MediaContentType0.split('/')[0]
             switch (type) {
                 case 'audio':
-                    payload.body = utils.generateRefprovider('_event_voice_note_')
+                    payload.body = utils.generateRefProvider('_event_voice_note_')
                     break
                 case 'image':
                 case 'video':
-                    payload.body = utils.generateRefprovider('_event_media_')
+                    payload.body = utils.generateRefProvider('_event_media_')
                     break
                 case 'application':
-                    payload.body = utils.generateRefprovider('_event_document_')
+                    payload.body = utils.generateRefProvider('_event_document_')
                     break
                 case 'text':
-                    payload.body = utils.generateRefprovider('_event_contacts_')
+                    payload.body = utils.generateRefProvider('_event_contacts_')
                     break
                 default:
                     // Lógica para manejar tipos de mensajes no reconocidos
@@ -64,7 +65,7 @@ class TwilioWebHookServer extends EventEmitter {
             }
         } else {
             if (body.Latitude && body.Longitude) {
-                payload.body = utils.generateRefprovider('_event_location_')
+                payload.body = utils.generateRefProvider('_event_location_')
             }
         }
 
@@ -124,7 +125,8 @@ class TwilioWebHookServer extends EventEmitter {
             console.log(`[Twilio]: Más información en la documentación`)
             console.log(``)
         })
-        this.emit('ready')
+
+        this.emit('ready', true)
     }
 
     stop(): Promise<void> {

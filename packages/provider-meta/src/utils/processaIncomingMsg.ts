@@ -58,7 +58,7 @@ export const processIncomingMessage = async ({
                 from: message.from,
                 url: imageUrl,
                 to,
-                body: utils.generateRefprovider('_event_media_'),
+                body: utils.generateRefProvider('_event_media_'),
                 pushName,
                 name: pushName,
             }
@@ -71,7 +71,7 @@ export const processIncomingMessage = async ({
                 from: message.from,
                 url: documentUrl,
                 to,
-                body: utils.generateRefprovider('_event_document_'),
+                body: utils.generateRefProvider('_event_document_'),
                 pushName,
                 name: pushName,
             }
@@ -84,7 +84,7 @@ export const processIncomingMessage = async ({
                 from: message.from,
                 url: videoUrl,
                 to,
-                body: utils.generateRefprovider('_event_media_'),
+                body: utils.generateRefProvider('_event_media_'),
                 pushName,
                 name: pushName,
             }
@@ -97,7 +97,7 @@ export const processIncomingMessage = async ({
                 to,
                 latitude: message.location.latitude,
                 longitude: message.location.longitude,
-                body: utils.generateRefprovider('_event_location_'),
+                body: utils.generateRefProvider('_event_location_'),
                 pushName,
                 name: pushName,
             }
@@ -110,7 +110,7 @@ export const processIncomingMessage = async ({
                 from: message.from,
                 url: audioUrl,
                 to,
-                body: utils.generateRefprovider('_event_audio_'),
+                body: utils.generateRefProvider('_event_audio_'),
                 pushName,
                 name: pushName,
             }
@@ -122,7 +122,7 @@ export const processIncomingMessage = async ({
                 from: message.from,
                 to,
                 id: message.sticker.id,
-                body: utils.generateRefprovider('_event_media_'),
+                body: utils.generateRefProvider('_event_media_'),
                 pushName,
                 name: pushName,
             }
@@ -139,7 +139,7 @@ export const processIncomingMessage = async ({
                     },
                 ],
                 to,
-                body: utils.generateRefprovider('_event_contacts_'),
+                body: utils.generateRefProvider('_event_contacts_'),
                 pushName,
                 name: pushName,
             }
@@ -154,7 +154,7 @@ export const processIncomingMessage = async ({
                     catalog_id: message.order.catalog_id,
                     product_items: message.order.product_items,
                 },
-                body: utils.generateRefprovider('_event_order_'),
+                body: utils.generateRefProvider('_event_order_'),
                 pushName,
                 name: pushName,
             }

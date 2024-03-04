@@ -7,11 +7,11 @@ import { Message } from '../src/types'
 
 const mockedProvider = 'mocked-ref-provider'
 const utilsMock = {
-    generateRefprovider: stub().returns(mockedProvider),
+    generateRefProvider: stub().returns(mockedProvider),
 }
 
 test.before.each(() => {
-    utilsMock.generateRefprovider.resetHistory()
+    utilsMock.generateRefProvider.resetHistory()
 })
 
 const getMediaUrlStub = stub().resolves('mocked-image-url')

@@ -115,19 +115,19 @@ class WebWhatsappProvider extends ProviderClass {
                 payload.name = `${payload?.author}`
 
                 if (payload?._data?.lat && payload?._data?.lng) {
-                    payload = { ...payload, body: utils.generateRefprovider('_event_location_') }
+                    payload = { ...payload, body: utils.generateRefProvider('_event_location_') }
                 }
 
                 if (payload._data.hasOwnProperty('type') && ['image', 'video'].includes(payload._data.type)) {
-                    payload = { ...payload, body: utils.generateRefprovider('_event_media_') }
+                    payload = { ...payload, body: utils.generateRefProvider('_event_media_') }
                 }
 
                 if (payload._data.hasOwnProperty('type') && ['document'].includes(payload._data.type)) {
-                    payload = { ...payload, body: utils.generateRefprovider('_event_document_') }
+                    payload = { ...payload, body: utils.generateRefProvider('_event_document_') }
                 }
 
                 if (payload._data.hasOwnProperty('type') && ['ptt'].includes(payload._data.type)) {
-                    payload = { ...payload, body: utils.generateRefprovider('_event_voice_note_') }
+                    payload = { ...payload, body: utils.generateRefProvider('_event_voice_note_') }
                 }
 
                 this.emit('message', payload)

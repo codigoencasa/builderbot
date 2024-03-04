@@ -3,7 +3,7 @@ import * as assert from 'uvu/assert'
 
 import { clear, delay, setup } from '../../__mock__/env'
 import { EVENTS, addKeyword, createBot, createFlow } from '../../src'
-import { generateRefprovider } from '../../src/utils'
+import { generateRefProvider } from '../../src/utils'
 
 const testSuite = suite('Flujo: enviando eventos')
 
@@ -22,7 +22,7 @@ testSuite(`Responder a "EVENTS.LOCATION"`, async (context) => {
 
     await provider.delaySendMessage(0, 'message', {
         from: '000',
-        body: generateRefprovider('_event_location_'),
+        body: generateRefProvider('_event_location_'),
     })
 
     await delay(200)

@@ -3,7 +3,7 @@ import * as assert from 'uvu/assert'
 
 import { setup, clear } from '../../__mock__/env'
 import { addKeyword, createBot, createFlow, EVENTS } from '../../src'
-import { delay, generateRefprovider } from '../../src/utils'
+import { delay, generateRefProvider } from '../../src/utils'
 
 const suiteCase = suite('EVENTS:')
 
@@ -41,7 +41,7 @@ suiteCase(`MEDIA`, async ({ database, provider }) => {
 
     await provider.delaySendMessage(0, 'message', {
         from: '000',
-        body: generateRefprovider('_event_media_'),
+        body: generateRefProvider('_event_media_'),
     })
     await delay(100)
     const getHistory = database.listHistory.map((i) => i.answer)
@@ -60,7 +60,7 @@ suiteCase(`LOCATION`, async ({ database, provider }) => {
 
     await provider.delaySendMessage(0, 'message', {
         from: '000',
-        body: generateRefprovider('_event_location_'),
+        body: generateRefProvider('_event_location_'),
     })
     await delay(100)
     const getHistory = database.listHistory.map((i) => i.answer)
@@ -79,7 +79,7 @@ suiteCase(`DOCUMENT`, async ({ database, provider }) => {
 
     await provider.delaySendMessage(0, 'message', {
         from: '000',
-        body: generateRefprovider('_event_document_'),
+        body: generateRefProvider('_event_document_'),
     })
     await delay(100)
     const getHistory = database.listHistory.map((i) => i.answer)
@@ -98,7 +98,7 @@ suiteCase(`VOICE_NOTE`, async ({ database, provider }) => {
 
     await provider.delaySendMessage(0, 'message', {
         from: '000',
-        body: generateRefprovider('_event_voice_note_'),
+        body: generateRefProvider('_event_voice_note_'),
     })
     await delay(100)
     const getHistory = database.listHistory.map((i) => i.answer)

@@ -47,7 +47,7 @@ const generateRefSerialize = ({
  * @param prefix - Prefijo opcional para el UUID
  * @returns Un UUID único, opcionalmente con prefijo
  */
-const generateRefprovider = (prefix?: string): string => {
+const generateRefProvider = (prefix?: string): string => {
     const id: string = randomUUID()
     return prefix ? `${prefix}_${id}` : id
 }
@@ -78,4 +78,4 @@ const decryptData = (encryptedData: string): string => {
     }
 }
 
-export { generateRef, generateRefSerialize, generateTime, generateRefprovider, encryptData, decryptData }
+export { generateRef, generateRefSerialize, generateTime, generateRefProvider, encryptData, decryptData }
