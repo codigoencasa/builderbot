@@ -4,9 +4,9 @@ import { EventEmitter } from 'node:events'
 import polka, { Polka } from 'polka'
 import Queue from 'queue-promise'
 
+import type { MetaProvider } from './metaProvider'
 import { Message } from './types'
 import { getProfile, processIncomingMessage } from './utils'
-import type { MetaProvider } from './metaProvider'
 
 const idCtxBot = 'ctx-bot'
 class MetaWebHookServer extends EventEmitter {

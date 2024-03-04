@@ -1,18 +1,18 @@
-import { DynamicBlacklist } from './../types'
 import { Console } from 'console'
 import { createWriteStream } from 'fs'
 import { EventEmitter } from 'node:events'
 
+import { DynamicBlacklist } from './../types'
 import { GlobalState, IdleState, SingleState } from '../context'
+import { MemoryDB } from '../db'
 import { LIST_REGEX } from '../io/events'
 import FlowClass from '../io/flowClass'
 import { toCtx } from '../io/methods'
+import { ProviderClass } from '../provider'
 import { FlowDynamicMessage, GeneralArgs, MessageContextIncoming } from '../types'
 import { BlackList, Queue } from '../utils'
 import { delay } from '../utils/delay'
 import { printer } from '../utils/interactive'
-import { ProviderClass } from '../provider'
-import { MemoryDB } from '../db'
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),

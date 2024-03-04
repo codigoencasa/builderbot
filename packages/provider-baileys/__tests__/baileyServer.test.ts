@@ -1,6 +1,6 @@
-import * as assert from 'uvu/assert'
 import sinon from 'sinon'
 import { test } from 'uvu'
+import * as assert from 'uvu/assert'
 
 import { BaileyHttpServer, inHandleCtx } from '../src/server'
 

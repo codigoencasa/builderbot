@@ -6,9 +6,9 @@ import { EventEmitter } from 'node:events'
 import { existsSync, createReadStream } from 'node:fs'
 import polka, { Middleware, Polka } from 'polka'
 
+import type { TwilioProvider } from './'
 import { TwilioRequestBody, TwilioPayload } from './types'
 import { parseNumber } from './utils'
-import type { TwilioProvider } from './'
 
 const idCtxBot = 'ctx-bot'
 

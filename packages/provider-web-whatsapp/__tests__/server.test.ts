@@ -1,6 +1,6 @@
-import * as assert from 'uvu/assert'
 import sinon, { spy, stub } from 'sinon'
 import { test } from 'uvu'
+import * as assert from 'uvu/assert'
 
 import { WebWhatsappHttpServer, inHandleCtx } from '../src/server'
 

@@ -1,4 +1,5 @@
 import { EventEmitter } from 'node:events'
+
 import { DynamicBlacklist } from '../types'
 
 export type Vendor<T = {}> = {} & T
