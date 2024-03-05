@@ -3,8 +3,8 @@ import * as assert from 'uvu/assert'
 
 import { setup, clear, parseAnswers } from '../../__mock__/env'
 import { addKeyword, createBot, createFlow, EVENTS, MemoryDB } from '../../src'
-import { delay } from '../../src/utils'
 import { ProviderMock } from '../../src/provider/providerMock'
+import { delay } from '../../src/utils'
 
 const fakeHTTP = async (fakeData: string[] = []) => {
     await delay(50)
