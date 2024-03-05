@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/lerna/schemas/lerna-schema.json",
-  "version": "0.1.3-alpha.20",
+  "version": "0.1.3-alpha.21",
   "packages": [
     "packages/bot",
     "packages/create-bot-whatsapp",
