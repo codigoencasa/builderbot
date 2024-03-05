@@ -29,9 +29,9 @@
 - [x] handleCtx twilio / meta
 - [x] revisar el fallBack
 - [x] numero host en el ctx twilio / meta
-- [ ] Cambiar todos los mensajes a ingles
+- [x] https://discord.com/channels/915193197645402142/1089893256260759553/1213299228605153290
 - [ ] https://docs.google.com/document/d/1yO-okdcl2BJA_1wYvZRd5C-V5xs9QVlqcDRdDwz47t0/edit#heading=h.twmsbd7b8ybt
-- [ ] https://discord.com/channels/915193197645402142/1089893256260759553/1213299228605153290
+- [ ] Cambiar todos los mensajes a ingles
 - [ ] hacer pruebas con npm
 - [ ] cambiar el CONTRIBUTING.md
 - [ ] cambiar mensajes a ingles

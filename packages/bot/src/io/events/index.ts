@@ -1,4 +1,5 @@
 import { eventAction } from './eventAction'
+import { REGEX_EVENT_CUSTOM } from './eventCustom'
 import { eventDocument, REGEX_EVENT_DOCUMENT } from './eventDocument'
 import { eventLocation, REGEX_EVENT_LOCATION } from './eventLocation'
 import { eventMedia, REGEX_EVENT_MEDIA } from './eventMedia'
@@ -29,6 +30,7 @@ const LIST_REGEX: EventFunctionRegex = {
     REGEX_EVENT_VOICE_NOTE,
     REGEX_EVENT_ORDER,
     REGEX_EVENT_TEMPLATE,
+    REGEX_EVENT_CUSTOM,
 }
 
 export { LIST_ALL, LIST_REGEX }

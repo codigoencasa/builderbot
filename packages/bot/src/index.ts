@@ -13,7 +13,7 @@ import * as utils from './utils'
  */
 const createBot = async <P extends ProviderClass = any, D extends MemoryDB = any>(
     { flow, database, provider }: { flow: FlowClass; database: D; provider: P },
-    args?: GeneralArgs
+    args?: Omit<GeneralArgs, 'listEvents'>
 ): Promise<CoreClass<P, D>> => {
     const defaultArgs: GeneralArgs = {
         blackList: [],
@@ -27,7 +27,10 @@ const createBot = async <P extends ProviderClass = any, D extends MemoryDB = any
         },
     }
 
-    const combinedArgs: GeneralArgs = { ...defaultArgs, ...args }
+    const combinedArgs: GeneralArgs = {
+        ...defaultArgs,
+        ...args,
+    }
     return new CoreClass<P, D>(flow, database, provider, combinedArgs)
 }
 

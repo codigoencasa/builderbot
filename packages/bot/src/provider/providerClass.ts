@@ -1,6 +1,6 @@
 import { EventEmitter } from 'node:events'
 
-import { DynamicBlacklist } from '../types'
+import { BotCtxMiddlewareOptions } from '../types'
 
 export type Vendor<T = {}> = {} & T
 
@@ -61,8 +61,14 @@ class ProviderClass extends EventEmitter {
         }
     }
 
-    public initHttpServer = (port: number, blacklist?: DynamicBlacklist) => {
-        console.log(`Ups it is provider initHttpServer ${port}`, blacklist)
+    /**
+     *
+     * @param port
+     * @param blacklist
+     * @returns
+     */
+    public initHttpServer = (port: number, opts: Pick<BotCtxMiddlewareOptions, 'blacklist'>) => {
+        console.log(`Ups it is provider initHttpServer ${port}`, opts)
         return
     }
 }

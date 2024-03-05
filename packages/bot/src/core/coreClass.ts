@@ -2,7 +2,7 @@ import { Console } from 'console'
 import { createWriteStream } from 'fs'
 import { EventEmitter } from 'node:events'
 
-import { DynamicBlacklist } from './../types'
+import { DispatchFn, DynamicBlacklist } from './../types'
 import { GlobalState, IdleState, SingleState } from '../context'
 import { MemoryDB } from '../db'
 import { LIST_REGEX } from '../io/events'
@@ -665,7 +665,9 @@ class CoreClass<P extends ProviderClass, D extends MemoryDB> extends EventEmitte
      *
      */
     httpServer = (port: number) => {
-        this.provider.initHttpServer(port, this.dynamicBlacklist)
+        this.provider.initHttpServer(port, {
+            blacklist: this.dynamicBlacklist,
+        })
     }
 
     /**
@@ -679,6 +681,7 @@ class CoreClass<P extends ProviderClass, D extends MemoryDB> extends EventEmitte
                 | (Pick<typeof this.provider, 'sendMessage' | 'vendor'> & {
                       provider: typeof this.provider
                       blacklist: DynamicBlacklist
+                      dispatch: DispatchFn
                   })
                 | undefined,
             req: any,

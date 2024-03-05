@@ -6,6 +6,8 @@ import type { IdleState } from './context'
 import { ProviderClass } from './provider'
 import type { Queue } from './utils'
 
+export type CustomNameEvent = string
+
 export type GeneralArgs = {
     blackList?: string[]
     listEvents?: Record<string, any>
@@ -230,4 +232,18 @@ export interface SendOptions {
     [key: string]: any
 }
 
-export type BotCtxMiddleware<P = ProviderClass> = Partial<P & { provider: any; blacklist: DynamicBlacklist }>
+export type DispatchFn = (
+    customName: string,
+    payload: {
+        from: string
+        name: string
+    }
+) => any
+
+export type BotCtxMiddlewareOptions = {
+    provider: any
+    blacklist: DynamicBlacklist
+    dispatch: DispatchFn
+}
+
+export type BotCtxMiddleware<P = ProviderClass> = Partial<P & BotCtxMiddlewareOptions>

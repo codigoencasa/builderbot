@@ -77,5 +77,13 @@ const decryptData = (encryptedData: string): string => {
         return 'FAIL'
     }
 }
+/**
+ *
+ * @param prefix
+ * @returns
+ */
+const generateRegex = (prefix: string): RegExp => {
+    return new RegExp(`^${prefix}__[\\w\\d]{8}-(?:[\\w\\d]{4}-){3}[\\w\\d]{12}$`)
+}
 
-export { generateRef, generateRefSerialize, generateTime, generateRefProvider, encryptData, decryptData }
+export { generateRef, generateRefSerialize, generateTime, generateRegex, generateRefProvider, encryptData, decryptData }
