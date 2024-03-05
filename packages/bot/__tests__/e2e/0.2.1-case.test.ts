@@ -1,7 +1,7 @@
 import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { setup, clear } from '../../__mock__/env'
+import { setup, clear, parseAnswers } from '../../__mock__/env'
 import { addKeyword, createBot, createFlow, EVENTS } from '../../src'
 import { delay } from '../../src/utils'
 
@@ -43,11 +43,11 @@ suiteCase(`Prevenir enviar mensaje luego de inactividad (2seg)`, async ({ databa
     })
 
     await delay(3000)
-    const getHistory = database.listHistory.map((i: { answer: any }) => i.answer)
-    assert.is('debes de responder antes de que transcurran 2 segundos (2000)', getHistory[0])
-    assert.is('mensaje al segundo', getHistory[1])
-    assert.is('gracias!', getHistory[2])
-    assert.is(undefined, getHistory[3])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is('debes de responder antes de que transcurran 2 segundos (2000)', history[0])
+    assert.is('mensaje al segundo', history[1])
+    assert.is('gracias!', history[2])
+    assert.is(undefined, history[3])
     bot.queuePrincipal.clearQueue('000')
 })
 
@@ -78,10 +78,10 @@ suiteCase(`Enviar mensaje luego de inactividad (2seg)`, async ({ database, provi
     })
 
     await delay(3000)
-    const getHistory = database.listHistory.map((i: { answer: any }) => i.answer)
-    assert.is('debes de responder antes de que transcurran 2 segundos (2000)', getHistory[0])
-    assert.is('Se cancelo por inactividad', getHistory[1])
-    assert.is(undefined, getHistory[2])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is('debes de responder antes de que transcurran 2 segundos (2000)', history[0])
+    assert.is('Se cancelo por inactividad', history[1])
+    assert.is(undefined, history[2])
     bot.queuePrincipal.clearQueue('000')
 })
 
@@ -132,17 +132,15 @@ suiteCase(`Enviar mensajes con ambos casos de idle`, async ({ database, provider
 
     await delay(15000)
 
-    const getHistory = database.listHistory.map((i: { answer: any }) => i.answer)
-    assert.is('Hola tienes 2 segundos para responder si no te pedire de nuevo otro dato', getHistory[0])
-    assert.is('Se cancelo por inactividad', getHistory[1])
-    assert.is('__call_action__', getHistory[2])
-    assert.is('__capture_only_intended__', getHistory[3])
-    assert.is('Empezemos de nuevo.', getHistory[4])
-    assert.is('Cual es el numero de orden? tienes dos segundos para responder...', getHistory[5])
-    assert.is('el numero es 444', getHistory[6])
-    assert.is('Ok el numero que escribiste es el numero es 444', getHistory[7])
-    assert.is('gracias!', getHistory[8])
-    assert.is(undefined, getHistory[9])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is('Hola tienes 2 segundos para responder si no te pedire de nuevo otro dato', history[0])
+    assert.is('Se cancelo por inactividad', history[1])
+    assert.is('Empezemos de nuevo.', history[2])
+    assert.is('Cual es el numero de orden? tienes dos segundos para responder...', history[3])
+    assert.is('el numero es 444', history[4])
+    assert.is('Ok el numero que escribiste es el numero es 444', history[5])
+    assert.is('gracias!', history[6])
+    assert.is(undefined, history[7])
     bot.queuePrincipal.clearQueue('000')
 })
 
@@ -180,13 +178,11 @@ suiteCase(`Enviar mensaje con gotoFlow anidados`, async ({ database, provider })
 
     await delay(5000)
 
-    const getHistory = database.listHistory.map((i: { answer: any }) => i.answer)
-    assert.is('Bievenido!', getHistory[0])
-    assert.is('__call_action__', getHistory[1])
-    assert.is('__call_action__', getHistory[2])
-    assert.is('Esto debe responderse en menos de 2 seg', getHistory[3])
-    assert.is('Chaooo paso el tiempo', getHistory[4])
-    assert.is(undefined, getHistory[5])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is('Bievenido!', history[0])
+    assert.is('Esto debe responderse en menos de 2 seg', history[1])
+    assert.is('Chaooo paso el tiempo', history[2])
+    assert.is(undefined, history[3])
     bot.queuePrincipal.clearQueue('000')
 })
 

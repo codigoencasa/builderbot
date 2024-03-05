@@ -1,7 +1,7 @@
 import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { clear, delay, setup } from '../../__mock__/env'
+import { clear, delay, parseAnswers, setup } from '../../__mock__/env'
 import { addKeyword, createBot, createFlow } from '../../src'
 
 const suiteCase = suite('Flujo: capture')
@@ -32,10 +32,12 @@ suiteCase(`Responder a "pregunta"`, async ({ database, provider }) => {
 
     await delay(100)
 
-    assert.is(['Hola como estas?', '¿Cual es tu edad?'].join('\n'), database.listHistory[0].answer)
-    assert.is('90', database.listHistory[1].answer)
-    assert.is('Gracias por tu respuesta', database.listHistory[2].answer)
-    assert.is(undefined, database.listHistory[3])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+
+    assert.is(['Hola como estas?', '¿Cual es tu edad?'].join('\n'), history[0])
+    assert.is('90', history[1])
+    assert.is('Gracias por tu respuesta', history[2])
+    assert.is(undefined, history[3])
 })
 
 suiteCase.run()

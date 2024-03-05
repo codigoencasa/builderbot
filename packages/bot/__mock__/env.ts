@@ -56,8 +56,13 @@ const clear = async (context: any): Promise<void> => {
  * @returns
  */
 const parseAnswers = (answers: any[]) => {
-    return answers
-    // return answers.filter((a) => !a.answer.includes('__call_action__') && !a.answer.includes('__goto_flow__') && !a.answer.includes('__capture_only_intended__'))
+    // return answers
+    return answers.filter(
+        (a) =>
+            !a.answer.includes('__call_action__') &&
+            !a.answer.includes('__goto_flow__') &&
+            !a.answer.includes('__capture_only_intended__')
+    )
 }
 
 const delay = (ms: number): Promise<void> => {

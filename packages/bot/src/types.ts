@@ -166,6 +166,7 @@ export interface TCTXoptions extends ActionPropertiesKeyword {
     nested?: any[]
     keyword?: string | string[] | {}
     callback?: boolean
+    answer?: string
 }
 
 /**
@@ -217,7 +218,8 @@ export interface TFlow<P = any, B = any> {
     ) => TFlow<P, B>
     addAction: (
         actionProps: ActionPropertiesGeneric | CallbackFunction<P, B>,
-        cb?: CallbackFunction<P, B>
+        cb?: CallbackFunction<P, B>,
+        nested?: TFlow<P, B> | TFlow<P, B>[] | null
     ) => TFlow<P, B>
     toJson: () => TContext[]
 }

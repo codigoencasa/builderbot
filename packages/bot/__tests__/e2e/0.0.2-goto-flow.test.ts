@@ -15,7 +15,7 @@ const fakeHTTP = async (fakeData: string, ms = 50) => {
 }
 
 testSuite('Debe saltar de flujo siguiente', async ({ database, provider }) => {
-    const userRegisteredFlow = addKeyword(['user_register'])
+    const userRegisteredFlow = addKeyword(EVENTS.ACTION)
         .addAnswer('Hola usuario registrado')
         .addAnswer('como estas usuario registrado')
 
@@ -23,13 +23,13 @@ testSuite('Debe saltar de flujo siguiente', async ({ database, provider }) => {
         .addAnswer('Buenas', null, async (_, { gotoFlow, flowDynamic }) => {
             await delay(10)
             await flowDynamic('Usuario registrado DEMO')
-            await gotoFlow(userRegisteredFlow)
+            return gotoFlow(userRegisteredFlow)
         })
         .addAnswer('este mensaje no debería existir')
 
     await createBot({
         database,
-        flow: createFlow([welcomeFlow]),
+        flow: createFlow([welcomeFlow, userRegisteredFlow]),
         provider,
     })
 
@@ -48,19 +48,19 @@ testSuite('Debe saltar de flujo siguiente', async ({ database, provider }) => {
 })
 
 testSuite('Debe saltar de flujo con capture sin flowDynamic', async ({ database, provider }) => {
-    const userRegisteredFlow = addKeyword(['user_register'])
+    const userRegisteredFlow = addKeyword(EVENTS.ACTION)
         .addAnswer('Hola usuario registrado')
         .addAnswer('como estas usuario registrado')
 
     const welcomeFlow = addKeyword(['hola'])
         .addAnswer('Buenas', { capture: true }, async (_, { gotoFlow }) => {
-            await gotoFlow(userRegisteredFlow)
+            return gotoFlow(userRegisteredFlow)
         })
         .addAnswer('este mensaje no debería existir')
 
     await createBot({
         database,
-        flow: createFlow([welcomeFlow]),
+        flow: createFlow([welcomeFlow, userRegisteredFlow]),
         provider,
     })
 
@@ -84,7 +84,7 @@ testSuite('Debe saltar de flujo con capture sin flowDynamic', async ({ database,
 })
 
 testSuite('Debe saltar de flujo con capture con flowDynamic', async ({ database, provider }) => {
-    const userRegisteredFlow = addKeyword(['user_register'])
+    const userRegisteredFlow = addKeyword(EVENTS.ACTION)
         .addAnswer('Hola usuario registrado')
         .addAnswer('como estas usuario registrado')
 
@@ -100,7 +100,7 @@ testSuite('Debe saltar de flujo con capture con flowDynamic', async ({ database,
 
     await createBot({
         database,
-        flow: createFlow([welcomeFlow]),
+        flow: createFlow([welcomeFlow, userRegisteredFlow]),
         provider,
     })
 
@@ -119,10 +119,9 @@ testSuite('Debe saltar de flujo con capture con flowDynamic', async ({ database,
     assert.is('Buenas', history[0])
     assert.is('ping', history[1])
     assert.is('Usuario registrado DEMO', history[2])
-    assert.is('__call_action__', history[3])
-    assert.is('Hola usuario registrado', history[4])
-    assert.is('como estas usuario registrado', history[5])
-    assert.is(undefined, history[6])
+    assert.is('Hola usuario registrado', history[3])
+    assert.is('como estas usuario registrado', history[4])
+    assert.is(undefined, history[5])
 })
 
 //Issue https://github.com/codigoencasa/bot-whatsapp/issues/865#issuecomment-1747772797
@@ -166,23 +165,20 @@ testSuite('Debe de continuar el el encadenamiento', async ({ database, provider 
 
     await delay(2000)
     const history = parseAnswers(database.listHistory).map((item) => item.answer)
-    assert.is('__call_action__', history[0])
-    assert.is('Elegir cartera', history[1])
-    assert.is('__capture_only_intended__', history[2])
-    assert.is('Wallet A', history[3])
-    assert.is('Comprar con', history[4])
-    assert.is('__capture_only_intended__', history[5])
-    assert.is('USDC', history[6])
-    assert.is('Comprar cantidad', history[7])
-    assert.is('0.1', history[8])
-    assert.is(undefined, history[9])
+    assert.is('Elegir cartera', history[0])
+    assert.is('Wallet A', history[1])
+    assert.is('Comprar con', history[2])
+    assert.is('USDC', history[3])
+    assert.is('Comprar cantidad', history[4])
+    assert.is('0.1', history[5])
+    assert.is(undefined, history[6])
 })
 
 //Issue https://github.com/codigoencasa/bot-whatsapp/issues/910
 testSuite('Debe de continuar el el encadenamiento con procesos async', async ({ database, provider }) => {
-    const flowBienvenida = addKeyword(EVENTS.ACTION).addAnswer('Bienvenido!')
+    const flowWelcome = addKeyword(EVENTS.ACTION).addAnswer('Bienvenido!')
 
-    const flowReserva = addKeyword(EVENTS.ACTION)
+    const flowReserved = addKeyword(EVENTS.ACTION)
         .addAction({ ref: '🙌🙌🙌🙌🙌' }, async (_, { flowDynamic }) => {
             const expensiveTask = await fakeHTTP({ data: 'datos de json' }, 800)
             await flowDynamic(expensiveTask.data)
@@ -190,11 +186,11 @@ testSuite('Debe de continuar el el encadenamiento con procesos async', async ({ 
         .addAction({ ref: '🔝🔝🔝🔝' }, async (_, { gotoFlow }) => {
             const expensiveTask = await fakeHTTP({ cliente: 'pepe' }, 800)
             if (expensiveTask.cliente !== 'goyo') {
-                return gotoFlow(flowReservaNuevoCliente)
+                return gotoFlow(flowReserverNewClient)
             }
         })
 
-    const flowReservaNuevoCliente = addKeyword('12345').addAnswer(
+    const flowReserverNewClient = addKeyword('12345').addAnswer(
         'Digame su *Nombre y apellidos* para reservar su mesa...',
         { capture: true, ref: '🔔🔔🔔' },
         async (ctx, { state }) => {
@@ -207,9 +203,9 @@ testSuite('Debe de continuar el el encadenamiento con procesos async', async ({ 
             const expensiveTask = await fakeHTTP(`reserva`, 800)
             switch (expensiveTask) {
                 case 'reserva':
-                    return ctxFn.gotoFlow(flowReserva)
+                    return ctxFn.gotoFlow(flowReserved)
                 default:
-                    return ctxFn.gotoFlow(flowBienvenida)
+                    return ctxFn.gotoFlow(flowWelcome)
             }
         } catch (e) {
             console.log('Error en el flowMain: ', e)
@@ -218,7 +214,7 @@ testSuite('Debe de continuar el el encadenamiento con procesos async', async ({ 
 
     await createBot({
         database,
-        flow: createFlow([flowMain, flowBienvenida, flowReserva, flowReservaNuevoCliente]),
+        flow: createFlow([flowMain, flowWelcome, flowReserved, flowReserverNewClient]),
         provider,
     })
 
@@ -234,13 +230,10 @@ testSuite('Debe de continuar el el encadenamiento con procesos async', async ({ 
 
     await delay(5000)
     const history = parseAnswers(database.listHistory).map((item) => item.answer)
-    assert.is('__call_action__', history[0])
-    assert.is('__capture_only_intended__', history[1])
-    assert.is('__capture_only_intended__', history[2])
-    assert.is('datos de json', history[3])
-    assert.is('Digame su *Nombre y apellidos* para reservar su mesa...', history[4])
-    assert.is('leifer', history[5])
-    assert.is(undefined, history[6])
+    assert.is('datos de json', history[0])
+    assert.is('Digame su *Nombre y apellidos* para reservar su mesa...', history[1])
+    assert.is('leifer', history[2])
+    assert.is(undefined, history[3])
 })
 
 //Issue https://github.com/codigoencasa/bot-whatsapp/issues/877
@@ -265,10 +258,9 @@ testSuite('Debe respectar el delay del node previo', async ({ database, provider
 
     await delay(2000)
     const history = parseAnswers(database.listHistory).map((item) => item.answer)
-    assert.is('__call_action__', history[0])
-    assert.is('Buenas ping debe espera 1segundo', history[1])
-    assert.is('Pong con delay 1 segundo', history[2])
-    assert.is(undefined, history[3])
+    assert.is('Buenas ping debe espera 1segundo', history[0])
+    assert.is('Pong con delay 1 segundo', history[1])
+    assert.is(undefined, history[2])
 })
 
 testSuite.run()

@@ -1,7 +1,7 @@
 import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { clear, delay, setup } from '../../__mock__/env'
+import { clear, delay, parseAnswers, setup } from '../../__mock__/env'
 import { addKeyword, createBot, createFlow } from '../../src'
 
 const suiteCase = suite('Flujo: regex')
@@ -28,10 +28,10 @@ suiteCase(`Responder a una expresion regular`, async ({ database, provider }) =>
     })
 
     await delay(100)
-
-    assert.is('Gracias por proporcionar un numero de tarjeta valido', database.listHistory[0].answer)
-    assert.is('Fin!', database.listHistory[1].answer)
-    assert.is(undefined, database.listHistory[2])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is('Gracias por proporcionar un numero de tarjeta valido', history[0])
+    assert.is('Fin!', history[1])
+    assert.is(undefined, history[2])
 })
 
 suiteCase(`NO Responder a una expresion regular`, async ({ database, provider }) => {

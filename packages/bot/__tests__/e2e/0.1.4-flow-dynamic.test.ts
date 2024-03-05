@@ -1,7 +1,7 @@
 import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { setup, clear } from '../../__mock__/env'
+import { setup, clear, parseAnswers } from '../../__mock__/env'
 import { addKeyword, createBot, createFlow } from '../../src'
 import { delay } from '../../src/utils'
 
@@ -53,33 +53,33 @@ suiteCase(`Responder con mensajes asyncronos`, async ({ database, provider }) =>
     })
 
     await delay(1500)
-    const getHistory = database.listHistory.map((i: { answer: any }) => i.answer)
-    assert.is(MOCK_VALUES[0], getHistory[0])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is(MOCK_VALUES[0], history[0])
 
     //FlowDynamic
-    assert.is('Ford', getHistory[1])
-    assert.is('GM', getHistory[2])
-    assert.is('BMW', getHistory[3])
+    assert.is('Ford', history[1])
+    assert.is('GM', history[2])
+    assert.is('BMW', history[3])
 
-    assert.is(MOCK_VALUES[1], getHistory[4])
-
-    //FlowDynamic
-    assert.is('Ranger', getHistory[5])
-    assert.is('Explorer', getHistory[6])
-
-    assert.is(MOCK_VALUES[2], getHistory[7])
+    assert.is(MOCK_VALUES[1], history[4])
 
     //FlowDynamic
-    assert.is('Usado', getHistory[8])
-    assert.is('Nuevos', getHistory[9])
+    assert.is('Ranger', history[5])
+    assert.is('Explorer', history[6])
 
-    assert.is(MOCK_VALUES[3], getHistory[10])
+    assert.is(MOCK_VALUES[2], history[7])
 
     //FlowDynamic
-    assert.is('1000', getHistory[11])
-    assert.is('2000', getHistory[12])
-    assert.is('3000', getHistory[13])
-    assert.is(undefined, getHistory[14])
+    assert.is('Usado', history[8])
+    assert.is('Nuevos', history[9])
+
+    assert.is(MOCK_VALUES[3], history[10])
+
+    //FlowDynamic
+    assert.is('1000', history[11])
+    assert.is('2000', history[12])
+    assert.is('3000', history[13])
+    assert.is(undefined, history[14])
 })
 
 suiteCase(`Responder con un "string"`, async ({ database, provider }) => {
@@ -101,11 +101,11 @@ suiteCase(`Responder con un "string"`, async ({ database, provider }) => {
     })
 
     await delay(100)
-    const getHistory = database.listHistory.map((i: { answer: any }) => i.answer)
-    assert.is('Como vas?', getHistory[0])
-    assert.is('Todo bien!', getHistory[1])
-    assert.is('y vos?', getHistory[2])
-    assert.is(undefined, getHistory[3])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is('Como vas?', history[0])
+    assert.is('Todo bien!', history[1])
+    assert.is('y vos?', history[2])
+    assert.is(undefined, history[3])
 })
 
 suiteCase(`Responder con un "array"`, async ({ database, provider }) => {
@@ -127,12 +127,12 @@ suiteCase(`Responder con un "array"`, async ({ database, provider }) => {
     })
 
     await delay(100)
-    const getHistory = database.listHistory.map((i: { answer: any }) => i.answer)
-    assert.is('Como vas?', getHistory[0])
-    assert.is('Todo bien!', getHistory[1])
-    assert.is('trabajando', getHistory[2])
-    assert.is('y vos?', getHistory[3])
-    assert.is(undefined, getHistory[4])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is('Como vas?', history[0])
+    assert.is('Todo bien!', history[1])
+    assert.is('trabajando', history[2])
+    assert.is('y vos?', history[3])
+    assert.is(undefined, history[4])
 })
 
 suiteCase(`Responder con un "object"`, async ({ database, provider }) => {
@@ -154,11 +154,11 @@ suiteCase(`Responder con un "object"`, async ({ database, provider }) => {
     })
 
     await delay(100)
-    const getHistory = database.listHistory.map((i: { answer: any }) => i.answer)
-    assert.is('Como vas?', getHistory[0])
-    assert.is('Todo bien!', getHistory[1])
-    assert.is('y vos?', getHistory[2])
-    assert.is(undefined, getHistory[3])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is('Como vas?', history[0])
+    assert.is('Todo bien!', history[1])
+    assert.is('y vos?', history[2])
+    assert.is(undefined, history[3])
 })
 
 suiteCase(`FlowDynamic con capture`, async ({ database, provider }) => {
@@ -195,14 +195,14 @@ suiteCase(`FlowDynamic con capture`, async ({ database, provider }) => {
     })
 
     await delay(100)
-    const getHistory = database.listHistory.map((i: { answer: any }) => i.answer)
-    assert.is('Como vas?: dime "bien" sino entro en fallback', getHistory[0])
-    assert.is('mal', getHistory[1])
-    assert.is('Como vas?: dime "bien" sino entro en fallback', getHistory[2])
-    assert.is('bien', getHistory[3])
-    assert.is('Todo bien!', getHistory[4])
-    assert.is('fin!', getHistory[5])
-    assert.is(undefined, getHistory[6])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is('Como vas?: dime "bien" sino entro en fallback', history[0])
+    assert.is('mal', history[1])
+    assert.is('Como vas?: dime "bien" sino entro en fallback', history[2])
+    assert.is('bien', history[3])
+    assert.is('Todo bien!', history[4])
+    assert.is('fin!', history[5])
+    assert.is(undefined, history[6])
 })
 
 suiteCase(`FlowDynamic con capture en hijo`, async ({ database, provider }) => {
@@ -262,19 +262,19 @@ suiteCase(`FlowDynamic con capture en hijo`, async ({ database, provider }) => {
 
     await delay(100)
 
-    const getHistory = database.listHistory.map((i: { answer: any }) => i.answer)
-    assert.is('Buenas! escribe flowDos', getHistory[0])
-    assert.is('flowDos', getHistory[1])
-    assert.is('Vamos al flowDos', getHistory[2])
-    assert.is('Soy flujo 2', getHistory[3])
-    assert.is('Soy flujo 2-1 escribe flow3', getHistory[4])
-    assert.is('flow3', getHistory[5])
-    assert.is('Soy flujo 3', getHistory[7])
-    assert.is('flow4', getHistory[8])
-    assert.is('Soy flujo 4', getHistory[9])
-    assert.is('Vamos por mas', getHistory[10])
-    assert.is('Soy flujo 4-1', getHistory[11])
-    // assert.is(undefined, getHistory[7])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is('Buenas! escribe flowDos', history[0])
+    assert.is('flowDos', history[1])
+    assert.is('Vamos al flowDos', history[2])
+    assert.is('Soy flujo 2', history[3])
+    assert.is('Soy flujo 2-1 escribe flow3', history[4])
+    assert.is('flow3', history[5])
+    assert.is('Soy flujo 3', history[7])
+    assert.is('flow4', history[8])
+    assert.is('Soy flujo 4', history[9])
+    assert.is('Vamos por mas', history[10])
+    assert.is('Soy flujo 4-1', history[11])
+    assert.is(undefined, history[12])
 })
 
 suiteCase.run()

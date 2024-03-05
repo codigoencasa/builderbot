@@ -308,7 +308,6 @@ class CoreClass<P extends ProviderClass, D extends MemoryDB> extends EventEmitte
                     .slice(indexToContinue)
                     .filter((i) => i.refSerialize !== currentPrev?.refSerialize)
 
-                // const filterNextFlow = nextFlow.filter((msg) => msg.refSerialize !== currentPrev?.refSerialize);
                 const isContinueFlow = filterNextFlow.map((i) => i.keyword).includes(currentPrev?.ref)
 
                 if (!isContinueFlow) {
@@ -567,7 +566,6 @@ class CoreClass<P extends ProviderClass, D extends MemoryDB> extends EventEmitte
             }))
 
             msgToSend = this.flowClass.find(body, false, flowStandalone) || []
-
             return exportFunctionsSend(() => sendFlow(msgToSend, from))
         }
 

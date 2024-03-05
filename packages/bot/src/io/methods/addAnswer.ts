@@ -105,23 +105,36 @@ const _addAnswer =
         return {
             ctx,
             ref: ctx.ref,
-            addAnswer: _addAnswer(ctx),
-            // addAnswer: (
-            //     answer: string,
-            //     options?: ActionPropertiesKeyword | null,
-            //     cb?: CallbackFunction<P, B> | null
-            // ): TFlow<P, B> => {
-            //     const _cb: CallbackFunction<P, B> = async (_, { flowDynamic }) => {
-            //         await flowDynamic(answer)
-            //     }
-            //     return _addAnswer(ctx)('__call_action__', null, _cb as CallbackFunction<P, B>).addAction(options, cb)
-            // },
+            // addAnswer: _addAnswer(ctx),
+            addAnswer: (
+                answer: string,
+                options?: ActionPropertiesKeyword | null,
+                cb?: CallbackFunction<P, B> | null,
+                nested?: TFlow<P>[] | TFlow<P>
+            ): TFlow<P, B> => {
+                const _cb: CallbackFunction<P, B> = async (_, { flowDynamic }) => {
+                    await flowDynamic([
+                        {
+                            body: answer,
+                            media: options?.media ?? undefined,
+                            delay: options?.delay ?? 0,
+                            buttons: options?.buttons ?? [],
+                        },
+                    ])
+                }
+                return _addAnswer(ctx)('__call_action__', null, _cb as CallbackFunction<P, B>).addAction(
+                    options,
+                    cb,
+                    nested
+                )
+            },
             addAction: (
                 cb: CallbackFunction<P, B> = () => {},
-                flagCb: CallbackFunction<P, B> = () => {}
+                flagCb: CallbackFunction<P, B> = () => {},
+                nested?: TFlow<P>[] | TFlow<P>
             ): TFlow<P, B> => {
-                if (typeof cb === 'object') return _addAnswer(ctx)('__capture_only_intended__', cb, flagCb)
-                return _addAnswer(ctx)('__call_action__', null, cb as CallbackFunction<P, B>)
+                if (typeof cb === 'object') return _addAnswer(ctx)('__capture_only_intended__', cb, flagCb, nested)
+                return _addAnswer(ctx)('__call_action__', null, cb as CallbackFunction<P, B>, nested)
             },
             toJson: toJson(ctx),
         }

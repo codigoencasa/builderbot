@@ -1,7 +1,7 @@
 import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { setup, clear } from '../../__mock__/env'
+import { setup, clear, parseAnswers } from '../../__mock__/env'
 import { addKeyword, createBot, createFlow } from '../../src'
 import { delay } from '../../src/utils'
 
@@ -28,7 +28,7 @@ suiteCase(`Debe continuar el flujo del hijo`, async ({ database, provider }) => 
         })
         .addAnswer('Apurate!')
 
-    const flujoPrincipal = addKeyword('hola')
+    const mainFlow = addKeyword('hola')
         .addAnswer('¿Como estas todo bien?')
         .addAnswer('Espero que si')
         .addAnswer('¿Cual es tu email?', { capture: true }, async (ctx, { fallBack }) => {
@@ -44,7 +44,7 @@ suiteCase(`Debe continuar el flujo del hijo`, async ({ database, provider }) => 
 
     createBot({
         database,
-        flow: createFlow([flujoPrincipal]),
+        flow: createFlow([mainFlow]),
         provider,
     })
 
@@ -53,42 +53,40 @@ suiteCase(`Debe continuar el flujo del hijo`, async ({ database, provider }) => 
         body: 'hola',
     })
 
-    await delay(0)
-    await provider.delaySendMessage(30, 'message', {
+    await provider.delaySendMessage(100, 'message', {
         from: '000',
         body: 'test@test.com',
     })
 
-    await delay(0)
-    await provider.delaySendMessage(60, 'message', {
+    await provider.delaySendMessage(250, 'message', {
         from: '000',
         body: 'paypal',
     })
 
-    await provider.delaySendMessage(90, 'message', {
+    await provider.delaySendMessage(250, 'message', {
         from: '000',
         body: 'continue!',
     })
 
-    await delay(0)
     await delay(800)
-    const getHistory = database.listHistory.map((i: { answer: any }) => i.answer)
 
-    assert.is('¿Como estas todo bien?', getHistory[0])
-    assert.is('Espero que si', getHistory[1])
-    assert.is('¿Cual es tu email?', getHistory[2])
-    assert.is('test@test.com', getHistory[3])
-    assert.is('Voy a validar tu email...', getHistory[4])
-    assert.is('Email validado correctamten!', getHistory[5])
-    assert.is('¿Como vas a pagar *paypal* o *cash*?', getHistory[6])
-    assert.is('paypal', getHistory[7])
-    assert.is('Voy generar un link de paypal *escribe algo*', getHistory[8])
-    assert.is('continue!', getHistory[9])
-    assert.is('Esperate.... estoy generando esto toma su tiempo', getHistory[10])
-    assert.is('Aqui lo tienes 😎😎', getHistory[11])
-    assert.is('http://paypal.com', getHistory[12])
-    assert.is('Apurate!', getHistory[13])
-    assert.is(undefined, getHistory[14])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+
+    assert.is('¿Como estas todo bien?', history[0])
+    assert.is('Espero que si', history[1])
+    assert.is('¿Cual es tu email?', history[2])
+    assert.is('test@test.com', history[3])
+    assert.is('Voy a validar tu email...', history[4])
+    assert.is('Email validado correctamten!', history[5])
+    assert.is('¿Como vas a pagar *paypal* o *cash*?', history[6])
+    assert.is('paypal', history[7])
+    assert.is('Voy generar un link de paypal *escribe algo*', history[8])
+    assert.is('continue!', history[9])
+    assert.is('Esperate.... estoy generando esto toma su tiempo', history[10])
+    assert.is('Aqui lo tienes 😎😎', history[11])
+    assert.is('http://paypal.com', history[12])
+    assert.is('Apurate!', history[13])
+    assert.is(undefined, history[14])
 })
 
 suiteCase.run()

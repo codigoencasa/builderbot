@@ -1,7 +1,7 @@
 import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { setup, clear } from '../../__mock__/env'
+import { setup, clear, parseAnswers } from '../../__mock__/env'
 import { addKeyword, createBot, createFlow } from '../../src'
 import { delay } from '../../src/utils'
 
@@ -33,14 +33,13 @@ suiteCase(`Delay en los flowDynamic`, async ({ database, provider }) => {
     })
 
     await delay(2000)
-    const getHistory = database.listHistory.map((i: { answer: any }) => i.answer)
-    assert.is('__call_action__', getHistory[0])
-    assert.is('Buenas! ¿Cual es tu nombre? este mensaje debe tener delay 1000', getHistory[1])
-    assert.is('Todo bien?', getHistory[2])
-    assert.is('Bien!', getHistory[3])
-    assert.is('si nada', getHistory[4])
-    assert.is('Chao!', getHistory[5])
-    assert.is(undefined, getHistory[6])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is('Buenas! ¿Cual es tu nombre? este mensaje debe tener delay 1000', history[0])
+    assert.is('Todo bien?', history[1])
+    assert.is('Bien!', history[2])
+    assert.is('si nada', history[3])
+    assert.is('Chao!', history[4])
+    assert.is(undefined, history[5])
 })
 
 suiteCase.run()

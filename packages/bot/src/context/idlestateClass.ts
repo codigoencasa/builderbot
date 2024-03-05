@@ -16,7 +16,7 @@ interface QueueItem {
     from: string
     inRef: any
     cb: Callback
-    stop: (ctxInComming: any) => void
+    stop: (ctxInComing: any) => void
 }
 
 class IdleState {
@@ -49,9 +49,9 @@ class IdleState {
             from,
             inRef,
             cb,
-            stop: (ctxInComming: any) => {
+            stop: (ctxInComing: any) => {
                 clearInterval(interval)
-                cb({ ...ctxInComming, next: false, inRef })
+                cb({ ...ctxInComing, next: false, inRef })
             },
         })
     }
@@ -74,15 +74,15 @@ class IdleState {
 
     /**
      *
-     * @param ctxInComming
+     * @param ctxInComing
      */
-    stop = (ctxInComming: { from: any }): void => {
+    stop = (ctxInComing: { from: any }): void => {
         try {
-            const queueCb = this.indexCb.get(ctxInComming.from) ?? []
+            const queueCb = this.indexCb.get(ctxInComing.from) ?? []
             for (const iterator of queueCb) {
-                iterator.stop(ctxInComming)
+                iterator.stop(ctxInComing)
             }
-            this.indexCb.set(ctxInComming.from, [])
+            this.indexCb.set(ctxInComing.from, [])
         } catch (err) {
             console.error(err)
         }

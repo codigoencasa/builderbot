@@ -1,9 +1,10 @@
 import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { setup, clear } from '../../__mock__/env'
-import { addKeyword, createBot, createFlow, EVENTS } from '../../src'
+import { setup, clear, parseAnswers } from '../../__mock__/env'
+import { addKeyword, createBot, createFlow, EVENTS, MemoryDB } from '../../src'
 import { delay } from '../../src/utils'
+import { ProviderMock } from '../../src/provider/providerMock'
 
 const fakeHTTP = async (fakeData: string[] = []) => {
     await delay(50)
@@ -11,7 +12,7 @@ const fakeHTTP = async (fakeData: string[] = []) => {
     return Promise.resolve(data)
 }
 
-const suiteCase = suite('Flujo: endFlow')
+const suiteCase = suite<{ provider: ProviderMock; database: MemoryDB }>('Flujo: endFlow')
 
 suiteCase.before.each(setup)
 suiteCase.after.each(clear)
@@ -49,19 +50,19 @@ suiteCase(`Detener el flujo`, async ({ database, provider }) => {
     })
 
     await delay(900)
-    const getHistory = database.listHistory.map((i: { answer: any }) => i.answer)
-    assert.is(MOCK_VALUES[0], getHistory[0])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is(MOCK_VALUES[0], history[0])
 
     //FlowDynamic
-    assert.is('Ford', getHistory[1])
-    assert.is('GM', getHistory[2])
-    assert.is('BMW', getHistory[3])
+    assert.is('Ford', history[1])
+    assert.is('GM', history[2])
+    assert.is('BMW', history[3])
 
-    assert.is(MOCK_VALUES[1], getHistory[4])
+    assert.is(MOCK_VALUES[1], history[4])
 
     //FlowDynamic
-    assert.is(undefined, getHistory[5])
-    assert.is(undefined, getHistory[6])
+    assert.is(undefined, history[5])
+    assert.is(undefined, history[6])
 })
 
 suiteCase(`Detener el flujo flowDynamic`, async ({ database, provider }) => {
@@ -84,13 +85,14 @@ suiteCase(`Detener el flujo flowDynamic`, async ({ database, provider }) => {
     })
 
     await delay(100)
-    const getHistory = database.listHistory.map((i: { answer: any }) => i.answer)
-    assert.is('Buenas!', getHistory[0])
-    assert.is('Continuamos...', getHistory[1])
-    assert.is(undefined, getHistory[2])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is('Buenas!', history[0])
+    assert.is('Continuamos...', history[1])
+    assert.is(undefined, history[2])
 })
 
-suiteCase(`flowDynamic con capture`, async ({ database, provider }) => {
+suiteCase(`flowDynamic con capture`, async (context) => {
+    const { database, provider } = context
     const MOCK_VALUES = ['¿CUal es tu email?', 'Continuamos....', '¿Cual es tu edad?']
 
     const flow = addKeyword(['hola'])
@@ -130,40 +132,40 @@ suiteCase(`flowDynamic con capture`, async ({ database, provider }) => {
         body: 'hola',
     })
 
-    await provider.delaySendMessage(100, 'message', {
+    await provider.delaySendMessage(150, 'message', {
         from: '000',
         body: 'this is not email value',
     })
 
-    await provider.delaySendMessage(100, 'message', {
+    await provider.delaySendMessage(200, 'message', {
         from: '000',
         body: 'test@test.com',
     })
 
-    await provider.delaySendMessage(100, 'message', {
+    await provider.delaySendMessage(250, 'message', {
         from: '000',
         body: '20',
     })
 
-    await provider.delaySendMessage(100, 'message', {
+    await provider.delaySendMessage(300, 'message', {
         from: '000',
         body: '18',
     })
 
     await delay(900)
-    const getHistory = database.listHistory.map((i: { answer: any }) => i.answer)
-    assert.is(MOCK_VALUES[0], getHistory[0])
-    assert.is('this is not email value', getHistory[1])
-    assert.is(MOCK_VALUES[0], getHistory[2])
-    assert.is('test@test.com', getHistory[3])
-    assert.is('Gracias por tu email se ha validado de manera correcta', getHistory[4])
-    assert.is(MOCK_VALUES[1], getHistory[5])
-    assert.is(MOCK_VALUES[2], getHistory[6])
-    assert.is('20', getHistory[7]) //TODO:Este punto falla en los test
-    assert.is('Ups creo que no eres mayor de edad', getHistory[8])
-    assert.is('18', getHistory[9])
-    assert.is('Bien tu edad es correcta!', getHistory[10])
-    assert.is('Puedes pasar', getHistory[11])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is(MOCK_VALUES[0], history[0])
+    assert.is('this is not email value', history[1])
+    assert.is(MOCK_VALUES[0], history[2])
+    assert.is('test@test.com', history[3])
+    assert.is('Gracias por tu email se ha validado de manera correcta', history[4])
+    assert.is(MOCK_VALUES[1], history[5])
+    assert.is(MOCK_VALUES[2], history[6])
+    assert.is('20', history[7])
+    assert.is('Ups creo que no eres mayor de edad', history[8])
+    assert.is('18', history[9])
+    assert.is('Bien tu edad es correcta!', history[10])
+    assert.is('Puedes pasar', history[11])
 })
 
 suiteCase(`endFlow desde gotoFlow`, async ({ database, provider }) => {
@@ -216,23 +218,10 @@ suiteCase(`endFlow desde gotoFlow`, async ({ database, provider }) => {
     })
 
     await delay(5000)
-    const getHistory = database.listHistory.map((i: { answer: any }) => i.answer)
-    assert.is('Buenas!', getHistory[0])
-    assert.is('__capture_only_intended__', getHistory[1])
-    assert.is('__capture_only_intended__', getHistory[2])
-    assert.is('Final y no mas', getHistory[3])
-    assert.is(undefined, getHistory[4])
-    // assert.is('this is not email value', getHistory[1])
-    // assert.is(MOCK_VALUES[0], getHistory[2])
-    // assert.is('test@test.com', getHistory[3])
-    // assert.is('Gracias por tu email se ha validado de manera correcta', getHistory[4])
-    // assert.is(MOCK_VALUES[1], getHistory[5])
-    // assert.is(MOCK_VALUES[2], getHistory[6])
-    // assert.is('20', getHistory[7])
-    // assert.is('Ups creo que no eres mayor de edad', getHistory[8])
-    // assert.is('18', getHistory[9])
-    // assert.is('Bien tu edad es correcta!', getHistory[10])
-    // assert.is('Puedes pasar', getHistory[11])
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is('Buenas!', history[0])
+    assert.is('Final y no mas', history[1])
+    assert.is(undefined, history[2])
 })
 
 suiteCase.run()
