@@ -11,4 +11,3 @@ packages/bot-ts/
 *.json
 /.nx/cache
 apps/
-apps/
