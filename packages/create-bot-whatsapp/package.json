@@ -1,6 +1,6 @@
 {
     "name": "create-bot-whatsapp",
-    "version": "0.1.3-alpha.21",
+    "version": "0.1.3-alpha.22",
     "description": "",
     "license": "ISC",
     "main": "dist/index.cjs",
