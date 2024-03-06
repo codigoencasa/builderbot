@@ -1,5 +1,5 @@
 {
-    "name": "create-bot-whatsapp",
+    "name": "create-builderbot",
     "version": "0.2.0",
     "description": "",
     "license": "ISC",
@@ -20,7 +20,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/codigoencasa/bot-whatsapp/tree/main/packages/create-bot-whatsapp"
+        "url": "https://github.com/codigoencasa/bot-whatsapp/tree/main/packages/create-builderbot"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^25.0.7",

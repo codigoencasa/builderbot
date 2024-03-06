@@ -302,7 +302,7 @@ importers:
                 specifier: ^17.0.1
                 version: 17.0.1
 
-    packages/create-bot-whatsapp:
+    packages/create-builderbot:
         dependencies:
             '@builderbot/cli':
                 specifier: workspace:*
@@ -319,7 +319,7 @@ importers:
                 version: 0.4.4(rollup@4.9.5)
             '@types/node':
                 specifier: ^20.11.0
-                version: 20.11.0
+                version: 20.11.5
             rimraf:
                 specifier: ^5.0.5
                 version: 5.0.5

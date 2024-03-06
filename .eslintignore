@@ -12,3 +12,5 @@ packages/cli/node_modules/
 packages/cli/dist/
 packages/create-bot-whatsapp/node_modules/
 packages/create-bot-whatsapp/dist/
+packages/create-builderbot/node_modules/
+packages/create-builderbot/dist/

@@ -36,11 +36,6 @@
       "email": "leifer33@gmail.com",
       "name": "Leifer Mendez",
       "url": "https://leifermendez.github.io"
-    },
-    {
-      "name": "aurik3",
-      "email": "aurik3@aurik3.com",
-      "url": "https://github.com/aurik3"
     }
   ],
   "repository": "https://github.com/leifermendez/bot-whatsapp",
@@ -48,7 +43,7 @@
   "workspaces": [
     "packages/bot",
     "packages/cli",
-    "packages/create-bot-whatsapp",
+    "packages/create-builderbot",
     "packages/database-mongo",
     "packages/database-mysql",
     "packages/database-json",

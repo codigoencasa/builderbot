@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "packages": [
     "packages/bot",
-    "packages/create-bot-whatsapp",
+    "packages/create-builderbot",
     "packages/database-mongo",
     "packages/database-mysql",
     "packages/database-json",
