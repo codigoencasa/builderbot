@@ -14,5 +14,11 @@ export const getEventName = (fullHash: string): string | null => {
  */
 export const setEvent = (name: string) => {
     return encryptData(`_event_custom_${name}_`)
-    // return generateRef(`_event_custom_${name}_`)
 }
+
+/**
+ *
+ * @param phone
+ * @returns
+ */
+export const removePlus = (phone: string) => phone.replace('+', '')

@@ -1,0 +1,22 @@
+{
+    "name": "base-bailey-json",
+    "version": "1.0.0",
+    "description": "",
+    "main": "src/app.js",
+    "type": "module",
+    "scripts": {
+        "prestart": "npx eslint . --no-ignore",
+        "start": "node app.js"
+      },
+    "keywords": [],
+    "dependencies": {
+        "@bot-whatsapp/bot": "latest",
+        "@bot-whatsapp/database-json": "latest",
+        "@bot-whatsapp/provider-baileys": "latest"
+    },
+    "devDependencies": {
+        "eslint-plugin-bot-whatsapp": "latest"
+    },
+    "author": "",
+    "license": "ISC"
+}

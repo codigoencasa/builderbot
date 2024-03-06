@@ -49,14 +49,14 @@ class MysqlAdapter {
         })
     }
 
-    save = (ctx: {
+    save = async (ctx: {
         ref: string
         keyword: string
         answer: any
         refSerialize: string
         from: string
         options: any
-    }): void => {
+    }): Promise<void> => {
         const values = [
             [ctx.ref, ctx.keyword, ctx.answer, ctx.refSerialize, ctx.from, JSON.stringify(ctx.options), null],
         ]

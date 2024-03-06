@@ -5,7 +5,7 @@ import { HistoryEntry, JsonFileAdapterOptions } from './types'
 
 class JsonFileDB {
     private pathFile: string
-    private listHistory: HistoryEntry[] = []
+    listHistory: HistoryEntry[] = []
     private options: JsonFileAdapterOptions = { filename: 'db.json' }
 
     constructor(

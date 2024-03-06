@@ -1,0 +1,4 @@
+{
+    "IMPORT": "import { VenomProvider as Provider } from '@bot-whatsapp/provider-venom'\n",
+    "IMPLEMENTATION": "\n    const adapterProvider = createProvider(Provider)"
+}

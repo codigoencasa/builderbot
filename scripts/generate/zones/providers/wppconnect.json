@@ -1,0 +1,4 @@
+{
+    "IMPORT": "import { WPPConnectProvider as Provider } from '@bot-whatsapp/provider-wppconnect'\n",
+    "IMPLEMENTATION": "\n    const adapterProvider = createProvider(Provider)"
+}

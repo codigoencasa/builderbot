@@ -1,0 +1,4 @@
+{
+    "IMPORT": "import { MemoryDB as Database } from '@bot-whatsapp/bot'\n",
+    "IMPLEMENTATION": "const adapterDB = new Database()\n"
+}

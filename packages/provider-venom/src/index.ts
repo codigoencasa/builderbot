@@ -47,7 +47,7 @@ class VenomProvider extends ProviderClass {
                 this.emit('message', {
                     body: utils.setEvent(customEvent),
                     name: payload.name,
-                    from: payload.from,
+                    from: utils.removePlus(payload.from),
                 })
             },
         }

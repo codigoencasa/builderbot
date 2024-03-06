@@ -16,7 +16,7 @@ export interface ProviderData {
     label: string
 }
 
-const PROVIDER_LIST: Provider[] = [
+export const PROVIDER_LIST: Provider[] = [
     { value: 'baileys', label: 'Baileys', hint: 'gratis' },
     { value: 'venom', label: 'Venom', hint: 'gratis' },
     { value: 'wppconnect', label: 'WPPConnect', hint: 'gratis' },
@@ -25,12 +25,10 @@ const PROVIDER_LIST: Provider[] = [
     { value: 'meta', label: 'Meta' },
 ]
 
-const PROVIDER_DATA: ProviderData[] = [
+export const PROVIDER_DATA: ProviderData[] = [
     { value: 'memory', label: 'Memory' },
     { value: 'json', label: 'Json' },
     { value: 'mongo', label: 'Mongo' },
     { value: 'mysql', label: 'MySQL' },
     { value: 'postgres', label: 'PostgreSQL' },
 ]
-
-export { PROVIDER_LIST, PROVIDER_DATA }

@@ -10,3 +10,5 @@ packages/bot-ts/
 *.md
 *.json
 /.nx/cache
+apps/
+apps/

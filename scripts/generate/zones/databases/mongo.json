@@ -1,0 +1,4 @@
+{
+    "IMPORT": "import { MongoAdapter as Database } from '@bot-whatsapp/database-mongo'",
+    "IMPLEMENTATION": "    const adapterDB = new Database({\n        dbUri: process.env.MONGO_DB_URI,\n        dbName: process.env.MONGO_DB_NAME,\n    })"
+}
