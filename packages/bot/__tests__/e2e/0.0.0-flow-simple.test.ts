@@ -54,4 +54,26 @@ testSuite(`NO responder a "pepe"`, async (context) => {
     assert.is(undefined, database.listHistory[1])
 })
 
+testSuite(`Break lines`, async (context) => {
+    const { database, provider } = context
+    const helloFlow = addKeyword('hola').addAnswer(['Buenas!', 'Dias']).addAnswer('Como vamos!')
+
+    await createBot({
+        database,
+        provider,
+        flow: createFlow([helloFlow]),
+    })
+
+    await provider.delaySendMessage(100, 'message', {
+        from: '000',
+        body: 'hola',
+    })
+
+    await delay(1000)
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is('Buenas!\nDias', history[0])
+    assert.is('Como vamos!', history[1])
+    assert.is(undefined, history[2])
+})
+
 testSuite.run()

@@ -107,15 +107,17 @@ const _addAnswer =
             ref: ctx.ref,
             // addAnswer: _addAnswer(ctx),
             addAnswer: (
-                answer: string,
+                answer: string | string[],
                 options?: ActionPropertiesKeyword | null,
                 cb?: CallbackFunction<P, B> | null,
                 nested?: TFlow<P>[] | TFlow<P>
             ): TFlow<P, B> => {
                 const _cb: CallbackFunction<P, B> = async (_, { flowDynamic }) => {
+                    const singleLineBody = Array.isArray(answer) ? answer.join('\n') : answer
+
                     await flowDynamic([
                         {
-                            body: answer,
+                            body: singleLineBody,
                             media: options?.media ?? undefined,
                             delay: options?.delay ?? 0,
                             buttons: options?.buttons ?? [],
