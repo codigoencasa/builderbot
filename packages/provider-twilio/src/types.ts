@@ -4,7 +4,6 @@ export interface ITwilioProviderOptions {
     accountSid: string
     authToken: string
     vendorNumber: string
-    port?: number
     publicUrl?: string
 }
 

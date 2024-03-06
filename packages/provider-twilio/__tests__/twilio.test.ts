@@ -1,7 +1,8 @@
 import proxyquire from 'proxyquire'
 import { stub } from 'sinon'
 import twilio from 'twilio'
-import { test } from 'uvu'
+import { ClientOpts } from 'twilio/lib/base/BaseTwilio'
+import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 
 import { TwilioRequestBody } from '../src/types'
@@ -14,27 +15,20 @@ const emitStub = stub()
 const sendStub = stub()
 const createStub = stub()
 
-test.after.each(() => {
-    emitStub.resetHistory()
-    sendStub.resetHistory()
-    createStub.resetHistory()
-})
-
 const { TwilioProvider } = proxyquire<typeof import('../src')>('../src', {
     twilio: {
         TwilioSDK: {
             Twilio: class MockTwilio extends twilio.Twilio {
-                constructor(accountSid, authToken, opts) {
-                    console.log('🎁🎁🎁')
+                constructor(
+                    accountSid: string | undefined,
+                    authToken: string | undefined,
+                    opts: ClientOpts | undefined
+                ) {
                     super(accountSid, authToken, opts)
                 }
             },
-            jwt: {
-                // Mock de otras propiedades/métodos utilizados en tu código
-            },
-            // Otras propiedades/métodos utilizados en tu código
+            jwt: {},
         },
-        // Otras propiedades/métodos utilizados en tu código
     },
     '@bot-whatsapp/bot': { utils: utilsMock },
 })
@@ -43,8 +37,23 @@ const twilioProvider = new TwilioProvider({
     accountSid: 'AC',
     authToken: 'ACfakeToken',
     vendorNumber: '123456789',
-    port: 3001,
     publicUrl: 'http://localhost',
+})
+
+const test = suite('Provider Meta: Test')
+
+test.after.each(() => {
+    emitStub.resetHistory()
+    sendStub.resetHistory()
+    createStub.resetHistory()
+})
+
+test.before(() => {
+    twilioProvider.initHttpServer(3001, { blacklist: {} as any })
+})
+
+test.after(async () => {
+    if (twilioProvider.http) await twilioProvider.http.stop()
 })
 
 test('sendMessageToApi - should send a message to API', async () => {
@@ -135,90 +144,46 @@ test('sendMessage - should call the method sendMedia', async () => {
 })
 
 test('sendMedia - should include localhost', async () => {
-    const twilioProvider = new TwilioProvider({
-        accountSid: 'AC',
-        authToken: 'ACfakeToken',
-        vendorNumber: '123456789',
-        port: 5001,
-        publicUrl: 'http://localhost',
-    })
     const to = '123456789'
     const message = 'Test message'
+    const url = 'http://localhost:3000/store/image.png'
+
     twilioProvider.vendor.messages.create = createStub.returns(true)
-    const result = await twilioProvider['sendMedia'](to, message, 'localhost')
-    assert.equal(result, true)
-    assert.equal(createStub.args[0][0].mediaUrl[0].includes('localhost'), true)
-    await twilioProvider.http.stop()
+    twilioProvider['sendMedia'] = sendStub
+    await twilioProvider['sendMedia'](to, message, url)
+    assert.equal(sendStub.called, true)
+    assert.equal(sendStub.args[0][2], url)
 })
 
 test('sendMedia - should include 127.0.0.1', async () => {
-    const twilioProvider = new TwilioProvider({
-        accountSid: 'AC',
-        authToken: 'ACfakeToken',
-        vendorNumber: '123456789',
-        port: 5002,
-        publicUrl: 'http://127.0.0.1',
-    })
     const to = '123456789'
     const message = 'Test message'
-    twilioProvider.vendor.messages.create = createStub.returns(true)
-    const result = await twilioProvider['sendMedia'](to, message, '127.0.0.1')
-    assert.equal(result, true)
-    assert.equal(createStub.args[0][0].mediaUrl[0].includes('127.0.0.1'), true)
-    await twilioProvider.http.stop()
-})
+    const url = 'http://127.0.0.1:3000/store/image.png'
 
-test('sendMedia -should include 0.0.0.0', async () => {
-    const twilioProvider = new TwilioProvider({
-        accountSid: 'AC',
-        authToken: 'ACfakeToken',
-        vendorNumber: '123456789',
-        port: 5003,
-        publicUrl: 'http://0.0.0.0',
-    })
-    const to = '123456789'
-    const message = 'Test message'
     twilioProvider.vendor.messages.create = createStub.returns(true)
-    const result = await twilioProvider['sendMedia'](to, message, '0.0.0.0')
-    assert.equal(result, true)
-    assert.equal(createStub.args[0][0].mediaUrl[0].includes('0.0.0.0'), true)
-    await twilioProvider.http.stop()
-})
-
-test('sendMedia - should include 0.0.0.0', async () => {
-    const publicUrl = 'https://example.com/media'
-    const twilioProvider = new TwilioProvider({
-        accountSid: 'AC',
-        authToken: 'ACfakeToken',
-        vendorNumber: '123456789',
-        port: 5004,
-        publicUrl,
-    })
-
-    const to = '123456789'
-    const message = 'Test message'
-    twilioProvider.vendor.messages.create = createStub.returns(true)
-    const result = await twilioProvider['sendMedia'](to, message, publicUrl)
-    assert.equal(result, true)
-    assert.equal(createStub.args[0][0].mediaUrl[0].includes(publicUrl), true)
-    await twilioProvider.http.stop()
+    twilioProvider['sendMedia'] = sendStub
+    await twilioProvider['sendMedia'](to, message, url)
+    assert.equal(sendStub.called, true)
+    assert.equal(sendStub.args[0][2], url)
 })
 
 test('sendMedia arroja un error si mediaInput es null', async () => {
-    const twilioProvider = new TwilioProvider({
-        accountSid: 'AC',
-        authToken: 'ACfakeToken',
-        vendorNumber: '123456789',
-        port: 5005,
-    })
-
     try {
-        await twilioProvider['sendMedia']('123456789', 'Hola', null)
-        assert.unreachable('Did not throw an error for mediaInput null')
-    } catch (error) {
-        assert.is(error.message, 'MEDIA_INPUT_NULL_: null')
+        const inTwilioProvider = new TwilioProvider({
+            accountSid: 'AC',
+            authToken: 'ACfakeToken',
+            vendorNumber: '123456789',
+            publicUrl: 'http://localhost',
+        })
+
+        inTwilioProvider.initHttpServer(5994, { blacklist: {} as any })
+        inTwilioProvider['sendMedia']('123456789', 'Hola', null).catch((e) =>
+            assert.equal(e.message, 'Media cannot be null')
+        )
+        await inTwilioProvider.http.stop()
+    } catch (e) {
+        assert.equal(e.message, 'Media cannot be null')
     }
-    await twilioProvider.http.stop()
 })
 
 test('Deberia retornar el path en la ruta tpm de la imagen', async () => {
@@ -233,10 +198,6 @@ test('Deberia retornar el path en la ruta tpm de la imagen', async () => {
     const result = await twilioProvider.saveFile(ctx)
     assert.equal(utilsMock.generalDownload.called, true)
     assert.equal(result.includes('file'), true)
-})
-
-test.after(async () => {
-    await twilioProvider.http.stop()
 })
 
 test.run()

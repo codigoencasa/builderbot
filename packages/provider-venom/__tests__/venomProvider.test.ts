@@ -254,7 +254,7 @@ test('initHttpServer - debería iniciar el servidor HTTP correctamente', async (
     }
     venomProvider.sendMessage = sendStub
 
-    venomProvider.initHttpServer(testPort)
+    venomProvider.initHttpServer(testPort, { blacklist: {} as any })
     assert.equal(startStub.called, true)
     await venomProvider.http?.server.server?.close()
 })

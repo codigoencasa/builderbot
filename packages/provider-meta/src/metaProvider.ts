@@ -1,5 +1,5 @@
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
-import { BotContext, BotCtxMiddleware, DynamicBlacklist, SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { BotContext, BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@bot-whatsapp/bot/dist/types'
 import axios from 'axios'
 import FormData from 'form-data'
 import { createReadStream } from 'fs'
@@ -15,8 +15,6 @@ import { downloadFile } from './utils'
 
 const URL = `https://graph.facebook.com`
 
-const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000
-
 class MetaProvider extends ProviderClass {
     http: MetaWebHookServer | undefined
     jwtToken: string | undefined
@@ -25,19 +23,13 @@ class MetaProvider extends ProviderClass {
     version: string = 'v16.0'
     queue: Queue
 
-    constructor({ jwtToken, numberId, verifyToken, version, port = PORT }: MetaProviderOptions) {
+    constructor({ jwtToken, numberId, verifyToken, version }: MetaProviderOptions) {
         super()
         this.jwtToken = jwtToken
         this.numberId = numberId
         this.version = version
         this.verifyToken = verifyToken
-        this.initHttpServer(port)
-
-        const listEvents = this.busEvents()
-
-        for (const { event, func } of listEvents) {
-            this.http.on(event, func)
-        }
+        // this.initHttpServer(6566, {blacklist:{} as any})
         this.queue = new Queue({
             concurrent: 1,
             interval: 100,
@@ -45,14 +37,36 @@ class MetaProvider extends ProviderClass {
         })
     }
 
-    initHttpServer = (port: number, blacklist?: DynamicBlacklist) => {
+    private listenOnEvents = () => {
+        const listEvents = this.busEvents()
+        for (const { event, func } of listEvents) {
+            this.http.on(event, func)
+        }
+    }
+
+    /**
+     *
+     * @param port
+     * @param opts
+     * @returns
+     */
+    initHttpServer = (port: number, opts: Pick<BotCtxMiddlewareOptions, 'blacklist'>) => {
         this.http = new MetaWebHookServer(this.jwtToken, this.numberId, this.version, this.verifyToken, port)
         const methods: BotCtxMiddleware<MetaProvider> = {
             sendMessage: this.sendMessage,
             provider: this.vendor,
-            blacklist,
+            blacklist: opts.blacklist,
+            dispatch: (customEvent, payload) => {
+                this.emit('message', {
+                    body: utils.setEvent(customEvent),
+                    name: payload.name,
+                    from: payload.from,
+                })
+            },
         }
         this.http.start(methods, port)
+        this.listenOnEvents()
+        return
     }
 
     /**

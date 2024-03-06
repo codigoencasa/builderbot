@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { stub } from 'sinon'
-import { test } from 'uvu'
+import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 
 import { MetaProvider } from '../src/metaProvider'
@@ -15,7 +15,6 @@ const metaProvider = new MetaProvider({
     numberId: 'your_number_id',
     verifyToken: 'your_verify_token',
     version: 'v16.0',
-    port: 3999,
 })
 
 const mockMessageBody = {
@@ -31,6 +30,16 @@ const mockMessageBody = {
 
 const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta')
 const sendMediaStub = stub(metaProvider, 'sendMedia')
+
+const test = suite('Provider Meta: Test')
+
+test.before(() => {
+    metaProvider.initHttpServer(3999, { blacklist: {} as any })
+})
+
+test.after(async () => {
+    if (metaProvider.http) await metaProvider.http.stop()
+})
 
 test('sendMessageToApi - should send a message to API', async () => {
     const mockResponseData = {}
@@ -554,10 +563,6 @@ test('saveFile - return error', async () => {
     const options = { path: '/path/to/save' }
     const result = await metaProvider.saveFile(ctx, options)
     assert.equal(result, 'ERROR')
-})
-
-test.after(async () => {
-    if (metaProvider.http) await metaProvider.http.stop()
 })
 
 test.run()

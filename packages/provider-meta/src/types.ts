@@ -93,7 +93,6 @@ export interface MetaProviderOptions {
     numberId: string
     verifyToken: string
     version: string
-    port?: number
 }
 
 export interface SaveFileOptions {

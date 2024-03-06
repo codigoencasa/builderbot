@@ -1,5 +1,5 @@
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
-import { BotContext, BotCtxMiddleware, DynamicBlacklist, SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { BotContext, BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@bot-whatsapp/bot/dist/types'
 import { Message, Whatsapp, create, defaultLogger } from '@wppconnect-team/wppconnect'
 import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
@@ -31,14 +31,24 @@ class WPPConnectProvider extends ProviderClass {
     /**
      *
      * @param port
+     * @param opts
+     * @returns
      */
-    initHttpServer = (port: number, blacklist?: DynamicBlacklist) => {
+    initHttpServer = (port: number, opts: Pick<BotCtxMiddlewareOptions, 'blacklist'>) => {
         const methods: BotCtxMiddleware<WPPConnectProvider> = {
             sendMessage: this.sendMessage,
             provider: this.vendor,
-            blacklist,
+            blacklist: opts.blacklist,
+            dispatch: (customEvent, payload) => {
+                this.emit('message', {
+                    body: utils.setEvent(customEvent),
+                    name: payload.name,
+                    from: payload.from,
+                })
+            },
         }
         this.http.start(methods, port)
+        return
     }
 
     /**

@@ -1,6 +1,6 @@
 import { ProviderClass, utils } from '@bot-whatsapp/bot'
 import { Vendor } from '@bot-whatsapp/bot/dist/provider/providerClass'
-import { BotContext, BotCtxMiddleware, DynamicBlacklist, SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { BotContext, BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@bot-whatsapp/bot/dist/types'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import twilio from 'twilio'
@@ -15,23 +15,11 @@ class TwilioProvider extends ProviderClass {
     private vendorNumber: string
     private publicUrl: string
 
-    constructor({
-        accountSid,
-        authToken,
-        vendorNumber,
-        port = Number(process.env.PORT) || 3000,
-        publicUrl = '',
-    }: ITwilioProviderOptions) {
+    constructor({ accountSid, authToken, vendorNumber, publicUrl = '' }: ITwilioProviderOptions) {
         super()
         this.publicUrl = publicUrl
-
         this.vendor = twilio(accountSid, authToken)
         this.vendorNumber = parseNumber(vendorNumber)
-        this.initHttpServer(port)
-        const listEvents = this.busEvents()
-        for (const { event, func } of listEvents) {
-            this.http.on(event, func)
-        }
     }
 
     private busEvents(): Array<{ event: string; func: (payload?: any) => void }> {
@@ -54,7 +42,7 @@ class TwilioProvider extends ProviderClass {
     }
 
     private async sendMedia(number: string, message: string, mediaInput: string | null): Promise<any> {
-        if (!mediaInput) throw new Error(`MEDIA_INPUT_NULL_: ${mediaInput}`)
+        if (!mediaInput) throw new Error(`Media cannot be null`)
         const encryptPath = utils.encryptData(encodeURIComponent(mediaInput))
         const urlEncode = `${this.publicUrl}/tmp?path=${encryptPath}`
         const regexUrl = /^(?!https?:\/\/)[^\s]+$/
@@ -94,14 +82,36 @@ class TwilioProvider extends ProviderClass {
         )
     }
 
-    initHttpServer = (port: number, blacklist?: DynamicBlacklist) => {
+    private listenOnEvents = () => {
+        const listEvents = this.busEvents()
+        for (const { event, func } of listEvents) {
+            this.http.on(event, func)
+        }
+    }
+
+    /**
+     *
+     * @param port
+     * @param opts
+     * @returns
+     */
+    initHttpServer = (port: number, opts: Pick<BotCtxMiddlewareOptions, 'blacklist'>) => {
         this.http = new TwilioWebHookServer(port)
         const methods: BotCtxMiddleware<TwilioProvider> = {
             sendMessage: this.sendMessage,
             provider: this.vendor,
-            blacklist,
+            blacklist: opts.blacklist,
+            dispatch: (customEvent, payload) => {
+                this.emit('message', {
+                    body: utils.setEvent(customEvent),
+                    name: payload.name,
+                    from: payload.from,
+                })
+            },
         }
         this.http.start(methods, port)
+        this.listenOnEvents()
+        return
     }
 
     sendMessage = async (number: string, message: string, options?: SendOptions): Promise<any> => {
