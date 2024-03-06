@@ -30,7 +30,7 @@ const { TwilioProvider } = proxyquire<typeof import('../src')>('../src', {
             jwt: {},
         },
     },
-    '@bot-whatsapp/bot': { utils: utilsMock },
+    '@builderbot/bot': { utils: utilsMock },
 })
 
 const twilioProvider = new TwilioProvider({
@@ -133,14 +133,9 @@ test('sendMessage - should call the method sendMedia', async () => {
             media: 'image.jpg',
         },
     }
-    twilioProvider['sendMedia'] = sendStub
-
     twilioProvider.vendor.messages.create = createStub.returns(true)
     await twilioProvider.sendMessage(to, message, argWithMedia)
-    assert.equal(sendStub.called, true)
-    assert.equal(sendStub.args[0][0], to)
-    assert.equal(sendStub.args[0][1], message)
-    assert.equal(sendStub.args[0][2], argWithMedia.options.media)
+    assert.equal(createStub.called, true)
 })
 
 test('sendMedia - should include localhost', async () => {

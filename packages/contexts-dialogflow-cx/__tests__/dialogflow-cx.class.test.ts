@@ -1,4 +1,4 @@
-import { ProviderClass } from '@bot-whatsapp/bot'
+import { ProviderClass } from '@builderbot/bot'
 import { promises as fsPromises, unlinkSync } from 'fs'
 import { join } from 'path'
 import { stub } from 'sinon'

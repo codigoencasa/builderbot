@@ -1,4 +1,4 @@
-import { utils } from '@bot-whatsapp/bot'
+import { utils } from '@builderbot/bot'
 import { createWriteStream } from 'fs'
 import * as http from 'http'
 import * as https from 'https'

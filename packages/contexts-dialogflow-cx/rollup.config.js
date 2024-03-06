@@ -12,7 +12,7 @@ export default {
     ],
     plugins: [
         nodeResolve({
-            resolveOnly: (module) => !/@google-cloud|@bot-whatsapp\/bot/i.test(module),
+            resolveOnly: (module) => !/@google-cloud|@builderbot\/bot/i.test(module),
         }),
         typescript(),
     ],

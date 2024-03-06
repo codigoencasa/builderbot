@@ -1,4 +1,4 @@
-# @bot-whatsapp/cli
+# @builderbot/cli
 
 -   [x] Revisar version de NODE
 -   [x] Revisar OS

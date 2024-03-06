@@ -1,5 +1,5 @@
-import { utils } from '@bot-whatsapp/bot'
-import { SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { utils } from '@builderbot/bot'
+import { SendOptions } from '@builderbot/bot/dist/types'
 import fsPromises from 'fs/promises'
 import proxyquire from 'proxyquire'
 import { stub } from 'sinon'
@@ -15,17 +15,23 @@ const wppconnectMock = {
     create: stub().resolves({ session: true }),
 }
 
+const generalDownloadMock = stub().resolves('resultado esperado o simulado')
+
 const WppConnectGenerateImageStub = stub().resolves()
 
 const mimeMock = {
     lookup: stub(),
 }
 
-const { WPPConnectProvider } = proxyquire<typeof import('../src')>('../src', {
+const proxyquireConfig = {
     '@wppconnect-team/wppconnect': { create: wppconnectMock.create() },
+    '@builderbot/bot': { utils: { ...utils, generalDownload: generalDownloadMock } },
     WppConnectGenerateImage: WppConnectGenerateImageStub(),
     'mime-types': mimeMock,
-})
+}
+
+const { WPPConnectProvider } = proxyquire<typeof import('../src/index')>('../src/index', proxyquireConfig)
+
 const wppConnectProvider = new WPPConnectProvider({ name: 'testBot' })
 
 const sendMediaStub = stub()
@@ -34,6 +40,7 @@ const vendorSendImageStub = stub()
 const sendImageStub = stub()
 const emitStub = stub()
 const sendStub = stub().resolves('success')
+
 test.after.each(() => {
     sendMediaStub.resetHistory()
     mimeMock.lookup.resetHistory()
@@ -342,7 +349,7 @@ test('initHttpServer - debería iniciar el servidor HTTP correctamente', async (
     }
     wppConnectProvider.sendMessage = sendStub
 
-    wppConnectProvider.initHttpServer(testPort)
+    wppConnectProvider.initHttpServer(testPort, { blacklist: {} as any })
     assert.equal(startStub.called, true)
     await wppConnectProvider.http?.server.server?.close()
 })

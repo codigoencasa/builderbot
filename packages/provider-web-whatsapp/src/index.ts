@@ -1,5 +1,5 @@
-import { ProviderClass, utils } from '@bot-whatsapp/bot'
-import { BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { ProviderClass, utils } from '@builderbot/bot'
+import { BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@builderbot/bot/dist/types'
 import { Console } from 'console'
 import { createWriteStream, readFileSync } from 'fs'
 import mime from 'mime-types'

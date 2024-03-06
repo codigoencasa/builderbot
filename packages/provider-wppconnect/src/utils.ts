@@ -1,4 +1,4 @@
-import { utils } from '@bot-whatsapp/bot'
+import { utils } from '@builderbot/bot'
 import { writeFile } from 'fs'
 
 import { Response } from './types'

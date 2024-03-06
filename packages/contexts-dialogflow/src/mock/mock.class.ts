@@ -1,4 +1,4 @@
-import { CoreClass } from '@bot-whatsapp/bot'
+import { CoreClass } from '@builderbot/bot'
 
 export class MockContext extends CoreClass {
     constructor(_database, _provider) {

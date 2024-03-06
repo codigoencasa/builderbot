@@ -16,7 +16,7 @@
     ],
     "bin": "./bin/create.cjs",
     "dependencies": {
-        "@bot-whatsapp/cli": "workspace:*"
+        "@builderbot/cli": "workspace:*"
     },
     "repository": {
         "type": "git",

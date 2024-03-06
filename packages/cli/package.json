@@ -1,5 +1,5 @@
 {
-    "name": "@bot-whatsapp/cli",
+    "name": "@builderbot/cli",
     "version": "0.1.3-alpha.16",
     "description": "",
     "main": "dist/index.cjs",

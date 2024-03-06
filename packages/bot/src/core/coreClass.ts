@@ -25,7 +25,7 @@ type EventFunction = (msg: { [key: string]: string }) => Promise<any> | void
 
 const idleForCallback = new IdleState()
 
-class CoreClass<P extends ProviderClass, D extends MemoryDB> extends EventEmitter {
+class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends EventEmitter {
     flowClass: FlowClass
     database: D
     provider: P

@@ -15,7 +15,7 @@ export default {
     plugins: [
         json(),
         nodeResolve({
-            resolveOnly: (module) => !/ffmpeg|@wppconnect|@bot-whatsapp\/bot|sharp/i.test(module),
+            resolveOnly: (module) => !/ffmpeg|@wppconnect|@builderbot\/bot|sharp/i.test(module),
         }),
         commonjs(),
         typescript(),

@@ -1,4 +1,4 @@
-import { BotCtxMiddleware } from '@bot-whatsapp/bot/dist/types'
+import { BotCtxMiddleware } from '@builderbot/bot/dist/types'
 import { urlencoded, json } from 'body-parser'
 import { EventEmitter } from 'node:events'
 import polka, { Polka } from 'polka'

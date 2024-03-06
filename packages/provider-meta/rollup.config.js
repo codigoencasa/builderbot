@@ -16,7 +16,7 @@ export default {
         json(),
         commonjs(),
         nodeResolve({
-            resolveOnly: (module) => !/axios|@bot-whatsapp\/bot/i.test(module),
+            resolveOnly: (module) => !/axios|@builderbot\/bot/i.test(module),
         }),
         typescript(),
     ],

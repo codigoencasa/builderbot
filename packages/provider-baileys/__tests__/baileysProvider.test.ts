@@ -1,5 +1,5 @@
-import { utils } from '@bot-whatsapp/bot'
-import { SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { utils } from '@builderbot/bot'
+import { SendOptions } from '@builderbot/bot/dist/types'
 import fs from 'fs'
 import { stub } from 'sinon'
 import { test } from 'uvu'
@@ -508,7 +508,7 @@ test('initHttpServer - debería iniciar el servidor HTTP correctamente', async (
     }
     baileysProvider.sendMessage = sendStub
 
-    baileysProvider.initHttpServer(testPort)
+    baileysProvider.initHttpServer(testPort, { blacklist: {} as any })
     assert.equal(startStub.called, true)
     await baileysProvider.http?.server.server?.close()
 })

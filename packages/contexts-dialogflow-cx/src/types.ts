@@ -1,4 +1,4 @@
-import { Button } from '@bot-whatsapp/bot/dist/types'
+import { Button } from '@builderbot/bot/dist/types'
 
 export interface DialogFlowContextOptions {
     language: string

@@ -1,5 +1,5 @@
-import { utils } from '@bot-whatsapp/bot'
-import { SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { utils } from '@builderbot/bot'
+import { SendOptions } from '@builderbot/bot/dist/types'
 import fsPromises from 'fs/promises'
 import proxyquire from 'proxyquire'
 import { spy, stub } from 'sinon'
@@ -20,7 +20,7 @@ const hookClose = async () => {
 }
 
 const { VenomProvider } = proxyquire<typeof import('../src/index')>('../src/index', {
-    '@bot-whatsapp/bot': { utils: utilsMock },
+    '@builderbot/bot': { utils: utilsMock },
     'mime-types': mimeMock,
 })
 const credentials = { name: 'bot', gifPlayback: false }

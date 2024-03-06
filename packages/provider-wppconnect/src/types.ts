@@ -1,4 +1,4 @@
-import { ProviderClass } from '@bot-whatsapp/bot'
+import { ProviderClass } from '@builderbot/bot'
 export interface Response {
     type: string
     data: Buffer

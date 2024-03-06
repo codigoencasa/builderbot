@@ -224,7 +224,7 @@ importers:
 
     packages/contexts-dialogflow:
         dependencies:
-            '@bot-whatsapp/bot':
+            '@builderbot/bot':
                 specifier: workspace:*
                 version: link:../bot
             '@google-cloud/dialogflow':
@@ -264,7 +264,7 @@ importers:
 
     packages/contexts-dialogflow-cx:
         dependencies:
-            '@bot-whatsapp/bot':
+            '@builderbot/bot':
                 specifier: workspace:*
                 version: link:../bot
             '@google-cloud/dialogflow-cx':
@@ -304,7 +304,7 @@ importers:
 
     packages/create-bot-whatsapp:
         dependencies:
-            '@bot-whatsapp/cli':
+            '@builderbot/cli':
                 specifier: workspace:*
                 version: link:../cli
         devDependencies:
@@ -537,7 +537,7 @@ importers:
                 specifier: ^2.1.2
                 version: 2.1.2
         devDependencies:
-            '@bot-whatsapp/bot':
+            '@builderbot/bot':
                 specifier: workspace:*
                 version: link:../bot
             '@hapi/boom':
@@ -616,7 +616,7 @@ importers:
                 specifier: ^2.2.1
                 version: 2.2.1
         devDependencies:
-            '@bot-whatsapp/bot':
+            '@builderbot/bot':
                 specifier: workspace:*
                 version: link:../bot
             '@rollup/plugin-commonjs':
@@ -683,7 +683,7 @@ importers:
                 specifier: 4.20.0
                 version: 4.20.0
         devDependencies:
-            '@bot-whatsapp/bot':
+            '@builderbot/bot':
                 specifier: workspace:*
                 version: link:../bot
             '@rollup/plugin-commonjs':
@@ -744,7 +744,7 @@ importers:
                 specifier: ^5.0.21
                 version: 5.0.21(typescript@5.3.3)
         devDependencies:
-            '@bot-whatsapp/bot':
+            '@builderbot/bot':
                 specifier: workspace:*
                 version: link:../bot
             '@rollup/plugin-commonjs':
@@ -814,7 +814,7 @@ importers:
                 specifier: ^1.23.0
                 version: 1.23.0
         devDependencies:
-            '@bot-whatsapp/bot':
+            '@builderbot/bot':
                 specifier: workspace:*
                 version: link:../bot
             '@rollup/plugin-commonjs':
@@ -875,7 +875,7 @@ importers:
                 specifier: ^0.5.2
                 version: 0.5.2
         devDependencies:
-            '@bot-whatsapp/bot':
+            '@builderbot/bot':
                 specifier: workspace:*
                 version: link:../bot
             '@rollup/plugin-commonjs':

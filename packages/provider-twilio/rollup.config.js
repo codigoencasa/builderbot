@@ -16,7 +16,7 @@ export default {
     plugins: [
         json(),
         nodeResolve({
-            resolveOnly: (module) => !/ffmpeg|@bot-whatsapp\/bot|twilio|sharp/i.test(module),
+            resolveOnly: (module) => !/ffmpeg|@builderbot\/bot|twilio|sharp/i.test(module),
         }),
         commonjs(),
         typescript(),

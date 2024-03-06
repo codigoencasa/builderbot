@@ -1,5 +1,5 @@
-import { utils } from '@bot-whatsapp/bot'
-import { BotCtxMiddleware } from '@bot-whatsapp/bot/dist/types'
+import { utils } from '@builderbot/bot'
+import { BotCtxMiddleware } from '@builderbot/bot/dist/types'
 import { urlencoded, json } from 'body-parser'
 import mime from 'mime-types'
 import { EventEmitter } from 'node:events'

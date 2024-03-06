@@ -1,5 +1,5 @@
-import { ProviderClass, utils } from '@bot-whatsapp/bot'
-import { BotContext, BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { ProviderClass, utils } from '@builderbot/bot'
+import { BotContext, BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@builderbot/bot/dist/types'
 import { Message, Whatsapp, create, defaultLogger } from '@wppconnect-team/wppconnect'
 import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
@@ -15,7 +15,7 @@ import { WppConnectGenerateImage, WppConnectValidNumber, WppConnectCleanNumber }
  * que extiende la clase ProviderClass (la cual es como una interfaz para saber qué funciones son requeridas).
  * https://github.com/wppconnect-team/wppconnect
  */
-defaultLogger.transports.forEach((t) => (t.silent = true)) //<==
+defaultLogger.transports.forEach((t) => (t.silent = true))
 class WPPConnectProvider extends ProviderClass {
     globalVendorArgs = { name: 'bot', port: 3000 }
     vendor: Whatsapp

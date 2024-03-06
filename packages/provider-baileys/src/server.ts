@@ -1,4 +1,4 @@
-import { BotCtxMiddleware } from '@bot-whatsapp/bot/dist/types'
+import { BotCtxMiddleware } from '@builderbot/bot/dist/types'
 import { WASocket } from '@whiskeysockets/baileys'
 import { urlencoded, json } from 'body-parser'
 import { createReadStream } from 'fs'

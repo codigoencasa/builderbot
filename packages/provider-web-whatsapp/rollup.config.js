@@ -16,7 +16,7 @@ export default {
         json(),
         commonjs(),
         nodeResolve({
-            resolveOnly: (module) => !/ffmpeg|whatsapp-web.js|@bot-whatsapp\/bot|sharp/i.test(module),
+            resolveOnly: (module) => !/ffmpeg|whatsapp-web.js|@builderbot\/bot|sharp/i.test(module),
         }),
         typescript(),
     ],

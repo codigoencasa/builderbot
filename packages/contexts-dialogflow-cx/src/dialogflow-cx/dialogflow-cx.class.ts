@@ -1,4 +1,4 @@
-import { CoreClass } from '@bot-whatsapp/bot'
+import { CoreClass } from '@builderbot/bot'
 import { SessionsClient } from '@google-cloud/dialogflow-cx'
 import { existsSync, readFileSync } from 'fs'
 import { join } from 'path'

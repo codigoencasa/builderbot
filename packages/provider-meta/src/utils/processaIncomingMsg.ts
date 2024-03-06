@@ -1,4 +1,4 @@
-import { utils } from '@bot-whatsapp/bot'
+import { utils } from '@builderbot/bot'
 
 import { getMediaUrl } from './mediaUrl'
 import { Message, ParamasIncomingMessage } from '../types'

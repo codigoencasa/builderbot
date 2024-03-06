@@ -1,3 +1,3 @@
-import { ProviderClass } from '@bot-whatsapp/bot'
+import { ProviderClass } from '@builderbot/bot'
 
 export type BotCtxMiddleware = Partial<ProviderClass & { provider: any }>

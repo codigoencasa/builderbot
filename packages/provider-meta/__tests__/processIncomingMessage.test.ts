@@ -18,7 +18,7 @@ const getMediaUrlStub = stub().resolves('mocked-image-url')
 
 const { processIncomingMessage } = proxyquire('../src/utils', {
     getMediaUrl: { getMediaUrl: getMediaUrlStub() },
-    '@bot-whatsapp/bot': { utils: utilsMock },
+    '@builderbot/bot': { utils: utilsMock },
 })
 
 test('processIncomingMessage - for text message', async () => {

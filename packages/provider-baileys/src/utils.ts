@@ -1,4 +1,4 @@
-import { utils } from '@bot-whatsapp/bot'
+import { utils } from '@builderbot/bot'
 import { createWriteStream, WriteStream } from 'fs'
 import * as qr from 'qr-image'
 

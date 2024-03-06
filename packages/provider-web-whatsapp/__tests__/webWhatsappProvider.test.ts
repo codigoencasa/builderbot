@@ -1,5 +1,5 @@
-import { utils } from '@bot-whatsapp/bot'
-import { SendOptions } from '@bot-whatsapp/bot/dist/types'
+import { utils } from '@builderbot/bot'
+import { SendOptions } from '@builderbot/bot/dist/types'
 import fs from 'fs'
 import mime from 'mime-types'
 import { stub } from 'sinon'
