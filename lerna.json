@@ -1,23 +1,6 @@
 {
-  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
-  "version": "0.2.2",
-  "packages": [
-    "packages/bot",
-    "packages/cli",
-    "packages/create-builderbot",
-    "packages/database-mongo",
-    "packages/database-mysql",
-    "packages/database-json",
-    "packages/database-postgres",
-    "packages/eslint-plugin-bot-whatsapp",
-    "packages/provider-meta",
-    "packages/provider-baileys",
-    "packages/provider-twilio",
-    "packages/provider-web-whatsapp",
-    "packages/provider-wppconnect",
-    "packages/provider-venom",
-    "packages/contexts-dialogflow",
-    "packages/contexts-dialogflow-cx"
-  ],
-  "npmClient": "pnpm"
+    "version": "0.2.2",
+    "packages": ["packages/*"],
+    "npmClient": "pnpm",
+    "$schema": "node_modules/lerna/schemas/lerna-schema.json"
 }
