@@ -4,7 +4,7 @@ import { join } from 'path'
 import color from 'picocolors'
 
 import { checkNodeVersion, checkGit } from '../check'
-import { PROVIDER_LIST, PROVIDER_DATA } from '../configuration'
+import { PROVIDER_LIST, PROVIDER_DATA, AVAILABLE_LANGUAGES } from '../configuration'
 import { copyBaseApp } from '../create-app'
 import { startInteractiveLegacy } from '../interactive-legacy'
 
@@ -104,13 +104,23 @@ const startInteractive = async (): Promise<void> => {
             return process.exit(0)
         }
 
+        const stepLanguage = await select({
+            message: '¿Que lenguaje prefieres usar?',
+            options: AVAILABLE_LANGUAGES,
+        })
+
+        if (isCancel(stepLanguage)) {
+            cancel('Operacion cancelada')
+            return process.exit(0)
+        }
+
         const s = spinner()
         s.start('Comprobando requerimientos')
         await systemRequirements()
         s.stop('Comprobando requerimientos')
 
         s.start(`Creando proyecto`)
-        const NAME_DIR: string = ['base', stepProvider, stepDatabase].join('-')
+        const NAME_DIR: string = ['base', stepLanguage, stepProvider, stepDatabase].join('-')
         await createApp(NAME_DIR)
         s.stop(`Creando proyecto`)
         bannerDone(NAME_DIR)
