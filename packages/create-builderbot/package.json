@@ -1,6 +1,6 @@
 {
     "name": "create-builderbot",
-    "version": "0.2.3-alpha.0",
+    "version": "0.3.0-alpha.0",
     "description": "",
     "license": "ISC",
     "main": "dist/index.cjs",
@@ -16,7 +16,7 @@
     ],
     "bin": "./bin/create.cjs",
     "dependencies": {
-        "@builderbot/cli": "workspace:*"
+        "@builderbot/cli": "^0.3.0-alpha.0"
     },
     "repository": {
         "type": "git",
@@ -30,5 +30,5 @@
         "rimraf": "^5.0.5",
         "rollup-plugin-typescript2": "^0.36.0"
     },
-    "gitHead": "cb94c90c05492a02dda63a8f48e661bf2995d4fb"
+    "gitHead": "7d7d2e9498fd9c4cb8390be61f0eb5fc105227c7"
 }

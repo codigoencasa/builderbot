@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/database-json",
-    "version": "0.2.2",
+    "version": "0.3.0-alpha.0",
     "description": "Esto es el conector a json",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
