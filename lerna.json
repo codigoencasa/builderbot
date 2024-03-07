@@ -3,6 +3,7 @@
   "version": "0.2.2",
   "packages": [
     "packages/bot",
+    "packages/cli",
     "packages/create-builderbot",
     "packages/database-mongo",
     "packages/database-mysql",
