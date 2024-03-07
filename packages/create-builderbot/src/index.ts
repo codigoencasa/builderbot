@@ -5,6 +5,4 @@ import { startInteractive } from '@builderbot/cli'
  * parte
  * @returns
  */
-const main = () => startInteractive()
-
-export default main
+export const main = () => startInteractive()
