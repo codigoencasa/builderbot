@@ -21,6 +21,7 @@
     "test": "npx lerna run test",
     "publish:canary": "npx lerna publish from-package --canary",
     "prepare": "npx husky install",
+    "publish:dev": "npx lerna publish from-package --dist-tag dev --yes",
     "next:version": "npx lerna version --force-publish",
     "preinstall": "npx only-allow pnpm",
     "release": "standard-version -- --prerelease --global",
