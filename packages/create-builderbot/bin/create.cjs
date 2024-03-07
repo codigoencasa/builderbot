@@ -1,3 +1,4 @@
 #!/usr/bin/env node
-const main = require('../dist/index.cjs')
-main()
+import('../dist/index.cjs')
+    .then((m) => m.default.main())
+    .catch((e) => console.log(`[Error CLI]:`, e))
