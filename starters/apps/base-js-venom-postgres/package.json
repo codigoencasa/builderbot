@@ -10,9 +10,9 @@
       },
     "keywords": [],
     "dependencies": {
-        "@bot-whatsapp/bot": "latest",
-        "@bot-whatsapp/database-json": "latest",
-        "@bot-whatsapp/provider-baileys": "latest"
+        "@builderbot/bot": "latest",
+        "@builderbot/database-json": "latest",
+        "@builderbot/provider-baileys": "latest"
     },
     "devDependencies": {
         "eslint-plugin-bot-whatsapp": "latest"

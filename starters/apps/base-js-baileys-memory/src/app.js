@@ -43,7 +43,7 @@ const registerFlow = addKeyword(utils.setEvent('REGISTER_FLOW'))
 
 const main = async () => {
     const adapterFlow = createFlow([welcomeFlow, registerFlow])
-
+    
     const adapterProvider = createProvider(Provider)
     const adapterDB = new Database()
 

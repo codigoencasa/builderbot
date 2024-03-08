@@ -62,6 +62,7 @@ export type BotContext = {
     idleFallBack?: boolean
     body: string
     from: string
+    [key: string]: any
 }
 
 export type MessageContextIncoming = {

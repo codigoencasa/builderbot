@@ -6,18 +6,18 @@
     "type": "module",
     "scripts": {
         "prestart": "npx eslint . --no-ignore",
-        "pre-copy": "cd .. && npm run  copy.lib base-baileys-json",
         "start": "node dist/app.js",
-        "dev": "npx tsx src/app.ts",
-        "build": "npx  rollup -c"
+        "dev": "nodemon src/app.ts",
+        "build": "npx rollup -c"
     },
     "keywords": [],
     "dependencies": {
-        "@bot-whatsapp/bot": "latest",
-        "@bot-whatsapp/database-json": "latest",
-        "@bot-whatsapp/provider-baileys": "latest"
+        "@builderbot/bot": "latest",
+        "@builderbot/database-json": "latest",
+        "@builderbot/provider-baileys": "latest"
     },
     "devDependencies": {
+        "nodemon": "^3.1.0",
         "@rollup/plugin-terser": "^0.4.4",
         "eslint": "^8.52.0",
         "eslint-plugin-bot-whatsapp": "latest",

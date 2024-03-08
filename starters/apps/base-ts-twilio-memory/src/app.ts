@@ -4,11 +4,11 @@ import { TwilioProvider as Provider } from '@bot-whatsapp/provider-twilio'
 const PORT = process.env.PORT ?? 3008
 
 const discordFlow = addKeyword<Provider, Database>('doc').addAnswer(
-    [
-        'You can see the documentation here',
-        '📄 https://builderbot.app/docs \n',
-        'Do you want to continue? *yes*'
-    ].join('\n'), { capture: true }, async (ctx, { gotoFlow, flowDynamic }) => {
+    ['You can see the documentation here', '📄 https://builderbot.app/docs \n', 'Do you want to continue? *yes*'].join(
+        '\n'
+    ),
+    { capture: true },
+    async (ctx, { gotoFlow, flowDynamic }) => {
         if (ctx.body.toLocaleLowerCase().includes('yes')) {
             return gotoFlow(registerFlow)
         }
@@ -41,7 +41,6 @@ const registerFlow = addKeyword<Provider, Database>(utils.setEvent('REGISTER_FLO
     })
 
 const main = async () => {
-
     const adapterFlow = createFlow([welcomeFlow, registerFlow])
     const adapterProvider = createProvider(Provider, {
     accountSid: 'YOUR_ACCOUNT_SID',
@@ -58,26 +57,35 @@ const main = async () => {
 
     httpServer(+PORT)
 
-    adapterProvider.http.server.post('/v1/messages', handleCtx(async (bot, req, res) => {
-        const { number, message, urlMedia } = req.body
-        await bot.sendMessage(number, message, { media: urlMedia ?? null })
-        return res.end('sended')
-    }))
+    adapterProvider.http.server.post(
+        '/v1/messages',
+        handleCtx(async (bot, req, res) => {
+            const { number, message, urlMedia } = req.body
+            await bot.sendMessage(number, message, { media: urlMedia ?? null })
+            return res.end('sended')
+        })
+    )
 
-    adapterProvider.http.server.post('/v1/register', handleCtx(async (bot, req, res) => {
-        const { number, name } = req.body
-        await bot.dispatch('REGISTER_FLOW', { from: number, name })
-        return res.end('trigger')
-    }))
+    adapterProvider.http.server.post(
+        '/v1/register',
+        handleCtx(async (bot, req, res) => {
+            const { number, name } = req.body
+            await bot.dispatch('REGISTER_FLOW', { from: number, name })
+            return res.end('trigger')
+        })
+    )
 
-    adapterProvider.http.server.post('/v1/blacklist', handleCtx(async (bot, req, res) => {
-        const { number, intent } = req.body
-        if (intent === 'remove') bot.blacklist.remove(`340000000`)
-        if (intent === 'add') bot.blacklist.add(`340000000`)
+    adapterProvider.http.server.post(
+        '/v1/blacklist',
+        handleCtx(async (bot, req, res) => {
+            const { number, intent } = req.body
+            if (intent === 'remove') bot.blacklist.remove(`340000000`)
+            if (intent === 'add') bot.blacklist.add(`340000000`)
 
-        res.writeHead(200, { 'Content-Type': 'application/json' })
-        return res.end(JSON.stringify({ status: 'ok', number, intent }))
-    }))
+            res.writeHead(200, { 'Content-Type': 'application/json' })
+            return res.end(JSON.stringify({ status: 'ok', number, intent }))
+        })
+    )
 }
 
 main()
