@@ -48,6 +48,7 @@ const main = async () => {
         dbUri: process.env.MONGO_DB_URI,
         dbName: process.env.MONGO_DB_NAME,
     })
+
     const { handleCtx, httpServer } = await createBot({
         flow: adapterFlow,
         provider: adapterProvider,

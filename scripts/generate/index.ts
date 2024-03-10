@@ -6,6 +6,10 @@ type genericProps = { IMPORT: string; IMPLEMENTATION: string }
 const BASE_TEMPLATE: string = join(process.cwd(), 'scripts', 'generate')
 const BASE_TEMPLATES_APP: string = join(process.cwd(), 'starters', 'apps')
 
+export const delay = (milliseconds: number): Promise<void> => {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds))
+}
+
 const [, , inputLanguage]: string[] = process.argv
 
 /**
@@ -59,6 +63,7 @@ const main = async (): Promise<void> => {
 
         for (const database of PROVIDER_DATA) {
             for (const provider of PROVIDER_LIST) {
+                await delay(100)
                 const full = await copyBase(inputLanguage, database.value, provider.value)
                 await replaceZones(full, database.value, provider.value)
             }

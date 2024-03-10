@@ -1,5 +1,6 @@
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@bot-whatsapp/bot'
-import { MysqlAdapter as Database } from '@bot-whatsapp/database-mysql'import { MetaProvider as Provider } from '@bot-whatsapp/provider-meta'
+import { MysqlAdapter as Database } from '@bot-whatsapp/database-mysql'
+import { MetaProvider as Provider } from '@bot-whatsapp/provider-meta'
 
 const PORT = process.env.PORT ?? 3008
 
@@ -54,6 +55,7 @@ const main = async () => {
         database: process.env.MYSQL_DB_NAME,
         password: process.env.MYSQL_DB_PASSWORD,
     })
+
     const { handleCtx, httpServer } = await createBot({
         flow: adapterFlow,
         provider: adapterProvider,

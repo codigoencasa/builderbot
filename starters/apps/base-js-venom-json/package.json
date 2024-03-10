@@ -15,7 +15,7 @@
         "@builderbot/provider-baileys": "latest"
     },
     "devDependencies": {
-        "eslint-plugin-bot-whatsapp": "latest"
+        "eslint-plugin-builderbot": "latest"
     },
     "author": "",
     "license": "ISC"

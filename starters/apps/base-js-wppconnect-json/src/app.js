@@ -47,6 +47,7 @@ const main = async () => {
     const adapterProvider = createProvider(Provider)
     
     const adapterDB = new Database({ filename: 'db.json' })
+
     const { handleCtx, httpServer } = await createBot({
         flow: adapterFlow,
         provider: adapterProvider,
