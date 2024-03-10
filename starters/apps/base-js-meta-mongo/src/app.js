@@ -1,5 +1,6 @@
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@bot-whatsapp/bot'
-import { MongoAdapter as Database } from '@bot-whatsapp/database-mongo'import { MetaProvider as Provider } from '@bot-whatsapp/provider-meta'
+import { MongoAdapter as Database } from '@bot-whatsapp/database-mongo'
+import { MetaProvider as Provider } from '@bot-whatsapp/provider-meta'
 
 const PORT = process.env.PORT ?? 3008
 
@@ -43,11 +44,11 @@ const registerFlow = addKeyword(utils.setEvent('REGISTER_FLOW'))
 const main = async () => {
     const adapterFlow = createFlow([welcomeFlow, registerFlow])
     const adapterProvider = createProvider(Provider, {
-    jwtToken: 'jwtToken',
-    numberId: 'numberId',
-    verifyToken: 'verifyToken',
-    version: 'v16.0'
-})
+        jwtToken: 'jwtToken',
+        numberId: 'numberId',
+        verifyToken: 'verifyToken',
+        version: 'v16.0'
+    })
         const adapterDB = new Database({
         dbUri: process.env.MONGO_DB_URI,
         dbName: process.env.MONGO_DB_NAME,

@@ -45,7 +45,7 @@ const main = async () => {
     const adapterFlow = createFlow([welcomeFlow, registerFlow])
     
     const adapterProvider = createProvider(Provider)
-        const adapterDB = new Database({
+    const adapterDB = new Database({
         host: process.env.MYSQL_DB_HOST,
         user: process.env.MYSQL_DB_USER,
         database: process.env.MYSQL_DB_NAME,

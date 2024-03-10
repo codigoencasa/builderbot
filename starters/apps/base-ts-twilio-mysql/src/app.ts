@@ -1,6 +1,7 @@
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@bot-whatsapp/bot'
 import { MysqlAdapter as Database } from '@bot-whatsapp/database-mysql'
 import { TwilioProvider as Provider } from '@bot-whatsapp/provider-twilio'
+
 const PORT = process.env.PORT ?? 3008
 
 const discordFlow = addKeyword<Provider, Database>('doc').addAnswer(
@@ -47,7 +48,7 @@ const main = async () => {
     authToken: 'YOUR_ACCOUNT_TOKEN',
     vendorNumber: '+14100000000',
 })
-        const adapterDB = new Database({
+    const adapterDB = new Database({
         host: process.env.MYSQL_DB_HOST,
         user: process.env.MYSQL_DB_USER,
         database: process.env.MYSQL_DB_NAME,

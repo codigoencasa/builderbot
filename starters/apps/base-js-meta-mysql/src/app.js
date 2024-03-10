@@ -44,12 +44,12 @@ const registerFlow = addKeyword(utils.setEvent('REGISTER_FLOW'))
 const main = async () => {
     const adapterFlow = createFlow([welcomeFlow, registerFlow])
     const adapterProvider = createProvider(Provider, {
-    jwtToken: 'jwtToken',
-    numberId: 'numberId',
-    verifyToken: 'verifyToken',
-    version: 'v16.0'
-})
-        const adapterDB = new Database({
+        jwtToken: 'jwtToken',
+        numberId: 'numberId',
+        verifyToken: 'verifyToken',
+        version: 'v16.0'
+    })
+    const adapterDB = new Database({
         host: process.env.MYSQL_DB_HOST,
         user: process.env.MYSQL_DB_USER,
         database: process.env.MYSQL_DB_NAME,

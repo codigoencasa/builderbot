@@ -1,5 +1,6 @@
 import { copy } from 'fs-extra'
 import { join } from 'path'
+import { rimraf } from 'rimraf'
 import { readFileSync, readdirSync, writeFileSync } from 'fs'
 
 type genericProps = { IMPORT: string; IMPLEMENTATION: string }
@@ -22,6 +23,20 @@ const copyBase = async (input: string, database: string, provider: string): Prom
     const options = { overwrite: true }
     await copy(FROM, TO, options)
     return TO
+}
+
+/**
+ *
+ */
+const cleanTemplates = async (): Promise<void> => {
+    try {
+        const list = readdirSync(BASE_TEMPLATES_APP)
+        for (const iterator of list) {
+            await rimraf(join(BASE_TEMPLATES_APP, '/', iterator))
+        }
+    } catch (e) {
+        console.log(`[Error]:`, e)
+    }
 }
 
 /**
@@ -57,15 +72,24 @@ const main = async (): Promise<void> => {
     try {
         const { PROVIDER_DATA, PROVIDER_LIST } = await import('../../packages/cli/src/configuration/index.ts')
 
-        if (!inputLanguage) {
-            throw new Error('should choose js or ts')
+        console.log(`Cleaning...`)
+        await cleanTemplates()
+
+        for (const database of PROVIDER_DATA) {
+            for (const provider of PROVIDER_LIST) {
+                await delay(50)
+                const full = await copyBase('js', database.value, provider.value)
+                await replaceZones(full, database.value, provider.value)
+                console.log(`Generated JS 🌟: ${database.value}-${provider.value}`)
+            }
         }
 
         for (const database of PROVIDER_DATA) {
             for (const provider of PROVIDER_LIST) {
-                await delay(100)
-                const full = await copyBase(inputLanguage, database.value, provider.value)
+                await delay(50)
+                const full = await copyBase('ts', database.value, provider.value)
                 await replaceZones(full, database.value, provider.value)
+                console.log(`Generated TS 👌: ${database.value}-${provider.value}`)
             }
         }
 

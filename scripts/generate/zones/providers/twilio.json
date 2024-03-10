@@ -1,5 +1,5 @@
 {
-    "IMPORT": "import { TwilioProvider as Provider } from '@bot-whatsapp/provider-twilio'",
+    "IMPORT": "import { TwilioProvider as Provider } from '@bot-whatsapp/provider-twilio'\n",
     "IMPLEMENTATION": "const adapterProvider = createProvider(Provider, {\n    accountSid: 'YOUR_ACCOUNT_SID',\n    authToken: 'YOUR_ACCOUNT_TOKEN',\n    vendorNumber: '+14100000000',\n})"
   }
   

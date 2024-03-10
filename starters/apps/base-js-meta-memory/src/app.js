@@ -44,11 +44,11 @@ const registerFlow = addKeyword(utils.setEvent('REGISTER_FLOW'))
 const main = async () => {
     const adapterFlow = createFlow([welcomeFlow, registerFlow])
     const adapterProvider = createProvider(Provider, {
-    jwtToken: 'jwtToken',
-    numberId: 'numberId',
-    verifyToken: 'verifyToken',
-    version: 'v16.0'
-})
+        jwtToken: 'jwtToken',
+        numberId: 'numberId',
+        verifyToken: 'verifyToken',
+        version: 'v16.0'
+    })
     const adapterDB = new Database()
 
     const { handleCtx, httpServer } = await createBot({
