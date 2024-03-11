@@ -8,7 +8,7 @@
     "packages/database-mysql",
     "packages/database-json",
     "packages/database-postgres",
-    "packages/eslint-plugin-bot-whatsapp-ts",
+    "packages/eslint-plugin-builderbot",
     "packages/provider-meta",
     "packages/provider-bailey",
     "packages/provider-baileys",
