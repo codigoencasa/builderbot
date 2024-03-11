@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/provider-twilio",
-    "version": "1.0.6-alpha.0",
+    "version": "1.0.7-alpha.0",
     "description": "> TODO: description",
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
@@ -28,7 +28,7 @@
         "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
     },
     "devDependencies": {
-        "@builderbot/bot": "^1.0.6-alpha.0",
+        "@builderbot/bot": "^1.0.7-alpha.0",
         "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
