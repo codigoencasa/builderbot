@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/provider-meta",
-    "version": "1.0.3-alpha.0",
+    "version": "1.0.4-alpha.0",
     "description": "> TODO: description",
     "author": "vicente1992 <vic_ortiz20@hotmail.es>",
     "homepage": "https://github.com/vicente1992/bot-whatsapp#readme",
@@ -38,7 +38,7 @@
         "queue-promise": "^2.2.1"
     },
     "devDependencies": {
-        "@builderbot/bot": "^1.0.3-alpha.0",
+        "@builderbot/bot": "^1.0.4-alpha.0",
         "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
