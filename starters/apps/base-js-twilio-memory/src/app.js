@@ -1,6 +1,6 @@
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@bot-whatsapp/bot'
-import { MemoryDB as Database } from '@bot-whatsapp/bot'
-import { TwilioProvider as Provider } from '@bot-whatsapp/provider-twilio'
+import { MemoryDB as Database } from '@builderbot/bot'
+import { TwilioProvider as Provider } from '@builderbot/provider-twilio'
 
 const PORT = process.env.PORT ?? 3008
 

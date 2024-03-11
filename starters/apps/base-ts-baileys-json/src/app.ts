@@ -1,6 +1,6 @@
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@bot-whatsapp/bot'
-import { JsonFileDB as Database } from '@bot-whatsapp/database-json'
-import { BaileysProvider as Provider } from '@bot-whatsapp/provider-baileys'
+import { JsonFileDB as Database } from '@builderbot/database-json'
+import { BaileysProvider as Provider } from '@builderbot/provider-baileys'
 
 const PORT = process.env.PORT ?? 3008
 

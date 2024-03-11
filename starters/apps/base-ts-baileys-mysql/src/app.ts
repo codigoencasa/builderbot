@@ -1,6 +1,6 @@
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@bot-whatsapp/bot'
-import { MysqlAdapter as Database } from '@bot-whatsapp/database-mysql'
-import { BaileysProvider as Provider } from '@bot-whatsapp/provider-baileys'
+import { MysqlAdapter as Database } from '@builderbot/database-mysql'
+import { BaileysProvider as Provider } from '@builderbot/provider-baileys'
 
 const PORT = process.env.PORT ?? 3008
 

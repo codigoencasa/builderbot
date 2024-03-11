@@ -1,6 +1,6 @@
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@bot-whatsapp/bot'
-import { MongoAdapter as Database } from '@bot-whatsapp/database-mongo'
-import { MetaProvider as Provider } from '@bot-whatsapp/provider-meta'
+import { MongoAdapter as Database } from '@builderbot/database-mongo'
+import { MetaProvider as Provider } from '@builderbot/provider-meta'
 
 const PORT = process.env.PORT ?? 3008
 

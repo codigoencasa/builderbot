@@ -1,6 +1,6 @@
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@bot-whatsapp/bot'
-import { MemoryDB as Database } from '@bot-whatsapp/bot'
-import { VenomProvider as Provider } from '@bot-whatsapp/provider-venom'
+import { MemoryDB as Database } from '@builderbot/bot'
+import { VenomProvider as Provider } from '@builderbot/provider-venom'
 
 const PORT = process.env.PORT ?? 3008
 

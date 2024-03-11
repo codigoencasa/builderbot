@@ -1,6 +1,6 @@
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@bot-whatsapp/bot'
-import { PostgreSQLAdapter as Database } from '@bot-whatsapp/database-postgres'
-import { WPPConnectProvider as Provider } from '@bot-whatsapp/provider-wppconnect'
+import { PostgreSQLAdapter as Database } from '@builderbot/database-postgres'
+import { WPPConnectProvider as Provider } from '@builderbot/provider-wppconnect'
 
 const PORT = process.env.PORT ?? 3008
 

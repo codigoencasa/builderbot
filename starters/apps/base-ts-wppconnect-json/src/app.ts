@@ -1,6 +1,6 @@
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@bot-whatsapp/bot'
-import { JsonFileDB as Database } from '@bot-whatsapp/database-json'
-import { WPPConnectProvider as Provider } from '@bot-whatsapp/provider-wppconnect'
+import { JsonFileDB as Database } from '@builderbot/database-json'
+import { WPPConnectProvider as Provider } from '@builderbot/provider-wppconnect'
 
 const PORT = process.env.PORT ?? 3008
 
