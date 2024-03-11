@@ -238,6 +238,7 @@ export type DispatchFn = (
     payload: {
         from: string
         name: string
+        [key: string]: any
     }
 ) => any
 

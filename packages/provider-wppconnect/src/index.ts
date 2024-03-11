@@ -41,6 +41,7 @@ class WPPConnectProvider extends ProviderClass {
             blacklist: opts.blacklist,
             dispatch: (customEvent, payload) => {
                 this.emit('message', {
+                    ...payload,
                     body: utils.setEvent(customEvent),
                     name: payload.name,
                     from: utils.removePlus(payload.from),
