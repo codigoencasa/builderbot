@@ -224,4 +224,46 @@ suiteCase(`endFlow desde gotoFlow`, async ({ database, provider }) => {
     assert.is(undefined, history[2])
 })
 
+suiteCase(`endFlow antes de capture`, async ({ database, provider }) => {
+    const flow = addKeyword(['hola'])
+        .addAnswer('Buenas!', null, async (_, { gotoFlow }) => {
+            return gotoFlow(flowAction)
+        })
+        .addAnswer('no debe llegar')
+
+    const flowAction = addKeyword(EVENTS.ACTION)
+        .addAction(async (_, { flowDynamic, endFlow }) => {
+            await flowDynamic('message 1')
+            return endFlow(`Finaliza el flow`)
+        })
+        .addAction({ capture: true }, async (_, { flowDynamic }) => {
+            await flowDynamic('no debe llegar')
+            console.log(`🌟🌟🌟🌟`)
+        })
+
+    await createBot({
+        database,
+        provider,
+        flow: createFlow([flow, flowAction]),
+    })
+
+    await provider.delaySendMessage(100, 'message', {
+        from: '000',
+        body: 'hola',
+    })
+
+    await provider.delaySendMessage(150, 'message', {
+        from: '000',
+        body: 'ping',
+    })
+
+    await delay(5000)
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is('Buenas!', history[0])
+    assert.is('message 1', history[1])
+    assert.is('Finaliza el flow', history[2])
+    assert.is('ping', history[3])
+    assert.is(undefined, history[4])
+})
+
 suiteCase.run()

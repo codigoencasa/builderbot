@@ -6,7 +6,7 @@ class MockProvider extends ProviderClass {
         super()
     }
 
-    delaySendMessage = async (milliseconds: number, eventName: string, payload: Payload): Promise<void> => {
+    delaySendMessage = async (milliseconds: number, eventName: string, payload: any): Promise<void> => {
         await delay(milliseconds)
         this.emit(eventName, payload)
     }

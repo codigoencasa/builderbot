@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "prestart": "npx eslint . --no-ignore",
-        "start": "node dist/app.js",
+        "start": "node ./dist/app.js",
         "dev": "nodemon src/app.ts",
         "build": "npx rollup -c"
     },

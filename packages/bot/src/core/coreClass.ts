@@ -2,7 +2,7 @@ import { Console } from 'console'
 import { createWriteStream } from 'fs'
 import { EventEmitter } from 'node:events'
 
-import { DispatchFn, DynamicBlacklist } from './../types'
+import { DispatchFn, DynamicBlacklist, TContext } from './../types'
 import { GlobalState, IdleState, SingleState } from '../context'
 import { MemoryDB } from '../db'
 import { LIST_REGEX } from '../io/events'
@@ -186,11 +186,26 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
 
         // 📄 Finalizar flujo
         const endFlow =
-            (flag: { endFlow: any; fallBack?: boolean; flowDynamic?: boolean; gotoFlow?: boolean }) =>
+            (
+                flag: { endFlow: any; fallBack?: boolean; flowDynamic?: boolean; gotoFlow?: boolean },
+                inRef: string | number
+            ) =>
             async (message = null) => {
                 flag.endFlow = true
                 endFlowFlag = true
-                if (message) this.sendProviderAndSave(from, createCtxMessage(message))
+                if (message) {
+                    this.sendProviderAndSave(from, createCtxMessage(message)).then(() =>
+                        this.sendProviderAndSave(
+                            from,
+                            createCtxMessage({ ...message, keyword: `${inRef}`, answer: '__end_flow__' })
+                        )
+                    )
+                } else {
+                    this.sendProviderAndSave(
+                        from,
+                        createCtxMessage({ ...message, keyword: `${inRef}`, answer: '__end_flow__' })
+                    )
+                }
                 clearQueue()
                 return
             }
@@ -271,7 +286,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             }
         }
 
-        const enqueueMsg = async (numberOrId: string, ctxMessage: { ref: any }, from: string) => {
+        const enqueueMsg = async (numberOrId: string, ctxMessage: TContext, from: string) => {
             try {
                 await this.queuePrincipal.enqueue(
                     from,
@@ -494,7 +509,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                 inRef,
                 fallBack: fallBack(flags),
                 flowDynamic: flowDynamic(flags, inRef, options),
-                endFlow: endFlow(flags),
+                endFlow: endFlow(flags, inRef),
                 gotoFlow: gotoFlow(flags),
             }
 
@@ -622,10 +637,16 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
      * @param {*} ctxMessage ver más en GLOSSARY.md
      * @returns
      */
-    sendProviderAndSave = async (numberOrId: string, ctxMessage: any) => {
+    sendProviderAndSave = async (numberOrId: string, ctxMessage: TContext) => {
         try {
             const { answer } = ctxMessage
-            if (answer && answer.length && answer !== '__call_action__' && answer !== '__goto_flow__') {
+            if (
+                answer &&
+                answer.length &&
+                answer !== '__call_action__' &&
+                answer !== '__goto_flow__' &&
+                answer !== '__end_flow__'
+            ) {
                 if (answer !== '__capture_only_intended__') {
                     await this.provider.sendMessage(numberOrId, answer, ctxMessage)
                     this.emit('send_message', { numberOrId, answer, ctxMessage })

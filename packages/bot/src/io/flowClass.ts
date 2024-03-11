@@ -61,8 +61,9 @@ class FlowClass {
         return messages
     }
 
-    findBySerialize(refSerialize: string): TContext | undefined {
-        return this.flowSerialize.find((r) => r.refSerialize === refSerialize)
+    findBySerialize(refSerialize: string, k: number = 0): TContext | undefined {
+        const index = this.flowSerialize.findIndex((r) => r.refSerialize === refSerialize)
+        return this.flowSerialize[index - k]
     }
 
     findIndexByRef(ref: string): number {
