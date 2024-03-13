@@ -5,9 +5,9 @@
     "main": "dist/app.js",
     "type": "module",
     "scripts": {
-        "prestart": "npx eslint . --no-ignore",
         "start": "node ./dist/app.js",
-        "dev": "nodemon ./src/app.ts",
+        "lint": "eslint . --no-ignore",
+        "dev": "npm run lint && nodemon ./src/app.ts",
         "build": "npx rollup -c"
     },
     "keywords": [],

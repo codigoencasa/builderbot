@@ -5,8 +5,8 @@
     "main": "src/app.js",
     "type": "module",
     "scripts": {
-        "prestart": "npx eslint . --no-ignore",
-        "dev": "nodemon ./src/app.js",
+        "lint": "eslint . --no-ignore",
+        "dev": "npm run lint && nodemon ./src/app.js",
         "start": "node ./src/app.js"
       },
     "keywords": [],
@@ -17,6 +17,7 @@
     },
     "devDependencies": {
         "eslint-plugin-builderbot": "latest",
+        "eslint": "^8.57.0",
         "nodemon": "^3.1.0"
     },
     "author": "",
