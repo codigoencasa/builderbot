@@ -1,9 +1,9 @@
 import { BotCtxMiddleware } from '@builderbot/bot/dist/types'
 import { urlencoded, json } from 'body-parser'
+import cors from 'cors'
 import { EventEmitter } from 'node:events'
 import polka, { Polka } from 'polka'
 import Queue from 'queue-promise'
-import cors from 'cors'
 
 import type { MetaProvider } from './metaProvider'
 import { Message } from './types'

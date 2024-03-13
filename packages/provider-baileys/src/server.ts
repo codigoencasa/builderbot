@@ -1,10 +1,10 @@
 import { BotCtxMiddleware } from '@builderbot/bot/dist/types'
 import { WASocket } from '@whiskeysockets/baileys'
 import { urlencoded, json } from 'body-parser'
+import cors from 'cors'
 import { createReadStream } from 'fs'
 import { EventEmitter } from 'node:events'
 import { join } from 'path'
-import cors from 'cors'
 import polka, { type Polka } from 'polka'
 
 import type { BaileysProvider } from './bailey'

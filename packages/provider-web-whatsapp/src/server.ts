@@ -1,9 +1,9 @@
 import { urlencoded, json } from 'body-parser'
+import cors from 'cors'
 import EventEmitter from 'node:events'
 import { createReadStream } from 'node:fs'
 import { join } from 'node:path'
 import polka, { Polka } from 'polka'
-import cors from 'cors'
 
 import { WebWhatsappProvider } from '.'
 import { BotCtxMiddleware } from './types'
