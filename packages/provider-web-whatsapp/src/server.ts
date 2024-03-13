@@ -3,6 +3,7 @@ import EventEmitter from 'node:events'
 import { createReadStream } from 'node:fs'
 import { join } from 'node:path'
 import polka, { Polka } from 'polka'
+import cors from 'cors'
 
 import { WebWhatsappProvider } from '.'
 import { BotCtxMiddleware } from './types'
@@ -27,6 +28,7 @@ export class WebWhatsappHttpServer extends EventEmitter {
      */
     protected buildHTTPServer(): Polka {
         return polka()
+            .use(cors())
             .use(urlencoded({ extended: true }))
             .use(json())
             .get('/', this.indexHome)

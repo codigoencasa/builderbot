@@ -4,6 +4,7 @@ import { urlencoded, json } from 'body-parser'
 import { createReadStream } from 'fs'
 import { EventEmitter } from 'node:events'
 import { join } from 'path'
+import cors from 'cors'
 import polka, { type Polka } from 'polka'
 
 import type { BaileysProvider } from './bailey'
@@ -39,6 +40,7 @@ class BaileyHttpServer extends EventEmitter {
      */
     protected buildHTTPServer(): Polka {
         return polka()
+            .use(cors())
             .use(urlencoded({ extended: true }))
             .use(json())
             .get('/', this.indexHome)

@@ -108,6 +108,30 @@ suiteCase(`Responder con un "string"`, async ({ database, provider }) => {
     assert.is(undefined, history[3])
 })
 
+suiteCase(`Lista array de string`, async ({ database, provider }) => {
+    const flow = addKeyword(['hola']).addAnswer('Como vas?', null, async (_, { flowDynamic }) => {
+        return flowDynamic(['Todo bien!', 'y vos?'])
+    })
+
+    await createBot({
+        database,
+        provider,
+        flow: createFlow([flow]),
+    })
+
+    await provider.delaySendMessage(0, 'message', {
+        from: '000',
+        body: 'hola',
+    })
+
+    await delay(100)
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is('Como vas?', history[0])
+    assert.is('Todo bien!', history[1])
+    assert.is('y vos?', history[2])
+    assert.is(undefined, history[3])
+})
+
 suiteCase(`Responder con un "array"`, async ({ database, provider }) => {
     const flow = addKeyword(['hola'])
         .addAnswer('Como vas?', null, async (_, { flowDynamic }) => {

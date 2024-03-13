@@ -17,7 +17,7 @@ interface PromiseFunctionWrapper<T> {
 
 class Queue<T> {
     private queue: Map<string, QueueItem<T>[]>
-    private queueTime: Map<string, number>
+    private queueTime: Map<string, string>
     private timers: Map<string, NodeJS.Timeout | boolean>
     private idsCallbacks: Map<string, string[]>
     private workingOnPromise: Map<string, boolean>
@@ -179,7 +179,7 @@ class Queue<T> {
         }
     }
 
-    setFingerTime(from: string, fingerTime: number): void {
+    setFingerTime(from: string, fingerTime: string): void {
         this.queueTime.set(from, fingerTime)
     }
 

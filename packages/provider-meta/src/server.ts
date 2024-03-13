@@ -3,6 +3,7 @@ import { urlencoded, json } from 'body-parser'
 import { EventEmitter } from 'node:events'
 import polka, { Polka } from 'polka'
 import Queue from 'queue-promise'
+import cors from 'cors'
 
 import type { MetaProvider } from './metaProvider'
 import { Message } from './types'
@@ -127,6 +128,7 @@ class MetaWebHookServer extends EventEmitter {
      */
     protected buildHTTPServer() {
         return polka()
+            .use(cors())
             .use(urlencoded({ extended: true }))
             .use(json())
             .get('/', this.emptyCtrl)

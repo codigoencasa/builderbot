@@ -5,6 +5,7 @@ import mime from 'mime-types'
 import { EventEmitter } from 'node:events'
 import { existsSync, createReadStream } from 'node:fs'
 import polka, { Middleware, Polka } from 'polka'
+import cors from 'cors'
 
 import type { TwilioProvider } from './'
 import { TwilioRequestBody, TwilioPayload } from './types'
@@ -100,6 +101,7 @@ class TwilioWebHookServer extends EventEmitter {
      */
     protected buildHTTPServer(): Polka {
         return polka()
+            .use(cors())
             .use(urlencoded({ extended: true }))
             .use(json())
             .post('/twilio-hook', this.incomingMsg)

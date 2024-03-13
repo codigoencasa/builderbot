@@ -404,9 +404,9 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
 
         const flowDynamic =
             (
-                flag: { endFlow?: boolean; fallBack?: boolean; flowDynamic: any; gotoFlow?: boolean },
-                inRef: any,
-                privateOptions: { [x: string]: any; omitEndFlow?: any; idleCtx?: any }
+                flag: { endFlow?: boolean; fallBack?: boolean; flowDynamic: boolean; gotoFlow?: boolean },
+                inRef: string,
+                privateOptions: { [x: string]: any; omitEndFlow?: boolean; idleCtx?: boolean }
             ) =>
             async (listMessages: string | string[] | FlowDynamicMessage[] = [], options = { continue: true }) => {
                 if (!options.hasOwnProperty('continue')) {
@@ -419,15 +419,32 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                     listMessages = [{ body: listMessages, ...options }]
                 }
 
-                const parseListMsg = listMessages.map((opt: FlowDynamicMessage, index: number) => {
-                    const optParse = {
-                        body: opt?.body ?? ' ',
-                        media: opt?.media ?? null,
-                        buttons: opt?.buttons ?? [],
+                const parseListMsg = listMessages.map((opt: string | FlowDynamicMessage, index: number) => {
+                    const optParse: {
+                        body: any
+                        answer: any
+                        media: string
+                        buttons: any[]
+                        capture: boolean
+                        delay: number
+                        keyword: null
+                    } = {
                         capture: false,
-                        delay: opt?.delay ?? this.generalArgs.delay ?? 0,
+                        body: '',
+                        buttons: [],
+                        media: null,
+                        delay: this.generalArgs.delay ?? 0,
                         keyword: null,
                         answer: undefined,
+                    }
+
+                    if (typeof opt === 'string') {
+                        optParse.body = opt
+                    } else {
+                        optParse.body = opt?.body ?? ' '
+                        optParse.media = opt?.media ?? null
+                        optParse.buttons = opt?.buttons ?? []
+                        optParse.delay = opt?.delay ?? this.generalArgs.delay ?? 0
                     }
 
                     return createCtxMessage(optParse, index)
@@ -481,7 +498,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback y ejecutarlo
         const cbEveryCtx = async (
-            inRef: string | number,
+            inRef: string,
             options: { [key: string]: any } = { startIdleMs: 0, omitEndFlow: false, idleCtx: false, triggerKey: false }
         ) => {
             const flags = {
