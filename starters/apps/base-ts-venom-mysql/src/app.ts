@@ -1,4 +1,4 @@
-import { createBot, createProvider, createFlow, addKeyword, utils } from '@bot-whatsapp/bot'
+import { createBot, createProvider, createFlow, addKeyword, utils } from '@builderbot/bot'
 import { MysqlAdapter as Database } from '@builderbot/database-mysql'
 import { VenomProvider as Provider } from '@builderbot/provider-venom'
 
