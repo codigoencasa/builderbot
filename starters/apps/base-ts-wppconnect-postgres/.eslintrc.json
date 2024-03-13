@@ -1,27 +1,26 @@
 {
     "env": {
-        "browser": true,
-        "es2021": true
+      "browser": true,
+      "node": true,
+      "es2021": true
     },
     "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended",
-        "plugin:bot-whatsapp/recommended"
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:builderbot/recommended"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "ecmaVersion": "latest",
-        "sourceType": "module"
+      "ecmaVersion": "latest",
+      "sourceType": "module"
     },
-    "plugins": [
-        "@typescript-eslint",
-        "bot-whatsapp"
-    ],
+    "plugins": ["@typescript-eslint", "builderbot"],
     "rules": {
-        "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-unused-vars": "off",
-        "@typescript-eslint/ban-ts-comment": "off",
-        "@typescript-eslint/ban-types": "off",
-        "no-unsafe-optional-chaining": "off"
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/ban-ts-comment": "off",
+      "@typescript-eslint/ban-types": "off",
+      "no-unsafe-optional-chaining": "off"
     }
-}
+  }
+  

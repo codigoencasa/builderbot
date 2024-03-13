@@ -17,10 +17,11 @@
         "@builderbot/provider-baileys": "latest"
     },
     "devDependencies": {
-        "nodemon": "^3.1.0",
         "@rollup/plugin-terser": "^0.4.4",
+        "@typescript-eslint/eslint-plugin": "^7.2.0",
         "eslint": "^8.52.0",
-        "eslint-plugin-builderbot": "latest",
+        "eslint-plugin-builderbot": "1.0.11-alpha.0",
+        "nodemon": "^3.1.0",
         "rollup": "^4.10.0",
         "rollup-plugin-typescript2": "^0.36.0",
         "tsx": "^4.7.1"
