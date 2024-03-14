@@ -21,6 +21,8 @@ export type GeneralArgs = {
     host?: string
 }
 
+export type FlagsRuntime = { endFlow: any; fallBack?: boolean; flowDynamic?: boolean; gotoFlow?: boolean }
+
 export type Button = {
     body: string
 }
@@ -196,6 +198,7 @@ export interface TContext {
     from?: string
     answer?: string | string[]
     refSerialize?: string
+    endFlow?: boolean
     options: TCTXoptions
     callbacks?: Callbacks
     json?: TContext[]

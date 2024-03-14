@@ -100,7 +100,7 @@ test('Obtener toJson', () => {
     assert.is(ctxB.answer, 'pera!')
     assert.match(ctxB.ref, /^ans_/)
 
-    assert.is(ctxC.answer, '__call_action__')
+    assert.is(ctxC.answer, 'chao')
     assert.match(ctxC.ref, /^ans_/)
 })
 
@@ -124,7 +124,7 @@ test('addAnswer toJson con IMG', () => {
     assert.equal(ctxA.keyword, 'hola')
     assert.equal(ctxB.answer, 'bye!')
     assert.equal(ctxB.options.media, 'http://mock.img/file-a.png')
-    assert.equal(ctxC.answer, '__call_action__')
+    assert.equal(ctxC.answer, 'otro!')
     assert.equal(ctxD.options.media, 'http://mock.img/file-b.png')
 })
 

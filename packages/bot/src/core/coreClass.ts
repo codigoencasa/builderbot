@@ -2,7 +2,7 @@ import { Console } from 'console'
 import { createWriteStream } from 'fs'
 import { EventEmitter } from 'node:events'
 
-import { DispatchFn, DynamicBlacklist, TContext } from './../types'
+import { DispatchFn, DynamicBlacklist, FlagsRuntime, TContext } from './../types'
 import { GlobalState, IdleState, SingleState } from '../context'
 import { MemoryDB } from '../db'
 import { LIST_REGEX } from '../io/events'
@@ -186,10 +186,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
 
         // 📄 Finalizar flujo
         const endFlow =
-            (
-                flag: { endFlow: any; fallBack?: boolean; flowDynamic?: boolean; gotoFlow?: boolean },
-                inRef: string | number
-            ) =>
+            (flag: FlagsRuntime, inRef: string | number) =>
             async (message = null) => {
                 flag.endFlow = true
                 endFlowFlag = true
@@ -212,21 +209,23 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
 
         // 📄 Finalizar flujo (patch)
         const endFlowToGotoFlow =
-            (flag: any) =>
-            async (messages = null, options = { fromGotoFlow: false, end: false }) => {
+            (flag: FlagsRuntime) =>
+            async (messages: TContext[] = []) => {
                 flag.endFlow = true
                 endFlowFlag = true
 
-                if (Array.isArray(messages)) {
-                    for (const iteratorCtxMessage of messages) {
-                        const scopeCtx: any = await resolveCbEveryCtx(iteratorCtxMessage, {
-                            omitEndFlow: options.fromGotoFlow,
-                            idleCtx: !!iteratorCtxMessage?.options?.idle,
-                            triggerKey: iteratorCtxMessage.keyword.startsWith('key_'),
-                        })
-                        if (scopeCtx?.endFlow) break
-                    }
+                for (const iteratorCtxMessage of messages) {
+                    const keyWord = Array.isArray(iteratorCtxMessage.keyword)
+                        ? iteratorCtxMessage.keyword.join(' ')
+                        : iteratorCtxMessage.keyword
+                    const scopeCtx = await resolveCbEveryCtx(iteratorCtxMessage, {
+                        omitEndFlow: true,
+                        idleCtx: !!iteratorCtxMessage?.options?.idle,
+                        triggerKey: keyWord.startsWith('key_'),
+                    })
+                    if (scopeCtx?.endFlow) break
                 }
+
                 clearQueue()
                 return
             }
@@ -348,7 +347,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         }
         // 📄 [options: fallBack]: esta funcion se encarga de repetir el ultimo mensaje
         const fallBack =
-            (flag: { endFlow?: boolean; fallBack: any; flowDynamic?: boolean; gotoFlow?: boolean }) =>
+            (flag: FlagsRuntime) =>
             async (message = null) => {
                 this.queuePrincipal.clearQueue(from)
                 flag.fallBack = true
@@ -364,10 +363,10 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             }
 
         const gotoFlow =
-            (flag: { endFlow?: boolean; fallBack?: boolean; flowDynamic?: boolean; gotoFlow?: any }) =>
+            (flag: FlagsRuntime) =>
             async (flowInstance: { toJson: () => any; ctx: { options: { delay: any } } }, step = 0) => {
                 idleForCallback.stop({ from })
-                const promises = []
+                const promises: TContext[] = []
                 flag.gotoFlow = true
 
                 if (!flowInstance?.toJson) {
@@ -386,16 +385,16 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
 
                 const flowParentId = flowTree[step]
 
-                const parseListMsg = await this.flowClass.find(flowParentId?.ref, true, flowTree)
+                const parseListMsg = this.flowClass.find(flowParentId?.ref, true, flowTree)
 
                 for (const msg of parseListMsg) {
                     const msgParse = this.flowClass.findSerializeByRef(msg?.ref)
 
-                    const ctxMessage = { ...msgParse, ...msg }
+                    const ctxMessage: TContext = { ...msgParse, ...msg }
                     await this.sendProviderAndSave(from, ctxMessage).then(() => promises.push(ctxMessage))
                 }
 
-                await endFlowToGotoFlow(flag)(promises, { fromGotoFlow: true, ...{ end: endFlowFlag } })
+                await endFlowToGotoFlow(flag)(promises)
                 return
             }
 
@@ -404,7 +403,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
 
         const flowDynamic =
             (
-                flag: { endFlow?: boolean; fallBack?: boolean; flowDynamic: boolean; gotoFlow?: boolean },
+                flag: FlagsRuntime,
                 inRef: string,
                 privateOptions: { [x: string]: any; omitEndFlow?: boolean; idleCtx?: boolean }
             ) =>
@@ -476,7 +475,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
 
         // 📄 Se encarga de revisar si el contexto del mensaje tiene callback o idle
         const resolveCbEveryCtx = async (
-            ctxMessage: any,
+            ctxMessage: TContext,
             options = { omitEndFlow: false, idleCtx: false, triggerKey: false }
         ) => {
             if (!!ctxMessage?.options?.idle && !ctxMessage?.options?.capture) {
@@ -488,11 +487,11 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
 
             if (ctxMessage?.options?.idle) {
                 const run = await cbEveryCtx(ctxMessage?.ref, { ...options, startIdleMs: ctxMessage?.options?.idle })
-                return run
+                return run as unknown as TContext
             }
             if (!ctxMessage?.options?.capture) {
                 const run = await cbEveryCtx(ctxMessage?.ref, options)
-                return run
+                return run as unknown as TContext
             }
         }
 
@@ -501,7 +500,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             inRef: string,
             options: { [key: string]: any } = { startIdleMs: 0, omitEndFlow: false, idleCtx: false, triggerKey: false }
         ) => {
-            const flags = {
+            const flags: FlagsRuntime = {
                 endFlow: false,
                 fallBack: false,
                 flowDynamic: false,

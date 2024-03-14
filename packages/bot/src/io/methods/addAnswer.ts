@@ -112,23 +112,11 @@ const _addAnswer =
                 cb?: CallbackFunction<P, B> | null,
                 nested?: TFlow<P>[] | TFlow<P>
             ): TFlow<P, B> => {
-                const _cb: CallbackFunction<P, B> = async (_, { flowDynamic }) => {
-                    const singleLineBody = Array.isArray(answer) ? answer.join('\n') : answer
-
-                    await flowDynamic([
-                        {
-                            body: singleLineBody,
-                            media: options?.media ?? undefined,
-                            delay: options?.delay ?? 0,
-                            buttons: options?.buttons ?? [],
-                        },
-                    ])
-                }
-                return _addAnswer(ctx)('__call_action__', null, _cb as CallbackFunction<P, B>).addAction(
-                    options,
-                    cb,
-                    nested
-                )
+                return _addAnswer(ctx)(
+                    answer,
+                    { ...options, capture: false },
+                    null as CallbackFunction<P, B>
+                ).addAction(options, cb, nested)
             },
             addAction: (
                 cb: CallbackFunction<P, B> = () => {},
