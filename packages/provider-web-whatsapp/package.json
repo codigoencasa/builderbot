@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/provider-web-whatsapp",
-    "version": "1.0.14-alpha.0",
+    "version": "1.0.15-alpha.0",
     "description": "Now I’m the model of a modern major general / The venerated Virginian veteran whose men are all / Lining up, to put me up on a pedestal / Writin’ letters to relatives / Embellishin’ my elegance and eloquence / But the elephant is in the room / The truth is in ya face when ya hear the British cannons go / BOOM",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
@@ -29,7 +29,7 @@
     },
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
     "devDependencies": {
-        "@builderbot/bot": "^1.0.14-alpha.0",
+        "@builderbot/bot": "^1.0.15-alpha.0",
         "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
