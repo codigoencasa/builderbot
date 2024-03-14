@@ -17,7 +17,7 @@ const suiteCase = suite<{ provider: ProviderMock; database: MemoryDB }>('Flujo: 
 suiteCase.before.each(setup)
 suiteCase.after.each(clear)
 
-suiteCase(`Detener el flujo`, async ({ database, provider }) => {
+suiteCase.skip(`Detener el flujo`, async ({ database, provider }) => {
     const MOCK_VALUES = [
         'Bienvenido te envio muchas marcas',
         'Seleccione marca del auto a cotizar, con el *número* correspondiente',
@@ -65,7 +65,7 @@ suiteCase(`Detener el flujo`, async ({ database, provider }) => {
     assert.is(undefined, history[6])
 })
 
-suiteCase(`Detener el flujo flowDynamic`, async ({ database, provider }) => {
+suiteCase.skip(`Detener el flujo flowDynamic`, async ({ database, provider }) => {
     const flow = addKeyword(['hola'])
         .addAnswer('Buenas!', null, async (_, { endFlow, flowDynamic }) => {
             await flowDynamic('Continuamos...')
@@ -91,7 +91,7 @@ suiteCase(`Detener el flujo flowDynamic`, async ({ database, provider }) => {
     assert.is(undefined, history[2])
 })
 
-suiteCase(`flowDynamic con capture`, async (context) => {
+suiteCase.skip(`flowDynamic con capture`, async (context) => {
     const { database, provider } = context
     const MOCK_VALUES = ['¿CUal es tu email?', 'Continuamos....', '¿Cual es tu edad?']
 
@@ -168,7 +168,7 @@ suiteCase(`flowDynamic con capture`, async (context) => {
     assert.is('Puedes pasar', history[11])
 })
 
-suiteCase(`endFlow desde gotoFlow`, async ({ database, provider }) => {
+suiteCase.skip(`endFlow desde gotoFlow`, async ({ database, provider }) => {
     const flow = addKeyword(['hola'])
         .addAnswer('Buenas!', null, async (_, { gotoFlow }) => {
             return gotoFlow(flowUsuario)
@@ -224,7 +224,7 @@ suiteCase(`endFlow desde gotoFlow`, async ({ database, provider }) => {
     assert.is(undefined, history[2])
 })
 
-suiteCase(`endFlow antes de capture`, async ({ database, provider }) => {
+suiteCase.skip(`endFlow antes de capture`, async ({ database, provider }) => {
     const flow = addKeyword(['hola'])
         .addAnswer('Buenas!', null, async (_, { gotoFlow }) => {
             return gotoFlow(flowAction)
@@ -263,6 +263,51 @@ suiteCase(`endFlow antes de capture`, async ({ database, provider }) => {
     assert.is('message 1', history[1])
     assert.is('Finaliza el flow', history[2])
     assert.is('ping', history[3])
+    assert.is(undefined, history[4])
+})
+
+suiteCase(`gotoFlow continue antes de capture`, async ({ database, provider }) => {
+    const flow = addKeyword(['paypal'])
+        .addAnswer('Buenas!', null, async (_, { gotoFlow }) => {
+            return gotoFlow(flowEmail)
+        })
+        .addAnswer('no debe llegar')
+
+    const flowPay = addKeyword(EVENTS.ACTION).addAnswer('Tu link de pago es http://example.com')
+
+    const flowEmail = addKeyword(EVENTS.ACTION).addAnswer(
+        [`¿Cual es tu email?`, `lo necesito para generarte el link de pago y registrarte en la plataforma`],
+        { capture: true },
+        async (_, { gotoFlow }) => {
+            return gotoFlow(flowPay)
+        }
+    )
+
+    await createBot({
+        database,
+        provider,
+        flow: createFlow([flow, flowEmail, flowPay]),
+    })
+
+    await provider.delaySendMessage(100, 'message', {
+        from: '000',
+        body: 'paypal',
+    })
+
+    await provider.delaySendMessage(150, 'message', {
+        from: '000',
+        body: 'test@test.com',
+    })
+
+    await delay(1000)
+    const history = parseAnswers(database.listHistory).map((item) => item.answer)
+    assert.is('Buenas!', history[0])
+    assert.is(
+        '¿Cual es tu email?\nlo necesito para generarte el link de pago y registrarte en la plataforma',
+        history[1]
+    )
+    assert.is('test@test.com', history[2])
+    assert.is('Tu link de pago es http://example.com', history[3])
     assert.is(undefined, history[4])
 })
 

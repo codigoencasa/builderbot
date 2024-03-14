@@ -14,7 +14,7 @@ export default {
     plugins: [
         commonjs(),
         nodeResolve({
-            resolveOnly: (module) => !/mongodb/i.test(module),
+            resolveOnly: (module) => !/mongodb|@builderbot\/bot/i.test(module),
         }),
         typescript(),
     ],

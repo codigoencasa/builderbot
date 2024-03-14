@@ -93,6 +93,7 @@ class BaileysProvider extends ProviderClass {
                 },
                 browser: this.globalVendorArgs.browser,
                 syncFullHistory: false,
+                markOnlineOnConnect: false,
                 generateHighQualityLinkPreview: true,
                 getMessage: this.getMessage,
             })

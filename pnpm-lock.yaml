@@ -359,6 +359,9 @@ importers:
 
     packages/database-mongo:
         dependencies:
+            '@builderbot/bot':
+                specifier: ^1.0.14-alpha.0
+                version: link:../bot
             mongodb:
                 specifier: ^4.17.2
                 version: 4.17.2

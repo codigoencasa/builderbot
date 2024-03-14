@@ -1,18 +1,11 @@
-// export type Context = {
-//     from: string
-//     keyword: string
-//     answer: string
-//     ref?: string
-//     refSerialize?: string
-//     _id?: string
-//     options: { [key: string]: any }
-// }
-
 class MemoryDB {
     public listHistory: any[] = []
 
-    constructor() {}
-
+    /**
+     *
+     * @param from
+     * @returns
+     */
     async getPrevByNumber(from: string): Promise<any> {
         const history = this.listHistory
             .slice()
@@ -21,6 +14,10 @@ class MemoryDB {
         return history.find((a) => a.from === from)
     }
 
+    /**
+     *
+     * @param ctx
+     */
     async save(ctx: any): Promise<void> {
         this.listHistory.push(ctx)
     }
