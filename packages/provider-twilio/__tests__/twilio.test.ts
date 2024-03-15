@@ -187,7 +187,7 @@ test('Deberia retornar el path en la ruta tpm de la imagen', async () => {
         To: '4444',
         Body: 'Hello',
         NumMedia: '33344',
-        MediaUrl0: 'http://example.com/file.jpg',
+        MediaUrl0: 'https://example.com/file.jpg',
     }
     utilsMock.generalDownload.call(() => '/tmp')
     const result = await twilioProvider.saveFile(ctx)
