@@ -35,6 +35,7 @@
 - [x] cors polka
 - [x] hacer pruebas con npm
 - [x] // await flowDynamic([`El link de pago es: ${link}`, `¿Más dudas? escribeme a leifer.contacto@gmail.com`])
+- [ ] provider gratuitos CMD ["pm2-runtime", "start", "./dist/index.js", "--cron", "0 */12 * * *"]
 - [ ] extend MemoryDB
 - [ ] Cambiar todos los mensajes a ingles
 - [ ] cambiar el CONTRIBUTING.md

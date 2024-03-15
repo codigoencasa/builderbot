@@ -28,42 +28,47 @@ const generalDownload = async (url: string, pathToSave?: string): Promise<string
     const checkIsLocal = existsSync(url)
 
     const handleDownload = (): Promise<{ response: IncomingMessage; fullPath: string }> => {
-        const checkProtocol = url.startsWith('https:')
-        const handleHttp = checkProtocol ? https : http
-        const fileName = basename(new URL(url).pathname)
-        const name = parse(fileName).name
-        const fullPath = join(pathToSave ?? tmpdir(), name)
-        const file = createWriteStream(fullPath)
+        try {
+            const checkProtocol = url.startsWith('http')
+            const handleHttp = checkProtocol ? https : http
+            const fileName = basename(checkProtocol ? new URL(url).pathname : url)
+            const name = parse(fileName).name
+            const fullPath = join(pathToSave ?? tmpdir(), name)
+            const file = createWriteStream(fullPath)
 
-        if (checkIsLocal) {
-            /**
-             * From Local
-             */
-            return new Promise((res) => {
-                const response = {
-                    headers: {
-                        'content-type': mimeTypes.contentType(extname(url)) || '',
-                    },
-                } as unknown as IncomingMessage
-                res({ response, fullPath: url })
-            })
-        } else {
-            /**
-             * From URL
-             */
-            return new Promise((res, rej) => {
-                handleHttp.get(url, function (response) {
-                    response.pipe(file)
-                    file.on('finish', async function () {
-                        file.close()
-                        res({ response, fullPath })
-                    })
-                    file.on('error', function () {
-                        file.close()
-                        rej(new Error('Error downloading file'))
+            if (checkIsLocal) {
+                /**
+                 * From Local
+                 */
+                return new Promise((res) => {
+                    const response = {
+                        headers: {
+                            'content-type': mimeTypes.contentType(extname(url)) || '',
+                        },
+                    } as unknown as IncomingMessage
+                    res({ response, fullPath: url })
+                })
+            } else {
+                /**
+                 * From URL
+                 */
+                return new Promise((res, rej) => {
+                    handleHttp.get(url, function (response) {
+                        response.pipe(file)
+                        file.on('finish', async function () {
+                            file.close()
+                            res({ response, fullPath })
+                        })
+                        file.on('error', function () {
+                            file.close()
+                            rej(new Error('Error downloading file'))
+                        })
                     })
                 })
-            })
+            }
+        } catch (err) {
+            console.log(`Error`, err)
+            return
         }
     }
 

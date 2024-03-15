@@ -673,7 +673,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             return Promise.resolve()
         } catch (err) {
             logger.log(`[ERROR ID (${ctxMessage.ref})]: `, err)
-            return Promise.reject()
+            return Promise.reject(err)
         }
     }
 
