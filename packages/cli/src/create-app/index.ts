@@ -8,7 +8,6 @@ import * as fs from 'fs-extra'
 const copyFiles = async (from: string, to: string): Promise<void> => {
     try {
         await fs.copy(from, to)
-        console.log('success!')
     } catch (err) {
         console.error(err)
     }
