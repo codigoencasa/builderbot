@@ -1,4 +1,8 @@
 {
     "IMPORT": "import { MongoAdapter as Database } from '@builderbot/database-mongo'\n",
-    "IMPLEMENTATION": "    const adapterDB = new Database({\n        dbUri: process.env.MONGO_DB_URI,\n        dbName: process.env.MONGO_DB_NAME,\n    })\n"
+    "IMPLEMENTATION": "    const adapterDB = new Database({\n        dbUri: process.env.MONGO_DB_URI,\n        dbName: process.env.MONGO_DB_NAME,\n    })\n",
+    "DEPENDENCIES":{
+        "@builderbot/database-mongo":"latest"
+    },
+    "DEV_DEPENDENCIES":{}
 }

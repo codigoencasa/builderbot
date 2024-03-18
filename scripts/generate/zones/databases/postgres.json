@@ -1,4 +1,8 @@
 {
     "IMPORT": "import { PostgreSQLAdapter as Database } from '@builderbot/database-postgres'\n",
-    "IMPLEMENTATION": "const adapterDB = new Database({\n       host: process.env.POSTGRES_DB_HOST,\n       user: process.env.POSTGRES_DB_USER,\n       database: process.env.POSTGRES_DB_NAME,\n       password: process.env.POSTGRES_DB_PASSWORD,\n       port: +process.env.POSTGRES_DB_PORT\n   })\n"
+    "IMPLEMENTATION": "const adapterDB = new Database({\n       host: process.env.POSTGRES_DB_HOST,\n       user: process.env.POSTGRES_DB_USER,\n       database: process.env.POSTGRES_DB_NAME,\n       password: process.env.POSTGRES_DB_PASSWORD,\n       port: +process.env.POSTGRES_DB_PORT\n   })\n",
+    "DEPENDENCIES":{
+        "@builderbot/database-postgres":"latest"
+    },
+    "DEV_DEPENDENCIES":{}
 }

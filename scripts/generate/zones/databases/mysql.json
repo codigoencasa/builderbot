@@ -1,4 +1,8 @@
 {
     "IMPORT": "import { MysqlAdapter as Database } from '@builderbot/database-mysql'\n",
-    "IMPLEMENTATION": "const adapterDB = new Database({\n        host: process.env.MYSQL_DB_HOST,\n        user: process.env.MYSQL_DB_USER,\n        database: process.env.MYSQL_DB_NAME,\n        password: process.env.MYSQL_DB_PASSWORD,\n    })\n"
+    "IMPLEMENTATION": "const adapterDB = new Database({\n        host: process.env.MYSQL_DB_HOST,\n        user: process.env.MYSQL_DB_USER,\n        database: process.env.MYSQL_DB_NAME,\n        password: process.env.MYSQL_DB_PASSWORD,\n    })\n",
+    "DEPENDENCIES":{
+        "@builderbot/database-mysql":"latest"
+    },
+    "DEV_DEPENDENCIES":{}
 }

@@ -12,9 +12,7 @@
     },
     "keywords": [],
     "dependencies": {
-        "@builderbot/bot": "latest",
-        "@builderbot/database-json": "latest",
-        "@builderbot/provider-baileys": "latest"
+        "@builderbot/bot": "latest"
     },
     "devDependencies": {
         "@rollup/plugin-terser": "^0.4.4",

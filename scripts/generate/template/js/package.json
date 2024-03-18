@@ -11,9 +11,7 @@
       },
     "keywords": [],
     "dependencies": {
-        "@builderbot/bot": "latest",
-        "@builderbot/database-json": "latest",
-        "@builderbot/provider-baileys": "latest"
+        "@builderbot/bot": "latest"
     },
     "devDependencies": {
         "eslint-plugin-builderbot": "latest",

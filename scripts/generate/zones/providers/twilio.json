@@ -1,5 +1,9 @@
 {
     "IMPORT": "import { TwilioProvider as Provider } from '@builderbot/provider-twilio'\n",
-    "IMPLEMENTATION": "const adapterProvider = createProvider(Provider, {\n    accountSid: 'YOUR_ACCOUNT_SID',\n    authToken: 'YOUR_ACCOUNT_TOKEN',\n    vendorNumber: '+14100000000',\n})"
+    "IMPLEMENTATION": "const adapterProvider = createProvider(Provider, {\n    accountSid: 'YOUR_ACCOUNT_SID',\n    authToken: 'YOUR_ACCOUNT_TOKEN',\n    vendorNumber: '+14100000000',\n})",
+    "DEPENDENCIES":{
+      "@builderbot/provider-twilio": "latest"
+    },
+    "DEV_DEPENDENCIES":{}
   }
   

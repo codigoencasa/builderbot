@@ -1,31 +1,31 @@
 {
-    "name": "base-bailey-json",
-    "version": "1.0.0",
-    "description": "",
-    "main": "dist/app.js",
-    "type": "module",
-    "scripts": {
-        "start": "node ./dist/app.js",
-        "lint": "eslint . --no-ignore",
-        "dev": "npm run lint && nodemon ./src/app.ts",
-        "build": "npx rollup -c"
-    },
-    "keywords": [],
-    "dependencies": {
-        "@builderbot/bot": "latest",
-        "@builderbot/database-json": "latest",
-        "@builderbot/provider-baileys": "latest"
-    },
-    "devDependencies": {
-        "@rollup/plugin-terser": "^0.4.4",
-        "@typescript-eslint/eslint-plugin": "^7.2.0",
-        "eslint": "^8.52.0",
-        "eslint-plugin-builderbot": "latest",
-        "nodemon": "^3.1.0",
-        "rollup": "^4.10.0",
-        "rollup-plugin-typescript2": "^0.36.0",
-        "tsx": "^4.7.1"
-    },
-    "author": "",
-    "license": "ISC"
+  "name": "base-bailey-json",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node ./dist/app.js",
+    "lint": "eslint . --no-ignore",
+    "dev": "npm run lint && nodemon ./src/app.ts",
+    "build": "npx rollup -c"
+  },
+  "keywords": [],
+  "dependencies": {
+    "@builderbot/bot": "latest",
+    "@builderbot/provider-meta": "latest",
+    "@builderbot/database-mongo": "latest"
+  },
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "eslint": "^8.52.0",
+    "eslint-plugin-builderbot": "latest",
+    "nodemon": "^3.1.0",
+    "rollup": "^4.10.0",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "tsx": "^4.7.1"
+  },
+  "author": "",
+  "license": "ISC"
 }

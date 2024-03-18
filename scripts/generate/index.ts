@@ -3,7 +3,7 @@ import { join } from 'path'
 import { rimraf } from 'rimraf'
 import { readFileSync, readdirSync, writeFileSync } from 'fs'
 
-type genericProps = { IMPORT: string; IMPLEMENTATION: string }
+type genericProps = { IMPORT: string; IMPLEMENTATION: string; DEPENDENCIES: Object; DEV_DEPENDENCIES: Object }
 const BASE_TEMPLATE: string = join(process.cwd(), 'scripts', 'generate')
 const BASE_TEMPLATES_APP: string = join(process.cwd(), 'starters', 'apps')
 
@@ -68,6 +68,41 @@ const replaceZones = async (fullPath: string, database: string, provider: string
     writeFileSync(pathEntryPoint, newTextPlain)
 }
 
+/**
+ *
+ * @param fullPath
+ * @param database
+ * @param provider
+ */
+const mergeDependencies = async (fullPath: string, database: string, provider: string): Promise<void> => {
+    try {
+        const pkg = join(fullPath, 'package.json')
+        const ZONE_PATH_PROVIDERS = join(BASE_TEMPLATE, 'zones', 'providers', `${provider}.json`)
+        const ZONE_PATH_DATABASES = join(BASE_TEMPLATE, 'zones', 'databases', `${database}.json`)
+        const dbDep: genericProps = JSON.parse(readFileSync(ZONE_PATH_DATABASES, 'utf8'))
+        const provDep: genericProps = JSON.parse(readFileSync(ZONE_PATH_PROVIDERS, 'utf8'))
+        const projectDep = JSON.parse(readFileSync(pkg, 'utf8'))
+
+        const updatedDependencies = {
+            ...projectDep,
+            dependencies: {
+                ...projectDep.dependencies,
+                ...provDep.DEPENDENCIES,
+                ...dbDep.DEPENDENCIES,
+            },
+            devDependencies: {
+                ...projectDep.devDependencies,
+                ...provDep.DEV_DEPENDENCIES,
+                ...dbDep.DEV_DEPENDENCIES,
+            },
+        }
+
+        writeFileSync(pkg, JSON.stringify(updatedDependencies, null, 2))
+    } catch (err) {
+        console.log(`Error: `, err)
+    }
+}
+
 const main = async (): Promise<void> => {
     try {
         const { PROVIDER_DATA, PROVIDER_LIST } = await import('../../packages/cli/src/configuration/index.ts')
@@ -80,6 +115,7 @@ const main = async (): Promise<void> => {
                 await delay(50)
                 const full = await copyBase('js', database.value, provider.value)
                 await replaceZones(full, database.value, provider.value)
+                await mergeDependencies(full, database.value, provider.value)
                 console.log(`Generated JS 🌟: ${database.value}-${provider.value}`)
             }
         }
@@ -89,6 +125,7 @@ const main = async (): Promise<void> => {
                 await delay(50)
                 const full = await copyBase('ts', database.value, provider.value)
                 await replaceZones(full, database.value, provider.value)
+                await mergeDependencies(full, database.value, provider.value)
                 console.log(`Generated TS 👌: ${database.value}-${provider.value}`)
             }
         }

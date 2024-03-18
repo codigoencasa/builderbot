@@ -37,6 +37,7 @@
 - [x] // await flowDynamic([`El link de pago es: ${link}`, `¿Más dudas? escribeme a leifer.contacto@gmail.com`])
 - [x] provider gratuitos CMD ["pm2-runtime", "start", "./dist/index.js", "--cron", "0 */12 * * *"]
 - [x] extend MemoryDB
+- [x] remove json del template memory
 - [ ] Cambiar todos los mensajes a ingles
 - [ ] cambiar el CONTRIBUTING.md
 - [ ] cambiar mensajes a ingles
