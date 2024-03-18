@@ -10,6 +10,8 @@ COPY package*.json pnpm-lock.yaml ./
 RUN apk add --no-cache \
     git 
 
+# RUN pnpm install  pm2 -g
+
 COPY . .
 RUN pnpm i
 
@@ -22,4 +24,5 @@ COPY --from=builder /app/src ./src
 COPY --from=builder /app/package.json /app/pnpm-lock.yaml ./
 
 RUN pnpm install --frozen-lockfile --production
+# CMD ["pm2-runtime", "start", "./src/app.js", "--cron", "0 */12 * * *"]
 CMD ["npm", "start"]
