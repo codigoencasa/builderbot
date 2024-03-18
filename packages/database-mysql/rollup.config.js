@@ -14,7 +14,7 @@ export default {
     plugins: [
         commonjs(),
         nodeResolve({
-            resolveOnly: (module) => !/mysql2/i.test(module),
+            resolveOnly: (module) => !/mysql2|@builderbot\/bot/i.test(module),
         }),
         typescript(),
     ],

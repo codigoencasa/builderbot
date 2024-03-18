@@ -1,9 +1,10 @@
 import { existsSync, promises as fsPromises } from 'fs'
+import { MemoryDB } from '@builderbot/bot'
 import { join } from 'path'
 
 import { HistoryEntry, JsonFileAdapterOptions } from './types'
 
-class JsonFileDB {
+class JsonFileDB extends MemoryDB {
     private pathFile: string
     listHistory: HistoryEntry[] = []
     private options: JsonFileAdapterOptions = { filename: 'db.json' }
@@ -13,6 +14,7 @@ class JsonFileDB {
             filename: 'de',
         }
     ) {
+        super()
         this.options = { ...this.options, ...options }
         this.pathFile = join(process.cwd(), this.options.filename)
         this.init().then()

@@ -328,6 +328,10 @@ importers:
                 version: 0.36.0(rollup@4.9.5)(typescript@5.3.3)
 
     packages/database-json:
+        dependencies:
+            '@builderbot/bot':
+                specifier: ^1.0.16-alpha.0
+                version: link:../bot
         devDependencies:
             '@rollup/plugin-commonjs':
                 specifier: ^25.0.7
@@ -405,6 +409,9 @@ importers:
 
     packages/database-mysql:
         dependencies:
+            '@builderbot/bot':
+                specifier: ^1.0.16-alpha.0
+                version: link:../bot
             mysql2:
                 specifier: ^2.3.3
                 version: 2.3.3
@@ -445,6 +452,9 @@ importers:
 
     packages/database-postgres:
         dependencies:
+            '@builderbot/bot':
+                specifier: ^1.0.16-alpha.0
+                version: link:../bot
             pg:
                 specifier: ^8.11.2
                 version: 8.11.2

@@ -15,7 +15,7 @@ export default {
     plugins: [
         commonjs(),
         nodeResolve({
-            resolveOnly: (module) => !/pg/i.test(module),
+            resolveOnly: (module) => !/pg|@builderbot\/bot/i.test(module),
         }),
         typescript(),
         terser(),

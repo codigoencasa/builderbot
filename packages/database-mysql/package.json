@@ -30,6 +30,7 @@
     },
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
     "dependencies": {
+        "@builderbot/bot": "^1.0.16-alpha.0",
         "mysql2": "^2.3.3"
     },
     "devDependencies": {

@@ -28,6 +28,9 @@
     "bugs": {
         "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
     },
+    "dependencies": {
+        "@builderbot/bot": "^1.0.16-alpha.0"
+    },
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
     "devDependencies": {
         "@rollup/plugin-commonjs": "^25.0.7",

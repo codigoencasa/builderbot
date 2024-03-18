@@ -1,13 +1,15 @@
+import { MemoryDB } from '@builderbot/bot'
 import { Pool } from 'pg'
 
 import { Contact, Credential, HistoryEntry } from './types'
 
-class PostgreSQLAdapter {
+class PostgreSQLAdapter extends MemoryDB {
     db: any
     listHistory: HistoryEntry[] = []
     credentials: Credential = { host: 'localhost', user: '', database: '', password: null, port: 5432 }
 
     constructor(_credentials: Credential) {
+        super()
         this.credentials = _credentials
         this.init().then()
     }
@@ -17,7 +19,7 @@ class PostgreSQLAdapter {
             const pool = new Pool(this.credentials)
             const db = await pool.connect()
             this.db = db
-            console.log('🆗 Conexión Correcta DB')
+            console.log('🆗 Successful DB Connection')
             this.checkTableExistsAndSP()
             return true
         } catch (error) {
@@ -39,7 +41,7 @@ class PostgreSQLAdapter {
 
             return row
         } catch (error) {
-            console.error('Error al obtener la entrada anterior por número:', error)
+            console.error('Error getting previous entry by number:', error)
             throw error
         }
     }
@@ -50,9 +52,8 @@ class PostgreSQLAdapter {
 
         try {
             await this.db.query(query, values)
-            console.log('🆗 Historico creado con exito')
         } catch (error) {
-            console.error('Error al registrar la entrada del historial:', error)
+            console.error('Error registering history entry:', error)
             throw error
         }
         this.listHistory.push(ctx)
@@ -65,7 +66,7 @@ class PostgreSQLAdapter {
             const result = await this.db.query(query, [from])
             return result.rows[0]
         } catch (error) {
-            console.error('Error al obtener contacto por número:', error.mesage)
+            console.error('Error getting contact by number:', error.message)
             throw error
         }
     }
@@ -86,9 +87,8 @@ class PostgreSQLAdapter {
 
         try {
             await this.db.query(query, values)
-            console.log('🆗 Contacto guardado o actualizado con éxito')
         } catch (error) {
-            console.error('🚫 Error al guardar o actualizar contacto:', error)
+            console.error('🚫 Error saving or updating contact:', error)
             throw error
         }
     }
@@ -105,9 +105,8 @@ class PostgreSQLAdapter {
             )`
         try {
             await this.db.query(contact)
-            console.log('🆗 Tabla contact existe o fue creada con éxito')
         } catch (error) {
-            console.error('🚫 Error al crear la tabla contact:', error)
+            console.error('🚫 Error creating the contact table:', error)
             throw error
         }
 
@@ -126,9 +125,8 @@ class PostgreSQLAdapter {
             )`
         try {
             await this.db.query(history)
-            console.log('🆗 Tabla history existe o fue creada con éxito')
         } catch (error) {
-            console.error('🚫 Error al crear la tabla de history:', error)
+            console.error('🚫 Error creating the history table:', error)
             throw error
         }
 
@@ -161,9 +159,8 @@ class PostgreSQLAdapter {
 
         try {
             await this.db.query(sp_suc)
-            console.log('🆗 Procedimiento almacenado de contacto existe o fue creada con éxito')
         } catch (error) {
-            console.error('🚫 Error al crear el procedimiento almacenado de contacto:', error)
+            console.error('🚫 Error creating the stored procedure for contact:', error)
             throw error
         }
 
@@ -199,9 +196,8 @@ class PostgreSQLAdapter {
 
         try {
             await this.db.query(sp_suhc)
-            console.log('🆗 Procedimiento almacenado de historico existe o fue creada con éxito')
         } catch (error) {
-            console.error('🚫 Error al crear el procedimiento almacenado de historico:', error)
+            console.error('🚫 Error creating the stored procedure for history:', error)
             throw error
         }
     }

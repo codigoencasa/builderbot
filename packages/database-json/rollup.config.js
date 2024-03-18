@@ -11,5 +11,11 @@ export default {
             exports: 'named',
         },
     ],
-    plugins: [commonjs(), nodeResolve(), typescript()],
+    plugins: [
+        commonjs(),
+        nodeResolve({
+            resolveOnly: (module) => !/@builderbot\/bot/i.test(module),
+        }),
+        typescript(),
+    ],
 }

@@ -1,13 +1,15 @@
 import mysql, { Connection, OkPacket, RowDataPacket } from 'mysql2'
 
 import { HistoryRow, MysqlAdapterCredentials } from './types'
+import { MemoryDB } from '@builderbot/bot'
 
-class MysqlAdapter {
+class MysqlAdapter extends MemoryDB {
     db: Connection
     listHistory = []
     credentials: MysqlAdapterCredentials = { host: null, user: null, database: null, password: null }
 
     constructor(_credentials: MysqlAdapterCredentials) {
+        super()
         this.credentials = _credentials
         this.init().then()
     }
@@ -15,21 +17,19 @@ class MysqlAdapter {
     async init(): Promise<void> {
         this.db = mysql.createConnection(this.credentials)
 
-        await this.db.connect(async (error: any) => {
+        this.db.connect(async (error: any) => {
             if (!error) {
-                console.log(`Solicitud de conexión a base de datos exitosa`)
+                console.log(`Successful database connection request`)
                 await this.checkTableExists()
             }
 
             if (error) {
-                console.log(`Solicitud de conexión fallida ${error.stack}`)
+                console.log(`Failed connection request ${error.stack}`)
             }
         })
     }
 
-    getPrevByNumber = async (from: any): Promise<HistoryRow | null> => {
-        //    TODO:pendiente valida _closing, lanza error
-        // if (this.db._closing) await this.init()
+    getPrevByNumber = async (from: any): Promise<HistoryRow> => {
         return await new Promise((resolve, reject) => {
             const sql = `SELECT * FROM history WHERE phone='${from}' ORDER BY id DESC`
             this.db.query<HistoryRow[]>(sql, (error: any, rows: any[]) => {
@@ -41,9 +41,8 @@ class MysqlAdapter {
                     row.options = JSON.parse(row.options)
                     resolve(row)
                 }
-
                 if (!rows.length) {
-                    resolve(null)
+                    resolve({} as HistoryRow)
                 }
             })
         })
@@ -64,7 +63,6 @@ class MysqlAdapter {
 
         this.db.query<OkPacket>(sql, [values], (err: any) => {
             if (err) throw err
-            console.log('Guardado en DB...', values)
         })
     }
 
@@ -74,7 +72,7 @@ class MysqlAdapter {
 
             const sql = `CREATE TABLE ${tableName} 
             (id INT AUTO_INCREMENT PRIMARY KEY, 
-            ref varchar(255) NOT NULL,
+            ref varchar(255) DEFAULT NULL,
             keyword varchar(255) NULL,
             answer longtext NOT NULL,
             refSerialize varchar(255) NOT NULL,
@@ -85,7 +83,7 @@ class MysqlAdapter {
 
             this.db.query<OkPacket>(sql, (err: any) => {
                 if (err) throw err
-                console.log(`Tabla ${tableName} creada correctamente `)
+                console.log(`Table ${tableName} created successfully`)
                 resolve(true)
             })
         })
