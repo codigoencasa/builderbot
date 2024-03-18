@@ -25,12 +25,17 @@ const welcomeFlow = addKeyword<Provider, Database>(['hi', 'hello', 'hola'])
             'I share with you the following links of interest about the project',
             '👉 *doc* to view the documentation',
         ].join('\n'),
-        { delay: 800 },
-        null,
+        { delay: 800, capture: true },
+        async (ctx, { fallBack }) => {
+            if (!ctx.body.toLocaleLowerCase().includes('doc')) {
+                return fallBack('You should type *doc*')
+            }
+            return
+        },
         [discordFlow]
     )
 
-const registerFlow = addKeyword<Provider, Database>(utils.setEvent('REGISTER_FLOW'))
+const registerFlow = addKeyword<Provider, Database>(utils.setEvent('REGISTER_EVENT'))
     .addAnswer(`What is your name?`, { capture: true }, async (ctx, { state }) => {
         await state.update({ name: ctx.body })
     })
@@ -78,8 +83,8 @@ const main = async () => {
         '/v1/blacklist',
         handleCtx(async (bot, req, res) => {
             const { number, intent } = req.body
-            if (intent === 'remove') bot.blacklist.remove(`340000000`)
-            if (intent === 'add') bot.blacklist.add(`340000000`)
+            if (intent === 'remove') bot.blacklist.remove(number)
+            if (intent === 'add') bot.blacklist.add(number)
 
             res.writeHead(200, { 'Content-Type': 'application/json' })
             return res.end(JSON.stringify({ status: 'ok', number, intent }))
