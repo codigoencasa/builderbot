@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/database-json",
-    "version": "1.0.18-alpha.0",
+    "version": "1.0.19-alpha.0",
     "description": "Esto es el conector a json",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
@@ -29,7 +29,7 @@
         "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
     },
     "dependencies": {
-        "@builderbot/bot": "^1.0.18-alpha.0"
+        "@builderbot/bot": "^1.0.19-alpha.0"
     },
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
     "devDependencies": {

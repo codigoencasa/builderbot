@@ -1,6 +1,6 @@
 {
     "name": "create-builderbot",
-    "version": "1.0.18-alpha.0",
+    "version": "1.0.19-alpha.0",
     "description": "",
     "license": "ISC",
     "main": "dist/index.cjs",
@@ -16,7 +16,7 @@
     ],
     "bin": "./bin/create.cjs",
     "dependencies": {
-        "@builderbot/cli": "^1.0.18-alpha.0"
+        "@builderbot/cli": "^1.0.19-alpha.0"
     },
     "repository": {
         "type": "git",
