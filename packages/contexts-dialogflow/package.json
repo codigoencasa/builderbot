@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/contexts-dialogflow",
-    "version": "1.0.17-alpha.0",
+    "version": "1.0.18-alpha.0",
     "description": "contexts typescript",
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
@@ -29,7 +29,7 @@
         "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
     },
     "dependencies": {
-        "@builderbot/bot": "^1.0.17-alpha.0",
+        "@builderbot/bot": "^1.0.18-alpha.0",
         "@google-cloud/dialogflow": "^6.2.0"
     },
     "devDependencies": {
