@@ -427,7 +427,8 @@ class BaileysProvider extends ProviderClass {
     }
 
     /**
-     *
+     * @deprecated Buttons are not available in this provider, please use sendButtons instead
+     * @private
      * @param {string} number
      * @param {string} text
      * @param {string} footer

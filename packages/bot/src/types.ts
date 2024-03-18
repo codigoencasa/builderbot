@@ -36,7 +36,9 @@ export type Button = {
  * @property {boolean} [sensitive] - Indica si la acción es sensible.
  */
 export type ActionPropertiesKeyword = {
+    /** @deprecated Intern use. */
     ref?: string
+    /** @deprecated */
     idle?: number
     buttons?: Button[]
     media?: string
@@ -61,6 +63,7 @@ export type ActionPropertiesGeneric = Omit<ActionPropertiesKeyword, 'sensitive' 
 export type BotContext = {
     name?: string
     host?: { phone: string; [key: string]: any }
+    /** @deprecated */
     idleFallBack?: boolean
     body: string
     from: string
@@ -132,7 +135,9 @@ export type BotMethods<P = {}, B = {}> = {
     fallBack: (message?: string) => void
     provider: P
     database: B
+    /** @deprecated */
     inRef: string
+    /** @deprecated */
     idle: IdleState
     state: BotStateStandAlone
     blacklist: DynamicBlacklist

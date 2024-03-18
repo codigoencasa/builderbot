@@ -172,7 +172,7 @@ class VenomProvider extends ProviderClass {
     }
 
     /**
-     * Enviar botones
+     * @deprecated Buttons are not available in this provider, please use sendButtons instead
      * @private
      * @param {*} number
      * @param {*} message

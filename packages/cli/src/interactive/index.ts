@@ -25,7 +25,7 @@ const bannerDone = (templateName: string = ''): void => {
             color.yellow(` npm start `),
             ``,
             `📄 Documentación y Curso:`,
-            `   https://bot-whatsapp.netlify.app`,
+            `   https://builderbot.vercel.app`,
             ``,
             `🤖 ¿Problemas? Únete:`,
             `   https://link.codigoencasa.com/DISCORD`,

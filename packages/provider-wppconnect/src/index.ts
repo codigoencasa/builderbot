@@ -164,7 +164,8 @@ class WPPConnectProvider extends ProviderClass {
     }
 
     /**
-     * Enviar mensaje con botones
+     * @deprecated Buttons are not available in this provider, please use sendButtons instead
+     * @private
      * @param {string} number
      * @param {string} text
      * @param {Array} buttons

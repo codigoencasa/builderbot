@@ -147,8 +147,8 @@ class WebWhatsappProvider extends ProviderClass {
     ]
 
     /**
-     * Enviar botones
-     * https://docs.wwebjs.dev/Buttons.html
+     * @deprecated Buttons are not available in this provider, please use sendButtons instead
+     * @private
      * @private
      * @param {*} number
      * @param {*} message

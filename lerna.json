@@ -10,7 +10,6 @@
     "packages/database-postgres",
     "packages/eslint-plugin-builderbot",
     "packages/provider-meta",
-    "packages/provider-bailey",
     "packages/provider-baileys",
     "packages/provider-twilio",
     "packages/provider-web-whatsapp",
