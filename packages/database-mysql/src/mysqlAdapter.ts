@@ -1,7 +1,7 @@
+import { MemoryDB } from '@builderbot/bot'
 import mysql, { Connection, OkPacket, RowDataPacket } from 'mysql2'
 
 import { HistoryRow, MysqlAdapterCredentials } from './types'
-import { MemoryDB } from '@builderbot/bot'
 
 class MysqlAdapter extends MemoryDB {
     db: Connection

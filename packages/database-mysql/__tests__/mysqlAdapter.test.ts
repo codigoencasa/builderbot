@@ -99,7 +99,7 @@ test('init - You should connect to the database', async () => {
     assert.equal(createConnectionStub.called, true)
     assert.equal(consoleLogSpy.called, true)
     assert.equal(checkTableExistsSutb.called, true)
-    assert.equal(consoleLogSpy.args[0][0], 'Solicitud de conexión a base de datos exitosa')
+    assert.equal(consoleLogSpy.args[0][0], 'Successful database connection request')
     consoleLogSpy.restore()
 })
 
@@ -166,7 +166,7 @@ test('[MysqlAdapter] - getPrevByNumber ', async () => {
 
     mockMysqlAdapter.db.query = (sql: string, callback: Function) => {
         if (sql.startsWith('SELECT')) {
-            callback(null, mockQueryResult)
+            callback({}, mockQueryResult)
         }
     }
 

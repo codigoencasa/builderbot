@@ -1,5 +1,5 @@
-import { existsSync, promises as fsPromises } from 'fs'
 import { MemoryDB } from '@builderbot/bot'
+import { existsSync, promises as fsPromises } from 'fs'
 import { join } from 'path'
 
 import { HistoryEntry, JsonFileAdapterOptions } from './types'
