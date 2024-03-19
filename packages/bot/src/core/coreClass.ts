@@ -1,14 +1,13 @@
 import { Console } from 'console'
 import { createWriteStream } from 'fs'
-import { EventEmitter } from 'node:events'
-
 import { DispatchFn, DynamicBlacklist, FlagsRuntime, TContext } from './../types'
+import { HostEventTypes, TypedEventEmitter } from '../utils/typeEventEmitter'
 import { GlobalState, IdleState, SingleState } from '../context'
 import { MemoryDB } from '../db'
 import { LIST_REGEX } from '../io/events'
 import FlowClass from '../io/flowClass'
 import { toCtx } from '../io/methods'
-import { ProviderClass } from '../provider'
+import { ProviderClass, ProviderEventTypes } from '../provider'
 import { FlowDynamicMessage, GeneralArgs, MessageContextIncoming } from '../types'
 import { BlackList, Queue } from '../utils'
 import { delay } from '../utils/delay'
@@ -25,7 +24,7 @@ type EventFunction = (msg: { [key: string]: string }) => Promise<any> | void
 
 const idleForCallback = new IdleState()
 
-class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends EventEmitter {
+class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends TypedEventEmitter<HostEventTypes> {
     flowClass: FlowClass
     database: D
     provider: P
@@ -71,9 +70,9 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     }
 
     /**
-     * Manejador de eventos
+     * Event handler
      */
-    listenerBusEvents = (): { event: string; func: EventFunction }[] => [
+    listenerBusEvents = (): { event: keyof ProviderEventTypes; func: EventFunction }[] => [
         {
             event: 'preinit',
             func: () => printer('Iniciando proveedor, espere...'),
@@ -665,7 +664,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             ) {
                 if (answer !== '__capture_only_intended__') {
                     await this.provider.sendMessage(numberOrId, answer, ctxMessage)
-                    this.emit('send_message', { numberOrId, answer, ctxMessage })
+                    this.emit('send_message', { ...ctxMessage, from: numberOrId, answer })
                 }
             }
             await this.database.save({ ...ctxMessage, from: numberOrId })

@@ -1,12 +1,20 @@
-import { EventEmitter } from 'node:events'
+import { BotContext, BotCtxMiddlewareOptions } from '../types'
+import { TypedEventEmitter } from '../utils/typeEventEmitter'
 
-import { BotCtxMiddlewareOptions } from '../types'
+export type ProviderEventTypes = {
+    message: [arg1: BotContext]
+    require_action: any
+    preinit: any
+    ready: any
+    auth_failure: any
+    host: any
+}
 
 export type Vendor<T = {}> = {} & T
 
 const NODE_ENV = process.env.NODE_ENV || 'dev'
 
-class ProviderClass extends EventEmitter {
+class ProviderClass extends TypedEventEmitter<ProviderEventTypes> {
     vendor: Vendor = {}
     globalVendorArgs: any
 

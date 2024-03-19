@@ -3,7 +3,7 @@ import { join } from 'path'
 import { readFileSync } from 'fs'
 
 const PACKAGES_PATH: string = join(process.cwd(), 'packages')
-const NAME_PREFIX: string = '@bot-whatsapp'
+const NAME_PREFIX: string = '@builderbot'
 
 const [, , appDir]: string[] = process.argv
 

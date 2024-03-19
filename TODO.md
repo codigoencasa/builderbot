@@ -44,5 +44,3 @@
 - [ ] cambiar el CONTRIBUTING.md
 - [ ] cambiar mensajes a ingles
 - [ ] state get('detail.name')
-- [ ] terminar wrapper `database`
-- [ ] terminar wrapper `provider`
