@@ -41,6 +41,8 @@
 - [x] deprecated button inside Byale
 - [x] idle, ref
 - [x] orden de start http
+- [ ] test meta
+- [ ] test twilio
 - [ ] Cambiar todos los mensajes a ingles
 - [ ] cambiar el CONTRIBUTING.md
 - [ ] cambiar mensajes a ingles
