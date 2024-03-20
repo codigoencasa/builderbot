@@ -8,6 +8,10 @@ import type { Queue } from './utils'
 
 export type CustomNameEvent = string
 
+export interface GlobalVendorArgs {
+    name: string
+}
+
 export type GeneralArgs = {
     blackList?: string[]
     listEvents?: Record<string, any>

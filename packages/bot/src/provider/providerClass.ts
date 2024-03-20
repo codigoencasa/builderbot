@@ -3,7 +3,8 @@ import { TypedEventEmitter } from '../utils/typeEventEmitter'
 
 export type ProviderEventTypes = {
     message: [arg1: BotContext]
-    require_action: any
+    require_action: [arg1: { title: string; instructions: string[] }]
+    notice: [arg1: { title: string; instructions: string[] }]
     preinit: any
     ready: any
     auth_failure: any
@@ -46,6 +47,8 @@ class ProviderClass extends TypedEventEmitter<ProviderEventTypes> {
                 code: `100`,
             }
             console.log(jsonRaw)
+            console.log(``)
+            console.log(res)
             res.writeHead(400, { 'Content-Type': 'application/json' })
             const jsonBody = JSON.stringify(jsonRaw)
             return res.end(jsonBody)

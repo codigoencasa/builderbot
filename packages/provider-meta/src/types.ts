@@ -6,6 +6,35 @@ export interface Contact {
     phones: string[]
 }
 
+export interface MetaList {
+    header: {
+        type: string
+        text: string
+    }
+    body: {
+        text: string
+    }
+    footer: {
+        text: string
+    }
+    action: {
+        button: string
+        sections: {
+            title: string
+            rows: {
+                id: string
+                title: string
+                description: string
+            }[]
+        }[]
+    }
+}
+
+export interface GlobalVendorArgs {
+    name: string
+    port: number
+}
+
 export interface Order {
     catalog_id: string
     product_items: string[]

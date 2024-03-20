@@ -5,11 +5,12 @@ import { EventEmitter } from 'node:events'
 import polka, { Polka } from 'polka'
 import Queue from 'queue-promise'
 
-import type { MetaProvider } from './metaProvider'
+import type { MetaProvider } from './meta'
 import { Message } from './types'
 import { getProfile, processIncomingMessage } from './utils'
 
-const idCtxBot = 'ctx-bot'
+const idCtxBot = 'id-ctx-bot'
+const idBotName = 'id-bot'
 class MetaWebHookServer extends EventEmitter {
     public server: Polka
     public port: number
@@ -32,6 +33,23 @@ class MetaWebHookServer extends EventEmitter {
             interval: 50,
             start: true,
         })
+    }
+
+    protected getListRoutes = (app: Polka): string[] => {
+        try {
+            const list = (app as any).routes as { [key: string]: { old: string }[][] }
+            const methodKeys = Object.keys(list)
+            const parseListRoutes = methodKeys.reduce((prev, current) => {
+                const routesForMethod = list[current].flat(2).map((i) => ({ method: current, path: i.old }))
+                prev = prev.concat(routesForMethod)
+                return prev
+            }, [] as { method: string; path: string }[])
+            const unique = parseListRoutes.map((r) => `[${r.method}]: http://localhost:${this.port}${r.path}`)
+            return [...new Set(unique)]
+        } catch (e) {
+            console.log(`[Error]:`, e)
+            return []
+        }
     }
 
     /**
@@ -119,8 +137,8 @@ class MetaWebHookServer extends EventEmitter {
         res.end('Invalid token!')
     }
 
-    protected emptyCtrl = (_, res) => {
-        res.end('')
+    protected emptyCtrl: polka.Middleware = (_, res) => {
+        res.end('running ok')
     }
 
     /**
@@ -139,27 +157,29 @@ class MetaWebHookServer extends EventEmitter {
     /**
      * Iniciar el servidor HTTP
      */
-    async start(vendor: BotCtxMiddleware, port?: number) {
+    async start(
+        vendor: BotCtxMiddleware,
+        port?: number,
+        args?: { botName: string },
+        cb: (arg?: any) => void = () => null
+    ) {
         if (port) this.port = port
 
         this.server.use(async (req, _, next) => {
             req[idCtxBot] = vendor
+            req[idBotName] = args?.botName ?? 'bot'
             if (req[idCtxBot]) return next()
             return next()
         })
 
-        this.server.listen(this.port, () => {
-            console.log(`[meta]: Agregar esta url "Webhook"`)
-            console.log(`[meta]: POST http://localhost:${this.port}/webhook`)
-            console.log(`[meta]: Más información en la documentación`)
-        })
         const profile = await getProfile(this.version, this.numberId, this.jwtToken)
         const host = {
             ...profile,
             phone: profile?.display_phone_number,
         }
-        this.emit('ready')
         this.emit('host', host)
+        const routes = this.getListRoutes(this.server).join('\n')
+        this.server.listen(this.port, cb(routes))
     }
 
     stop(): Promise<void> {
@@ -193,7 +213,8 @@ const inHandleCtx =
                 docs: `https://builderbot.vercel.app/errors`,
                 code: `100`,
             }
-            console.log(jsonRaw)
+            console.log(``)
+            console.log(res)
             res.writeHead(400, { 'Content-Type': 'application/json' })
             const jsonBody = JSON.stringify(jsonRaw)
             return res.end(jsonBody)

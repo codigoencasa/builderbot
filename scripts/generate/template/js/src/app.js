@@ -33,7 +33,7 @@ const welcomeFlow = addKeyword(['hi', 'hello', 'hola'])
         [discordFlow]
     )
 
-const registerFlow = addKeyword(utils.setEvent('REGISTER_EVENT'))
+const registerFlow = addKeyword(utils.setEvent('REGISTER_FLOW'))
     .addAnswer(`What is your name?`, { capture: true }, async (ctx, { state }) => {
         await state.update({ name: ctx.body })
     })

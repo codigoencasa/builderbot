@@ -24,6 +24,28 @@ class BaileyHttpServer extends EventEmitter {
 
     /**
      *
+     * @param app
+     * @returns
+     */
+    protected getListRoutes = (app: Polka): string[] => {
+        try {
+            const list = (app as any).routes as { [key: string]: { old: string }[][] }
+            const methodKeys = Object.keys(list)
+            const parseListRoutes = methodKeys.reduce((prev, current) => {
+                const routesForMethod = list[current].flat(2).map((i) => ({ method: current, path: i.old }))
+                prev = prev.concat(routesForMethod)
+                return prev
+            }, [] as { method: string; path: string }[])
+            const unique = parseListRoutes.map((r) => `[${r.method}]: http://localhost:${this.port}${r.path}`)
+            return [...new Set(unique)]
+        } catch (e) {
+            console.log(`[Error]:`, e)
+            return []
+        }
+    }
+
+    /**
+     *
      * @param _
      * @param res
      */
@@ -49,7 +71,7 @@ class BaileyHttpServer extends EventEmitter {
     /**
      * Iniciar el servidor HTTP
      */
-    start(vendor: BotCtxMiddleware, port?: number, args?: { botName: string }) {
+    start(vendor: BotCtxMiddleware, port?: number, args?: { botName: string }, cb: (arg?: any) => void = () => null) {
         if (port) this.port = port
         this.server.use(async (req, _, next) => {
             req[idCtxBot] = vendor
@@ -58,9 +80,8 @@ class BaileyHttpServer extends EventEmitter {
             return next()
         })
 
-        this.server.listen(this.port, () => {
-            console.log(`[bailey]: GET http://localhost:${this.port}`)
-        })
+        const routes = this.getListRoutes(this.server).join('\n')
+        this.server.listen(this.port, cb(routes))
     }
 
     stop(): Promise<void> {

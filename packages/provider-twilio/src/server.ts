@@ -11,7 +11,8 @@ import type { TwilioProvider } from './'
 import { TwilioRequestBody, TwilioPayload } from './types'
 import { parseNumber } from './utils'
 
-const idCtxBot = 'ctx-bot'
+const idCtxBot = 'id-ctx-bot'
+const idBotName = 'id-bot'
 
 /**
  * Encargado de levantar un servidor HTTP con una hook url
@@ -25,6 +26,23 @@ class TwilioWebHookServer extends EventEmitter {
         super()
         this.server = this.buildHTTPServer()
         this.port = twilioPort
+    }
+
+    protected getListRoutes = (app: Polka): string[] => {
+        try {
+            const list = (app as any).routes as { [key: string]: { old: string }[][] }
+            const methodKeys = Object.keys(list)
+            const parseListRoutes = methodKeys.reduce((prev, current) => {
+                const routesForMethod = list[current].flat(2).map((i) => ({ method: current, path: i.old }))
+                prev = prev.concat(routesForMethod)
+                return prev
+            }, [] as { method: string; path: string }[])
+            const unique = parseListRoutes.map((r) => `[${r.method}]: http://localhost:${this.port}${r.path}`)
+            return [...new Set(unique)]
+        } catch (e) {
+            console.log(`[Error]:`, e)
+            return []
+        }
     }
 
     /**
@@ -104,31 +122,25 @@ class TwilioWebHookServer extends EventEmitter {
             .use(cors())
             .use(urlencoded({ extended: true }))
             .use(json())
-            .post('/twilio-hook', this.incomingMsg)
+            .post('/webhook', this.incomingMsg)
             .get('/tmp', this.handlerLocalMedia)
     }
 
     /**
      * Iniciar el servidor HTTP
      */
-    start(vendor: BotCtxMiddleware, port?: number) {
+    start(vendor: BotCtxMiddleware, port?: number, args?: { botName: string }, cb: (arg?: any) => void = () => null) {
         if (port) this.port = port
 
         this.server.use(async (req, _, next) => {
             req[idCtxBot] = vendor
+            req[idBotName] = args?.botName ?? 'bot'
             if (req[idCtxBot]) return next()
             return next()
         })
 
-        this.server.listen(this.port, () => {
-            console.log(``)
-            console.log(`[Twilio]: Agregar esta url "WHEN A MESSAGE COMES IN"`)
-            console.log(`[Twilio]: POST http://localhost:${this.port}/twilio-hook`)
-            console.log(`[Twilio]: Más información en la documentación`)
-            console.log(``)
-        })
-
-        this.emit('ready', true)
+        const routes = this.getListRoutes(this.server).join('\n')
+        this.server.listen(this.port, cb(routes))
     }
 
     stop(): Promise<void> {

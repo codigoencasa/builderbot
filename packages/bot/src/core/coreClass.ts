@@ -1,7 +1,7 @@
 import { Console } from 'console'
 import { createWriteStream } from 'fs'
+
 import { DispatchFn, DynamicBlacklist, FlagsRuntime, TContext } from './../types'
-import { HostEventTypes, TypedEventEmitter } from '../utils/typeEventEmitter'
 import { GlobalState, IdleState, SingleState } from '../context'
 import { MemoryDB } from '../db'
 import { LIST_REGEX } from '../io/events'
@@ -12,6 +12,7 @@ import { FlowDynamicMessage, GeneralArgs, MessageContextIncoming } from '../type
 import { BlackList, Queue } from '../utils'
 import { delay } from '../utils/delay'
 import { printer } from '../utils/interactive'
+import { HostEventTypes, TypedEventEmitter } from '../utils/typeEventEmitter'
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
@@ -75,15 +76,19 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     listenerBusEvents = (): { event: keyof ProviderEventTypes; func: EventFunction }[] => [
         {
             event: 'preinit',
-            func: () => printer('Iniciando proveedor, espere...'),
+            func: () => printer('Starting provider, please wait...', ''),
         },
         {
             event: 'require_action',
-            func: ({ instructions, title = '⚡⚡ ACCIÓN REQUERIDA ⚡⚡' }) => printer(instructions, title),
+            func: ({ instructions, title = '' }) => printer(instructions, title),
+        },
+        {
+            event: 'notice',
+            func: ({ instructions, title = '' }) => printer(instructions, title, 'bgMagenta'),
         },
         {
             event: 'ready',
-            func: () => printer('Proveedor conectado y listo'),
+            func: () => printer('Provider connected and ready', ''),
         },
         {
             event: 'auth_failure',
@@ -369,12 +374,15 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                 flag.gotoFlow = true
 
                 if (!flowInstance?.toJson) {
-                    printer([
-                        `[POSSIBLE_CIRCULAR_DEPENDENCY]: Se ha detectado una dependencia circular.`,
-                        `Para evitar problemas, te recomendamos utilizar 'require'('./ruta_del_flow')`,
-                        `Ejemplo:  gotoFlow(helloFlow) -->  gotoFlow(require('./flows/helloFlow.js'))`,
-                        `[INFO]: https://bot-whatsapp.netlify.app/docs/goto-flow/`,
-                    ])
+                    printer(
+                        [
+                            `Circular dependency detected.`,
+                            `To avoid issues, we recommend using 'require'('./flow_path')`,
+                            `Example:  gotoFlow(helloFlow) -->  gotoFlow(require('./flows/helloFlow.js'))`,
+                            `https://bot-whatsapp.netlify.app/docs/goto-flow/`,
+                        ],
+                        `POSSIBLE_CIRCULAR_DEPENDENCY`
+                    )
                     return
                 }
 
@@ -479,7 +487,11 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         ) => {
             if (!!ctxMessage?.options?.idle && !ctxMessage?.options?.capture) {
                 printer(
-                    `[ATENCION IDLE]: La función "idle" no tendrá efecto a menos que habilites la opción "capture:true". Por favor, asegúrate de configurar "capture:true" o elimina la función "idle"`
+                    [
+                        `The "idle" function will have no effect unless you enable the "capture:true" option.`,
+                        `Please make sure to configure "capture:true" or remove the "idle" function`,
+                    ],
+                    `IDLE ATTENTION`
                 )
                 return
             }
@@ -714,8 +726,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     handleCtx = (
         ctxPolka: (
             bot:
-                | (Pick<typeof this.provider, 'sendMessage' | 'vendor'> & {
-                      provider: typeof this.provider
+                | (Pick<P, 'sendMessage' | 'vendor'> & {
+                      provider: P
                       blacklist: DynamicBlacklist
                       dispatch: DispatchFn
                   })

@@ -1,14 +1,17 @@
-import { ProviderClass } from './providerClass'
+import { ProviderClass, ProviderEventTypes } from './providerClass'
 
 function delay(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-type EventName = string
 type PayloadType = any
 
 class ProviderMock extends ProviderClass {
-    delaySendMessage = async (milliseconds: number, eventName: EventName, payload: PayloadType): Promise<void> => {
+    delaySendMessage = async (
+        milliseconds: number,
+        eventName: keyof ProviderEventTypes,
+        payload: PayloadType
+    ): Promise<void> => {
         await delay(milliseconds)
         this.emit(eventName, payload)
     }

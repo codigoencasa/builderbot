@@ -103,19 +103,19 @@ class BaileysProvider extends ProviderClass {
                     await sock.waitForConnectionUpdate((update) => !!update.qr)
                     const code = await sock.requestPairingCode(this.globalVendorArgs.phoneNumber)
                     this.emit('require_action', {
+                        title: '⚡⚡ ACTION REQUIRED ⚡⚡',
                         instructions: [
-                            `Acepta la notificación del WhatsApp ${this.globalVendorArgs.phoneNumber} en tu celular 👌`,
-                            `El token para la vinculación es: ${code}`,
-                            `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
+                            `Accept the WhatsApp notification from ${this.globalVendorArgs.phoneNumber} on your phone 👌`,
+                            `The token for linking is: ${code}`,
+                            `Need help: https://link.codigoencasa.com/DISCORD`,
                         ],
                     })
                 } else {
                     this.emit('auth_failure', [
-                        `No se ha definido el numero de telefono agregalo`,
-                        `Reinicia el BOT`,
-                        `Tambien puedes mirar un log que se ha creado baileys.log`,
-                        `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
-                        `(Puedes abrir un ISSUE) https://github.com/codigoencasa/bot-whatsapp/issues/new/choose`,
+                        `The phone number has not been defined, please add it`,
+                        `Restart the BOT`,
+                        `You can also check a log that has been created baileys.log`,
+                        `Need help: https://link.codigoencasa.com/DISCORD`,
                     ])
                 }
             }
@@ -124,8 +124,7 @@ class BaileysProvider extends ProviderClass {
                 const { connection, lastDisconnect, qr } = update
 
                 const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode
-
-                /** Conexion cerrada por diferentes motivos */
+                /** Connection closed for various reasons */
                 if (connection === 'close') {
                     if (statusCode !== DisconnectReason.loggedOut) {
                         this.initBailey()
@@ -138,7 +137,7 @@ class BaileysProvider extends ProviderClass {
                     }
                 }
 
-                /** Conexion abierta correctamente */
+                /** Connection opened successfully */
                 if (connection === 'open') {
                     const parseNumber = `${sock?.user?.id}`.split(':').shift()
                     const host = { ...sock?.user, phone: parseNumber }
@@ -150,10 +149,11 @@ class BaileysProvider extends ProviderClass {
                 /** QR Code */
                 if (qr && !this.globalVendorArgs.usePairingCode) {
                     this.emit('require_action', {
+                        title: '⚡⚡ ACTION REQUIRED ⚡⚡',
                         instructions: [
-                            `Debes escanear el QR Code 👌 ${this.globalVendorArgs.name}.qr.png`,
-                            `Recuerda que el QR se actualiza cada minuto `,
-                            `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
+                            `You must scan the QR Code`,
+                            `Remember that the QR code updates every minute`,
+                            `Need help: https://link.codigoencasa.com/DISCORD`,
                         ],
                     })
                     await baileyGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)
@@ -166,11 +166,10 @@ class BaileysProvider extends ProviderClass {
         } catch (e) {
             logger.log(e)
             this.emit('auth_failure', [
-                `Algo inesperado ha ocurrido NO entres en pánico`,
-                `Reinicia el BOT`,
-                `Tambien puedes mirar un log que se ha creado baileys.log`,
-                `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
-                `(Puedes abrir un ISSUE) https://github.com/codigoencasa/bot-whatsapp/issues/new/choose`,
+                `Something unexpected has occurred, do not panic`,
+                `Restart the BOT`,
+                `You can also check a log that has been created baileys.log`,
+                `Need help: https://link.codigoencasa.com/DISCORD`,
             ])
         }
     }
@@ -195,13 +194,18 @@ class BaileysProvider extends ProviderClass {
                 })
             },
         }
-        this.http.start(methods, port)
+        this.http.start(methods, port, { botName: this.globalVendorArgs.name }, (routes) => {
+            this.emit('notice', {
+                title: '🛜  HTTP Server ON ',
+                instructions: routes,
+            })
+        })
         return
     }
 
     /**
-     * Mapeamos los eventos nativos a los que la clase Provider espera
-     * para tener un standar de eventos
+     * Map native events that the Provider class expects
+     * to have a standard set of events
      * @returns
      */
     protected busEvents = (): { event: keyof BaileysEventMap; func: (arg?: any, arg2?: any) => any }[] => [
@@ -437,13 +441,13 @@ class BaileysProvider extends ProviderClass {
      */
 
     sendButtons = async (number: string, text: string, buttons: ButtonOption[]) => {
-        this.emit(
-            'notice',
-            [
-                `[NOTA]: Actualmente enviar botones no esta disponible con este proveedor`,
-                `[NOTA]: esta funcion esta disponible con Meta o Twilio`,
-            ].join('\n')
-        )
+        this.emit('notice', {
+            title: 'DEPRECATED',
+            instructions: [
+                `Currently sending buttons is not available with this provider`,
+                `this function is available with Meta or Twilio`,
+            ],
+        })
         const numberClean = baileyCleanNumber(number)
         const templateButtons = buttons.map((btn: { body }, i: any) => ({
             buttonId: `id-btn-${i}`,

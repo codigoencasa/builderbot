@@ -110,7 +110,23 @@ class TwilioProvider extends ProviderClass {
                 })
             },
         }
-        this.http.start(methods, port)
+
+        this.http.start(methods, port, { botName: this.globalVendorArgs.name }, (routes) => {
+            this.emit('notice', {
+                title: '🛜  HTTP Server ON ',
+                instructions: routes,
+            })
+
+            this.emit('notice', {
+                title: '⚡⚡ SETUP TWILIO ⚡⚡',
+                instructions: [
+                    `Add "Webhook" WHEN A MESSAGE COMES IN`,
+                    `http://localhost:${port}/webhook`,
+                    `More info https://builderbot.vercel.app/en/providers/twilio`,
+                ],
+            })
+        })
+
         this.listenOnEvents()
         return
     }

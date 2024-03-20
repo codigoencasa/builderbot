@@ -1,1 +1,1 @@
-export { MetaProvider } from './metaProvider'
+export { MetaProvider } from './meta'

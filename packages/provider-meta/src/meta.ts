@@ -1,5 +1,6 @@
 import { ProviderClass, utils } from '@builderbot/bot'
-import { BotContext, BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@builderbot/bot/dist/types'
+import { Vendor } from '@builderbot/bot/dist/provider/providerClass'
+import { BotContext, BotCtxMiddleware, BotCtxMiddlewareOptions, Button, SendOptions } from '@builderbot/bot/dist/types'
 import axios from 'axios'
 import FormData from 'form-data'
 import { createReadStream } from 'fs'
@@ -9,27 +10,47 @@ import { tmpdir } from 'os'
 import { join, basename } from 'path'
 import Queue from 'queue-promise'
 
+import { MetaInterface } from './metaInterface'
 import { MetaWebHookServer } from './server'
-import { Localization, Message, MetaProviderOptions, Reaction, SaveFileOptions, TextMessageBody } from './types'
+import {
+    GlobalVendorArgs,
+    Localization,
+    Message,
+    MetaList,
+    MetaProviderOptions,
+    Reaction,
+    SaveFileOptions,
+    TextMessageBody,
+} from './types'
 import { downloadFile } from './utils'
+import { parseMetaNumber } from './utils/number'
 
 const URL = `https://graph.facebook.com`
 
 class MetaProvider extends ProviderClass {
     http: MetaWebHookServer | undefined
-    jwtToken: string | undefined
-    verifyToken: string | undefined
-    numberId: string | undefined
-    version: string = 'v16.0'
-    queue: Queue
+    queue: Queue = new Queue()
+    vendor: Vendor<MetaInterface>
+    globalVendorArgs: MetaProviderOptions & Partial<GlobalVendorArgs> = {
+        name: 'bot',
+        jwtToken: undefined,
+        numberId: undefined,
+        verifyToken: undefined,
+        version: 'v16.0',
+    }
 
-    constructor({ jwtToken, numberId, verifyToken, version }: MetaProviderOptions) {
+    constructor(args: MetaProviderOptions & Partial<GlobalVendorArgs>) {
         super()
-        this.jwtToken = jwtToken
-        this.numberId = numberId
-        this.version = version
-        this.verifyToken = verifyToken
-        // this.initHttpServer(6566, {blacklist:{} as any})
+
+        this.http = new MetaWebHookServer(
+            this.globalVendorArgs.jwtToken,
+            this.globalVendorArgs.numberId,
+            this.globalVendorArgs.version,
+            this.globalVendorArgs.verifyToken,
+            args.port
+        )
+
+        this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
         this.queue = new Queue({
             concurrent: 1,
             interval: 100,
@@ -51,10 +72,9 @@ class MetaProvider extends ProviderClass {
      * @returns
      */
     initHttpServer = (port: number, opts: Pick<BotCtxMiddlewareOptions, 'blacklist'>) => {
-        this.http = new MetaWebHookServer(this.jwtToken, this.numberId, this.version, this.verifyToken, port)
         const methods: BotCtxMiddleware<MetaProvider> = {
             sendMessage: this.sendMessage,
-            provider: this.vendor,
+            provider: this,
             blacklist: opts.blacklist,
             dispatch: (customEvent, payload) => {
                 this.emit('message', {
@@ -65,7 +85,21 @@ class MetaProvider extends ProviderClass {
                 })
             },
         }
-        this.http.start(methods, port)
+        this.http.start(methods, port, { botName: this.globalVendorArgs.name }, (routes) => {
+            this.emit('notice', {
+                title: '🛜  HTTP Server ON ',
+                instructions: routes,
+            })
+
+            this.emit('notice', {
+                title: '⚡⚡ SETUP META/FACEBOOK ⚡⚡',
+                instructions: [
+                    `Add "Webhook" URL`,
+                    `http://localhost:${port}/webhook`,
+                    `More info https://builderbot.vercel.app/en/providers/meta`,
+                ],
+            })
+        })
         this.listenOnEvents()
         return
     }
@@ -78,7 +112,7 @@ class MetaProvider extends ProviderClass {
     busEvents = () => [
         {
             event: 'auth_failure',
-            func: (payload: any) => this.emit('error', payload),
+            func: (payload: any) => this.emit('auth_failure', payload),
         },
         {
             event: 'ready',
@@ -104,7 +138,7 @@ class MetaProvider extends ProviderClass {
      * @param {Object} body - The body of the message.
      * @return {void} A Promise that resolves when the message is sent.
      */
-    sendMessageMeta(body: TextMessageBody): void {
+    sendMessageMeta = (body: TextMessageBody): void => {
         return this.queue.add(() => this.sendMessageToApi(body))
     }
 
@@ -114,13 +148,17 @@ class MetaProvider extends ProviderClass {
      * @param {Object} body - The body of the message.
      * @return {Object} The response data from the API.
      */
-    async sendMessageToApi(body: TextMessageBody): Promise<any> {
+    sendMessageToApi = async (body: TextMessageBody): Promise<any> => {
         try {
-            const response = await axios.post(`${URL}/${this.version}/${this.numberId}/messages`, body, {
-                headers: {
-                    Authorization: `Bearer ${this.jwtToken}`,
-                },
-            })
+            const response = await axios.post(
+                `${URL}/${this.globalVendorArgs.version}/${this.globalVendorArgs.numberId}/messages`,
+                body,
+                {
+                    headers: {
+                        Authorization: `Bearer ${this.globalVendorArgs.jwtToken}`,
+                    },
+                }
+            )
             return response.data
         } catch (error) {
             console.error(error.message)
@@ -129,6 +167,7 @@ class MetaProvider extends ProviderClass {
     }
 
     sendText = async (to: string, message: string) => {
+        to = parseMetaNumber(to)
         const body: TextMessageBody = {
             messaging_product: 'whatsapp',
             recipient_type: 'individual',
@@ -143,6 +182,7 @@ class MetaProvider extends ProviderClass {
     }
 
     sendImage = async (to: string, mediaInput = null) => {
+        to = parseMetaNumber(to)
         if (!mediaInput) throw new Error(`MEDIA_INPUT_NULL_: ${mediaInput}`)
 
         const formData = new FormData()
@@ -154,12 +194,16 @@ class MetaProvider extends ProviderClass {
 
         const {
             data: { id: mediaId },
-        } = await axios.post(`${URL}/${this.version}/${this.numberId}/media`, formData, {
-            headers: {
-                Authorization: `Bearer ${this.jwtToken}`,
-                ...formData.getHeaders(),
-            },
-        })
+        } = await axios.post(
+            `${URL}/${this.globalVendorArgs.version}/${this.globalVendorArgs.numberId}/media`,
+            formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${this.globalVendorArgs.jwtToken}`,
+                    ...formData.getHeaders(),
+                },
+            }
+        )
 
         const body: TextMessageBody = {
             messaging_product: 'whatsapp',
@@ -179,6 +223,7 @@ class MetaProvider extends ProviderClass {
      * @returns
      */
     sendVideo = async (to: string, pathVideo = null) => {
+        to = parseMetaNumber(to)
         if (!pathVideo) throw new Error(`MEDIA_INPUT_NULL_: ${pathVideo}`)
 
         const formData = new FormData()
@@ -187,15 +232,18 @@ class MetaProvider extends ProviderClass {
             contentType: mimeType,
         })
         formData.append('messaging_product', 'whatsapp')
-
         const {
             data: { id: mediaId },
-        } = await axios.post(`${URL}/${this.version}/${this.numberId}/media`, formData, {
-            headers: {
-                Authorization: `Bearer ${this.jwtToken}`,
-                ...formData.getHeaders(),
-            },
-        })
+        } = await axios.post(
+            `${URL}/${this.globalVendorArgs.version}/${this.globalVendorArgs.numberId}/media`,
+            formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${this.globalVendorArgs.jwtToken}`,
+                    ...formData.getHeaders(),
+                },
+            }
+        )
 
         const body = {
             messaging_product: 'whatsapp',
@@ -216,6 +264,7 @@ class MetaProvider extends ProviderClass {
      */
 
     sendMedia = async (to: string, text = '', mediaInput: string) => {
+        to = parseMetaNumber(to)
         const fileDownloaded = await utils.generalDownload(mediaInput)
         const mimeType = mime.lookup(fileDownloaded)
         mediaInput = fileDownloaded
@@ -236,7 +285,8 @@ class MetaProvider extends ProviderClass {
      * @param {*} buttons
      * @returns
      */
-    sendLists = async (to: string, list: any) => {
+    sendList = async (to: string, list: MetaList) => {
+        to = parseMetaNumber(to)
         const parseList = { ...list, ...{ type: 'list' } }
         const body: TextMessageBody = {
             messaging_product: 'whatsapp',
@@ -249,64 +299,19 @@ class MetaProvider extends ProviderClass {
     }
 
     /**
-     * Enviar listas alternativo
-     * @param {*} number
-     * @param {*} header
-     * @param {*} text
-     * @param {*} footer
-     * @param {*} button
-     * @param {*} list
+     *
+     * @param to
+     * @param buttons
+     * @param text
      * @returns
      */
-    sendList = async (to: string, header: string, text: string, footer: string, button: string, list = []) => {
-        const parseList = list.map((list) => ({
-            title: list.title,
-            rows: list.rows.map((row) => ({
-                id: row.id,
-                title: row.title,
-                description: row.description,
-            })),
-        }))
-
-        const body = {
-            messaging_product: 'whatsapp',
-            recipient_type: 'individual',
-            to,
-            type: 'interactive',
-            interactive: {
-                type: 'list',
-                header: {
-                    type: 'text',
-                    text: header,
-                },
-                body: {
-                    text: text,
-                },
-                footer: {
-                    text: footer,
-                },
-                action: {
-                    button: button,
-                    sections: parseList,
-                },
-            },
-        }
-        return this.sendMessageMeta(body)
-    }
-
-    /**
-     * Enviar buttons
-     * @param {*} number
-     * @param {*} text
-     * @param {*} buttons
-     * @returns
-     */
-    sendButtons = async (to: string, text: string, buttons = []) => {
+    sendButtons = async (to: string, buttons: Button[] = [], text: string) => {
+        to = parseMetaNumber(to)
         const parseButtons = buttons.map((btn, i) => ({
             type: 'reply',
             reply: {
                 id: `btn-${i}`,
-                title: btn.body,
+                title: btn.body.slice(0, 15),
             },
         }))
 
@@ -318,7 +323,7 @@ class MetaProvider extends ProviderClass {
             interactive: {
                 type: 'button',
                 body: {
-                    text: text,
+                    text,
                 },
                 action: {
                     buttons: parseButtons,
@@ -329,72 +334,30 @@ class MetaProvider extends ProviderClass {
     }
 
     /**
-     * Enviar buttons only text
-     * @param {*} number
-     * @param {*} text
-     * @param {*} buttons
+     * Enviar CTA
+     * @param to
+     * @param button
+     * @param text
      * @returns
      */
-    sendButtonsText = async (to: string, text: string, buttons = []) => {
-        const parseButtons = buttons.map((btn) => ({
-            type: 'reply',
-            reply: {
-                id: btn.id,
-                title: btn.title,
-            },
-        }))
+    sendButtonUrl = async (to: string, button: Button & { url: string }, text: string) => {
+        to = parseMetaNumber(to)
         const body: TextMessageBody = {
             messaging_product: 'whatsapp',
             recipient_type: 'individual',
             to,
             type: 'interactive',
             interactive: {
-                type: 'button',
+                type: 'cta_url',
                 body: {
-                    text: text,
+                    text,
                 },
                 action: {
-                    buttons: parseButtons,
-                },
-            },
-        }
-        return this.sendMessageMeta(body)
-    }
-
-    /**
-     * Enviar buttons with image
-     * @param {*} number
-     * @param {*} text
-     * @param {*} buttons
-     * @param {*} url
-     * @returns
-     */
-    sendButtonsMedia = async (to: string, text: string, buttons = [], url: string) => {
-        const parseButtons = buttons.map((btn) => ({
-            type: 'reply',
-            reply: {
-                id: btn.id,
-                title: btn.title,
-            },
-        }))
-        const body: TextMessageBody = {
-            messaging_product: 'whatsapp',
-            recipient_type: 'individual',
-            to,
-            type: 'interactive',
-            interactive: {
-                type: 'button',
-                header: {
-                    type: 'image',
-                    image: {
-                        link: url,
+                    name: 'cta_url',
+                    parameters: {
+                        display_text: button.body.slice(0, 15),
+                        url: button.url,
                     },
-                },
-                body: {
-                    text: text,
-                },
-                action: {
-                    buttons: parseButtons,
                 },
             },
         }
@@ -410,7 +373,8 @@ class MetaProvider extends ProviderClass {
      * @returns
      */
 
-    sendTemplate = async (number, template, languageCode) => {
+    sendTemplate = async (number: string, template: any, languageCode: any) => {
+        number = parseMetaNumber(number)
         const body: any = {
             messaging_product: 'whatsapp',
             recipient_type: 'individual',
@@ -474,7 +438,8 @@ class MetaProvider extends ProviderClass {
      * @returns
      */
 
-    sendContacts = async (to: string, contact = []) => {
+    sendContacts = async (to: string, contact: any = []) => {
+        to = parseMetaNumber(to)
         const parseContacts = contact.map((contact) => ({
             name: {
                 formatted_name: contact.name,
@@ -485,12 +450,12 @@ class MetaProvider extends ProviderClass {
                 prefix: contact.prefix,
             },
             birthday: contact.birthday,
-            phones: contact.phones.map((phone) => ({
+            phones: contact.phones.map((phone: { phone: any; wa_id: any; type: any }) => ({
                 phone: phone.phone,
                 wa_id: phone.wa_id,
                 type: phone.type,
             })),
-            emails: contact.emails.map((email) => ({
+            emails: contact.emails.map((email: { email: any; type: any }) => ({
                 email: email.email,
                 type: email.type,
             })),
@@ -499,19 +464,29 @@ class MetaProvider extends ProviderClass {
                 department: contact.department,
                 title: contact.title,
             },
-            urls: contact.urls.map((url) => ({
+            urls: contact.urls.map((url: { url: any; type: any }) => ({
                 url: url.url,
                 type: url.type,
             })),
-            addresses: contact.addresses.map((address) => ({
-                street: address.street,
-                city: address.city,
-                state: address.state,
-                zip: address.zip,
-                country: address.country,
-                country_code: address.counry_code,
-                type: address.type,
-            })),
+            addresses: contact.addresses.map(
+                (address: {
+                    street: any
+                    city: any
+                    state: any
+                    zip: any
+                    country: any
+                    counry_code: any
+                    type: any
+                }) => ({
+                    street: address.street,
+                    city: address.city,
+                    state: address.state,
+                    zip: address.zip,
+                    country: address.country,
+                    country_code: address.counry_code,
+                    type: address.type,
+                })
+            ),
         }))
 
         const body = {
@@ -533,7 +508,8 @@ class MetaProvider extends ProviderClass {
      * @returns
      */
 
-    sendCatalog = async (number, bodyText, itemCatalogId) => {
+    sendCatalog = async (number: string, bodyText: any, itemCatalogId: any) => {
+        number = parseMetaNumber(number)
         const body = {
             messaging_product: 'whatsapp',
             recipient_type: 'individual',
@@ -563,8 +539,9 @@ class MetaProvider extends ProviderClass {
      * @returns
      */
     sendMessage = async (number: string, message: string, options?: SendOptions): Promise<any> => {
+        number = parseMetaNumber(number)
         options = { ...options, ...options['options'] }
-        if (options?.buttons?.length) return this.sendButtons(number, message, options.buttons)
+        if (options?.buttons?.length) return this.sendButtons(number, options.buttons, message)
         if (options?.media) return this.sendMedia(number, message, options.media)
 
         this.sendText(number, message)
@@ -575,11 +552,12 @@ class MetaProvider extends ProviderClass {
      * @param {*} number
      * @param {*} react
      */
-    sendReaction = async (number: string, react: Reaction) => {
+    sendReaction = async (to: string, react: Reaction) => {
+        to = parseMetaNumber(to)
         const body = {
             messaging_product: 'whatsapp',
             recipient_type: 'individual',
-            to: number,
+            to,
             type: 'reaction',
             reaction: {
                 message_id: react.message_id,
@@ -598,6 +576,7 @@ class MetaProvider extends ProviderClass {
      * @returns
      */
     sendLocation = async (to: string, localization: Localization) => {
+        to = parseMetaNumber(to)
         const { long_number, lat_number, name, address } = localization
         const body = {
             messaging_product: 'whatsapp',
@@ -615,7 +594,7 @@ class MetaProvider extends ProviderClass {
 
     saveFile = async (ctx: Partial<Message & BotContext>, options: SaveFileOptions = {}): Promise<string> => {
         try {
-            const { buffer, extension } = await downloadFile(ctx?.url, this.jwtToken)
+            const { buffer, extension } = await downloadFile(ctx?.url, this.globalVendorArgs.jwtToken)
             const fileName = `file-${Date.now()}.${extension}`
             const pathFile = join(options?.path ?? tmpdir(), fileName)
             await writeFile(pathFile, buffer)
@@ -627,6 +606,7 @@ class MetaProvider extends ProviderClass {
     }
 
     sendFile = async (to: string, mediaInput = null) => {
+        to = parseMetaNumber(to)
         if (!mediaInput) throw new Error(`MEDIA_INPUT_NULL_: ${mediaInput}`)
 
         const formData = new FormData()
@@ -640,12 +620,16 @@ class MetaProvider extends ProviderClass {
 
         const {
             data: { id: mediaId },
-        } = await axios.post(`${URL}/${this.version}/${this.numberId}/media`, formData, {
-            headers: {
-                Authorization: `Bearer ${this.jwtToken}`,
-                ...formData.getHeaders(),
-            },
-        })
+        } = await axios.post(
+            `${URL}/${this.globalVendorArgs.version}/${this.globalVendorArgs.numberId}/media`,
+            formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${this.globalVendorArgs.jwtToken}`,
+                    ...formData.getHeaders(),
+                },
+            }
+        )
 
         const body = {
             messaging_product: 'whatsapp',
@@ -660,6 +644,7 @@ class MetaProvider extends ProviderClass {
     }
 
     sendAudio(to: string, fileOpus: string, text: string) {
+        to = parseMetaNumber(to)
         console.log({ to, fileOpus, text })
     }
 }
