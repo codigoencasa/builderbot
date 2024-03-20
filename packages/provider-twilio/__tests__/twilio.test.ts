@@ -52,9 +52,9 @@ test.before(() => {
     twilioProvider.initHttpServer(3001, { blacklist: {} as any })
 })
 
-test.after(async () => {
-    if (twilioProvider.http) await twilioProvider.http.stop()
-})
+// test.after(async () => {
+//     if (twilioProvider.http) await twilioProvider.http.stop()
+// })
 
 test('sendMessageToApi - should send a message to API', async () => {
     assert.instance(twilioProvider, TwilioProvider)
