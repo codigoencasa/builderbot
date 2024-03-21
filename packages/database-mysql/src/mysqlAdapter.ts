@@ -57,9 +57,9 @@ class MysqlAdapter extends MemoryDB {
         options: any
     }): Promise<void> => {
         const values = [
-            [ctx.ref, ctx.keyword, ctx.answer, ctx.refSerialize, ctx.from, JSON.stringify(ctx.options), null],
+            [ctx.ref, ctx.keyword, ctx.answer, ctx.refSerialize, ctx.from, JSON.stringify(ctx.options)],
         ]
-        const sql = 'INSERT INTO history (ref, keyword, answer, refSerialize, phone, options, created_at) values ?'
+        const sql = 'INSERT INTO history (ref, keyword, answer, refSerialize, phone, options) values ?'
 
         this.db.query<OkPacket>(sql, [values], (err: any) => {
             if (err) throw err
