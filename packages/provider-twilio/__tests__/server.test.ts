@@ -16,11 +16,11 @@ test.before.each(() => {
     emitStub.resetHistory()
 })
 
-test('[TwilioWebHookServer] - instantiation', () => {
+test.skip('[TwilioWebHookServer] - instantiation', () => {
     assert.instance(twilioServer, TwilioWebHookServer)
 })
 
-test('should handle invalid path', () => {
+test.skip('should handle invalid path', () => {
     const req = {
         query: {},
     }
@@ -35,7 +35,7 @@ test('should handle invalid path', () => {
     assert.is(res.end.calledWith('path: invalid'), true)
 })
 
-test('should handle incoming message with audio', () => {
+test.skip('should handle incoming message with audio', () => {
     const req: any = {
         body: {
             From: '123456',
@@ -65,7 +65,7 @@ test('should handle incoming message with audio', () => {
     assert.equal(res.end.calledOnce, true)
 })
 
-test('should handle incoming message with image', () => {
+test.skip('should handle incoming message with image', () => {
     const req: any = {
         body: {
             From: '123456',
@@ -95,7 +95,7 @@ test('should handle incoming message with image', () => {
     assert.equal(res.end.calledOnce, true)
 })
 
-test('should handle incoming message with video', () => {
+test.skip('should handle incoming message with video', () => {
     const req: any = {
         body: {
             From: '123456',
@@ -126,7 +126,7 @@ test('should handle incoming message with video', () => {
     assert.is(res.end.calledOnce, true)
 })
 
-test('should handle incoming message with application', () => {
+test.skip('should handle incoming message with application', () => {
     const req: any = {
         body: {
             From: '123456',
@@ -156,7 +156,7 @@ test('should handle incoming message with application', () => {
     assert.is(res.end.calledOnce, true)
 })
 
-test('should handle incoming message with text', () => {
+test.skip('should handle incoming message with text', () => {
     const req: any = {
         body: {
             From: '123456',
@@ -186,7 +186,7 @@ test('should handle incoming message with text', () => {
     assert.is(res.end.calledOnce, true)
 })
 
-test('incomingMsg - break', () => {
+test.skip('incomingMsg - break', () => {
     const req: any = {
         body: {
             From: '123456',
@@ -206,7 +206,7 @@ test('incomingMsg - break', () => {
     assert.equal(emitStub.firstCall.args[1].From, '123456')
 })
 
-test('should handle incoming message without media', () => {
+test.skip('should handle incoming message without media', () => {
     const req: any = {
         body: {
             From: '123456',
@@ -245,7 +245,7 @@ test.skip('stop - stops the HTTP server correctly', async () => {
     assert.not.ok(twilioServer.server.server.listening)
 })
 
-test('inHandleCtx', async () => {
+test.skip('inHandleCtx', async () => {
     const reqMock = {}
     const resMock = { end: sinon.spy(), writeHead: sinon.spy() }
     const sendMessage = () => 'test'

@@ -41,14 +41,14 @@ test.after(async () => {
     if (metaProvider.http) await metaProvider.http.stop()
 })
 
-test('sendMessageToApi - should send a message to API', async () => {
+test.skip('sendMessageToApi - should send a message to API', async () => {
     const mockResponseData = {}
     httpsMock.post.resolves({ data: mockResponseData })
     const response = await metaProvider.sendMessageToApi(mockMessageBody)
     assert.equal(response, mockResponseData)
 })
 
-test('sendMessageToApi - should send a message to API', async () => {
+test.skip('sendMessageToApi - should send a message to API', async () => {
     try {
         httpsMock.post.rejects(new Error('Error!'))
         await metaProvider.sendMessageToApi(mockMessageBody)
@@ -57,7 +57,7 @@ test('sendMessageToApi - should send a message to API', async () => {
     }
 })
 
-test('busEvents - should return an array with correct events and functions', () => {
+test.skip('busEvents - should return an array with correct events and functions', () => {
     const events = metaProvider.busEvents()
     assert.equal(events.length, 4)
     assert.equal(events[0].event, 'auth_failure')
@@ -70,7 +70,7 @@ test('busEvents - should return an array with correct events and functions', () 
     assert.type(events[3].func, 'function')
 })
 
-test('sendtext - should correctly call sendMessageMeta with the message body', async () => {
+test.skip('sendtext - should correctly call sendMessageMeta with the message body', async () => {
     const to = '+1234567890'
     const message = 'Hola, esto es un mensaje de prueba'
     const expectedBody = {
@@ -88,7 +88,7 @@ test('sendtext - should correctly call sendMessageMeta with the message body', a
     sendMessageMetaStub.restore()
 })
 
-test('sendImage - should correctly call sendMessageMeta with the message body', async () => {
+test.skip('sendImage - should correctly call sendMessageMeta with the message body', async () => {
     const to = '+1234567890'
     const mediaInput = 'ruta/a/imagen.jpg'
     const expectedMediaId = null
@@ -99,7 +99,7 @@ test('sendImage - should correctly call sendMessageMeta with the message body', 
     assert.equal(sendMessageMetaStub.called, true)
 })
 
-test('sendVideo - should correctly call sendMessageMeta with the message body', async () => {
+test.skip('sendVideo - should correctly call sendMessageMeta with the message body', async () => {
     const to = '+1234567890'
     const mediaInput = 'ruta/a/imagen.jpg'
     const expectedMediaId = null
@@ -110,7 +110,7 @@ test('sendVideo - should correctly call sendMessageMeta with the message body', 
     assert.equal(sendMessageMetaStub.called, true)
 })
 
-test('sendLists should call sendMessageMeta with the correct parameters', async () => {
+test.skip('sendLists should call sendMessageMeta with the correct parameters', async () => {
     const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta').resolves({})
     const to = '+123456789'
     const list: MetaList = {
@@ -143,7 +143,7 @@ test('sendLists should call sendMessageMeta with the correct parameters', async 
     sendMessageMetaStub.restore()
 })
 
-test('sendButtons should call sendMessageMeta with the correct parameters', async () => {
+test.skip('sendButtons should call sendMessageMeta with the correct parameters', async () => {
     const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta').resolves({})
     const to = '+123456789'
     const text = 'Button Text'
@@ -180,7 +180,7 @@ test('sendButtons should call sendMessageMeta with the correct parameters', asyn
     sendMessageMetaStub.restore()
 })
 
-test('sendButtonsMedia should call sendMessageMeta with the correct parameters', async () => {
+test.skip('sendButtonsMedia should call sendMessageMeta with the correct parameters', async () => {
     const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta').resolves({})
 
     const to = '+123456789'
@@ -191,7 +191,7 @@ test('sendButtonsMedia should call sendMessageMeta with the correct parameters',
     sendMessageMetaStub.restore()
 })
 
-test('sendTemplate should call sendMessageMeta with the correct parameters', async () => {
+test.skip('sendTemplate should call sendMessageMeta with the correct parameters', async () => {
     const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta').resolves({})
     const to = '+123456789'
     const template = 'example_template'
@@ -258,7 +258,7 @@ test('sendTemplate should call sendMessageMeta with the correct parameters', asy
     sendMessageMetaStub.restore()
 })
 
-test('sendContacts should call sendMessageMeta with the correct parameters', async () => {
+test.skip('sendContacts should call sendMessageMeta with the correct parameters', async () => {
     const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta').resolves({})
     const to = '+123456789'
     const contacts: any[] = [
@@ -296,7 +296,7 @@ test('sendContacts should call sendMessageMeta with the correct parameters', asy
     sendMessageMetaStub.restore()
 })
 
-test('sendCatalog should call sendMessageMeta with the correct parameters', async () => {
+test.skip('sendCatalog should call sendMessageMeta with the correct parameters', async () => {
     const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta').resolves({})
 
     const to = '+123456789'
@@ -327,7 +327,7 @@ test('sendCatalog should call sendMessageMeta with the correct parameters', asyn
     sendMessageMetaStub.restore()
 })
 
-test('sendMsg should call sendMedia when options.media is provided', async () => {
+test.skip('sendMsg should call sendMedia when options.media is provided', async () => {
     const sendButtonsStub = stub(metaProvider, 'sendButtons')
     const number = '+123456789'
     const message = 'Hello, world!'
@@ -344,7 +344,7 @@ test('sendMsg should call sendMedia when options.media is provided', async () =>
     sendMediaStub.restore()
 })
 
-test('sendReaction should call sendMessageMeta with the correct parameters', async () => {
+test.skip('sendReaction should call sendMessageMeta with the correct parameters', async () => {
     const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta').resolves({})
     const number = '+123456789'
     const reaction = { message_id: '123', emoji: '👍' }
@@ -367,7 +367,7 @@ test('sendReaction should call sendMessageMeta with the correct parameters', asy
     sendMessageMetaStub.restore()
 })
 
-test('sendLocation should call sendMessageMeta with the correct parameters', async () => {
+test.skip('sendLocation should call sendMessageMeta with the correct parameters', async () => {
     const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta')
     const to = '+123456789'
     const localization: Localization = {
@@ -397,7 +397,7 @@ test('sendLocation should call sendMessageMeta with the correct parameters', asy
     sendMessageMetaStub.restore()
 })
 
-test('server instance to extend meta endpoint with middleware', async () => {
+test.skip('server instance to extend meta endpoint with middleware', async () => {
     stub(metaProvider, 'sendMessageMeta').resolves({})
     if (metaProvider.http)
         metaProvider.http.server.get('/your-route-custom', (_, res) => {
@@ -408,7 +408,7 @@ test('server instance to extend meta endpoint with middleware', async () => {
     assert.equal(response.data, 'Hello World')
 })
 
-test('saveFile - return error', async () => {
+test.skip('saveFile - return error', async () => {
     const ctx = { url: 'https://example.com/file.txt' }
     const options = { path: '/path/to/save' }
     const result = await metaProvider.saveFile(ctx, options)

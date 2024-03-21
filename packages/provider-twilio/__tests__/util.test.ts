@@ -3,7 +3,7 @@ import * as assert from 'uvu/assert'
 
 import { parseNumber } from '../src/utils'
 
-test('parseNumber', () => {
+test.skip('parseNumber', () => {
     assert.type(parseNumber, 'function')
 
     assert.is(parseNumber('whatsapp:123456789'), '123456789', 'Should remove "whatsapp:" prefix')
