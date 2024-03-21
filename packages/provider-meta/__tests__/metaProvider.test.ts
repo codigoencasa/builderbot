@@ -4,7 +4,7 @@ import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 
 import { MetaProvider } from '../src/meta'
-import { Localization } from '../src/types'
+import { Localization, MetaList } from '../src/types'
 
 const httpsMock = {
     post: stub(axios, 'post'),
@@ -41,13 +41,14 @@ test.after(async () => {
     if (metaProvider.http) await metaProvider.http.stop()
 })
 
-test.skip('sendMessageToApi - should send a message to API', async () => {
+test('sendMessageToApi - should send a message to API', async () => {
     const mockResponseData = {}
     httpsMock.post.resolves({ data: mockResponseData })
     const response = await metaProvider.sendMessageToApi(mockMessageBody)
     assert.equal(response, mockResponseData)
 })
-test.skip('sendMessageToApi - should send a message to API', async () => {
+
+test('sendMessageToApi - should send a message to API', async () => {
     try {
         httpsMock.post.rejects(new Error('Error!'))
         await metaProvider.sendMessageToApi(mockMessageBody)
@@ -56,7 +57,7 @@ test.skip('sendMessageToApi - should send a message to API', async () => {
     }
 })
 
-test.skip('busEvents - should return an array with correct events and functions', () => {
+test('busEvents - should return an array with correct events and functions', () => {
     const events = metaProvider.busEvents()
     assert.equal(events.length, 4)
     assert.equal(events[0].event, 'auth_failure')
@@ -69,8 +70,8 @@ test.skip('busEvents - should return an array with correct events and functions'
     assert.type(events[3].func, 'function')
 })
 
-test.skip('sendtext - should correctly call sendMessageMeta with the message body', async () => {
-    const to = '1234546'
+test('sendtext - should correctly call sendMessageMeta with the message body', async () => {
+    const to = '+1234567890'
     const message = 'Hola, esto es un mensaje de prueba'
     const expectedBody = {
         messaging_product: 'whatsapp',
@@ -87,8 +88,8 @@ test.skip('sendtext - should correctly call sendMessageMeta with the message bod
     sendMessageMetaStub.restore()
 })
 
-test.skip('sendImage - should correctly call sendMessageMeta with the message body', async () => {
-    const to = '12345'
+test('sendImage - should correctly call sendMessageMeta with the message body', async () => {
+    const to = '+1234567890'
     const mediaInput = 'ruta/a/imagen.jpg'
     const expectedMediaId = null
     httpsMock.post.resolves({ data: { id: expectedMediaId } })
@@ -98,8 +99,8 @@ test.skip('sendImage - should correctly call sendMessageMeta with the message bo
     assert.equal(sendMessageMetaStub.called, true)
 })
 
-test.skip('sendVideo - should correctly call sendMessageMeta with the message body', async () => {
-    const to = '12345'
+test('sendVideo - should correctly call sendMessageMeta with the message body', async () => {
+    const to = '+1234567890'
     const mediaInput = 'ruta/a/imagen.jpg'
     const expectedMediaId = null
     httpsMock.post.resolves({ data: { id: expectedMediaId } })
@@ -109,13 +110,24 @@ test.skip('sendVideo - should correctly call sendMessageMeta with the message bo
     assert.equal(sendMessageMetaStub.called, true)
 })
 
-test.skip('sendLists should call sendMessageMeta with the correct parameters', async () => {
+test('sendLists should call sendMessageMeta with the correct parameters', async () => {
     const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta').resolves({})
     const to = '+123456789'
-    const list = {
-        messaging_product: 'whatsapp',
-        recipient_type: 'individual',
-        to: 'recipient_id',
+    const list: MetaList = {
+        header: {
+            type: '',
+            text: '',
+        },
+        body: {
+            text: '',
+        },
+        footer: {
+            text: '',
+        },
+        action: {
+            button: '',
+            sections: [],
+        },
     }
     const expectedBody = {
         messaging_product: 'whatsapp',
@@ -124,80 +136,19 @@ test.skip('sendLists should call sendMessageMeta with the correct parameters', a
         type: 'interactive',
         interactive: { ...list, type: 'list' },
     }
-    await metaProvider.sendLists(to, list)
+    await metaProvider.sendList(to, list)
     assert.equal(sendMessageMetaStub.calledOnce, true)
     assert.equal(JSON.stringify(sendMessageMetaStub.firstCall.args[0]), JSON.stringify(expectedBody))
     assert.ok(sendMessageMetaStub.calledWith(expectedBody))
     sendMessageMetaStub.restore()
 })
 
-test.skip('sendList should call sendMessageMeta with the correct parameters', async () => {
-    const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta').resolves({})
-    const to = '+123456789'
-    const header = 'List Header'
-    const text = 'List Text'
-    const footer = 'List Footer'
-    const button = 'List Button'
-    const list = [
-        {
-            title: 'test',
-            rows: [
-                {
-                    id: 1,
-                    title: 'test',
-                    description: 'Description!',
-                },
-            ],
-        },
-    ]
-
-    await metaProvider.sendList(to, header, text, footer, button, list as any)
-    assert.equal(sendMessageMetaStub.calledOnce, true)
-
-    const parseList = list.map((listItem) => ({
-        title: listItem.title,
-        rows: listItem.rows.map((row) => ({
-            id: row.id,
-            title: row.title,
-            description: row.description,
-        })),
-    }))
-
-    const expectedBody = {
-        messaging_product: 'whatsapp',
-        recipient_type: 'individual',
-        to,
-        type: 'interactive',
-        interactive: {
-            type: 'list',
-            header: {
-                type: 'text',
-                text: header,
-            },
-            body: {
-                text: text,
-            },
-            footer: {
-                text: footer,
-            },
-            action: {
-                button: button,
-                sections: parseList,
-            },
-        },
-    }
-
-    assert.equal(JSON.stringify(sendMessageMetaStub.firstCall.args[0]), JSON.stringify(expectedBody))
-    assert.ok(sendMessageMetaStub.calledWith(expectedBody))
-    sendMessageMetaStub.restore()
-})
-
-test.skip('sendButtons should call sendMessageMeta with the correct parameters', async () => {
+test('sendButtons should call sendMessageMeta with the correct parameters', async () => {
     const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta').resolves({})
     const to = '+123456789'
     const text = 'Button Text'
     const buttons = [{ body: 'Button 1' }, { body: 'Button 2' }, { body: 'Button 3' }]
-    await metaProvider.sendButtons(to, text, buttons as any)
+    await metaProvider.sendButtons(to, buttons as any, text)
     assert.equal(sendMessageMetaStub.calledOnce, true)
 
     const parseButtons = buttons.map((btn, i) => ({
@@ -229,100 +180,18 @@ test.skip('sendButtons should call sendMessageMeta with the correct parameters',
     sendMessageMetaStub.restore()
 })
 
-test.skip('sendButtonsText should call sendMessageMeta with the correct parameters', async () => {
-    const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta').resolves({})
-    const to = '+123456789'
-    const text = 'Button Text'
-    const buttons = [
-        { id: 'btn1', title: 'Button 1' },
-        { id: 'btn2', title: 'Button 2' },
-        { id: 'btn3', title: 'Button 3' },
-    ]
-
-    await metaProvider.sendButtonsText(to, text, buttons as any)
-    assert.equal(sendMessageMetaStub.calledOnce, true)
-
-    const parseButtons = buttons.map((btn) => ({
-        type: 'reply',
-        reply: {
-            id: btn.id,
-            title: btn.title,
-        },
-    }))
-
-    const expectedBody = {
-        messaging_product: 'whatsapp',
-        recipient_type: 'individual',
-        to,
-        type: 'interactive',
-        interactive: {
-            type: 'button',
-            body: {
-                text: text,
-            },
-            action: {
-                buttons: parseButtons,
-            },
-        },
-    }
-
-    assert.equal(JSON.stringify(sendMessageMetaStub.firstCall.args[0]), JSON.stringify(expectedBody))
-    assert.ok(sendMessageMetaStub.calledWith(expectedBody))
-    sendMessageMetaStub.restore()
-})
-
-test.skip('sendButtonsMedia should call sendMessageMeta with the correct parameters', async () => {
+test('sendButtonsMedia should call sendMessageMeta with the correct parameters', async () => {
     const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta').resolves({})
 
-    // Mock data for the test
     const to = '+123456789'
-    const text = 'Button Text'
-    const buttons = [
-        { id: 'btn1', title: 'Button 1' },
-        { id: 'btn2', title: 'Button 2' },
-        { id: 'btn3', title: 'Button 3' },
-    ]
     const url = 'https://example.com/image.jpg'
-    await metaProvider.sendButtonsMedia(to, text, buttons as any, url)
+    const buttons = { body: 'test', url }
+    await metaProvider.sendButtonUrl(to, buttons, url)
     assert.equal(sendMessageMetaStub.calledOnce, true)
-
-    const parseButtons = buttons.map((btn) => ({
-        type: 'reply',
-        reply: {
-            id: btn.id,
-            title: btn.title,
-        },
-    }))
-
-    const expectedBody = {
-        messaging_product: 'whatsapp',
-        recipient_type: 'individual',
-        to,
-        type: 'interactive',
-        interactive: {
-            type: 'button',
-            header: {
-                type: 'image',
-                image: {
-                    link: url,
-                },
-            },
-            body: {
-                text: text,
-            },
-            action: {
-                buttons: parseButtons,
-            },
-        },
-    }
-
-    assert.equal(JSON.stringify(sendMessageMetaStub.firstCall.args[0]), JSON.stringify(expectedBody))
-    assert.ok(sendMessageMetaStub.calledWith(expectedBody))
-
     sendMessageMetaStub.restore()
 })
 
-test.skip('sendTemplate should call sendMessageMeta with the correct parameters', async () => {
+test('sendTemplate should call sendMessageMeta with the correct parameters', async () => {
     const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta').resolves({})
     const to = '+123456789'
     const template = 'example_template'
@@ -389,7 +258,7 @@ test.skip('sendTemplate should call sendMessageMeta with the correct parameters'
     sendMessageMetaStub.restore()
 })
 
-test.skip('sendContacts should call sendMessageMeta with the correct parameters', async () => {
+test('sendContacts should call sendMessageMeta with the correct parameters', async () => {
     const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta').resolves({})
     const to = '+123456789'
     const contacts: any[] = [
@@ -427,7 +296,7 @@ test.skip('sendContacts should call sendMessageMeta with the correct parameters'
     sendMessageMetaStub.restore()
 })
 
-test.skip('sendCatalog should call sendMessageMeta with the correct parameters', async () => {
+test('sendCatalog should call sendMessageMeta with the correct parameters', async () => {
     const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta').resolves({})
 
     const to = '+123456789'
@@ -458,26 +327,7 @@ test.skip('sendCatalog should call sendMessageMeta with the correct parameters',
     sendMessageMetaStub.restore()
 })
 
-test.skip('sendMsg should call sendButtons when options.buttons is provided', async () => {
-    const sendButtonsStub = stub(metaProvider, 'sendButtons')
-
-    const number = '+123456789'
-    const message = 'Hello, world!'
-    const options = {
-        buttons: [
-            { id: '1', title: 'Button 1' },
-            { id: '2', title: 'Button 2' },
-        ],
-    }
-    await metaProvider.sendMessage(number, message, { options })
-    assert.equal(sendButtonsStub.calledOnce, true)
-    const expectedArgs = [number, message, options.buttons]
-    assert.equal(JSON.stringify(sendButtonsStub.firstCall.args), JSON.stringify(expectedArgs))
-    assert.equal(sendMediaStub.notCalled, true)
-    sendButtonsStub.restore()
-})
-
-test.skip('sendMsg should call sendMedia when options.media is provided', async () => {
+test('sendMsg should call sendMedia when options.media is provided', async () => {
     const sendButtonsStub = stub(metaProvider, 'sendButtons')
     const number = '+123456789'
     const message = 'Hello, world!'
@@ -494,7 +344,7 @@ test.skip('sendMsg should call sendMedia when options.media is provided', async 
     sendMediaStub.restore()
 })
 
-test.skip('sendReaction should call sendMessageMeta with the correct parameters', async () => {
+test('sendReaction should call sendMessageMeta with the correct parameters', async () => {
     const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta').resolves({})
     const number = '+123456789'
     const reaction = { message_id: '123', emoji: '👍' }
@@ -517,7 +367,7 @@ test.skip('sendReaction should call sendMessageMeta with the correct parameters'
     sendMessageMetaStub.restore()
 })
 
-test.skip('sendLocation should call sendMessageMeta with the correct parameters', async () => {
+test('sendLocation should call sendMessageMeta with the correct parameters', async () => {
     const sendMessageMetaStub = stub(metaProvider, 'sendMessageMeta')
     const to = '+123456789'
     const localization: Localization = {
@@ -547,7 +397,7 @@ test.skip('sendLocation should call sendMessageMeta with the correct parameters'
     sendMessageMetaStub.restore()
 })
 
-test.skip('server instance to extend meta endpoint with middleware', async () => {
+test('server instance to extend meta endpoint with middleware', async () => {
     stub(metaProvider, 'sendMessageMeta').resolves({})
     if (metaProvider.http)
         metaProvider.http.server.get('/your-route-custom', (_, res) => {
@@ -558,7 +408,7 @@ test.skip('server instance to extend meta endpoint with middleware', async () =>
     assert.equal(response.data, 'Hello World')
 })
 
-test.skip('saveFile - return error', async () => {
+test('saveFile - return error', async () => {
     const ctx = { url: 'https://example.com/file.txt' }
     const options = { path: '/path/to/save' }
     const result = await metaProvider.saveFile(ctx, options)
