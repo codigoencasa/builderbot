@@ -85,12 +85,7 @@ class VenomProvider extends ProviderClass {
         } catch (e) {
             logger.log(e)
             this.emit('auth_failure', {
-                instructions: [
-                    `Ocurrio un error con la inicializacion de venom`,
-                    `Reinicia el BOT`,
-                    `Tambien puedes mirar un log que se ha creado venom.log`,
-                    `(Puedes abrir un ISSUE) https://github.com/codigoencasa/bot-whatsapp/issues/new/choose`,
-                ],
+                instructions: [`An error occurred during Venom initialization`, `Restart the BOT`],
             })
         }
     }
@@ -101,10 +96,11 @@ class VenomProvider extends ProviderClass {
     generateQr = async (qr: string) => {
         console.clear()
         this.emit('require_action', {
+            title: '⚡⚡ ACTION REQUIRED ⚡⚡',
             instructions: [
-                `Debes escanear el QR Code para iniciar ${this.globalVendorArgs.name}.qr.png`,
-                `Recuerda que el QR se actualiza cada minuto `,
-                `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
+                `You must scan the QR Code`,
+                `Remember that the QR code updates every minute`,
+                `Need help: https://link.codigoencasa.com/DISCORD`,
             ],
         })
         await venomGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)
@@ -180,13 +176,13 @@ class VenomProvider extends ProviderClass {
      * @returns
      */
     sendButtons = async (number: string, message: any, buttons = []) => {
-        this.emit(
-            'notice',
-            [
-                `[NOTA]: Actualmente enviar botones no esta disponible con este proveedor`,
-                `[NOTA]: esta funcion esta disponible con Meta o Twilio`,
-            ].join('\n')
-        )
+        this.emit('notice', {
+            title: 'DEPRECATED',
+            instructions: [
+                `Currently sending buttons is not available with this provider`,
+                `this function is available with Meta or Twilio`,
+            ],
+        })
         const buttonToStr = [message].concat(buttons.map((btn) => `${btn.body}`)).join(`\n`)
         return this.vendor.sendText(number, buttonToStr)
         // return this.vendor.sendButtons(number, "Title", buttons1, "Description");

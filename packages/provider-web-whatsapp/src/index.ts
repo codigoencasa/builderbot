@@ -41,15 +41,14 @@ class WebWhatsappProvider extends ProviderClass {
             this.vendor.on(event, func)
         }
 
-        this.vendor.emit('preinit')
-
         this.vendor.initialize().catch((e) => {
             logger.log(e)
             this.emit('require_action', {
+                title: '❌ ERROR ❌',
                 instructions: [
-                    `(Opcion 1): Debes eliminar la carpeta .wwebjs_auth y reiniciar nuevamente el bot. `,
-                    `(Opcion 2): Ejecutar este comando "npm install whatsapp-web.js@latest" `,
-                    `(Opcion 3): Ir FORO de discord https://link.codigoencasa.com/DISCORD `,
+                    `(Option 1): You must delete the .wwebjs_auth folder and restart the bot.`,
+                    `(Option 2): Run this command "npm install whatsapp-web.js@latest".`,
+                    `(Option 3): Visit the Discord forum at https://link.codigoencasa.com/DISCORD.`,
                 ],
             })
         })
@@ -87,16 +86,17 @@ class WebWhatsappProvider extends ProviderClass {
     busEvents = () => [
         {
             event: 'auth_failure',
-            func: (payload: any) => this.emit('error', payload),
+            func: (payload: any) => this.emit('auth_failure', payload),
         },
         {
             event: 'qr',
             func: async (qr: string) => {
                 this.emit('require_action', {
+                    title: '⚡⚡ ACTION REQUIRED ⚡⚡',
                     instructions: [
-                        `Debes escanear el QR Code para iniciar ${this.globalVendorArgs.name}.qr.png`,
-                        `Recuerda que el QR se actualiza cada minuto `,
-                        `Necesitas ayuda: https://link.codigoencasa.com/DISCORD`,
+                        `You must scan the QR Code`,
+                        `Remember that the QR code updates every minute`,
+                        `Need help: https://link.codigoencasa.com/DISCORD`,
                     ],
                 })
                 await wwebGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)
@@ -156,13 +156,13 @@ class WebWhatsappProvider extends ProviderClass {
      * @returns
      */
     sendButtons = async (number: string, message: any, buttons: any = []) => {
-        this.emit(
-            'notice',
-            [
-                `[NOTA]: Actualmente enviar botones no esta disponible con este proveedor`,
-                `[NOTA]: esta funcion esta disponible con Meta o Twilio`,
-            ].join('\n')
-        )
+        this.emit('notice', {
+            title: 'DEPRECATED',
+            instructions: [
+                `Currently sending buttons is not available with this provider`,
+                `this function is available with Meta or Twilio`,
+            ],
+        })
         const buttonMessage = new Buttons(message, buttons, '', '')
         return this.vendor.sendMessage(number, buttonMessage)
     }

@@ -57,7 +57,6 @@ class WPPConnectProvider extends ProviderClass {
      */
     initWppConnect = async () => {
         try {
-            this.emit('preinit')
             const name = this.globalVendorArgs.name
             const session = await create({
                 session: name,
@@ -65,10 +64,11 @@ class WPPConnectProvider extends ProviderClass {
                     if (attempt == 5) throw new Error()
 
                     this.emit('require_action', {
+                        title: '⚡⚡ ACTION REQUIRED ⚡⚡',
                         instructions: [
-                            `Debes escanear el QR Code para iniciar ${this.globalVendorArgs.name}.qr.png`,
-                            `Recuerde que el código QR se actualiza cada minuto `,
-                            `¿Necesita ayuda? https://link.codigoencasa.com/DISCORD`,
+                            `You must scan the QR Code`,
+                            `Remember that the QR code updates every minute`,
+                            `Need help: https://link.codigoencasa.com/DISCORD`,
                         ],
                     })
                     WppConnectGenerateImage(base64Qrimg, `${this.globalVendorArgs.name}.qr.png`)
@@ -87,11 +87,10 @@ class WPPConnectProvider extends ProviderClass {
             this.initBusEvents()
         } catch (error) {
             this.emit('auth_failure', [
-                `Algo inesperado ha ocurrido, no entres en pánico`,
-                `Reinicie el bot`,
-                `También puede consultar el registro generado wppconnect.log`,
-                `Necesita ayuda: https://link.codigoencasa.com/DISCORD`,
-                `(Puede abrir un ISSUE) https://github.com/codigoencasa/bot-whatsapp/issues/new/choose`,
+                `Something unexpected has occurred, do not panic`,
+                `Restart the bot`,
+                `You can also check the generated log wppconnect.log`,
+                `Need help: https://link.codigoencasa.com/DISCORD`,
             ])
         }
     }
@@ -172,13 +171,13 @@ class WPPConnectProvider extends ProviderClass {
      * @example await sendButtons("+XXXXXXXXXXX", "Your Text", [{"body": "Button 1"},{"body": "Button 2"}])
      */
     sendButtons = async (number: any, text: any, buttons: any[]) => {
-        this.emit(
-            'notice',
-            [
-                `[NOTA]: Actualmente enviar botones no esta disponible con este proveedor`,
-                `[NOTA]: esta funcion esta disponible con Meta o Twilio`,
-            ].join('\n')
-        )
+        this.emit('notice', {
+            title: 'DEPRECATED',
+            instructions: [
+                `Currently sending buttons is not available with this provider`,
+                `this function is available with Meta or Twilio`,
+            ],
+        })
 
         const templateButtons = buttons.map((btn: { body: any }, i: any) => ({
             id: `id-btn-${i}`,
