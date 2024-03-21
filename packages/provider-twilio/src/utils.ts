@@ -1,5 +1,10 @@
 const parseNumber = (number: string): string => {
-    return `${number}`.replace('whatsapp:', '').replace('+', '')
+    return number.replace(/(?:whatsapp:|\+\d+)/, '')
 }
 
-export { parseNumber }
+const parseNumberFrom = (number: string): string => {
+    const cleanNumber = number.replace(/whatsapp|:|\+/g, '')
+    return `whatsapp:+${cleanNumber}`
+}
+
+export { parseNumber, parseNumberFrom }

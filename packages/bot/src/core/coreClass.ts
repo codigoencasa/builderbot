@@ -88,7 +88,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         },
         {
             event: 'ready',
-            func: () => printer('Provider connected and ready', ''),
+            func: () =>
+                printer(['Tell a contact on your WhatsApp to write "hello"...'], '✅ Connected Provider', 'bgCyan'),
         },
         {
             event: 'auth_failure',

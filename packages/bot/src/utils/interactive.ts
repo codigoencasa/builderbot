@@ -1,6 +1,6 @@
 import color from 'picocolors'
 
-type PrinterFunction = (message: string | string[], title: string, cName?: 'bgMagenta' | 'bgRed') => void
+type PrinterFunction = (message: string | string[], title: string, cName?: 'bgMagenta' | 'bgRed' | 'bgCyan') => void
 
 const NODE_ENV: string = process.env.NODE_ENV || 'dev'
 

@@ -1,57 +1,75 @@
 import { ProviderClass, utils } from '@builderbot/bot'
 import { Vendor } from '@builderbot/bot/dist/provider/providerClass'
-import { BotContext, BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@builderbot/bot/dist/types'
+import {
+    BotContext,
+    BotCtxMiddleware,
+    BotCtxMiddlewareOptions,
+    GlobalVendorArgs,
+    SendOptions,
+} from '@builderbot/bot/dist/types'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import twilio from 'twilio'
 
 import { TwilioWebHookServer } from './server'
+import { TwilioProviderMethods } from './twilioInterface'
 import { ITwilioProviderOptions, TwilioRequestBody } from './types'
-import { parseNumber } from './utils'
+import { parseNumberFrom } from './utils'
 
-class TwilioProvider extends ProviderClass {
+class TwilioProvider extends ProviderClass implements TwilioProviderMethods {
     public http: TwilioWebHookServer
     public vendor: Vendor<twilio.Twilio>
-    private vendorNumber: string
-    private publicUrl: string
 
-    constructor({ accountSid, authToken, vendorNumber, publicUrl = '' }: ITwilioProviderOptions) {
+    globalVendorArgs: ITwilioProviderOptions & Partial<GlobalVendorArgs> = {
+        accountSid: undefined,
+        authToken: undefined,
+        vendorNumber: undefined,
+    }
+
+    constructor(args: ITwilioProviderOptions & Partial<GlobalVendorArgs>) {
         super()
-        this.publicUrl = publicUrl
-        this.vendor = twilio(accountSid, authToken)
-        this.vendorNumber = parseNumber(vendorNumber)
+        this.http = new TwilioWebHookServer(args?.port)
+        this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
+        this.vendor = twilio(this.globalVendorArgs.accountSid, this.globalVendorArgs.authToken)
     }
 
-    private busEvents(): Array<{ event: string; func: (payload?: any) => void }> {
-        return [
-            {
-                event: 'auth_failure',
-                func: (payload) => this.emit('error', payload),
+    busEvents = () => [
+        {
+            event: 'auth_failure',
+            func: (payload: any) => this.emit('auth_failure', payload),
+        },
+        {
+            event: 'ready',
+            func: () => this.emit('ready', true),
+        },
+        {
+            event: 'message',
+            func: (payload: BotContext) => {
+                this.emit('message', payload)
             },
-            {
-                event: 'ready',
-                func: () => this.emit('ready', true),
+        },
+        {
+            event: 'host',
+            func: (payload: any) => {
+                this.emit('host', payload)
             },
-            {
-                event: 'message',
-                func: (payload) => {
-                    this.emit('message', payload)
-                },
-            },
-        ]
-    }
+        },
+    ]
 
-    private async sendMedia(number: string, message: string, mediaInput: string | null): Promise<any> {
+    sendMedia = async (number: string, message = '', mediaInput: string) => {
+        const entryPointUrl = this.globalVendorArgs?.publicUrl ?? `http://localhost:${this.http.port}`
         if (!mediaInput) throw new Error(`Media cannot be null`)
         const encryptPath = utils.encryptData(encodeURIComponent(mediaInput))
-        const urlEncode = `${this.publicUrl}/tmp?path=${encryptPath}`
+        const urlEncode = `${entryPointUrl}/tmp?path=${encryptPath}`
         const regexUrl = /^(?!https?:\/\/)[^\s]+$/
-        const urlNotice = [
-            `[NOTA]: Estas intentando enviar una fichero que esta en local.`,
-            `[NOTA]: Para que esto funcione con Twilio necesitas que el fichero este en una URL publica`,
-            `[NOTA]: más informacion aqui https://bot-whatsapp.netlify.app/docs/provider-twilio/`,
-            `[NOTA]: Esta es la url que se enviara a twilio (debe ser publica) ${urlEncode}`,
-        ].join('\n')
+        const instructions = [
+            `You are trying to send a file that is local.`,
+            `For this to work with Twilio, the file needs to be in a public URL.`,
+            `More information here https://builderbot.vercel.app/en/twilio/uses-cases`,
+            `This is the URL that will be sent to Twilio (must be public)`,
+            ``,
+            `${urlEncode}`,
+        ]
 
         if (
             mediaInput.includes('localhost') ||
@@ -60,29 +78,33 @@ class TwilioProvider extends ProviderClass {
             regexUrl.test(mediaInput)
         ) {
             mediaInput = urlEncode
-            console.log(urlNotice)
+
+            this.emit('notice', {
+                title: '🟠  WARNING 🟠',
+                instructions,
+            })
         }
 
-        number = parseNumber(number)
         return this.vendor.messages.create({
             mediaUrl: [`${mediaInput}`],
             body: message,
-            from: `whatsapp:+${this.vendorNumber}`,
-            to: `whatsapp:+${number}`,
+            from: parseNumberFrom(this.globalVendorArgs.vendorNumber),
+            to: parseNumberFrom(number),
         })
     }
 
-    private async sendButtons(): Promise<void> {
-        this.emit(
-            'notice',
-            [
-                `[NOTA]: Actualmente enviar botones con Twilio está en desarrollo`,
-                `[NOTA]: https://www.twilio.com/es-mx/docs/whatsapp/buttons`,
-            ].join('\n')
-        )
+    async sendButtons(): Promise<void> {
+        this.emit('notice', {
+            title: '📃 INFO 📃',
+            instructions: [
+                `Twilio presents a different way to implement buttons`,
+                `To understand more about how it works, I recommend you check the following URLs`,
+                `https://builderbot.vercel.app/en/providers/twilio/uses-cases`,
+            ],
+        })
     }
 
-    private listenOnEvents = () => {
+    listenOnEvents = () => {
         const listEvents = this.busEvents()
         for (const { event, func } of listEvents) {
             this.http.on(event, func)
@@ -96,10 +118,9 @@ class TwilioProvider extends ProviderClass {
      * @returns
      */
     initHttpServer = (port: number, opts: Pick<BotCtxMiddlewareOptions, 'blacklist'>) => {
-        this.http = new TwilioWebHookServer(port)
         const methods: BotCtxMiddleware<TwilioProvider> = {
             sendMessage: this.sendMessage,
-            provider: this.vendor,
+            provider: this,
             blacklist: opts.blacklist,
             dispatch: (customEvent, payload) => {
                 this.emit('message', {
@@ -120,11 +141,16 @@ class TwilioProvider extends ProviderClass {
             this.emit('notice', {
                 title: '⚡⚡ SETUP TWILIO ⚡⚡',
                 instructions: [
-                    `Add "Webhook" WHEN A MESSAGE COMES IN`,
+                    `Add "When a message comes in"`,
                     `http://localhost:${port}/webhook`,
                     `More info https://builderbot.vercel.app/en/providers/twilio`,
                 ],
             })
+
+            const host = {
+                phone: this.globalVendorArgs.vendorNumber,
+            }
+            this.emit('host', host)
         })
 
         this.listenOnEvents()
@@ -133,13 +159,12 @@ class TwilioProvider extends ProviderClass {
 
     sendMessage = async (number: string, message: string, options?: SendOptions): Promise<any> => {
         options = { ...options, ...options['options'] }
-        number = parseNumber(`${number}`)
         if (options?.buttons?.length) await this.sendButtons()
         if (options?.media) return this.sendMedia(number, message, options.media)
         const response = this.vendor.messages.create({
             body: message,
-            from: `whatsapp:+${this.vendorNumber}`,
-            to: `whatsapp:+${number}`,
+            from: parseNumberFrom(this.globalVendorArgs.vendorNumber),
+            to: parseNumberFrom(number),
         })
         return response
     }

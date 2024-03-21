@@ -41,7 +41,11 @@
 - [x] deprecated button inside Byale
 - [x] idle, ref
 - [x] orden de start http
+- [x] meta recuerda que debes iniciar la conversacion con iun template
+- [ ] rollup starter remover rollup nodeResolver
+- [ ] test rember subscrie permisos
 - [ ] test meta
+- [ ] cambiar img url exmaple de imagen
 - [ ] test twilio
 - [ ] Cambiar todos los mensajes a ingles
 - [ ] cambiar el CONTRIBUTING.md

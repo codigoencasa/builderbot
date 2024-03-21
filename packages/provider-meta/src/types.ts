@@ -67,6 +67,28 @@ export interface ParamasIncomingMessage {
     message: any
 }
 
+export type TextGenericParams = {
+    messaging_product: 'whatsapp'
+    recipient_type: string
+    to: string
+    type: string
+    [key: string]: any
+}
+
+export type ParsedContact = {
+    name: {
+        formatted_name: string
+        first_name: string
+        [key: string]: any
+    }
+    phones: {
+        phone: string
+        type: string
+        [key: string]: any
+    }[]
+    [key: string]: any
+}
+
 export interface TextMessageBody {
     messaging_product: string
     to: string

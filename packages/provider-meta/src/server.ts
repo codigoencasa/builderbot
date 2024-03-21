@@ -107,7 +107,7 @@ class MetaWebHookServer extends EventEmitter {
      * @param {string} token
      * @returns {boolean}
      */
-    protected tokenIsValid(mode: string, token: string) {
+    protected tokenIsValid(mode: string, token: string): boolean {
         return mode === 'subscribe' && this.token === token
     }
 
@@ -116,7 +116,7 @@ class MetaWebHookServer extends EventEmitter {
      * @param {*} req
      * @param {*} res
      */
-    protected verifyToken = async (req, res) => {
+    protected verifyToken: polka.Middleware = async (req: any, res: any) => {
         const { query } = req
         const mode: string = query?.['hub.mode']
         const token: string = query?.['hub.verify_token']
@@ -127,7 +127,7 @@ class MetaWebHookServer extends EventEmitter {
             return
         }
         if (this.tokenIsValid(mode, token)) {
-            console.log('Webhook verified')
+            this.emit('ready')
             res.statusCode = 200
             res.end(challenge)
             return

@@ -3,9 +3,9 @@ import ffmpeg from 'fluent-ffmpeg'
 import path from 'path'
 ffmpeg.setFfmpegPath(ffmpegInstaller.path)
 
-interface FormatOptions {
+export interface FormatOptions {
     code: string
-    ext: string
+    ext: 'mp4' | 'opus' | 'mp3'
 }
 
 const formats: Record<string, FormatOptions> = {
@@ -17,13 +17,16 @@ const formats: Record<string, FormatOptions> = {
         code: 'libopus',
         ext: 'opus',
     },
+    mp4: {
+        code: 'aac',
+        ext: 'mp4',
+    },
 }
 
-const convertAudio = async (filePath: string, format: keyof typeof formats = 'opus'): Promise<string> => {
+const convertAudio = async (filePath: string, format: FormatOptions['ext'] = 'opus'): Promise<string> => {
     if (!filePath) {
         throw new Error('filePath is required')
     }
-
     const opusFilePath = path.join(
         path.dirname(filePath),
         `${path.basename(filePath, path.extname(filePath))}.${formats[format].ext}`

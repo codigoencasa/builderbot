@@ -10,6 +10,7 @@ export type CustomNameEvent = string
 
 export interface GlobalVendorArgs {
     name: string
+    port?: number
 }
 
 export type GeneralArgs = {
