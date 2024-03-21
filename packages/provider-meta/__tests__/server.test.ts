@@ -1,4 +1,4 @@
-import { spy, stub } from 'sinon'
+import { spy } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
@@ -10,34 +10,19 @@ const resMock = {
     end: spy(),
 }
 
-test.skip('should create MetaWebHookServer instance', async () => {
-    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3002)
-    server.start({})
-    assert.is(server['port'], 3002)
-    assert.is(server['jwtToken'], 'jwtToken')
-    await server.stop()
-})
-
-test.skip('start -should start MetaWebHookServer and emit "ready"', async () => {
-    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3003)
-    const metaServerSpy = stub(server['server'], 'listen')
-    server.start({})
-    assert.equal(metaServerSpy.called, true)
-})
-
-test.skip('tokenIsValid - method should return true for valid token', () => {
+test('tokenIsValid - method should return true for valid token', () => {
     const metaWebHookServer = new MetaWebHookServer('valid-jwt', '123', 'v1', 'valid-token')
     const result = metaWebHookServer['tokenIsValid']('subscribe', 'valid-token')
     assert.equal(result, true)
 })
 
-test.skip('tokenIsValid method should return false for invalid token', () => {
+test('tokenIsValid method should return false for invalid token', () => {
     const metaWebHookServer = new MetaWebHookServer('valid-jwt', '123', 'v1', 'valid-token')
     const result = metaWebHookServer['tokenIsValid']('subscribe', 'invalid-token')
     assert.equal(result, false)
 })
 
-test.skip('verifyToken - should return 403 and "No token!" if mode or token are missing', () => {
+test('verifyToken - should return 403 and "No token!" if mode or token are missing', () => {
     const metaWebHookServer = new MetaWebHookServer('valid-jwt', '123', 'v1', 'valid-token')
     const req = { query: {} }
 
@@ -46,7 +31,7 @@ test.skip('verifyToken - should return 403 and "No token!" if mode or token are 
     assert.is(resMock.end.calledWith('No token!'), true)
 })
 
-test.skip('verifyToken - should return 403 and "Invalid token!" if token is invalid', () => {
+test('verifyToken - should return 403 and "Invalid token!" if token is invalid', () => {
     const metaWebHookServer = new MetaWebHookServer('valid-jwt', '123', 'v1', 'valid-token')
     const req = { query: { 'hub.mode': 'subscribe', 'hub.verify_token': 'invalid-token' } }
     metaWebHookServer['verifyToken'](req, resMock)
@@ -54,7 +39,7 @@ test.skip('verifyToken - should return 403 and "Invalid token!" if token is inva
     assert.is(resMock.end.calledWith('Invalid token!'), true)
 })
 
-test.skip('verifyToken - should return 200 and the challenge if token is valid', () => {
+test('verifyToken - should return 200 and the challenge if token is valid', () => {
     const metaWebHookServer = new MetaWebHookServer('valid-jwt', '123', 'v1', 'valid-token')
     const challengeValue = 'some-challenge'
     const req = {
@@ -65,14 +50,7 @@ test.skip('verifyToken - should return 200 and the challenge if token is valid',
     assert.is(resMock.end.calledWith(challengeValue), true)
 })
 
-// test.skip('emptyCtrl - should call res.end with an empty string', () => {
-//     const metaWebHookServer = new MetaWebHookServer('valid-jwt', '123', 'v1', 'valid-token')
-//     const req = {}
-//     metaWebHookServer['emptyCtrl'](req, resMock)
-//     assert.is(resMock.end.calledWith(''), true)
-// })
-
-test.skip('processMessage emits the correct message', () => {
+test('processMessage emits the correct message', () => {
     const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3002)
     const mockEmit = spy(server, 'emit')
     const message: Message = {
@@ -87,7 +65,7 @@ test.skip('processMessage emits the correct message', () => {
     assert.equal(mockEmit.calledWith('message', message), true)
 })
 
-test.skip('incomingMsg - incomingMsg should process messages correctly', async () => {
+test('incomingMsg - incomingMsg should process messages correctly', async () => {
     const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3002)
     const message = { type: 'text', from: 'sender', to: 'receiver', body: 'Hello!' }
     const req = {
@@ -114,7 +92,7 @@ test.skip('incomingMsg - incomingMsg should process messages correctly', async (
     assert.ok(resMock.end.calledWith('Messages enqueued'))
     assert.ok(enqueueStub.called)
 })
-test.skip('incomingMsg - No debe llamar el metodo messageQueuey retornar el mensaje empty endpoint ', async () => {
+test('incomingMsg - No debe llamar el metodo messageQueuey retornar el mensaje empty endpoint ', async () => {
     const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', 3002)
     const req = {
         body: {
@@ -138,6 +116,26 @@ test.skip('incomingMsg - No debe llamar el metodo messageQueuey retornar el mens
     assert.equal(resMock.statusCode, 200)
     assert.ok(resMock.end.calledWith('empty endpoint'))
     assert.ok(enqueueStub.notCalled)
+})
+
+test('getListRoutes returns a unique list of routes', () => {
+    const port = 3002
+    const server = new MetaWebHookServer('jwtToken', 'numberId', 'version', 'token', port)
+    const app: any = {
+        routes: {
+            GET: [[{ old: '/route1' }], [{ old: '/route2' }]],
+            POST: [[{ old: '/route3' }]],
+        },
+    }
+
+    const result = server['getListRoutes'](app)
+    assert.ok(Array.isArray(result))
+
+    assert.equal(result, [
+        `[GET]: http://localhost:${port}/route1`,
+        `[GET]: http://localhost:${port}/route2`,
+        `[POST]: http://localhost:${port}/route3`,
+    ])
 })
 
 test.run()
