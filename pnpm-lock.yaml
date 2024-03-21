@@ -225,7 +225,7 @@ importers:
     packages/contexts-dialogflow:
         dependencies:
             '@builderbot/bot':
-                specifier: ^1.0.22-alpha.0
+                specifier: ^1.0.23-alpha.0
                 version: link:../bot
             '@google-cloud/dialogflow':
                 specifier: ^6.2.0
@@ -265,7 +265,7 @@ importers:
     packages/contexts-dialogflow-cx:
         dependencies:
             '@builderbot/bot':
-                specifier: ^1.0.22-alpha.0
+                specifier: ^1.0.23-alpha.0
                 version: link:../bot
             '@google-cloud/dialogflow-cx':
                 specifier: ^4.3.1
@@ -305,7 +305,7 @@ importers:
     packages/create-builderbot:
         dependencies:
             '@builderbot/cli':
-                specifier: ^1.0.22-alpha.0
+                specifier: ^1.0.23-alpha.0
                 version: link:../cli
         devDependencies:
             '@rollup/plugin-commonjs':
@@ -330,7 +330,7 @@ importers:
     packages/database-json:
         dependencies:
             '@builderbot/bot':
-                specifier: ^1.0.22-alpha.0
+                specifier: ^1.0.23-alpha.0
                 version: link:../bot
         devDependencies:
             '@rollup/plugin-commonjs':
@@ -364,7 +364,7 @@ importers:
     packages/database-mongo:
         dependencies:
             '@builderbot/bot':
-                specifier: ^1.0.22-alpha.0
+                specifier: ^1.0.23-alpha.0
                 version: link:../bot
             mongodb:
                 specifier: ^4.17.2
@@ -410,7 +410,7 @@ importers:
     packages/database-mysql:
         dependencies:
             '@builderbot/bot':
-                specifier: ^1.0.22-alpha.0
+                specifier: ^1.0.23-alpha.0
                 version: link:../bot
             mysql2:
                 specifier: ^2.3.3
@@ -453,7 +453,7 @@ importers:
     packages/database-postgres:
         dependencies:
             '@builderbot/bot':
-                specifier: ^1.0.22-alpha.0
+                specifier: ^1.0.23-alpha.0
                 version: link:../bot
             pg:
                 specifier: ^8.11.2
@@ -551,7 +551,7 @@ importers:
                 version: 2.1.2
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.0.22-alpha.0
+                specifier: ^1.0.23-alpha.0
                 version: link:../bot
             '@hapi/boom':
                 specifier: ^10.0.1
@@ -636,7 +636,7 @@ importers:
                 version: 2.2.1
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.0.22-alpha.0
+                specifier: ^1.0.23-alpha.0
                 version: link:../bot
             '@rollup/plugin-commonjs':
                 specifier: ^25.0.7
@@ -709,7 +709,7 @@ importers:
                 version: 4.20.0
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.0.22-alpha.0
+                specifier: ^1.0.23-alpha.0
                 version: link:../bot
             '@rollup/plugin-commonjs':
                 specifier: ^25.0.7
@@ -776,7 +776,7 @@ importers:
                 version: 5.0.21(typescript@5.3.3)
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.0.22-alpha.0
+                specifier: ^1.0.23-alpha.0
                 version: link:../bot
             '@rollup/plugin-commonjs':
                 specifier: ^25.0.7
@@ -852,7 +852,7 @@ importers:
                 version: 1.23.0
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.0.22-alpha.0
+                specifier: ^1.0.23-alpha.0
                 version: link:../bot
             '@rollup/plugin-commonjs':
                 specifier: ^25.0.7
@@ -919,7 +919,7 @@ importers:
                 version: 0.5.2
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.0.22-alpha.0
+                specifier: ^1.0.23-alpha.0
                 version: link:../bot
             '@rollup/plugin-commonjs':
                 specifier: ^25.0.7

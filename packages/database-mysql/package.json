@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/database-mysql",
-    "version": "1.0.22-alpha.0",
+    "version": "1.0.23-alpha.0",
     "description": "Esto es el conector a Mysql",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
@@ -30,7 +30,7 @@
     },
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
     "dependencies": {
-        "@builderbot/bot": "^1.0.22-alpha.0",
+        "@builderbot/bot": "^1.0.23-alpha.0",
         "mysql2": "^2.3.3"
     },
     "devDependencies": {
