@@ -59,10 +59,11 @@ test('venomProvider - initBusEvents should bind vendor events to corresponding f
 
 test('generateQr - QR generation is done correctly', async () => {
     const payloadEmit = {
+        title: '⚡⚡ ACTION REQUIRED ⚡⚡',
         instructions: [
-            'Debes escanear el QR Code para iniciar bot.qr.png',
-            'Recuerda que el QR se actualiza cada minuto ',
-            'Necesitas ayuda: https://link.codigoencasa.com/DISCORD',
+            `You must scan the QR Code`,
+            `Remember that the QR code updates every minute`,
+            `Need help: https://link.codigoencasa.com/DISCORD`,
         ],
     }
     venomProvider.emit = emitStub
@@ -155,10 +156,13 @@ test('busEvents - onMessage I should build the bodysuit for the guy lat y lng', 
 })
 
 test('sendButtons - should send buttons correctly', async () => {
-    const payloadEmit = [
-        `[NOTA]: Actualmente enviar botones no esta disponible con este proveedor`,
-        `[NOTA]: esta funcion esta disponible con Meta o Twilio`,
-    ].join('\n')
+    const payloadEmit = {
+        title: 'DEPRECATED',
+        instructions: [
+            `Currently sending buttons is not available with this provider`,
+            `this function is available with Meta or Twilio`,
+        ],
+    }
     const number = '1234567890'
     const message = 'Mensaje con botones'
     const buttons: any = [{ body: 'Botón 1' }, { body: 'Botón 2' }]
