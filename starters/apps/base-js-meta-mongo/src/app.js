@@ -35,7 +35,7 @@ const welcomeFlow = addKeyword(['hi', 'hello', 'hola'])
         [discordFlow]
     )
 
-const registerFlow = addKeyword(utils.setEvent('REGISTER_EVENT'))
+const registerFlow = addKeyword(utils.setEvent('REGISTER_FLOW'))
     .addAnswer(`What is your name?`, { capture: true }, async (ctx, { state }) => {
         await state.update({ name: ctx.body })
     })
@@ -52,7 +52,7 @@ const main = async () => {
         jwtToken: 'jwtToken',
         numberId: 'numberId',
         verifyToken: 'verifyToken',
-        version: 'v16.0'
+        version: 'v18.0'
     })
         const adapterDB = new Database({
         dbUri: process.env.MONGO_DB_URI,
@@ -64,8 +64,6 @@ const main = async () => {
         provider: adapterProvider,
         database: adapterDB,
     })
-
-    httpServer(+PORT)
 
     adapterProvider.http.server.post(
         '/v1/messages',
@@ -96,6 +94,9 @@ const main = async () => {
             return res.end(JSON.stringify({ status: 'ok', number, intent }))
         })
     )
+
+    httpServer(+PORT)
+
 }
 
 main()

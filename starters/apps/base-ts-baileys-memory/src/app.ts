@@ -35,7 +35,7 @@ const welcomeFlow = addKeyword<Provider, Database>(['hi', 'hello', 'hola'])
         [discordFlow]
     )
 
-const registerFlow = addKeyword<Provider, Database>(utils.setEvent('REGISTER_EVENT'))
+const registerFlow = addKeyword<Provider, Database>(utils.setEvent('REGISTER_FLOW'))
     .addAnswer(`What is your name?`, { capture: true }, async (ctx, { state }) => {
         await state.update({ name: ctx.body })
     })
@@ -48,7 +48,7 @@ const registerFlow = addKeyword<Provider, Database>(utils.setEvent('REGISTER_EVE
 
 const main = async () => {
     const adapterFlow = createFlow([welcomeFlow, registerFlow])
-
+    
     const adapterProvider = createProvider(Provider)
     const adapterDB = new Database()
 
@@ -57,8 +57,6 @@ const main = async () => {
         provider: adapterProvider,
         database: adapterDB,
     })
-
-    httpServer(+PORT)
 
     adapterProvider.http.server.post(
         '/v1/messages',
@@ -89,6 +87,9 @@ const main = async () => {
             return res.end(JSON.stringify({ status: 'ok', number, intent }))
         })
     )
+
+    httpServer(+PORT)
+
 }
 
 main()

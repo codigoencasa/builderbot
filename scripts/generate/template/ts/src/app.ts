@@ -54,8 +54,6 @@ const main = async () => {
         database: adapterDB,
     })
 
-    httpServer(+PORT)
-
     adapterProvider.http.server.post(
         '/v1/messages',
         handleCtx(async (bot, req, res) => {
@@ -85,6 +83,8 @@ const main = async () => {
             return res.end(JSON.stringify({ status: 'ok', number, intent }))
         })
     )
+
+    httpServer(+PORT)
 }
 
 main()
