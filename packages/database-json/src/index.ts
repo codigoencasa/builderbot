@@ -2,7 +2,7 @@ import { MemoryDB } from '@builderbot/bot'
 import { existsSync, promises as fsPromises } from 'fs'
 import { join } from 'path'
 
-import { HistoryEntry, JsonFileAdapterOptions } from './types'
+import type { HistoryEntry, JsonFileAdapterOptions } from './types'
 
 class JsonFileDB extends MemoryDB {
     private pathFile: string

@@ -4,7 +4,7 @@ import { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { Response } from '../src/types'
+import type { Response } from '../src/types'
 import {
     writeFilePromise,
     WppConnectGenerateImage,

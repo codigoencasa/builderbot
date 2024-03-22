@@ -42,10 +42,13 @@
 - [x] idle, ref
 - [x] orden de start http
 - [x] meta recuerda que debes iniciar la conversacion con iun template
-- [ ] rollup starter remover rollup nodeResolver
-- [ ] test rember subscrie permisos
+- [x] rollup starter remover rollup nodeResolver
+- [x] baileys jpg error
+- [ ] flowDynamic({media...})
+- [ ] mysql port
+- [ ] elmintar vendor de handleCTX
 - [ ] test meta
-- [ ] cambiar img url exmaple de imagen
+- [ ] try catch error http
 - [ ] test twilio
 - [ ] Cambiar todos los mensajes a ingles
 - [ ] cambiar el CONTRIBUTING.md

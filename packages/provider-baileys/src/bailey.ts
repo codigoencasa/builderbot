@@ -1,25 +1,29 @@
 import { ProviderClass, utils } from '@builderbot/bot'
-import { Vendor } from '@builderbot/bot/dist/provider/providerClass'
-import type { BotContext, BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@builderbot/bot/dist/types'
-import { Boom } from '@hapi/boom'
+import type { BotContext, Button, GlobalVendorArgs, SendOptions } from '@builderbot/bot/dist/types'
+import type { Boom } from '@hapi/boom'
 import { Console } from 'console'
-import { createWriteStream, readFileSync, existsSync, PathOrFileDescriptor } from 'fs'
+import type { PathOrFileDescriptor } from 'fs'
+import { createReadStream, createWriteStream, readFileSync, existsSync } from 'fs'
 import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import pino from 'pino'
+import type polka from 'polka'
 import { rimraf } from 'rimraf'
-import { IStickerOptions, Sticker } from 'wa-sticker-formatter'
+import type { IStickerOptions } from 'wa-sticker-formatter'
+import { Sticker } from 'wa-sticker-formatter'
 
-import {
+import type {
     AnyMediaMessageContent,
     AnyMessageContent,
     BaileysEventMap,
-    DisconnectReason,
     PollMessageOptions,
     WAMessage,
     WASocket,
+} from './baileyWrapper'
+import {
+    DisconnectReason,
     downloadMediaMessage,
     getAggregateVotesInPollMessage,
     makeCacheableSignalKeyStore,
@@ -28,17 +32,25 @@ import {
     proto,
     useMultiFileAuthState,
 } from './baileyWrapper'
-import { BaileyHttpServer } from './server'
-import { ButtonOption, GlobalVendorArgs } from './type'
+import { BaileyGlobalVendorArgs } from './type'
 import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber } from './utils'
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/baileys.log`),
 })
 
-class BaileysProvider extends ProviderClass {
-    http: BaileyHttpServer | undefined
-    globalVendorArgs: GlobalVendorArgs = {
+class BaileysProvider extends ProviderClass<WASocket> {
+    protected afterInit(): void {}
+
+    public indexHome: polka.Middleware = (req, res) => {
+        const botName = req[this.idBotName]
+        const qrPath = join(process.cwd(), `${botName}.qr.png`)
+        const fileStream = createReadStream(qrPath)
+        res.writeHead(200, { 'Content-Type': 'image/png' })
+        fileStream.pipe(res)
+    }
+
+    public globalVendorArgs: GlobalVendorArgs<BaileyGlobalVendorArgs> = {
         name: `bot`,
         gifPlayback: false,
         usePairingCode: false,
@@ -47,23 +59,30 @@ class BaileysProvider extends ProviderClass {
         useBaileysStore: true,
         port: 3000,
     }
-    vendor: Vendor<WASocket>
+
     store?: ReturnType<typeof makeInMemoryStore>
 
-    saveCredsGlobal: (() => Promise<void>) | null = null
-
-    constructor(args: Partial<GlobalVendorArgs>) {
+    constructor(args: Partial<BaileyGlobalVendorArgs>) {
         super()
         this.store = null
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
-        this.http = new BaileyHttpServer(this.globalVendorArgs.port)
-        this.initBailey().then()
     }
+
+    protected getMessage = async (key: { remoteJid: string; id: string }) => {
+        if (this.store) {
+            const msg = await this.store.loadMessage(key.remoteJid, key.id)
+            return msg?.message || undefined
+        }
+        // only if store is present
+        return proto.Message.fromObject({})
+    }
+
+    protected saveCredsGlobal: (() => Promise<void>) | null = null
 
     /**
      * Iniciar todo Bailey
      */
-    protected initBailey = async () => {
+    protected initVendor = async () => {
         const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
         const { state, saveCreds } = await useMultiFileAuthState(NAME_DIR_SESSION)
         const loggerBaileys = pino({ level: 'fatal' })
@@ -97,11 +116,14 @@ class BaileysProvider extends ProviderClass {
                 generateHighQualityLinkPreview: true,
                 getMessage: this.getMessage,
             })
+
             this.store?.bind(sock.ev)
+
             if (this.globalVendorArgs.usePairingCode && !sock.authState.creds.registered) {
                 if (this.globalVendorArgs.phoneNumber) {
                     await sock.waitForConnectionUpdate((update) => !!update.qr)
                     const code = await sock.requestPairingCode(this.globalVendorArgs.phoneNumber)
+
                     this.emit('require_action', {
                         title: '⚡⚡ ACTION REQUIRED ⚡⚡',
                         instructions: [
@@ -127,13 +149,13 @@ class BaileysProvider extends ProviderClass {
                 /** Connection closed for various reasons */
                 if (connection === 'close') {
                     if (statusCode !== DisconnectReason.loggedOut) {
-                        this.initBailey()
+                        this.initVendor()
                     }
 
                     if (statusCode === DisconnectReason.loggedOut) {
                         const PATH_BASE = join(process.cwd(), NAME_DIR_SESSION)
                         await rimraf(PATH_BASE)
-                        await this.initBailey()
+                        await this.initVendor()
                     }
                 }
 
@@ -143,7 +165,7 @@ class BaileysProvider extends ProviderClass {
                     const host = { ...sock?.user, phone: parseNumber }
                     this.emit('ready', true)
                     this.emit('host', host)
-                    this.initBusEvents(sock)
+                    this.vendor = sock
                 }
 
                 /** QR Code */
@@ -163,6 +185,8 @@ class BaileysProvider extends ProviderClass {
             sock.ev.on('creds.update', async () => {
                 await saveCreds()
             })
+
+            return sock.ev
         } catch (e) {
             logger.log(e)
             this.emit('auth_failure', [
@@ -172,35 +196,6 @@ class BaileysProvider extends ProviderClass {
                 `Need help: https://link.codigoencasa.com/DISCORD`,
             ])
         }
-    }
-
-    /**
-     *
-     * @param port
-     * @param blacklist
-     * @returns
-     */
-    initHttpServer = (port: number, opts: Pick<BotCtxMiddlewareOptions, 'blacklist'>) => {
-        const methods: BotCtxMiddleware<BaileysProvider> = {
-            sendMessage: this.sendMessage,
-            provider: this.vendor,
-            blacklist: opts.blacklist,
-            dispatch: (customEvent, payload) => {
-                this.emit('message', {
-                    ...payload,
-                    body: utils.setEvent(customEvent),
-                    name: payload.name,
-                    from: utils.removePlus(payload.from),
-                })
-            },
-        }
-        this.http.start(methods, port, { botName: this.globalVendorArgs.name }, (routes) => {
-            this.emit('notice', {
-                title: '🛜  HTTP Server ON ',
-                instructions: routes,
-            })
-        })
-        return
     }
 
     /**
@@ -315,25 +310,7 @@ class BaileysProvider extends ProviderClass {
         },
     ]
 
-    protected initBusEvents = (_sock: WASocket) => {
-        this.vendor = _sock
-        const listEvents = this.busEvents()
-        for (const { event, func } of listEvents) {
-            this.vendor.ev.on(event, func)
-        }
-    }
-
-    protected getMessage = async (key: { remoteJid: string; id: string }) => {
-        if (this.store) {
-            const msg = await this.store.loadMessage(key.remoteJid, key.id)
-            return msg?.message || undefined
-        }
-        // only if store is present
-        return proto.Message.fromObject({})
-    }
-
     /**
-     * @alpha
      * @param {string} number
      * @param {string} message
      * @example await sendMessage('+XXXXXXXXXXX', 'https://dominio.com/imagen.jpg' | 'img/imagen.jpg')
@@ -358,9 +335,9 @@ class BaileysProvider extends ProviderClass {
      * @param {*} text
      * @returns
      */
-    sendImage = async (number: string, filePath: PathOrFileDescriptor, text: any) => {
+    sendImage = async (number: string, filePath: string, text: any) => {
         const payload: AnyMediaMessageContent = {
-            image: readFileSync(filePath),
+            image: { url: filePath },
             caption: text,
         }
         return this.vendor.sendMessage(number, payload)
@@ -440,7 +417,7 @@ class BaileysProvider extends ProviderClass {
      * @example await sendMessage("+XXXXXXXXXXX", "Your Text", "Your Footer", [{"buttonId": "id", "buttonText": {"displayText": "Button"}, "type": 1}])
      */
 
-    sendButtons = async (number: string, text: string, buttons: ButtonOption[]) => {
+    sendButtons = async (number: string, text: string, buttons: Button[]) => {
         this.emit('notice', {
             title: 'DEPRECATED',
             instructions: [
@@ -624,4 +601,4 @@ class BaileysProvider extends ProviderClass {
     }
 }
 
-export { BaileysProvider, GlobalVendorArgs as BaileysProviderArgs }
+export { BaileysProvider, BaileyGlobalVendorArgs as BaileysProviderArgs }

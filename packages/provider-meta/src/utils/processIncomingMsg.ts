@@ -1,7 +1,7 @@
 import { utils } from '@builderbot/bot'
 
 import { getMediaUrl } from './mediaUrl'
-import { Message, ParamasIncomingMessage } from '../types'
+import type { Message, ParamasIncomingMessage } from '../types'
 
 export const processIncomingMessage = async ({
     pushName,

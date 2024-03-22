@@ -1,5 +1,5 @@
 import { ProviderClass, utils } from '@builderbot/bot'
-import { BotContext, BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@builderbot/bot/dist/types'
+import type { BotContext, BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@builderbot/bot/dist/types'
 import { Console } from 'console'
 import { createWriteStream } from 'fs'
 import { writeFile } from 'fs/promises'
@@ -9,7 +9,7 @@ import { join } from 'path'
 import venom from 'venom-bot'
 
 import { VenomHttpServer } from './server'
-import { SaveFileOptions } from './types'
+import type { SaveFileOptions } from './types'
 import { venomCleanNumber, venomGenerateImage, venomisValidNumber } from './utils'
 
 const logger = new Console({
@@ -22,13 +22,14 @@ const logger = new Console({
  * https://github.com/orkestral/venom
  */
 class VenomProvider extends ProviderClass {
-    globalVendorArgs = { name: `bot`, gifPlayback: false, port: 3000 }
+    V = { name: `bot`, gifPlayback: false, port: 3000 }
     vendor: venom.Whatsapp
     http: VenomHttpServer | undefined
+
     constructor(args: { name: string; gifPlayback: boolean }) {
         super()
-        this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
-        this.http = new VenomHttpServer(this.globalVendorArgs.name, this.globalVendorArgs.port)
+        this.V = { ...this.V, ...args }
+        this.http = new VenomHttpServer(this.V.name, this.V.port)
         this.init().then(() => this.initBusEvents())
     }
 
@@ -41,7 +42,7 @@ class VenomProvider extends ProviderClass {
     initHttpServer = (port: number, opts: Pick<BotCtxMiddlewareOptions, 'blacklist'>) => {
         const methods: BotCtxMiddleware<VenomProvider> = {
             sendMessage: this.sendMessage,
-            provider: this.vendor,
+            provider: this,
             blacklist: opts.blacklist,
             dispatch: (customEvent, payload) => {
                 this.emit('message', {
@@ -60,7 +61,7 @@ class VenomProvider extends ProviderClass {
      * Iniciamos el Proveedor Venom
      */
     init = async () => {
-        const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
+        const NAME_DIR_SESSION = `${this.V.name}_sessions`
         try {
             const client = await venom.create(
                 NAME_DIR_SESSION,
@@ -103,7 +104,7 @@ class VenomProvider extends ProviderClass {
                 `Need help: https://link.codigoencasa.com/DISCORD`,
             ],
         })
-        await venomGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)
+        await venomGenerateImage(qr, `${this.V.name}.qr.png`)
     }
 
     /**

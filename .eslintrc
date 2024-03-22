@@ -29,6 +29,7 @@
     "ignorePatterns": ["node_modules/", "starters/", "__test__", "base-**", "_test_", "*.js"],
     "plugins": ["@typescript-eslint", "import"],
     "rules": {
+        "@typescript-eslint/consistent-type-imports": ["error"],
         "import/order": [
             "error",
             {

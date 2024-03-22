@@ -1,6 +1,6 @@
 import { http, https } from 'follow-redirects'
 import { rename, createWriteStream, existsSync } from 'fs'
-import { IncomingMessage } from 'http'
+import type { IncomingMessage } from 'http'
 import mimeTypes from 'mime-types'
 import { tmpdir } from 'os'
 import { extname, basename, parse, join } from 'path'

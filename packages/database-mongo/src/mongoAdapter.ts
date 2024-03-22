@@ -1,7 +1,8 @@
 import { MemoryDB } from '@builderbot/bot'
-import { MongoClient, Db } from 'mongodb'
+import type { Db } from 'mongodb'
+import { MongoClient } from 'mongodb'
 
-import { History, MongoAdapterCredentials } from './types'
+import type { History, MongoAdapterCredentials } from './types'
 
 class MongoAdapter extends MemoryDB {
     db: Db | null = null

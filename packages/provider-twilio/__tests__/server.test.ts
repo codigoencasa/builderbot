@@ -2,7 +2,8 @@ import sinon, { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { TwilioPayload, TwilioWebHookServer, inHandleCtx } from '../src/server'
+import type { TwilioPayload } from '../src/server'
+import { TwilioWebHookServer, inHandleCtx } from '../src/server'
 
 const emitStub = stub()
 

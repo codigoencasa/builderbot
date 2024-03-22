@@ -3,7 +3,7 @@ import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
 import { processDynamicFlowAwait } from '../src/rules/processDynamicFlowAwait'
-import { Context, INode } from '../src/types'
+import type { Context, INode } from '../src/types'
 
 const createMockNode = (type: string, calleeName?: string): INode => ({
     type,

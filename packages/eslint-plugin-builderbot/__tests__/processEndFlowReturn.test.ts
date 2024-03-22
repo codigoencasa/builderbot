@@ -3,7 +3,7 @@ import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
 import { processEndFlowReturn } from '../src/rules/processEndFlowReturn'
-import { INode, Context } from '../src/types'
+import type { INode, Context } from '../src/types'
 
 const createMockNode = (type: string, calleeName?: string): INode => ({
     type,

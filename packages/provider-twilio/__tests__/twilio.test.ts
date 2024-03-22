@@ -1,11 +1,11 @@
 import proxyquire from 'proxyquire'
 import { stub } from 'sinon'
 import twilio from 'twilio'
-import { ClientOpts } from 'twilio/lib/base/BaseTwilio'
+import type { ClientOpts } from 'twilio/lib/base/BaseTwilio'
 import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { TwilioRequestBody } from '../src/types'
+import type { TwilioRequestBody } from '../src/types'
 
 const utilsMock = {
     encryptData: stub().returns('kddkdkdk'),

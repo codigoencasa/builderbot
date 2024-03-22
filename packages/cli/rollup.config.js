@@ -8,15 +8,15 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const PATH_STARTERTS = join(process.cwd(), '..', '..', 'starters')
-const DEST_STARTERTS = join(__dirname, 'dist', 'starters')
+const PATH_STARTERS = join(process.cwd(), '..', '..', 'starters', 'apps')
+const DEST_STARTERS = join(__dirname, 'starters')
 
 function copyStarts() {
     return {
         name: 'copyStartersPlugin',
         async buildStart() {
-            await ensureDir(DEST_STARTERTS)
-            await copy(PATH_STARTERTS, DEST_STARTERTS)
+            await ensureDir(DEST_STARTERS)
+            await copy(PATH_STARTERS, DEST_STARTERS)
         },
     }
 }

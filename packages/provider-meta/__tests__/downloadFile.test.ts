@@ -1,4 +1,4 @@
-import { AxiosResponse } from 'axios'
+import type { AxiosResponse } from 'axios'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 

@@ -3,7 +3,7 @@ import { stub } from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { Message } from '../src/types'
+import type { Message } from '../src/types'
 
 const mockedProvider = 'mocked-ref-provider'
 const utilsMock = {

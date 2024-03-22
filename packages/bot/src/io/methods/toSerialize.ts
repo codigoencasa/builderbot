@@ -1,4 +1,4 @@
-import { TContext } from '../../types'
+import type { TContext } from '../../types'
 import { generateRefSerialize } from '../../utils/hash'
 
 /**

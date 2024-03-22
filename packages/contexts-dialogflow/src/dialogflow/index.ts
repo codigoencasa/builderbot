@@ -1,5 +1,5 @@
 import { DialogFlowContext } from './dialogflow.class'
-import { ParamsDialogFlow } from '../types'
+import type { ParamsDialogFlow } from '../types'
 
 /**
  * Crear instancia de clase Bot

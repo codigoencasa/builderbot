@@ -1,36 +1,32 @@
 import { ProviderClass, utils } from '@builderbot/bot'
-import { Vendor } from '@builderbot/bot/dist/provider/providerClass'
-import {
-    BotContext,
-    BotCtxMiddleware,
-    BotCtxMiddlewareOptions,
-    GlobalVendorArgs,
-    SendOptions,
-} from '@builderbot/bot/dist/types'
+import type { Vendor } from '@builderbot/bot/dist/provider/providerClass'
+import type { BotContext, BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@builderbot/bot/dist/types'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import twilio from 'twilio'
 
 import { TwilioWebHookServer } from './server'
-import { TwilioProviderMethods } from './twilioInterface'
-import { ITwilioProviderOptions, TwilioRequestBody } from './types'
+import type { TwilioProviderMethods } from './twilioInterface'
+import type { ITwilioProviderOptions, TwilioRequestBody } from './types'
 import { parseNumberFrom } from './utils'
 
 class TwilioProvider extends ProviderClass implements TwilioProviderMethods {
     public http: TwilioWebHookServer
     public vendor: Vendor<twilio.Twilio>
 
-    globalVendorArgs: ITwilioProviderOptions & Partial<GlobalVendorArgs> = {
+    V: ITwilioProviderOptions = {
         accountSid: undefined,
         authToken: undefined,
         vendorNumber: undefined,
+        name: 'bot',
+        port: 3000,
     }
 
-    constructor(args: ITwilioProviderOptions & Partial<GlobalVendorArgs>) {
+    constructor(args: ITwilioProviderOptions) {
         super()
         this.http = new TwilioWebHookServer(args?.port)
-        this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
-        this.vendor = twilio(this.globalVendorArgs.accountSid, this.globalVendorArgs.authToken)
+        this.V = { ...this.V, ...args }
+        this.vendor = twilio(this.V.accountSid, this.V.authToken)
     }
 
     busEvents = () => [
@@ -57,7 +53,7 @@ class TwilioProvider extends ProviderClass implements TwilioProviderMethods {
     ]
 
     sendMedia = async (number: string, message = '', mediaInput: string) => {
-        const entryPointUrl = this.globalVendorArgs?.publicUrl ?? `http://localhost:${this.http.port}`
+        const entryPointUrl = this.V?.publicUrl ?? `http://localhost:${this.http.port}`
         if (!mediaInput) throw new Error(`Media cannot be null`)
         const encryptPath = utils.encryptData(encodeURIComponent(mediaInput))
         const urlEncode = `${entryPointUrl}/tmp?path=${encryptPath}`
@@ -88,7 +84,7 @@ class TwilioProvider extends ProviderClass implements TwilioProviderMethods {
         return this.vendor.messages.create({
             mediaUrl: [`${mediaInput}`],
             body: message,
-            from: parseNumberFrom(this.globalVendorArgs.vendorNumber),
+            from: parseNumberFrom(this.V.vendorNumber),
             to: parseNumberFrom(number),
         })
     }
@@ -132,7 +128,7 @@ class TwilioProvider extends ProviderClass implements TwilioProviderMethods {
             },
         }
 
-        this.http.start(methods, port, { botName: this.globalVendorArgs.name }, (routes) => {
+        this.http.start(methods, port, { botName: this.V.name }, (routes) => {
             this.emit('notice', {
                 title: '🛜  HTTP Server ON ',
                 instructions: routes,
@@ -148,7 +144,7 @@ class TwilioProvider extends ProviderClass implements TwilioProviderMethods {
             })
 
             const host = {
-                phone: this.globalVendorArgs.vendorNumber,
+                phone: this.V.vendorNumber,
             }
             this.emit('host', host)
         })
@@ -163,7 +159,7 @@ class TwilioProvider extends ProviderClass implements TwilioProviderMethods {
         if (options?.media) return this.sendMedia(number, message, options.media)
         const response = this.vendor.messages.create({
             body: message,
-            from: parseNumberFrom(this.globalVendorArgs.vendorNumber),
+            from: parseNumberFrom(this.V.vendorNumber),
             to: parseNumberFrom(number),
         })
         return response

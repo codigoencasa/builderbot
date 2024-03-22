@@ -1,4 +1,5 @@
-import { ProviderClass, ProviderEventTypes } from './providerClass'
+import { ProviderClass } from './interface/provider'
+import type { ProviderEventTypes } from '../types'
 
 function delay(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms))
@@ -7,6 +8,24 @@ function delay(ms: number): Promise<void> {
 type PayloadType = any
 
 class ProviderMock extends ProviderClass {
+    public indexHome
+    protected initVendor(): Promise<any> {
+        return Promise.resolve()
+    }
+
+    protected busEvents(): { event: string; func: Function }[] {
+        return []
+    }
+    public globalVendorArgs: any
+
+    public saveFile(): Promise<string> {
+        return Promise.resolve('')
+    }
+
+    protected afterInit(): void {
+        console.log('Method not implemented.')
+    }
+
     delaySendMessage = async (
         milliseconds: number,
         eventName: keyof ProviderEventTypes,

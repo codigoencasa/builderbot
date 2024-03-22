@@ -1,5 +1,5 @@
 import { utils } from '@builderbot/bot'
-import { SendOptions } from '@builderbot/bot/dist/types'
+import type { SendOptions } from '@builderbot/bot/dist/types'
 import fsPromises from 'fs/promises'
 import proxyquire from 'proxyquire'
 import { spy, stub } from 'sinon'

@@ -1,13 +1,14 @@
 import { ProviderClass, utils } from '@builderbot/bot'
-import { BotContext, BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@builderbot/bot/dist/types'
-import { Message, Whatsapp, create, defaultLogger } from '@wppconnect-team/wppconnect'
+import type { BotContext, BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@builderbot/bot/dist/types'
+import type { Message, Whatsapp } from '@wppconnect-team/wppconnect'
+import { create, defaultLogger } from '@wppconnect-team/wppconnect'
 import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
 import { tmpdir } from 'os'
 import { join } from 'path'
 
 import { WPPConnectHttpServer } from './server'
-import { SaveFileOptions } from './types'
+import type { SaveFileOptions } from './types'
 import { WppConnectGenerateImage, WppConnectValidNumber, WppConnectCleanNumber } from './utils'
 
 /**
@@ -37,7 +38,7 @@ class WPPConnectProvider extends ProviderClass {
     initHttpServer = (port: number, opts: Pick<BotCtxMiddlewareOptions, 'blacklist'>) => {
         const methods: BotCtxMiddleware<WPPConnectProvider> = {
             sendMessage: this.sendMessage,
-            provider: this.vendor,
+            provider: this,
             blacklist: opts.blacklist,
             dispatch: (customEvent, payload) => {
                 this.emit('message', {

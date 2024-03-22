@@ -1,7 +1,7 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { INode } from '../src/types'
+import type { INode } from '../src/types'
 import { isInsideAddActionOrAddAnswer } from '../src/utils'
 
 const createMockNode = (type: string, calleeName?: string): INode => ({

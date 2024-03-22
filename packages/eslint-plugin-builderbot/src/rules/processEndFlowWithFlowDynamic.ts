@@ -1,4 +1,4 @@
-import { INode, Context } from '../types'
+import type { INode, Context } from '../types'
 import { isInsideAddActionOrAddAnswer } from '../utils'
 
 const processEndFlowWithFlowDynamic = (context: Context) => {

@@ -1,13 +1,7 @@
-export interface GlobalVendorArgs {
-    name: string
+export type BaileyGlobalVendorArgs = {
     gifPlayback: boolean
     usePairingCode: boolean
     phoneNumber: string | null
     browser: string[]
     useBaileysStore: boolean
-    port: number
-}
-
-export interface ButtonOption {
-    body: string
 }

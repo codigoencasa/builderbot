@@ -1,5 +1,5 @@
 import { utils } from '@builderbot/bot'
-import { SendOptions } from '@builderbot/bot/dist/types'
+import type { SendOptions } from '@builderbot/bot/dist/types'
 import fs from 'fs'
 import mime from 'mime-types'
 import { stub } from 'sinon'

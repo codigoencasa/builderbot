@@ -1,7 +1,7 @@
 import { utils } from '@builderbot/bot'
 import { writeFile } from 'fs'
 
-import { Response } from './types'
+import type { Response } from './types'
 
 const WppConnectCleanNumber = (number: string, full: boolean = false): string => {
     number = number.replace('@c.us', '').replace('+', '')

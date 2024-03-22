@@ -1,3 +1,5 @@
+import type { GlobalVendorArgs } from '@builderbot/bot/dist/types'
+
 export interface MediaResponse {
     url?: string
 }
@@ -30,10 +32,12 @@ export interface MetaList {
     }
 }
 
-export interface GlobalVendorArgs {
-    name: string
-    port: number
-}
+export type MetaGlobalVendorArgs = {
+    jwtToken: string
+    numberId: string
+    verifyToken: string
+    version: string
+} & GlobalVendorArgs
 
 export interface Order {
     catalog_id: string
@@ -137,13 +141,6 @@ export interface Localization {
     lat_number: string
     name: string
     address: string
-}
-
-export interface MetaProviderOptions {
-    jwtToken: string
-    numberId: string
-    verifyToken: string
-    version: string
 }
 
 export interface SaveFileOptions {

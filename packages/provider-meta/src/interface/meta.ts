@@ -1,6 +1,14 @@
-import { SendOptions, BotContext, Button } from '@builderbot/bot/dist/types'
+import type { SendOptions, BotContext, Button } from '@builderbot/bot/dist/types'
 
-import { TextMessageBody, Reaction, Localization, Message, SaveFileOptions, MetaList, TextGenericParams } from './types'
+import type {
+    TextMessageBody,
+    Reaction,
+    Localization,
+    Message,
+    SaveFileOptions,
+    MetaList,
+    TextGenericParams,
+} from '../types'
 
 export interface MetaInterface {
     sendMessageMeta: (body: TextMessageBody) => void

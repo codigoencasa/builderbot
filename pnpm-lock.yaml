@@ -91,6 +91,12 @@ importers:
             '@ffmpeg-installer/ffmpeg':
                 specifier: ^1.1.0
                 version: 1.1.0
+            body-parser:
+                specifier: ^1.20.2
+                version: 1.20.2
+            cors:
+                specifier: ^2.8.5
+                version: 2.8.5
             fluent-ffmpeg:
                 specifier: ^2.1.2
                 version: 2.1.2
@@ -103,6 +109,9 @@ importers:
             picocolors:
                 specifier: ^1.0.0
                 version: 1.0.0
+            polka:
+                specifier: ^0.5.2
+                version: 0.5.2
             sharp:
                 specifier: ^0.33.2
                 version: 0.33.2
@@ -122,6 +131,12 @@ importers:
             '@rollup/plugin-terser':
                 specifier: ^0.4.4
                 version: 0.4.4(rollup@4.9.5)
+            '@types/body-parser':
+                specifier: ^1.19.5
+                version: 1.19.5
+            '@types/cors':
+                specifier: ^2.8.17
+                version: 2.8.17
             '@types/fluent-ffmpeg':
                 specifier: ^2.1.24
                 version: 2.1.24
@@ -7709,7 +7724,6 @@ packages:
         dependencies:
             object-assign: 4.1.1
             vary: 1.1.2
-        dev: true
 
     /cosmiconfig-typescript-loader@5.0.0(@types/node@20.11.5)(cosmiconfig@8.3.6)(typescript@5.3.3):
         resolution:
@@ -14200,7 +14214,6 @@ packages:
                 integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==,
             }
         engines: { node: '>=0.10.0' }
-        dev: true
 
     /object-hash@3.0.0:
         resolution:
@@ -18784,7 +18797,6 @@ packages:
                 integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==,
             }
         engines: { node: '>= 0.8' }
-        dev: true
 
     /venom-bot@5.0.21(typescript@5.3.3):
         resolution:

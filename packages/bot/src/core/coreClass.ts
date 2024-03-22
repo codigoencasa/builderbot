@@ -1,18 +1,19 @@
 import { Console } from 'console'
 import { createWriteStream } from 'fs'
 
-import { DispatchFn, DynamicBlacklist, FlagsRuntime, TContext } from './../types'
+import type { DispatchFn, DynamicBlacklist, FlagsRuntime, ProviderEventTypes, TContext } from './../types'
 import { GlobalState, IdleState, SingleState } from '../context'
-import { MemoryDB } from '../db'
+import type { MemoryDB } from '../db'
 import { LIST_REGEX } from '../io/events'
-import FlowClass from '../io/flowClass'
+import type FlowClass from '../io/flowClass'
 import { toCtx } from '../io/methods'
-import { ProviderClass, ProviderEventTypes } from '../provider'
-import { FlowDynamicMessage, GeneralArgs, MessageContextIncoming } from '../types'
+import type { ProviderClass } from '../provider/interface/provider'
+import type { FlowDynamicMessage, GeneralArgs, MessageContextIncoming } from '../types'
 import { BlackList, Queue } from '../utils'
 import { delay } from '../utils/delay'
 import { printer } from '../utils/interactive'
-import { HostEventTypes, TypedEventEmitter } from '../utils/typeEventEmitter'
+import type { HostEventTypes } from '../utils/typeEventEmitter'
+import { TypedEventEmitter } from '../utils/typeEventEmitter'
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
@@ -20,8 +21,6 @@ const logger = new Console({
 const loggerQueue = new Console({
     stdout: createWriteStream(`${process.cwd()}/queue.class.log`),
 })
-
-type EventFunction = (msg: { [key: string]: string }) => Promise<any> | void
 
 const idleForCallback = new IdleState()
 
@@ -73,11 +72,10 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     /**
      * Event handler
      */
-    listenerBusEvents = (): { event: keyof ProviderEventTypes; func: EventFunction }[] => [
-        {
-            event: 'preinit',
-            func: () => printer('Starting provider, please wait...', ''),
-        },
+    listenerBusEvents = (): {
+        event: keyof ProviderEventTypes
+        func: ProviderEventTypes[keyof ProviderEventTypes]
+    }[] => [
         {
             event: 'require_action',
             func: ({ instructions, title = '' }) => printer(instructions, title),
@@ -714,7 +712,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
      *
      */
     httpServer = (port: number) => {
-        this.provider.initHttpServer(port, {
+        this.provider.initAll(port, {
             blacklist: this.dynamicBlacklist,
         })
     }

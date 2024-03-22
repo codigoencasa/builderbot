@@ -4,7 +4,7 @@ import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
 import { PostgreSQLAdapter } from '../src/postgresAdapter'
-import { Contact, HistoryEntry } from '../src/types'
+import type { Contact, HistoryEntry } from '../src/types'
 
 const credentials = { host: 'localhost', user: '', database: '', password: null, port: 5432 }
 

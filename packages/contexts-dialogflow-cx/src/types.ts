@@ -1,4 +1,4 @@
-import { Button } from '@builderbot/bot/dist/types'
+import type { Button } from '@builderbot/bot/dist/types'
 
 export interface DialogFlowContextOptions {
     language: string

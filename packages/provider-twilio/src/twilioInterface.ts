@@ -1,6 +1,6 @@
-import { SendOptions, BotContext } from '@builderbot/bot/dist/types'
+import type { SendOptions, BotContext } from '@builderbot/bot/dist/types'
 
-import { TwilioRequestBody } from './types'
+import type { TwilioRequestBody } from './types'
 
 export interface TwilioProviderMethods {
     sendMedia: (number: string, message: string, mediaInput: string) => Promise<any>

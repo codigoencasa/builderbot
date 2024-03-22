@@ -1,6 +1,6 @@
 import { ProviderClass, utils } from '@builderbot/bot'
-import { Vendor } from '@builderbot/bot/dist/provider/providerClass'
-import { BotContext, BotCtxMiddleware, BotCtxMiddlewareOptions, Button, SendOptions } from '@builderbot/bot/dist/types'
+import type { Vendor } from '@builderbot/bot/dist/provider/interface/provider'
+import type { BotContext, Button, SendOptions } from '@builderbot/bot/dist/types'
 import axios from 'axios'
 import FormData from 'form-data'
 import { createReadStream } from 'fs'
@@ -8,50 +8,43 @@ import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
 import { tmpdir } from 'os'
 import { join, basename } from 'path'
+import type polka from 'polka'
 import Queue from 'queue-promise'
 
-import { MetaInterface } from './metaInterface'
-import { MetaWebHookServer } from './server'
-import {
-    GlobalVendorArgs,
+import { MetaCoreVendor } from './core'
+import type { MetaInterface } from '../interface/meta'
+import type {
+    MetaGlobalVendorArgs,
     Localization,
     Message,
     MetaList,
-    MetaProviderOptions,
     ParsedContact,
     Reaction,
     SaveFileOptions,
     TextGenericParams,
     TextMessageBody,
-} from './types'
-import { downloadFile } from './utils'
-import { parseMetaNumber } from './utils/number'
+} from '../types'
+import { downloadFile, getProfile } from '../utils'
+import { parseMetaNumber } from '../utils/number'
 
 const URL = `https://graph.facebook.com`
 
-class MetaProvider extends ProviderClass implements MetaInterface {
-    http: MetaWebHookServer | undefined
-    queue: Queue = new Queue()
-    vendor: Vendor<MetaInterface>
-    globalVendorArgs: MetaProviderOptions & Partial<GlobalVendorArgs> = {
+class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface {
+    public vendor: Vendor<any>
+    public queue: Queue = new Queue()
+
+    public globalVendorArgs: MetaGlobalVendorArgs = {
         name: 'bot',
-        jwtToken: undefined,
-        numberId: undefined,
-        verifyToken: undefined,
+        jwtToken: '',
+        numberId: '',
+        verifyToken: '',
         version: 'v18.0',
+        port: 3000,
     }
 
-    constructor(args: MetaProviderOptions & Partial<GlobalVendorArgs>) {
+    constructor(args: MetaGlobalVendorArgs) {
         super()
-
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
-        this.http = new MetaWebHookServer(
-            this.globalVendorArgs.jwtToken,
-            this.globalVendorArgs.numberId,
-            this.globalVendorArgs.version,
-            this.globalVendorArgs.verifyToken,
-            args.port
-        )
 
         this.queue = new Queue({
             concurrent: 1,
@@ -60,6 +53,33 @@ class MetaProvider extends ProviderClass implements MetaInterface {
         })
     }
 
+    protected async afterInit(): Promise<void> {
+        const { version, numberId, jwtToken } = this.globalVendorArgs
+        const profile = await getProfile(version, numberId, jwtToken)
+        const host = {
+            ...profile,
+            phone: profile?.display_phone_number,
+        }
+        this.vendor.emit('host', host)
+    }
+
+    public indexHome: polka.Middleware = (_, res) => {
+        res.end('running ok')
+    }
+
+    protected initVendor(): Promise<any> {
+        const vendor = new MetaCoreVendor(this.queue)
+        this.server = this.server
+            .use((req, _, next) => {
+                req['globalVendorArgs'] = this.globalVendorArgs
+                return next()
+            })
+            .get('/webhook', vendor.verifyToken)
+            .post('/webhook', vendor.incomingMsg)
+
+        this.vendor = vendor
+        return Promise.resolve(this.vendor)
+    }
     /**
      *
      * @param ctx
@@ -101,46 +121,6 @@ class MetaProvider extends ProviderClass implements MetaInterface {
             },
         },
     ]
-
-    private listenOnEvents = () => {
-        const listEvents = this.busEvents()
-        for (const { event, func } of listEvents) {
-            this.http.on(event, func)
-        }
-    }
-
-    initHttpServer = (port: number, opts: Pick<BotCtxMiddlewareOptions, 'blacklist'>) => {
-        const methods: BotCtxMiddleware<MetaProvider> = {
-            sendMessage: this.sendMessage,
-            provider: this,
-            blacklist: opts.blacklist,
-            dispatch: (customEvent, payload) => {
-                this.emit('message', {
-                    ...payload,
-                    body: utils.setEvent(customEvent),
-                    name: payload.name,
-                    from: utils.removePlus(payload.from),
-                })
-            },
-        }
-        this.http.start(methods, port, { botName: this.globalVendorArgs.name }, (routes) => {
-            this.emit('notice', {
-                title: '🛜  HTTP Server ON ',
-                instructions: routes,
-            })
-
-            this.emit('notice', {
-                title: '⚡⚡ SETUP META/FACEBOOK ⚡⚡',
-                instructions: [
-                    `Add "Webhook" URL`,
-                    `http://localhost:${port}/webhook`,
-                    `More info https://builderbot.vercel.app/en/providers/meta`,
-                ],
-            })
-        })
-        this.listenOnEvents()
-        return
-    }
 
     sendImage = async (to: string, mediaInput = null) => {
         to = parseMetaNumber(to)

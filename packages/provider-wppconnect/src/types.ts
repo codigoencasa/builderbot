@@ -1,4 +1,4 @@
-import { ProviderClass } from '@builderbot/bot'
+import type { ProviderClass } from '@builderbot/bot'
 export interface Response {
     type: string
     data: Buffer

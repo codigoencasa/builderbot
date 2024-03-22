@@ -1,5 +1,6 @@
 import { utils } from '@builderbot/bot'
-import { createWriteStream, WriteStream } from 'fs'
+import type { WriteStream } from 'fs'
+import { createWriteStream } from 'fs'
 import * as qr from 'qr-image'
 
 /**

@@ -1,6 +1,6 @@
 import { EventEmitter } from 'node:events'
 
-import { TContext } from '../types'
+import type { TContext } from '../types'
 
 export type HostEventTypes = {
     send_message: [arg1: TContext & { from: string; answer: string | string[] }]

@@ -3,5 +3,15 @@
     "tabWidth": 4,
     "semi": false,
     "singleQuote": true,
-    "printWidth": 120
+    "printWidth": 120,
+    "overrides": [
+        {
+          "files": "*.ts",
+          "options": {
+            "typescript": {
+              "sortModifiers": true
+            }
+          }
+        }
+      ]
 }

@@ -1,4 +1,4 @@
-import { INode } from '../types'
+import type { INode } from '../types'
 
 function isInsideAddActionOrAddAnswer(node: INode) {
     let currentNode = node

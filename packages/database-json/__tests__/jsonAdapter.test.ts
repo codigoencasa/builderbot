@@ -4,7 +4,7 @@ import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
 import { JsonFileDB } from '../src'
-import { HistoryEntry, JsonFileAdapterOptions } from '../src/types'
+import type { HistoryEntry, JsonFileAdapterOptions } from '../src/types'
 
 const entryMock: HistoryEntry = {
     ref: 'mockRef',

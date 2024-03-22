@@ -1,7 +1,7 @@
 import axios from 'axios'
 import type { AxiosResponse } from 'axios'
 
-import { WhatsAppProfile } from '../types'
+import type { WhatsAppProfile } from '../types'
 
 async function getProfile(version: string, numberId: string, token: string): Promise<WhatsAppProfile> {
     try {

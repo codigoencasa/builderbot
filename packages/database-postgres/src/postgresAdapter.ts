@@ -1,7 +1,7 @@
 import { MemoryDB } from '@builderbot/bot'
 import { Pool } from 'pg'
 
-import { Contact, Credential, HistoryEntry } from './types'
+import type { Contact, Credential, HistoryEntry } from './types'
 
 class PostgreSQLAdapter extends MemoryDB {
     db: any

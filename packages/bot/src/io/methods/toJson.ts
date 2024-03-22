@@ -1,4 +1,4 @@
-import { TContext } from '../../types'
+import type { TContext } from '../../types'
 
 const toJson = (inCtx: TContext): (() => TContext[]) => {
     const lastCtx = inCtx.hasOwnProperty('ctx') ? inCtx.ctx : inCtx

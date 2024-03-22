@@ -1,6 +1,6 @@
 import { addAnswer } from './addAnswer'
 import { toJson } from './toJson'
-import { ActionPropertiesKeyword, CallbackFunction, TContext, TFlow } from '../../types'
+import type { ActionPropertiesKeyword, CallbackFunction, TContext, TFlow } from '../../types'
 import { generateRef } from '../../utils/hash'
 
 /**

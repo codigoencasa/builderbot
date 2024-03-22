@@ -1,6 +1,6 @@
 import { addChild } from './addChild'
 import { toJson } from './toJson'
-import {
+import type {
     TCTXoptions as TCTOptions,
     TContext,
     TFlow,

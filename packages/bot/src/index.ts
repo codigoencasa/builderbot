@@ -4,8 +4,8 @@ import { LIST_ALL as EVENTS } from './io/events'
 import FlowClass from './io/flowClass'
 import { addAnswer } from './io/methods/addAnswer'
 import { addKeyword } from './io/methods/addKeyword'
-import { ProviderClass } from './provider/providerClass'
-import { GeneralArgs, TFlow } from './types'
+import { ProviderClass } from './provider/interface/provider'
+import type { GeneralArgs, TFlow } from './types'
 import * as utils from './utils'
 
 /**

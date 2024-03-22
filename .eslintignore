@@ -4,8 +4,6 @@ packages/portal/node_modules/
 packages/portal/dist/
 starters/apps/node_modules/
 starters/apps/dist/
-packages/bot-ts/node_modules/
-packages/bot-ts/dist/
 packages/bot/node_modules/
 packages/bot/dist/
 packages/cli/node_modules/
@@ -14,3 +12,6 @@ packages/create-bot-whatsapp/node_modules/
 packages/create-bot-whatsapp/dist/
 packages/create-builderbot/node_modules/
 packages/create-builderbot/dist/
+packages/eslint-plugin-builderbot/dist/
+packages/eslint-plugin-builderbot/node_modules/
+*.test.ts

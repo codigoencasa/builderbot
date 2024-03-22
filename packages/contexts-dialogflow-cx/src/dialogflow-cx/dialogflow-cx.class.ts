@@ -3,7 +3,8 @@ import { SessionsClient } from '@google-cloud/dialogflow-cx'
 import { existsSync, readFileSync } from 'fs'
 import { join } from 'path'
 
-import { DialogFlowContextOptions, DialogFlowCredentials, Message, MessageContextIncoming } from '../types'
+import type { DialogFlowContextOptions, DialogFlowCredentials, MessageContextIncoming } from '../types'
+import { Message } from '../types'
 
 const GOOGLE_ACCOUNT_PATH = join(process.cwd(), 'google-key.json')
 

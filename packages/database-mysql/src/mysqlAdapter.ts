@@ -1,7 +1,8 @@
 import { MemoryDB } from '@builderbot/bot'
-import mysql, { Connection, OkPacket, RowDataPacket } from 'mysql2'
+import type { Connection, OkPacket, RowDataPacket } from 'mysql2'
+import mysql from 'mysql2'
 
-import { HistoryRow, MysqlAdapterCredentials } from './types'
+import type { HistoryRow, MysqlAdapterCredentials } from './types'
 
 class MysqlAdapter extends MemoryDB {
     db: Connection
@@ -56,9 +57,7 @@ class MysqlAdapter extends MemoryDB {
         from: string
         options: any
     }): Promise<void> => {
-        const values = [
-            [ctx.ref, ctx.keyword, ctx.answer, ctx.refSerialize, ctx.from, JSON.stringify(ctx.options)],
-        ]
+        const values = [[ctx.ref, ctx.keyword, ctx.answer, ctx.refSerialize, ctx.from, JSON.stringify(ctx.options)]]
         const sql = 'INSERT INTO history (ref, keyword, answer, refSerialize, phone, options) values ?'
 
         this.db.query<OkPacket>(sql, [values], (err: any) => {

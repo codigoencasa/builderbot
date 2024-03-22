@@ -6,7 +6,8 @@ import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
 import { DialogFlowContextCX } from '../src/dialogflow-cx/dialogflow-cx.class'
-import { DialogFlowContextOptions, Message } from '../src/types'
+import type { DialogFlowContextOptions } from '../src/types'
+import { Message } from '../src/types'
 
 const mockProvider = new ProviderClass()
 

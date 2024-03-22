@@ -2,8 +2,9 @@ import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 
 import { setup, clear, parseAnswers } from '../../__mock__/env'
-import { addKeyword, createBot, createFlow, EVENTS, MemoryDB } from '../../src'
-import { ProviderMock } from '../../src/provider/providerMock'
+import type { MemoryDB } from '../../src'
+import { addKeyword, createBot, createFlow, EVENTS } from '../../src'
+import type { ProviderMock } from '../../src/provider/providerMock'
 import { delay } from '../../src/utils'
 
 const fakeHTTP = async (fakeData: string[] = []) => {

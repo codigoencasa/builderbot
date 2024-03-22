@@ -1,4 +1,4 @@
-import { Context, INode } from '../types'
+import type { Context, INode } from '../types'
 import { isInsideAddActionOrAddAnswer } from '../utils'
 
 const processDynamicFlowAwait = (context: Context) => {

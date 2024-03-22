@@ -1,9 +1,10 @@
 import { ProviderClass, utils } from '@builderbot/bot'
-import { BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@builderbot/bot/dist/types'
+import type { BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@builderbot/bot/dist/types'
 import { Console } from 'console'
 import { createWriteStream, readFileSync } from 'fs'
 import mime from 'mime-types'
-import WAWebJS, { Client, LocalAuth, MessageMedia, Buttons } from 'whatsapp-web.js'
+import type WAWebJS from 'whatsapp-web.js'
+import { Client, LocalAuth, MessageMedia, Buttons } from 'whatsapp-web.js'
 
 import { WebWhatsappHttpServer } from './server'
 import { wwebCleanNumber, wwebGenerateImage, wwebIsValidNumber } from './utils'
@@ -63,7 +64,7 @@ class WebWhatsappProvider extends ProviderClass {
     initHttpServer = (port: number, opts: Pick<BotCtxMiddlewareOptions, 'blacklist'>) => {
         const methods: BotCtxMiddleware<WebWhatsappProvider> = {
             sendMessage: this.sendMessage,
-            provider: this.vendor,
+            provider: this,
             blacklist: opts.blacklist,
             dispatch: (customEvent, payload) => {
                 this.emit('message', {

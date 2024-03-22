@@ -1,5 +1,5 @@
 import { toSerialize } from './toSerialize'
-import { TContext, TFlow } from '../../types'
+import type { TContext, TFlow } from '../../types'
 
 /**
  * @private

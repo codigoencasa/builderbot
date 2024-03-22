@@ -3,14 +3,23 @@
  */
 
 import type { IdleState } from './context'
-import { ProviderClass } from './provider'
+import type { ProviderClass } from './provider/interface/provider'
 import type { Queue } from './utils'
 
 export type CustomNameEvent = string
 
-export interface GlobalVendorArgs {
-    name: string
+export type GlobalVendorArgs<V = { [key: string]: any }> = {
+    name?: string
     port?: number
+} & V
+
+export type ProviderEventTypes = {
+    message: [arg1: BotContext]
+    require_action: [arg1: { title: string; instructions: string[] }]
+    notice: [arg1: { title: string; instructions: string[] }]
+    ready: any
+    auth_failure: any
+    host: any
 }
 
 export type GeneralArgs = {
