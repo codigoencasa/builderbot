@@ -40,7 +40,7 @@ abstract class ProviderClass<V = any> extends TypedEventEmitter<ProviderEventTyp
      * Bot name identifier.
      * @type {string}
      */
-    public idBotName: string = 'id-bot'
+    public idBotName: string = 'bot'
 
     /**
      * Context bot identifier.
@@ -57,11 +57,18 @@ abstract class ProviderClass<V = any> extends TypedEventEmitter<ProviderEventTyp
     }
 
     /**
-     * Abstract method to be executed after initialization.
+     * Abstract method to be executed before http initialization.
      * @protected
      * @abstract
      */
-    protected abstract afterInit(): void
+    protected abstract beforeHttpServerInit(): void
+
+    /**
+     * Abstract method to be executed after http initialization.
+     * @protected
+     * @abstract
+     */
+    protected abstract afterHttpServerInit(): void
 
     /**
      * Abstract method to define bus events.
@@ -107,10 +114,15 @@ abstract class ProviderClass<V = any> extends TypedEventEmitter<ProviderEventTyp
      * @param {{ on: any, [key: string]: any }} vendor - Vendor instance.
      * @returns {void}
      */
-    protected listenOnEvents(vendor: { on: any; [key: string]: any }): void {
-        if (!this.vendor) {
-            throw Error(`Vendor should not be empty`)
+    protected listenOnEvents(vendor: Vendor<any>): void {
+        if (!vendor) {
+            throw Error(`Vendor should not return empty`)
         }
+
+        if (!this.vendor) {
+            this.vendor = vendor
+        }
+
         const listEvents = this.busEvents()
         for (const { event, func } of listEvents) {
             vendor.on(event, func)
@@ -211,13 +223,6 @@ abstract class ProviderClass<V = any> extends TypedEventEmitter<ProviderEventTyp
             return []
         }
     }
-
-    /**
-     * Index home middleware.
-     * @public
-     */
-    public abstract indexHome: polka.Middleware
-
     /**
      * Build the HTTP server.
      * @public
@@ -228,7 +233,6 @@ abstract class ProviderClass<V = any> extends TypedEventEmitter<ProviderEventTyp
             .use(cors())
             .use(urlencoded({ extended: true }))
             .use(json())
-            .get('/', this.indexHome)
     }
 
     /**
@@ -263,15 +267,18 @@ abstract class ProviderClass<V = any> extends TypedEventEmitter<ProviderEventTyp
             },
         }
 
+        this.initVendor().then((v) => this.listenOnEvents(v))
+
+        this.beforeHttpServerInit()
+
         this.start(methods, (routes) => {
             this.emit('notice', {
                 title: '🛜  HTTP Server ON ',
                 instructions: routes,
             })
-            this.afterInit()
+            this.afterHttpServerInit()
         })
 
-        this.initVendor().then((v) => this.listenOnEvents(v))
         return
     }
 }

@@ -7,7 +7,7 @@ import { createReadStream, createWriteStream, readFileSync, existsSync } from 'f
 import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
 import { tmpdir } from 'os'
-import { join } from 'path'
+import { join, basename } from 'path'
 import pino from 'pino'
 import type polka from 'polka'
 import { rimraf } from 'rimraf'
@@ -40,16 +40,6 @@ const logger = new Console({
 })
 
 class BaileysProvider extends ProviderClass<WASocket> {
-    protected afterInit(): void {}
-
-    public indexHome: polka.Middleware = (req, res) => {
-        const botName = req[this.idBotName]
-        const qrPath = join(process.cwd(), `${botName}.qr.png`)
-        const fileStream = createReadStream(qrPath)
-        res.writeHead(200, { 'Content-Type': 'image/png' })
-        fileStream.pipe(res)
-    }
-
     public globalVendorArgs: GlobalVendorArgs<BaileyGlobalVendorArgs> = {
         name: `bot`,
         gifPlayback: false,
@@ -66,6 +56,25 @@ class BaileysProvider extends ProviderClass<WASocket> {
         super()
         this.store = null
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
+    }
+
+    protected beforeHttpServerInit(): void {
+        this.server = this.server
+            .use((req, _, next) => {
+                req['globalVendorArgs'] = this.globalVendorArgs
+                return next()
+            })
+            .get('/', this.indexHome)
+    }
+
+    protected afterHttpServerInit(): void {}
+
+    public indexHome: polka.Middleware = (req, res) => {
+        const botName = req[this.idBotName]
+        const qrPath = join(process.cwd(), `${botName}.qr.png`)
+        const fileStream = createReadStream(qrPath)
+        res.writeHead(200, { 'Content-Type': 'image/png' })
+        fileStream.pipe(res)
     }
 
     protected getMessage = async (key: { remoteJid: string; id: string }) => {
@@ -396,7 +405,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
     sendFile = async (number: string, filePath: string) => {
         const mimeType = mime.lookup(filePath)
-        const fileName = filePath.split('/').pop()
+        const fileName = basename(filePath)
 
         const payload: AnyMessageContent = {
             document: { url: filePath },
@@ -601,4 +610,4 @@ class BaileysProvider extends ProviderClass<WASocket> {
     }
 }
 
-export { BaileysProvider, BaileyGlobalVendorArgs as BaileysProviderArgs }
+export { BaileysProvider }

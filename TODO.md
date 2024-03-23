@@ -44,6 +44,7 @@
 - [x] meta recuerda que debes iniciar la conversacion con iun template
 - [x] rollup starter remover rollup nodeResolver
 - [x] baileys jpg error
+- [ ] coverage
 - [ ] flowDynamic({media...})
 - [ ] mysql port
 - [ ] elmintar vendor de handleCTX

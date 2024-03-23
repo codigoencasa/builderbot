@@ -1,6 +1,6 @@
 import type { Button, GlobalVendorArgs } from '@builderbot/bot/dist/types'
 
-export type ITwilioProviderOptions = {
+export type ITwilioProviderARgs = {
     accountSid: string
     authToken: string
     vendorNumber: string

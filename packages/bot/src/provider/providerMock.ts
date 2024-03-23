@@ -8,7 +8,7 @@ function delay(ms: number): Promise<void> {
 type PayloadType = any
 
 class ProviderMock extends ProviderClass {
-    public indexHome
+    protected beforeHttpServerInit(): void {}
     protected initVendor(): Promise<any> {
         return Promise.resolve()
     }
@@ -22,9 +22,7 @@ class ProviderMock extends ProviderClass {
         return Promise.resolve('')
     }
 
-    protected afterInit(): void {
-        console.log('Method not implemented.')
-    }
+    protected afterHttpServerInit(): void {}
 
     delaySendMessage = async (
         milliseconds: number,

@@ -1,5 +1,4 @@
-import type { Middleware, Polka } from 'polka'
-
+import type { Polka } from 'polka'
 import type { BotCtxMiddleware } from '../../types'
 
 /**
@@ -34,12 +33,6 @@ export interface ProviderHttpServer {
     inHandleCtx<T extends Pick<any, 'sendMessage'> & { provider: any }>(
         ctxPolka: (bot: T | undefined, req: Request, res: PolkaRes) => Promise<void>
     ): (...args: any[]) => any
-
-    /**
-     * Middleware for handling index or home route.
-     */
-    indexHome: Middleware
-
     /**
      * Retrieves a list of routes registered on the provided Polka instance.
      * @param app Polka instance.

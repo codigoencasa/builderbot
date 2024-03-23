@@ -104,9 +104,11 @@ export interface TextMessageBody {
     }
     image?: {
         id: string
+        caption: string
     }
     video?: {
         id: string
+        caption: string
     }
     interactive?: any
     contacts?: any[]

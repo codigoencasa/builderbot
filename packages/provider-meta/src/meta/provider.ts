@@ -8,7 +8,6 @@ import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
 import { tmpdir } from 'os'
 import { join, basename } from 'path'
-import type polka from 'polka'
 import Queue from 'queue-promise'
 
 import { MetaCoreVendor } from './core'
@@ -45,7 +44,6 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
     constructor(args: MetaGlobalVendorArgs) {
         super()
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
-
         this.queue = new Queue({
             concurrent: 1,
             interval: 100,
@@ -53,18 +51,36 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         })
     }
 
-    protected async afterInit(): Promise<void> {
-        const { version, numberId, jwtToken } = this.globalVendorArgs
-        const profile = await getProfile(version, numberId, jwtToken)
-        const host = {
-            ...profile,
-            phone: profile?.display_phone_number,
-        }
-        this.vendor.emit('host', host)
+    protected beforeHttpServerInit(): void {
+        this.server = this.server
+            .use((req, _, next) => {
+                req['globalVendorArgs'] = this.globalVendorArgs
+                return next()
+            })
+            .post('/', this.vendor.indexHome)
+            .get('/webhook', this.vendor.verifyToken)
+            .post('/webhook', this.vendor.incomingMsg)
     }
 
-    public indexHome: polka.Middleware = (_, res) => {
-        res.end('running ok')
+    protected async afterHttpServerInit(): Promise<void> {
+        try {
+            const { version, numberId, jwtToken } = this.globalVendorArgs
+            const profile = await getProfile(version, numberId, jwtToken)
+            const host = {
+                ...profile,
+                phone: profile?.display_phone_number,
+            }
+            this.vendor.emit('host', host)
+            this.emit('ready')
+        } catch (err) {
+            this.emit('notice', {
+                title: '🟠 ERROR AUTH  🟠',
+                instructions: [
+                    `Error connecting to META, make sure you have the correct credentials, .env`,
+                    `https://builderbot.vercel.app/en/providers/meta`,
+                ],
+            })
+        }
     }
 
     protected initVendor(): Promise<any> {
@@ -122,7 +138,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         },
     ]
 
-    sendImage = async (to: string, mediaInput = null) => {
+    sendImage = async (to: string, mediaInput = null, caption: string) => {
         to = parseMetaNumber(to)
         if (!mediaInput) throw new Error(`MEDIA_INPUT_NULL_: ${mediaInput}`)
 
@@ -152,12 +168,13 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             type: 'image',
             image: {
                 id: mediaId,
+                caption,
             },
         }
         return this.sendMessageMeta(body)
     }
 
-    sendVideo = async (to: string, pathVideo = null) => {
+    sendVideo = async (to: string, pathVideo = null, caption: string) => {
         to = parseMetaNumber(to)
         if (!pathVideo) throw new Error(`MEDIA_INPUT_NULL_: ${pathVideo}`)
 
@@ -186,24 +203,24 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             type: 'video',
             video: {
                 id: mediaId,
+                caption,
             },
         }
         return this.sendMessageMeta(body)
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    sendMedia = async (to: string, _ = '', mediaInput: string) => {
+    sendMedia = async (to: string, text = '', mediaInput: string) => {
         to = parseMetaNumber(to)
         const fileDownloaded = await utils.generalDownload(mediaInput)
         const mimeType = mime.lookup(fileDownloaded)
         mediaInput = fileDownloaded
-        if (mimeType.includes('image')) return this.sendImage(to, mediaInput)
-        if (mimeType.includes('video')) return this.sendVideo(to, fileDownloaded)
+        if (mimeType.includes('image')) return this.sendImage(to, mediaInput, text)
+        if (mimeType.includes('video')) return this.sendVideo(to, fileDownloaded, text)
         if (mimeType.includes('audio')) {
             const fileOpus = await utils.convertAudio(mediaInput, 'mp3')
             return this.sendAudio(to, fileOpus)
         }
 
-        return this.sendFile(to, mediaInput)
+        return this.sendFile(to, mediaInput, text)
     }
 
     sendList = async (to: string, list: MetaList) => {
@@ -320,7 +337,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         this.sendText(to, message)
     }
 
-    sendFile = async (to: string, mediaInput = null) => {
+    sendFile = async (to: string, mediaInput = null, caption: string) => {
         to = parseMetaNumber(to)
         if (!mediaInput) throw new Error(`MEDIA_INPUT_NULL_: ${mediaInput}`)
 
@@ -353,6 +370,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             document: {
                 id: mediaId,
                 filename: nameOriginal,
+                caption,
             },
         }
         return this.sendMessageMeta(body)
