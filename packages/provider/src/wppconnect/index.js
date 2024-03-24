@@ -167,11 +167,10 @@ class WPPConnectProviderClass extends ProviderClass {
      * @example await sendPollMessage("+XXXXXXXXXXX", "You accept terms", [ "Yes", "Not"], {"selectableCount": 1})
      */
 
-    sendPoll = async (number, text, poll) => {
-        if (poll.options.length < 2) return false
+    sendPoll = async (number, text, poll, { selectableCount }) => {
+        if (poll.length < 2) return false
 
-        const selectableCount = poll.multiselect === undefined ? 1 : poll.multiselect ? 1 : 0
-        return this.vendor.sendPollMessage(number, text, poll.options, { selectableCount })
+        return this.vendor.sendPollMessage(number, text, poll, { selectableCount })
     }
 
     /**
