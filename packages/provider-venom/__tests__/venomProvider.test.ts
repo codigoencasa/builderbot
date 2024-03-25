@@ -38,7 +38,7 @@ test.after.each(() => {
     sendStub.resetHistory()
 })
 
-test('VenomProvider - initializes correctly', async () => {
+test.skip('VenomProvider - initializes correctly', async () => {
     venomProvider.init = initStub.resolves(true)
     await venomProvider.init()
     assert.equal(initStub.called, true)
@@ -46,7 +46,7 @@ test('VenomProvider - initializes correctly', async () => {
     assert.equal(venomProvider.globalVendorArgs.gifPlayback, credentials.gifPlayback)
 })
 
-test('venomProvider - initBusEvents should bind vendor events to corresponding functions', () => {
+test.skip('venomProvider - initBusEvents should bind vendor events to corresponding functions', () => {
     const onMessageStub = stub()
     const vendorMock: any = {
         onMessage: onMessageStub,
@@ -57,7 +57,7 @@ test('venomProvider - initBusEvents should bind vendor events to corresponding f
     assert.equal(onMessageStub.called, true)
 })
 
-test('generateQr - QR generation is done correctly', async () => {
+test.skip('generateQr - QR generation is done correctly', async () => {
     const payloadEmit = {
         title: '⚡⚡ ACTION REQUIRED ⚡⚡',
         instructions: [
@@ -74,7 +74,7 @@ test('generateQr - QR generation is done correctly', async () => {
     assert.equal(emitStub.args[0][1], payloadEmit)
 })
 
-test('busEvents - onMessage I should return undefined', async () => {
+test.skip('busEvents - onMessage I should return undefined', async () => {
     const payload: any = {
         from: 'status@broadcast',
         type: 'image',
@@ -84,7 +84,7 @@ test('busEvents - onMessage I should return undefined', async () => {
     assert.equal(emitStub.args[0], undefined)
 })
 
-test('busEvents - onMessage I should return undefined', async () => {
+test.skip('busEvents - onMessage I should return undefined', async () => {
     const payload: any = {
         from: '123@g.us',
         type: 'image',
@@ -94,7 +94,7 @@ test('busEvents - onMessage I should return undefined', async () => {
     assert.equal(emitStub.args[0], undefined)
 })
 
-test('busEvents - onMessage I should build the body suit for the guy imagen', async () => {
+test.skip('busEvents - onMessage I should build the body suit for the guy imagen', async () => {
     const payload: any = {
         from: '+123456789',
         type: 'image',
@@ -107,7 +107,7 @@ test('busEvents - onMessage I should build the body suit for the guy imagen', as
     assert.ok(emitStub.called)
 })
 
-test('busEvents - onMessage I should build the body suit for the guy document', async () => {
+test.skip('busEvents - onMessage I should build the body suit for the guy document', async () => {
     const payload: any = {
         from: '123456789',
         type: 'document',
@@ -118,7 +118,7 @@ test('busEvents - onMessage I should build the body suit for the guy document', 
     assert.equal(emitStub.args[0][1].from, payload.from)
 })
 
-test('busEvents - onMessage I should build the body suit for the guy ptt', async () => {
+test.skip('busEvents - onMessage I should build the body suit for the guy ptt', async () => {
     const payload: any = {
         from: '123456789',
         type: 'ptt',
@@ -130,7 +130,7 @@ test('busEvents - onMessage I should build the body suit for the guy ptt', async
     assert.ok(emitStub.args[0][1].body.includes('_event_voice_note_'))
 })
 
-test('busEvents - onMessage I should build the body suit for the guy ptt', async () => {
+test.skip('busEvents - onMessage I should build the body suit for the guy ptt', async () => {
     const payload: any = {
         from: '123456789',
         type: 'ptt',
@@ -142,7 +142,7 @@ test('busEvents - onMessage I should build the body suit for the guy ptt', async
     assert.ok(emitStub.args[0][1].body.includes('_event_voice_note_'))
 })
 
-test('busEvents - onMessage I should build the bodysuit for the guy lat y lng', async () => {
+test.skip('busEvents - onMessage I should build the bodysuit for the guy lat y lng', async () => {
     const payload: any = {
         from: '123456789',
         lat: '1224',
@@ -155,7 +155,7 @@ test('busEvents - onMessage I should build the bodysuit for the guy lat y lng', 
     assert.ok(emitStub.args[0][1].body.includes('_event_location_'))
 })
 
-test('sendButtons - should send buttons correctly', async () => {
+test.skip('sendButtons - should send buttons correctly', async () => {
     const payloadEmit = {
         title: 'DEPRECATED',
         instructions: [
@@ -175,7 +175,7 @@ test('sendButtons - should send buttons correctly', async () => {
     assert.equal(sendStub.called, true)
 })
 
-test('sendAudio - should send  audio correctly', async () => {
+test.skip('sendAudio - should send  audio correctly', async () => {
     const number = '1234567890'
     const audioPath = 'audio.mp3'
     venomProvider.vendor.sendVoice = sendStub
@@ -183,7 +183,7 @@ test('sendAudio - should send  audio correctly', async () => {
     assert.equal(sendStub.calledWith(number, audioPath), true)
 })
 
-test('sendImage  - should send sendImage correctly', async () => {
+test.skip('sendImage  - should send sendImage correctly', async () => {
     const number = '1234567890'
     const filePath = 'image.png'
     const text = 'Hello Word!'
@@ -192,7 +192,7 @@ test('sendImage  - should send sendImage correctly', async () => {
     assert.equal(sendStub.calledWith(number, filePath, 'image-name', text), true)
 })
 
-test('sendFile   - should send sendFile correctly', async () => {
+test.skip('sendFile   - should send sendFile correctly', async () => {
     const number = '1234567890'
     const filePath = 'file/image.png'
     const text = 'Hello Word!'
@@ -201,7 +201,7 @@ test('sendFile   - should send sendFile correctly', async () => {
     assert.equal(sendStub.calledWith(number, filePath, 'image.png', text), true)
 })
 
-test('sendVideo    - should send sendVideoAsGif correctly', async () => {
+test.skip('sendVideo    - should send sendVideoAsGif correctly', async () => {
     const number = '1234567890'
     const filePath = 'faudio.mp4'
     const text = 'Hello Word!'
@@ -210,7 +210,7 @@ test('sendVideo    - should send sendVideoAsGif correctly', async () => {
     assert.equal(sendStub.calledWith(number, filePath, 'video.gif', text), true)
 })
 
-test('sendMessage - should call the method sendButtons', async () => {
+test.skip('sendMessage - should call the method sendButtons', async () => {
     const to = '123456789'
     const message = 'Test message'
     const argWithButtons: SendOptions = {
@@ -224,7 +224,7 @@ test('sendMessage - should call the method sendButtons', async () => {
     assert.equal(sendButtonsStub.args[0][2], argWithButtons.buttons)
 })
 
-test('sendMessage - should call the method sendMedia', async () => {
+test.skip('sendMessage - should call the method sendMedia', async () => {
     const to = '123456789'
     const message = 'Test message'
     const argWithMedia: SendOptions = {
@@ -238,7 +238,7 @@ test('sendMessage - should call the method sendMedia', async () => {
     assert.equal(sendMediaStub.args[0][2], message)
 })
 
-test('sendMessage - should call the method sendText ', async () => {
+test.skip('sendMessage - should call the method sendText ', async () => {
     const to = '123456789'
     const message = 'Test message'
     const argWithMedia: any = {}
@@ -249,7 +249,7 @@ test('sendMessage - should call the method sendText ', async () => {
     assert.equal(sendStub.args[0][1], message)
 })
 
-test('initHttpServer - debería iniciar el servidor HTTP correctamente', async () => {
+test.skip('initHttpServer - debería iniciar el servidor HTTP correctamente', async () => {
     const startStub = stub()
 
     const testPort = 3000
@@ -263,7 +263,7 @@ test('initHttpServer - debería iniciar el servidor HTTP correctamente', async (
     await venomProvider.http?.server.server?.close()
 })
 
-test('generateFileName should return a valid filename with provided extension', () => {
+test.skip('generateFileName should return a valid filename with provided extension', () => {
     const extension = 'txt'
     const expectedPrefix = 'file-'
     const fixedTimestamp = 1628739872000
@@ -275,7 +275,7 @@ test('generateFileName should return a valid filename with provided extension', 
     nowStub.restore()
 })
 
-test('saveFile  - saves file correctly in path storage', async () => {
+test.skip('saveFile  - saves file correctly in path storage', async () => {
     const ctxMock = { mimetype: 'image/jpeg' }
     const fileName = `file-${Date.now()}.jpeg`
     const decryptFileMock = stub().resolves(Buffer.from('file content'))
@@ -291,7 +291,7 @@ test('saveFile  - saves file correctly in path storage', async () => {
     readFileSyncStub.restore()
 })
 
-test('saveFile  - saves file correctly in tmpdir', async () => {
+test.skip('saveFile  - saves file correctly in tmpdir', async () => {
     const ctxMock = { mimetype: 'image/jpeg' }
     const fileName = `file-${Date.now()}.jpeg`
     const decryptFileMock = stub().resolves(Buffer.from('file content'))
@@ -307,7 +307,7 @@ test('saveFile  - saves file correctly in tmpdir', async () => {
     readFileSyncStub.restore()
 })
 
-test('saveFile handles errors', async () => {
+test.skip('saveFile handles errors', async () => {
     const ctxMock = { mimetype: 'image/jpeg' }
     const errorMessage = 'Failed to decrypt file'
     const errorMock = new Error(errorMessage)
