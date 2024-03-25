@@ -44,6 +44,7 @@
 - [x] meta recuerda que debes iniciar la conversacion con iun template
 - [x] rollup starter remover rollup nodeResolver
 - [x] baileys jpg error
+- [x] remove space number
 - [ ] coverage
 - [ ] flowDynamic({media...})
 - [ ] que se puedae escribir a el mismo

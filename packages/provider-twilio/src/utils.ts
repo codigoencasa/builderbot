@@ -1,9 +1,9 @@
 const parseNumber = (number: string): string => {
-    return number.replace(/(?:whatsapp:|\+\d+)/, '')
+    return number.replace(/(?:whatsapp:|\+\d+)/, '').replace(/\s/g, '')
 }
 
 const parseNumberFrom = (number: string): string => {
-    const cleanNumber = number.replace(/whatsapp|:|\+/g, '')
+    const cleanNumber = number.replace(/whatsapp|:|\+/g, '').replace(/\s/g, '')
     return `whatsapp:+${cleanNumber}`
 }
 

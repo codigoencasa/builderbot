@@ -8,8 +8,8 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const PATH_STARTERS = join(process.cwd(), '..', '..', 'starters', 'apps')
-const DEST_STARTERS = join(__dirname, 'starters')
+const PATH_STARTERS = join(process.cwd(), '..', '..', 'starters')
+const DEST_STARTERS = join(__dirname, 'dist', 'starters')
 
 function copyStarts() {
     return {
