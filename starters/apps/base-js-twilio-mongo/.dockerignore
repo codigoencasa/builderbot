@@ -1,0 +1,7 @@
+dist/*
+node_modules
+.env
+
+*_sessions
+*tokens
+.wwebjs*

@@ -1,9 +1,36 @@
 import { utils } from '@builderbot/bot'
-import { createWriteStream } from 'fs'
+import { createWriteStream, existsSync, unlinkSync } from 'fs'
 import * as http from 'http'
 import * as https from 'https'
-import { tmpdir } from 'os'
+import { tmpdir, platform } from 'os'
+import { join } from 'path'
 import * as qr from 'qr-image'
+
+const wwebGetChromeExecutablePath = () => {
+    const myPlatform = platform()
+    switch (myPlatform) {
+        case 'win32':
+            return wwebGetWindowsChromeExecutablePath()
+        case 'darwin':
+            return '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+        case 'linux':
+            return '/usr/bin/google-chrome'
+        default:
+            console.error('Could not find browser.')
+            return null
+    }
+}
+
+const wwebGetWindowsChromeExecutablePath = () => {
+    const programFilesPath = process.env.ProgramFiles || ''
+    const programFiles86Path = process.env['ProgramFiles(x86)'] || ''
+    const pathProgramFiles86Path = join(programFiles86Path, 'Google', 'Chrome', 'Application', 'chrome.exe')
+    const pathProgramFiles64Path = join(programFilesPath, 'Google', 'Chrome', 'Application', 'chrome.exe')
+
+    if (existsSync(pathProgramFiles86Path)) return pathProgramFiles86Path
+    if (existsSync(pathProgramFiles64Path)) return pathProgramFiles64Path
+    return ''
+}
 
 const wwebCleanNumber = (number: string, full: boolean = false): string => {
     number = number.replace('@c.us', '').replace('+', '')
@@ -24,6 +51,16 @@ const wwebGenerateImage = async (base64: string, name: string = 'qr.png'): Promi
 
     await writeFilePromise()
     await utils.cleanImage(PATH_QR)
+}
+
+const wwebDeleteTokens = (session: string) => {
+    try {
+        const pathTokens = join(process.cwd(), session)
+        unlinkSync(pathTokens)
+        console.log('Tokens clean..')
+    } catch (e) {
+        return
+    }
 }
 
 const wwebIsValidNumber = (rawNumber: string): boolean => {
@@ -56,4 +93,11 @@ const wwebDownloadMedia = async (url: string): Promise<string> => {
     })
 }
 
-export { wwebCleanNumber, wwebGenerateImage, wwebIsValidNumber, wwebDownloadMedia }
+export {
+    wwebCleanNumber,
+    wwebGenerateImage,
+    wwebDeleteTokens,
+    wwebIsValidNumber,
+    wwebDownloadMedia,
+    wwebGetChromeExecutablePath,
+}

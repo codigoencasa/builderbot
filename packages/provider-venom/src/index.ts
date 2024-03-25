@@ -1,20 +1,17 @@
+import './fix'
 import { ProviderClass, utils } from '@builderbot/bot'
-import type { BotContext, BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@builderbot/bot/dist/types'
-import { Console } from 'console'
-import { createWriteStream } from 'fs'
+import type { Vendor } from '@builderbot/bot/dist/provider/interface/provider'
+import type { BotContext, Button, SendOptions } from '@builderbot/bot/dist/types'
+import { createReadStream } from 'fs'
 import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
 import { tmpdir } from 'os'
-import { join } from 'path'
+import { basename, join } from 'path'
+import type polka from 'polka'
 import venom from 'venom-bot'
 
-import { VenomHttpServer } from './server'
 import type { SaveFileOptions } from './types'
-import { venomCleanNumber, venomGenerateImage, venomisValidNumber } from './utils'
-
-const logger = new Console({
-    stdout: createWriteStream(`${process.cwd()}/venom.log`),
-})
+import { venomCleanNumber, venomDeleteTokens, venomGenerateImage, venomisValidNumber } from './utils'
 
 /**
  * ⚙️ VenomProvider: Es una clase tipo adaptor
@@ -22,55 +19,50 @@ const logger = new Console({
  * https://github.com/orkestral/venom
  */
 class VenomProvider extends ProviderClass {
-    V = { name: `bot`, gifPlayback: false, port: 3000 }
+    globalVendorArgs = { name: `bot`, gifPlayback: false, port: 3000 }
     vendor: venom.Whatsapp
-    http: VenomHttpServer | undefined
-
     constructor(args: { name: string; gifPlayback: boolean }) {
         super()
-        this.V = { ...this.V, ...args }
-        this.http = new VenomHttpServer(this.V.name, this.V.port)
-        this.init().then(() => this.initBusEvents())
+        this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
     }
 
-    /**
-     *
-     * @param port
-     * @param opts
-     * @returns
-     */
-    initHttpServer = (port: number, opts: Pick<BotCtxMiddlewareOptions, 'blacklist'>) => {
-        const methods: BotCtxMiddleware<VenomProvider> = {
-            sendMessage: this.sendMessage,
-            provider: this,
-            blacklist: opts.blacklist,
-            dispatch: (customEvent, payload) => {
-                this.emit('message', {
-                    ...payload,
-                    body: utils.setEvent(customEvent),
-                    name: payload.name,
-                    from: utils.removePlus(payload.from),
-                })
-            },
-        }
-        this.http.start(methods, port)
-        return
-    }
+    private generateFileName = (extension: string): string => `file-${Date.now()}.${extension}`
 
-    /**
-     * Iniciamos el Proveedor Venom
-     */
-    init = async () => {
-        const NAME_DIR_SESSION = `${this.V.name}_sessions`
+    protected async initVendor(): Promise<any> {
+        const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
         try {
             const client = await venom.create(
                 NAME_DIR_SESSION,
                 (base) => this.generateQr(base),
-                (info) => console.log({ info }),
+                (info) => {
+                    console.log({ info })
+                    if (
+                        [
+                            'initBrowser',
+                            'openBrowser',
+                            'initWhatsapp',
+                            'successPageWhatsapp',
+                            'notLogged',
+                            'waitForLogin',
+                            'waitChat',
+                            'successChat',
+                        ].includes(info)
+                    ) {
+                        console.clear()
+                        this.emit('notice', {
+                            title: '⏱️  Loading... ',
+                            instructions: [`this process can take up to 90 seconds`, `we will let you know shortly`],
+                        })
+                    }
+                },
                 {
+                    updatesLog: false,
                     disableSpins: true,
                     disableWelcome: true,
                     logQR: false,
+                    autoClose: 45000,
+                    ...this.globalVendorArgs,
+                    folderNameToken: NAME_DIR_SESSION,
                 }
             )
 
@@ -83,19 +75,77 @@ class VenomProvider extends ProviderClass {
             }
             this.emit('ready', true)
             this.emit('host', host)
-        } catch (e) {
-            logger.log(e)
-            this.emit('auth_failure', {
-                instructions: [`An error occurred during Venom initialization`, `Restart the BOT`],
+            client.onIncomingCall(async (call) => {
+                console.log(call)
+                // client.sendText(call.peerJid, "Sorry, I still can't answer calls");
             })
+            return client
+        } catch (e) {
+            console.log(e)
+            this.emit('auth_failure', {
+                instructions: [`An error occurred during Venom initialization`, `trying again in 5 seconds...`],
+            })
+            venomDeleteTokens(NAME_DIR_SESSION)
+            setTimeout(async () => {
+                console.clear()
+                await this.initVendor()
+            }, 5000)
         }
     }
+
+    protected listenOnEvents(vendor: Vendor<venom.Whatsapp>): void {
+        if (!vendor) {
+            throw Error(`Vendor should not return empty`)
+        }
+
+        if (!this.vendor) {
+            this.vendor = vendor
+        }
+
+        const listEvents = this.busEvents()
+        for (const { event, func } of listEvents) {
+            if (this.vendor[event])
+                this.vendor[event]((payload: venom.Message & { lat?: string; lng?: string; name: string }) =>
+                    func(payload)
+                )
+        }
+    }
+
+    protected beforeHttpServerInit(): void {
+        this.server = this.server
+            .use((req, _, next) => {
+                req['globalVendorArgs'] = this.globalVendorArgs
+                return next()
+            })
+            .get('/', this.indexHome)
+    }
+
+    /**
+     *
+     * @param req
+     * @param res
+     */
+    public indexHome: polka.Middleware = (req, res) => {
+        const botName = req[this.idBotName]
+        const qrPath = join(process.cwd(), `${botName}.qr.png`)
+        const fileStream = createReadStream(qrPath)
+        res.writeHead(200, { 'Content-Type': 'image/png' })
+        fileStream.pipe(res)
+    }
+
+    protected afterHttpServerInit(): void {}
 
     /**
      * Generamos QR Code pra escanear con el Whatsapp
      */
     generateQr = async (qr: string) => {
         console.clear()
+
+        this.emit('notice', {
+            title: '🛜  HTTP Server ON ',
+            instructions: this.getListRoutes(this.server),
+        })
+
         this.emit('require_action', {
             title: '⚡⚡ ACTION REQUIRED ⚡⚡',
             instructions: [
@@ -104,7 +154,8 @@ class VenomProvider extends ProviderClass {
                 `Need help: https://link.codigoencasa.com/DISCORD`,
             ],
         })
-        await venomGenerateImage(qr, `${this.V.name}.qr.png`)
+
+        await venomGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)
     }
 
     /**
@@ -153,22 +204,6 @@ class VenomProvider extends ProviderClass {
     ]
 
     /**
-     * Iniciamos y mapeamos el BusEvent
-     * Ejemplo:
-     * this.vendor.onMessage() 👉 this.vendor["onMessage"]()
-     */
-    initBusEvents = () => {
-        const listEvents = this.busEvents()
-
-        for (const { event, func } of listEvents) {
-            if (this.vendor[event])
-                this.vendor[event]((payload: venom.Message & { lat?: string; lng?: string; name: string }) =>
-                    func(payload)
-                )
-        }
-    }
-
-    /**
      * @deprecated Buttons are not available in this provider, please use sendButtons instead
      * @private
      * @param {*} number
@@ -176,7 +211,7 @@ class VenomProvider extends ProviderClass {
      * @param {*} buttons []
      * @returns
      */
-    sendButtons = async (number: string, message: any, buttons = []) => {
+    sendButtons = async (number: string, message: string, buttons: Button[] = []) => {
         this.emit('notice', {
             title: 'DEPRECATED',
             instructions: [
@@ -210,7 +245,8 @@ class VenomProvider extends ProviderClass {
      * @returns
      */
     sendImage = async (number: string, filePath: string, text: string) => {
-        return this.vendor.sendImage(number, filePath, 'image-name', text)
+        const fileName = basename(filePath)
+        return this.vendor.sendImage(number, filePath, fileName, text)
     }
 
     /**
@@ -221,7 +257,7 @@ class VenomProvider extends ProviderClass {
      */
 
     sendFile = async (number: string, filePath: string, text: string) => {
-        const fileName = filePath.split('/').pop()
+        const fileName = basename(filePath)
         return this.vendor.sendFile(number, filePath, fileName, text)
     }
 
@@ -257,10 +293,10 @@ class VenomProvider extends ProviderClass {
     }
 
     /**
-     * Enviar mensaje al usuario
-     * @param {*} userId
-     * @param {*} message
-     * @param {*} param2
+     *
+     * @param number
+     * @param message
+     * @param options
      * @returns
      */
     sendMessage = async (number: string, message: string, options?: SendOptions): Promise<any> => {
@@ -271,8 +307,12 @@ class VenomProvider extends ProviderClass {
         return this.vendor.sendText(number, message)
     }
 
-    private generateFileName = (extension: string): string => `file-${Date.now()}.${extension}`
-
+    /**
+     *
+     * @param ctx
+     * @param options
+     * @returns
+     */
     saveFile = async (ctx: Partial<venom.Message & BotContext>, options: SaveFileOptions = {}): Promise<string> => {
         try {
             const { mimetype } = ctx

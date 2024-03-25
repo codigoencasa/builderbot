@@ -1,8 +1,9 @@
 import { utils } from '@builderbot/bot'
-import { writeFile, createWriteStream } from 'fs'
+import { writeFile, createWriteStream, unlinkSync } from 'fs'
 import * as http from 'http'
 import * as https from 'https'
 import { tmpdir } from 'os'
+import { join } from 'path'
 
 const venomCleanNumber = (number: string, full: boolean = false): string => {
     number = number.replace('@c.us', '').replace('+', '')
@@ -63,10 +64,28 @@ const venomDownloadMedia = (url: string): Promise<string> => {
     })
 }
 
+const venomDeleteTokens = (session: string) => {
+    try {
+        const pathTokens = join(process.cwd(), session)
+        unlinkSync(pathTokens)
+        console.log('Tokens clean..')
+    } catch (e) {
+        return
+    }
+}
+
 const venomisValidNumber = (rawNumber: string): boolean => {
     const regexGroup = /\@g.us\b/gm
     const exist = rawNumber.match(regexGroup)
     return !exist
 }
 
-export { venomCleanNumber, venomGenerateImage, venomisValidNumber, venomDownloadMedia, writeFilePromise, notMatches }
+export {
+    venomCleanNumber,
+    venomDeleteTokens,
+    venomGenerateImage,
+    venomisValidNumber,
+    venomDownloadMedia,
+    writeFilePromise,
+    notMatches,
+}

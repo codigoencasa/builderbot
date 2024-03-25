@@ -49,7 +49,7 @@ yarn-error.log
 # Local Netlify folder
 .netlify
 .secrets
-
+_tmp_*
 # managed
 **.data.json
 **.node-persist**

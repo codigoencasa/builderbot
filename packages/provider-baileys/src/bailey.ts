@@ -32,7 +32,7 @@ import {
     proto,
     useMultiFileAuthState,
 } from './baileyWrapper'
-import { BaileyGlobalVendorArgs } from './type'
+import type { BaileyGlobalVendorArgs } from './type'
 import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber } from './utils'
 
 const logger = new Console({
@@ -124,6 +124,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 markOnlineOnConnect: false,
                 generateHighQualityLinkPreview: true,
                 getMessage: this.getMessage,
+                ...this.globalVendorArgs,
             })
 
             this.store?.bind(sock.ev)

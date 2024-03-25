@@ -1,15 +1,16 @@
 import { ProviderClass, utils } from '@builderbot/bot'
-import type { BotContext, BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@builderbot/bot/dist/types'
+import type { BotContext, SendOptions } from '@builderbot/bot/dist/types'
 import type { Message, Whatsapp } from '@wppconnect-team/wppconnect'
 import { create, defaultLogger } from '@wppconnect-team/wppconnect'
+import { createReadStream } from 'fs'
 import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
 import { tmpdir } from 'os'
-import { join } from 'path'
+import { basename, join } from 'path'
+import type { Middleware } from 'polka'
 
-import { WPPConnectHttpServer } from './server'
 import type { SaveFileOptions } from './types'
-import { WppConnectGenerateImage, WppConnectValidNumber, WppConnectCleanNumber } from './utils'
+import { WppConnectGenerateImage, WppConnectValidNumber, WppConnectCleanNumber, WppDeleteTokens } from './utils'
 
 /**
  * ⚙️ WppConnectProvider: Es una clase tipo adaptador
@@ -18,50 +19,31 @@ import { WppConnectGenerateImage, WppConnectValidNumber, WppConnectCleanNumber }
  */
 defaultLogger.transports.forEach((t) => (t.silent = true))
 class WPPConnectProvider extends ProviderClass {
+    protected afterHttpServerInit(): void {
+        this.emit('notice', {
+            title: '⏱️  Loading... ',
+            instructions: [`this process can take up to 90 seconds`, `we will let you know shortly`],
+        })
+    }
+
     globalVendorArgs = { name: 'bot', port: 3000 }
     vendor: Whatsapp
-    wppConnectProvider: any
-    http: WPPConnectHttpServer | undefined
+
     constructor(args: { name: string }) {
         super()
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
-        this.initWppConnect().then()
-        this.http = new WPPConnectHttpServer(this.globalVendorArgs.name, this.globalVendorArgs.port)
-    }
-
-    /**
-     *
-     * @param port
-     * @param opts
-     * @returns
-     */
-    initHttpServer = (port: number, opts: Pick<BotCtxMiddlewareOptions, 'blacklist'>) => {
-        const methods: BotCtxMiddleware<WPPConnectProvider> = {
-            sendMessage: this.sendMessage,
-            provider: this,
-            blacklist: opts.blacklist,
-            dispatch: (customEvent, payload) => {
-                this.emit('message', {
-                    ...payload,
-                    body: utils.setEvent(customEvent),
-                    name: payload.name,
-                    from: utils.removePlus(payload.from),
-                })
-            },
-        }
-        this.http.start(methods, port)
-        return
     }
 
     /**
      * Iniciar WppConnect
      */
-    initWppConnect = async () => {
+    protected async initVendor(): Promise<any> {
+        const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
+
         try {
-            const name = this.globalVendorArgs.name
-            const session = await create({
-                session: name,
-                catchQR: (base64Qrimg, _, attempt) => {
+            const createInstance = await create({
+                session: NAME_DIR_SESSION,
+                catchQR: (base64QRImg, _, attempt) => {
                     if (attempt == 5) throw new Error()
 
                     this.emit('require_action', {
@@ -72,27 +54,32 @@ class WPPConnectProvider extends ProviderClass {
                             `Need help: https://link.codigoencasa.com/DISCORD`,
                         ],
                     })
-                    WppConnectGenerateImage(base64Qrimg, `${this.globalVendorArgs.name}.qr.png`)
+                    WppConnectGenerateImage(base64QRImg, `${this.globalVendorArgs.name}.qr.png`)
                 },
                 puppeteerOptions: {
                     headless: true,
                     args: ['--no-sandbox'],
                 },
+                ...this.globalVendorArgs,
+                folderNameToken: NAME_DIR_SESSION,
             })
-            this.vendor = session
-            const hostDevice = await session.getWid()
+            this.vendor = createInstance
+            const hostDevice = await createInstance.getWid()
             const parseNumber = `${hostDevice}`.split('@').shift()
             const host = { phone: parseNumber }
             this.emit('ready', true)
             this.emit('host', host)
-            this.initBusEvents()
+
+            return createInstance
         } catch (error) {
-            this.emit('auth_failure', [
-                `Something unexpected has occurred, do not panic`,
-                `Restart the bot`,
-                `You can also check the generated log wppconnect.log`,
-                `Need help: https://link.codigoencasa.com/DISCORD`,
-            ])
+            this.emit('auth_failure', {
+                instructions: [`An error occurred during Venom initialization`, `trying again in 5 seconds...`],
+            })
+            WppDeleteTokens(NAME_DIR_SESSION)
+            setTimeout(async () => {
+                console.clear()
+                await this.initVendor()
+            }, 5000)
         }
     }
 
@@ -155,14 +142,42 @@ class WPPConnectProvider extends ProviderClass {
         },
     ]
 
-    initBusEvents = () => {
-        const listEvents = this.busEvents()
+    protected listenOnEvents(vendor: any): void {
+        if (!vendor) {
+            throw Error(`Vendor should not return empty`)
+        }
 
+        if (!this.vendor) {
+            this.vendor = vendor
+        }
+
+        const listEvents = this.busEvents()
         for (const { event, func } of listEvents) {
             if (this.vendor[event]) this.vendor[event]((payload: any) => func(payload))
         }
     }
 
+    /**
+     *
+     * @param req
+     * @param res
+     */
+    public indexHome: Middleware = (req, res) => {
+        const botName = req[this.idBotName]
+        const qrPath = join(process.cwd(), `${botName}.qr.png`)
+        const fileStream = createReadStream(qrPath)
+        res.writeHead(200, { 'Content-Type': 'image/png' })
+        fileStream.pipe(res)
+    }
+
+    protected beforeHttpServerInit(): void {
+        this.server = this.server
+            .use((req, _, next) => {
+                req['globalVendorArgs'] = this.globalVendorArgs
+                return next()
+            })
+            .get('/', this.indexHome)
+    }
     /**
      * @deprecated Buttons are not available in this provider, please use sendButtons instead
      * @private
@@ -240,7 +255,7 @@ class WPPConnectProvider extends ProviderClass {
      */
 
     sendFile = async (number: any, filePath: string, text: any) => {
-        const fileName = filePath.split('/').pop()
+        const fileName = basename(filePath)
         return this.vendor.sendFile(number, filePath, fileName, text)
     }
 

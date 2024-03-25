@@ -1,17 +1,21 @@
 import { ProviderClass, utils } from '@builderbot/bot'
-import type { BotCtxMiddleware, BotCtxMiddlewareOptions, SendOptions } from '@builderbot/bot/dist/types'
-import { Console } from 'console'
-import { createWriteStream, readFileSync } from 'fs'
+import type { BotContext, SendOptions } from '@builderbot/bot/dist/types'
+import { createReadStream, readFileSync } from 'fs'
+import { writeFile } from 'fs/promises'
+import { tmpdir } from 'os'
 import mime from 'mime-types'
+import { basename, join } from 'path'
+import type { Middleware } from 'polka'
 import type WAWebJS from 'whatsapp-web.js'
 import { Client, LocalAuth, MessageMedia, Buttons } from 'whatsapp-web.js'
 
-import { WebWhatsappHttpServer } from './server'
-import { wwebCleanNumber, wwebGenerateImage, wwebIsValidNumber } from './utils'
-
-const logger = new Console({
-    stdout: createWriteStream('./log'),
-})
+import {
+    wwebCleanNumber,
+    wwebDeleteTokens,
+    wwebGenerateImage,
+    wwebGetChromeExecutablePath,
+    wwebIsValidNumber,
+} from './utils'
 
 /**
  * ⚙️ WebWhatsappProvider: Es una clase tipo adaptor
@@ -21,62 +25,75 @@ const logger = new Console({
 class WebWhatsappProvider extends ProviderClass {
     globalVendorArgs = { name: `bot`, gifPlayback: false, port: 3000 }
     vendor: Client
-    http: WebWhatsappHttpServer | undefined
     constructor(args: { name: string; gifPlayback: boolean }) {
         super()
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
+    }
+
+    private generateFileName = (extension: string): string => `file-${Date.now()}.${extension}`
+
+    protected initVendor(): Promise<WAWebJS.Client> {
+        const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
+
         this.vendor = new Client({
-            authStrategy: new LocalAuth({
-                clientId: `${this.globalVendorArgs.name}_sessions`,
-            }),
             puppeteer: {
                 headless: true,
                 args: ['--no-sandbox', '--disable-setuid-sandbox', '--unhandled-rejections=strict'],
-                //executablePath: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+                executablePath: wwebGetChromeExecutablePath(),
             },
+            ...this.globalVendorArgs,
+            authStrategy: new LocalAuth({
+                clientId: NAME_DIR_SESSION,
+            }),
         })
-        this.http = new WebWhatsappHttpServer(this.globalVendorArgs.name, this.globalVendorArgs.port)
-        const listEvents = this.busEvents()
-
-        for (const { event, func } of listEvents) {
-            this.vendor.on(event, func)
-        }
 
         this.vendor.initialize().catch((e) => {
-            logger.log(e)
-            this.emit('require_action', {
-                title: '❌ ERROR ❌',
-                instructions: [
-                    `(Option 1): You must delete the .wwebjs_auth folder and restart the bot.`,
-                    `(Option 2): Run this command "npm install whatsapp-web.js@latest".`,
-                    `(Option 3): Visit the Discord forum at https://link.codigoencasa.com/DISCORD.`,
-                ],
+            console.log(e)
+            this.emit('auth_failure', {
+                instructions: [`An error occurred during Venom initialization`, `trying again in 5 seconds...`],
             })
+            wwebDeleteTokens(NAME_DIR_SESSION)
+            setTimeout(async () => {
+                console.clear()
+                await this.initVendor()
+            }, 5000)
+        })
+
+        return Promise.resolve(this.vendor)
+    }
+
+    protected beforeHttpServerInit(): void {
+        this.server = this.server
+            .use((req, _, next) => {
+                req['globalVendorArgs'] = this.globalVendorArgs
+                return next()
+            })
+            .get('/', this.indexHome)
+    }
+
+    public indexHome: Middleware = (req, res) => {
+        const botName = req[this.idBotName]
+        const qrPath = join(process.cwd(), `${botName}.qr.png`)
+        const fileStream = createReadStream(qrPath)
+        res.writeHead(200, { 'Content-Type': 'image/png' })
+        fileStream.pipe(res)
+    }
+
+    protected afterHttpServerInit(): void {
+        this.emit('notice', {
+            title: '⏱️  Loading... ',
+            instructions: [`this process can take up to 90 seconds`, `we will let you know shortly`],
         })
     }
 
-    /**
-     *
-     * @param port
-     * @param opts
-     * @returns
-     */
-    initHttpServer = (port: number, opts: Pick<BotCtxMiddlewareOptions, 'blacklist'>) => {
-        const methods: BotCtxMiddleware<WebWhatsappProvider> = {
-            sendMessage: this.sendMessage,
-            provider: this,
-            blacklist: opts.blacklist,
-            dispatch: (customEvent, payload) => {
-                this.emit('message', {
-                    ...payload,
-                    body: utils.setEvent(customEvent),
-                    name: payload.name,
-                    from: utils.removePlus(payload.from),
-                })
-            },
-        }
-        this.http.start(methods, port)
-        return
+    async saveFile(ctx: BotContext, options?: { path: string }): Promise<string> {
+        const fileData: WAWebJS.MessageMedia = ctx.fileData
+        const extension = mime.extension(fileData.mimetype) as string
+        const fileName = this.generateFileName(extension)
+        const pathFile = join(options?.path ?? tmpdir(), fileName)
+        const buffer = Buffer.from(fileData.data, 'base64')
+        await writeFile(pathFile, buffer)
+        return pathFile
     }
 
     /**
@@ -113,8 +130,12 @@ class WebWhatsappProvider extends ProviderClass {
         },
         {
             event: 'message',
-            func: (
-                payload: WAWebJS.Message & { _data: { lng?: string; lat?: string; type?: string }; name: string }
+            func: async (
+                payload: WAWebJS.Message & {
+                    _data: { lng?: string; lat?: string; type?: string }
+                    [key: string]: any
+                    name: string
+                }
             ) => {
                 if (payload.from === 'status@broadcast') {
                     return
@@ -125,6 +146,11 @@ class WebWhatsappProvider extends ProviderClass {
                 }
                 payload.from = wwebCleanNumber(payload.from, true)
                 payload.name = `${payload?.author}`
+
+                if (payload?.hasMedia) {
+                    const media = await payload.downloadMedia()
+                    payload.fileData = media
+                }
 
                 if (payload?._data?.lat && payload?._data?.lng) {
                     payload = { ...payload, body: utils.generateRefProvider('_event_location_') }
@@ -240,12 +266,13 @@ class WebWhatsappProvider extends ProviderClass {
      * @param {*} text
      * @returns
      */
-    sendVideo = async (number: string, filePath: string) => {
+    sendVideo = async (number: string, filePath: string, caption: string) => {
         const base64 = readFileSync(filePath, { encoding: 'base64' })
         const mimeType = mime.lookup(filePath)
         const media = new MessageMedia(`${mimeType}`, base64)
         return this.vendor.sendMessage(number, media, {
-            sendMediaAsDocument: true,
+            sendMediaAsDocument: false,
+            caption,
         })
     }
 
@@ -256,11 +283,12 @@ class WebWhatsappProvider extends ProviderClass {
      * @param {*} text
      * @returns
      */
-    sendFile = async (number: string, filePath: string) => {
+    sendFile = async (number: string, filePath: string, caption: string) => {
         const base64 = readFileSync(filePath, { encoding: 'base64' })
         const mimeType = mime.lookup(filePath)
-        const media = new MessageMedia(`${mimeType}`, base64)
-        return this.vendor.sendMessage(number, media)
+        const filename = basename(filePath)
+        const media = new MessageMedia(`${mimeType}`, base64, filename)
+        return this.vendor.sendMessage(number, media, { caption })
     }
 
     /**
@@ -275,13 +303,13 @@ class WebWhatsappProvider extends ProviderClass {
         const mimeType = mime.lookup(fileDownloaded)
 
         if (`${mimeType}`.includes('image')) return this.sendImage(number, fileDownloaded, text)
-        if (`${mimeType}`.includes('video')) return this.sendVideo(number, fileDownloaded)
+        if (`${mimeType}`.includes('video')) return this.sendVideo(number, fileDownloaded, text)
         if (`${mimeType}`.includes('audio')) {
             const fileOpus = await utils.convertAudio(fileDownloaded)
             return this.sendAudio(number, fileOpus, text)
         }
 
-        return this.sendFile(number, fileDownloaded)
+        return this.sendFile(number, fileDownloaded, text)
     }
 
     /**

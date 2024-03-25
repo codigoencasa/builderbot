@@ -46,6 +46,7 @@
 - [x] baileys jpg error
 - [ ] coverage
 - [ ] flowDynamic({media...})
+- [ ] que se puedae escribir a el mismo
 - [ ] mysql port
 - [ ] elmintar vendor de handleCTX
 - [ ] test meta

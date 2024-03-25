@@ -1,5 +1,6 @@
 import { utils } from '@builderbot/bot'
-import { writeFile } from 'fs'
+import { unlinkSync, writeFile } from 'fs'
+import { join } from 'path'
 
 import type { Response } from './types'
 
@@ -20,6 +21,16 @@ const writeFilePromise = (pathQr: string, response: Response): Promise<boolean> 
             resolve(true)
         })
     })
+}
+
+const WppDeleteTokens = (session: string) => {
+    try {
+        const pathTokens = join(process.cwd(), session)
+        unlinkSync(pathTokens)
+        console.log('Tokens clean..')
+    } catch (e) {
+        return
+    }
 }
 
 const WppConnectGenerateImage = async (base: string, name: string = 'qr.png'): Promise<void | Error> => {
@@ -44,4 +55,11 @@ const WppConnectValidNumber = (rawNumber: string): boolean => {
     return !exist
 }
 
-export { WppConnectValidNumber, WppConnectGenerateImage, WppConnectCleanNumber, notMatches, writeFilePromise }
+export {
+    WppConnectValidNumber,
+    WppDeleteTokens,
+    WppConnectGenerateImage,
+    WppConnectCleanNumber,
+    notMatches,
+    writeFilePromise,
+}
