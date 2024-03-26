@@ -12,8 +12,8 @@ import type { FlowDynamicMessage, GeneralArgs, MessageContextIncoming } from '..
 import { BlackList, Queue } from '../utils'
 import { delay } from '../utils/delay'
 import { printer } from '../utils/interactive'
-import type { HostEventTypes } from '../utils/typeEventEmitter'
-import { TypedEventEmitter } from '../utils/typeEventEmitter'
+import type { HostEventTypes } from './eventEmitterClass'
+import { EventEmitterClass } from './eventEmitterClass'
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
@@ -24,7 +24,7 @@ const loggerQueue = new Console({
 
 const idleForCallback = new IdleState()
 
-class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends TypedEventEmitter<HostEventTypes> {
+class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends EventEmitterClass<HostEventTypes> {
     flowClass: FlowClass
     database: D
     provider: P

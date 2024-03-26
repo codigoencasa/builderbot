@@ -7,7 +7,13 @@ import type { HistoryRow, MysqlAdapterCredentials } from './types'
 class MysqlAdapter extends MemoryDB {
     db: Connection
     listHistory = []
-    credentials: MysqlAdapterCredentials = { host: null, user: null, database: null, password: null }
+    credentials: MysqlAdapterCredentials = {
+        host: null,
+        user: null,
+        database: null,
+        password: null,
+        port: 3306,
+    }
 
     constructor(_credentials: MysqlAdapterCredentials) {
         super()

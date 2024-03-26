@@ -45,10 +45,11 @@
 - [x] rollup starter remover rollup nodeResolver
 - [x] baileys jpg error
 - [x] remove space number
+- [x] que se puedae escribir a el mismo
+- [x] mysql port
+- [ ] meta image, media, audio
 - [ ] coverage
 - [ ] flowDynamic({media...})
-- [ ] que se puedae escribir a el mismo
-- [ ] mysql port
 - [ ] elmintar vendor de handleCTX
 - [ ] test meta
 - [ ] try catch error http

@@ -7,7 +7,7 @@ export type HostEventTypes = {
     notice: [arg1: { title: string; instructions: string[] }]
 }
 
-export class TypedEventEmitter<TEvents extends Record<string, any>> {
+export class EventEmitterClass<TEvents extends Record<string, any>> {
     private emitter = new EventEmitter()
 
     emit<TEventName extends keyof TEvents & string>(eventName: TEventName, ...eventArg: TEvents[TEventName]) {

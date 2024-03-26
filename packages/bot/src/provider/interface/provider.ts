@@ -5,18 +5,18 @@ import polka, { type Polka } from 'polka'
 import type { PolkaRes, ProviderHttpServer } from './server'
 import type { GlobalVendorArgs, BotCtxMiddlewareOptions, BotCtxMiddleware, ProviderEventTypes } from '../../types'
 import { removePlus, setEvent } from '../../utils/event'
-import { TypedEventEmitter } from '../../utils/typeEventEmitter'
+import { EventEmitterClass } from '../../core/eventEmitterClass'
 
 export type Vendor<T = {}> = {} & T
 
 /**
  * Abstract class representing a ProviderClass.
  * @abstract
- * @extends TypedEventEmitter
+ * @extends EventEmitterClass
  * @implements ProviderHttpServer
  * @typeparam V - Type parameter for vendor.
  */
-abstract class ProviderClass<V = any> extends TypedEventEmitter<ProviderEventTypes> implements ProviderHttpServer {
+abstract class ProviderClass<V = any> extends EventEmitterClass<ProviderEventTypes> implements ProviderHttpServer {
     /**
      * Global arguments for vendor.
      * @abstract
