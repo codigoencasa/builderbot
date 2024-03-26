@@ -3,9 +3,9 @@ import cors from 'cors'
 import polka, { type Polka } from 'polka'
 
 import type { PolkaRes, ProviderHttpServer } from './server'
+import { EventEmitterClass } from '../../core/eventEmitterClass'
 import type { GlobalVendorArgs, BotCtxMiddlewareOptions, BotCtxMiddleware, ProviderEventTypes } from '../../types'
 import { removePlus, setEvent } from '../../utils/event'
-import { EventEmitterClass } from '../../core/eventEmitterClass'
 
 export type Vendor<T = {}> = {} & T
 

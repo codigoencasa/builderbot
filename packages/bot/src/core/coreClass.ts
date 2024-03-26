@@ -2,6 +2,8 @@ import { Console } from 'console'
 import { createWriteStream } from 'fs'
 
 import type { DispatchFn, DynamicBlacklist, FlagsRuntime, ProviderEventTypes, TContext } from './../types'
+import type { HostEventTypes } from './eventEmitterClass'
+import { EventEmitterClass } from './eventEmitterClass'
 import { GlobalState, IdleState, SingleState } from '../context'
 import type { MemoryDB } from '../db'
 import { LIST_REGEX } from '../io/events'
@@ -12,8 +14,6 @@ import type { FlowDynamicMessage, GeneralArgs, MessageContextIncoming } from '..
 import { BlackList, Queue } from '../utils'
 import { delay } from '../utils/delay'
 import { printer } from '../utils/interactive'
-import type { HostEventTypes } from './eventEmitterClass'
-import { EventEmitterClass } from './eventEmitterClass'
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/core.class.log`),
