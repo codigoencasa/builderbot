@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/database-postgres",
-    "version": "1.0.24-alpha.0",
+    "version": "1.0.25-alpha.0",
     "description": "> TODO: description",
     "author": "vicente1992 <vic_ortiz20@hotmail.es>",
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
@@ -29,7 +29,7 @@
         "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
     },
     "dependencies": {
-        "@builderbot/bot": "^1.0.24-alpha.0",
+        "@builderbot/bot": "^1.0.25-alpha.0",
         "pg": "^8.11.2"
     },
     "devDependencies": {
