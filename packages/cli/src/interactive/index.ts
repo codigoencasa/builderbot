@@ -24,13 +24,13 @@ const bannerDone = (templateName: string = ''): void => {
             color.yellow(` npm install `),
             color.yellow(` npm start `),
             ``,
-            `📄 Documentación y Curso:`,
+            `📄 Documentation:`,
             `   https://builderbot.vercel.app`,
             ``,
-            `🤖 ¿Problemas? Únete:`,
+            `🤖 Issues? Join:`,
             `   https://link.codigoencasa.com/DISCORD`,
         ].join('\n'),
-        'Instrucciones:'
+        'Instructions:'
     )
 }
 

@@ -34,7 +34,9 @@ const removeOverLogs = async () => {
     await writeFile(path, toFix)
 }
 
-;() => {
-    removeOverLogs()
-    fixSendFiles()
+const mainFix = async () => {
+    await removeOverLogs()
+    await fixSendFiles()
 }
+
+export { mainFix }
