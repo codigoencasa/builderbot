@@ -1,628 +1,765 @@
-// import { utils } from '@builderbot/bot'
-// import { SendOptions } from '@builderbot/bot/dist/types'
-// import fs from 'fs'
-// import { stub } from 'sinon'
-// import { test } from 'uvu'
-// import * as assert from 'uvu/assert'
+import { beforeEach, describe, expect, jest, test } from '@jest/globals'
+import { BaileysProvider } from '../src'
+import path from 'path'
+import { IStickerOptions } from 'wa-sticker-formatter'
+import fs from 'fs'
 
-// import { BaileysProvider } from '../src'
-// import { WASocket } from '../src/baileyWrapper'
-// import { ButtonOption } from '../src/type'
+const phoneNumber = '+123456789'
 
-// const hookClose = async () => {
-//     await utils.delay(2000)
-//     process.exit(0)
-// }
+jest.mock('@whiskeysockets/baileys', () => ({
+    downloadMediaMessage: jest.fn(),
+}))
 
-// const args = {
-//     name: 'TestBot',
-//     gifPlayback: true,
-//     usePairingCode: true,
-//     phoneNumber: '+1234567890',
-//     useBaileysStore: true,
-// }
+jest.mock('fs/promises', () => ({
+    writeFile: jest.fn(),
+}))
 
-// const baileysProvider = new BaileysProvider(args)
-// const vendorMock: any = baileysProvider.vendor
-// vendorMock.close = stub().callsFake(hookClose)
-// baileysProvider.vendor = vendorMock
+jest.mock('wa-sticker-formatter', () => {
+    return {
+        Sticker: jest.fn().mockImplementation(() => ({
+            toMessage: jest.fn().mockImplementation(() => Buffer.from('sticker-buffer')),
+        })),
+    }
+})
 
-// const sendStub = stub().resolves('success')
-// const emitStub = stub()
-// const loadMessageStub = stub()
+jest.mock('../src/utils', () => ({
+    baileyCleanNumber: jest.fn().mockImplementation(() => phoneNumber),
+}))
 
-// test.after.each(async () => {
-//     sendStub.resetHistory()
-//     emitStub.resetHistory()
-//     loadMessageStub.resetHistory()
-// })
+const mimeType = 'text/plain'
 
-// test('should construct BaileysProvider instance correctly', async () => {
-//     assert.instance(baileysProvider, BaileysProvider)
-//     assert.is(baileysProvider.globalVendorArgs.name, args.name)
-//     assert.is(baileysProvider.globalVendorArgs.gifPlayback, args.gifPlayback)
-//     assert.is(baileysProvider.globalVendorArgs.usePairingCode, args.usePairingCode)
-//     assert.is(baileysProvider.globalVendorArgs.phoneNumber, args.phoneNumber)
-//     assert.is(baileysProvider.globalVendorArgs.useBaileysStore, args.useBaileysStore)
-// })
+jest.mock('mime-types', () => ({
+    lookup: jest.fn().mockImplementation(() => mimeType),
+    extension: jest.fn().mockImplementation(() => '.png'),
+}))
 
-// test('sendSticker - send a sticker successfully', async () => {
-//     const remoteJid = '1234546@c.us'
-//     const fileName = '2whHCbI.png'
-//     const url = `http://i.imgur.com/${fileName}`
-//     const stickerOptions = { pack: 'MyPack', author: 'Me' }
-//     const messages = null
-//     baileysProvider.vendor.sendMessage = sendStub
-//     await baileysProvider.sendSticker(remoteJid, url, stickerOptions, messages)
-//     assert.equal(sendStub.args[0][0], remoteJid)
-//     assert.equal(sendStub.called, true)
-// })
+const mockSendSuccess = jest.fn().mockImplementation(() => 'success') as any
 
-// test('sendPresenceUpdate - send presence update successfully', async () => {
-//     const remoteJid = '1338383@c.us'
-//     const WAPresence = 'recording'
-//     baileysProvider.vendor.sendPresenceUpdate = sendStub
-//     await baileysProvider.sendPresenceUpdate(remoteJid, WAPresence)
-//     assert.equal(sendStub.args[0][0], WAPresence)
-//     assert.equal(sendStub.args[0][1], remoteJid)
-// })
+describe('#BaileysProvider', () => {
+    let provider: BaileysProvider
+    let mockRes: any
+    let mockReq: any
+    let mockNext: any
 
-// test('sendContact - send a contact successfully', async () => {
-//     const remoteJid = 'xxxxxxxxxxx@c.us'
-//     const contactNumber = '+123456789'
-//     const displayName = 'John Doe'
-//     const messages = 'Hello Word!'
-//     const expectedContact = {
-//         vcard:
-//             'BEGIN:VCARD\n' +
-//             'VERSION:3.0\n' +
-//             'FN:John Doe\n' +
-//             'ORG:Ashoka Uni;\n' +
-//             'TEL;type=CELL;type=VOICE;waid=123456789:+123456789\n' +
-//             'END:VCARD',
-//     }
-//     baileysProvider.vendor.sendMessage = sendStub
-//     await baileysProvider.sendContact(remoteJid, { replaceAll: () => contactNumber }, displayName, messages)
-//     assert.equal(sendStub.args[0][0], remoteJid)
-//     assert.equal(sendStub.args[0][1].contacts.displayName, '.')
-//     assert.equal(sendStub.args[0][1].contacts.contacts[0], expectedContact)
-//     assert.equal(sendStub.args[0][2].quoted, messages)
-// })
+    beforeEach(() => {
+        const args = {
+            name: 'test-bot',
+            gifPlayback: true,
+            usePairingCode: true,
+            browser: ['Ubuntu', 'Chrome', '20.0.04'],
+            phoneNumber: '+123456789',
+            useBaileysStore: false,
+            port: 3001,
+        }
 
-// test('sendLocation - send a location successfully', async () => {
-//     const remoteJid = '1224445@c.us'
-//     const latitude = 40.7128
-//     const longitude = -74.006
-//     const messages = 'Hello Word!'
-//     const expectedLocation = { location: { degreesLatitude: 40.7128, degreesLongitude: -74.006 } }
-//     baileysProvider.vendor.sendMessage = sendStub
-//     await baileysProvider.sendLocation(remoteJid, latitude, longitude, messages)
-//     assert.equal(sendStub.args[0][0], remoteJid)
-//     assert.equal(sendStub.args[0][1], expectedLocation)
-//     assert.equal(sendStub.args[0][2].quoted, messages)
-// })
+        provider = new BaileysProvider(args)
+        mockReq = {}
+        mockRes = {
+            writeHead: jest.fn(),
+            end: jest.fn(),
+            pipe: jest.fn(),
+        }
+        mockNext = jest.fn()
+        provider.vendor = jest.fn() as any
+    })
 
-// test('sendMessage - should call the method sendButtons', async () => {
-//     const to = '+123456789'
-//     const message = 'Test message'
-//     const argWithButtons: SendOptions = {
-//         options: {
-//             buttons: ['Button1', 'Button2'],
-//         },
-//     }
-//     baileysProvider['sendButtons'] = sendStub
-//     const response = await baileysProvider.sendMessage(to, message, argWithButtons)
-//     assert.equal(sendStub.called, true)
-//     assert.equal(response, 'success')
-//     assert.equal(sendStub.args[0][0], '123456789@s.whatsapp.net')
-//     assert.equal(sendStub.args[0][1], message)
-//     assert.equal(sendStub.args[0][2], ['Button1', 'Button2'])
-// })
+    test('should initialize BaileysProvider correctly with default arguments', () => {
+        // Arrange
+        const defaultArgs = {
+            name: 'bot',
+            gifPlayback: false,
+            usePairingCode: false,
+            browser: ['Ubuntu', 'Chrome', '20.0.04'],
+            phoneNumber: null,
+            useBaileysStore: true,
+            port: 3000,
+        }
+        // Act
+        const baileysProvider = new BaileysProvider({})
 
-// test('sendMessage - should call the method sendMedia', async () => {
-//     const to = '+123456789'
-//     const message = 'Test message'
-//     const argWithButtons: SendOptions = {
-//         media: 'image.jpg',
-//     }
-//     baileysProvider['sendMedia'] = sendStub
-//     const response = await baileysProvider.sendMessage(to, message, argWithButtons)
-//     assert.equal(sendStub.called, true)
-//     assert.equal(response, 'success')
-//     assert.equal(sendStub.args[0][0], '123456789@s.whatsapp.net')
-//     assert.equal(sendStub.args[0][1], argWithButtons.media)
-//     assert.equal(sendStub.args[0][2], message)
-// })
+        // Assert
+        expect(baileysProvider.globalVendorArgs).toEqual(defaultArgs)
+    })
 
-// test('sendMessage - should call the method sendText', async () => {
-//     const to = '+123456789'
-//     const message = 'Test message'
-//     const argWithButtons: SendOptions = {}
-//     baileysProvider['sendText'] = sendStub
-//     const response = await baileysProvider.sendMessage(to, message, argWithButtons)
-//     assert.equal(sendStub.called, true)
-//     assert.equal(response, 'success')
-//     assert.equal(sendStub.args[0][0], '123456789@s.whatsapp.net')
-//     assert.equal(sendStub.args[0][1], message)
-// })
+    describe('#beforeHttpServerInit', () => {
+        test('beforeHttpServerInit - you should configure middleware to handle HTTP requests', () => {
+            // Arrange
+            const mockUse = jest.fn().mockReturnThis()
+            const mockGet = jest.fn()
 
-// test('sendPoll - Deberia retornar false', async () => {
-//     const remoteJid = '122445@c.us'
-//     const text = '¿Qué opción prefieres?'
-//     const poll = {
-//         options: [],
-//         multiselect: false,
-//     }
-//     const result = await baileysProvider.sendPoll(remoteJid, text, poll)
-//     assert.equal(result, false)
-// })
+            const mockPolka = jest.fn(() => ({
+                use: mockUse,
+                get: mockGet,
+            }))
 
-// test('sendPoll - sendPoll sends the poll successfully', async () => {
-//     const remoteJid = '122445@c.us'
-//     const text = '¿Qué opción prefieres?'
-//     const poll = {
-//         options: ['Opción A', 'Opción B', 'Opción C'],
-//         multiselect: true,
-//     }
-//     baileysProvider.vendor.sendMessage = sendStub
-//     await baileysProvider.sendPoll(remoteJid, text, poll)
-//     assert.equal(sendStub.args[0][0], '122445@c.us@s.whatsapp.net')
-// })
+            provider.server = mockPolka() as any
+            // Act
+            provider['beforeHttpServerInit']()
 
-// test('sendPoll - sendPoll sends the poll successfully', async () => {
-//     const remoteJid = '122445@c.us'
-//     const text = '¿Qué opción prefieres?'
-//     const poll = {
-//         options: ['Opción A', 'Opción B', 'Opción C'],
-//         multiselect: false,
-//     }
-//     baileysProvider.vendor.sendMessage = sendStub
-//     await baileysProvider.sendPoll(remoteJid, text, poll)
-//     assert.equal(sendStub.args[0][0], '122445@c.us@s.whatsapp.net')
-// })
+            // Assert
+            expect(mockUse).toHaveBeenCalled()
+            const middleware = mockUse.mock.calls[0][0] as any
+            expect(middleware).toBeInstanceOf(Function)
+            middleware(mockReq, mockRes, mockNext)
+            expect(mockReq.globalVendorArgs).toBe(provider.globalVendorArgs)
+            expect(mockGet).toHaveBeenCalledWith('/', provider.indexHome)
+        })
+    })
 
-// test('sendPoll - sendPoll sends the poll successfully', async () => {
-//     const remoteJid = '122445@c.us'
-//     const text = '¿Qué opción prefieres?'
-//     const poll = {
-//         options: ['Opción A', 'Opción B', 'Opción C'],
-//         multiselect: undefined,
-//     }
-//     baileysProvider.vendor.sendMessage = sendStub
-//     await baileysProvider.sendPoll(remoteJid, text, poll)
-//     assert.equal(sendStub.args[0][0], '122445@c.us@s.whatsapp.net')
-// })
+    describe('#getMessage', () => {
+        test.skip('should return undefined when store is not present', async () => {
+            // Arrange
+            const mockedKey = { remoteJid: 'exampleRemoteJid', id: 'exampleId' }
+            provider.store = null as any
 
-// test('sendButtons - must send buttons correctly', async () => {
-//     const provider = new BaileysProvider({})
-//     const remoteJid = '122445@c.us'
-//     const text = '¿Qué opción prefieres?'
-//     const buttons: ButtonOption[] = [{ body: 'Button 1' }, { body: 'Button 2' }]
-//     const expectedButtons = [
-//         {
-//             buttonId: 'id-btn-0',
-//             buttonText: { displayText: 'Button 1' },
-//             type: 1,
-//         },
-//         {
-//             buttonId: 'id-btn-1',
-//             buttonText: { displayText: 'Button 2' },
-//             type: 1,
-//         },
-//     ]
-//     provider.emit = emitStub
-//     provider.vendor.sendMessage = sendStub
-//     await provider.sendButtons(remoteJid, text, buttons)
-//     assert.equal(sendStub.args[0][0], '122445@c.us@s.whatsapp.net')
-//     assert.equal(emitStub.args[0][0], 'notice')
-//     assert.equal(sendStub.args[0][1].text, text)
-//     assert.equal(sendStub.args[0][1].buttons, expectedButtons)
-// })
+            // Act
+            const result = await provider['getMessage'](mockedKey)
 
-// test('sendFile - should send the file correctly', async () => {
-//     const remoteJid = '122445@c.us'
-//     const filePath = './path/to/file.pdf'
-//     baileysProvider.vendor.sendMessage = sendStub
-//     const expectedPayload = {
-//         document: { url: './path/to/file.pdf' },
-//         mimetype: 'application/pdf',
-//         fileName: 'file.pdf',
-//     }
-//     const result = await baileysProvider.sendFile(remoteJid, filePath)
-//     assert.equal(result, 'success')
-//     assert.equal(sendStub.args[0][0], remoteJid)
-//     assert.equal(sendStub.args[0][1], expectedPayload)
-// })
+            // Assert
+            expect(result).toEqual({})
+        })
 
-// test('sendText  - should send the text correctly', async () => {
-//     const provider = new BaileysProvider({})
-//     const remoteJid = '122445@c.us'
-//     const message = 'Test message'
-//     provider.vendor.sendMessage = sendStub
-//     const expectedPayload = { text: 'Test message' }
-//     const result = await provider.sendText(remoteJid, message)
-//     assert.equal(result, 'success')
-//     assert.equal(sendStub.args[0][0], remoteJid)
-//     assert.equal(sendStub.args[0][1], expectedPayload)
-// })
+        test('should return message when store is present', async () => {
+            // Arrange
+            const mockedKey = { remoteJid: 'exampleRemoteJid', id: 'exampleId' }
+            provider.store = {
+                loadMessage: jest.fn(),
+            } as any
 
-// test('sendAudio  - should send the audio correctly', async () => {
-//     const remoteJid = '122445@c.us'
-//     const message = 'Test message'
-//     baileysProvider.vendor.sendMessage = sendStub
-//     const expectedPayload = { audio: { url: 'Test message' }, ptt: true }
-//     const result = await baileysProvider.sendAudio(remoteJid, message)
-//     assert.equal(result, 'success')
-//     assert.equal(sendStub.args[0][0], remoteJid)
-//     assert.equal(sendStub.args[0][1], expectedPayload)
-// })
+            // Act
+            const result = await provider['getMessage'](mockedKey)
 
-// test('getMessage - deberia retornar un objeto vacio', async () => {
-//     const key = {
-//         remoteJid: 'ejemplo@whatsapp.com',
-//         id: '1234567890',
-//     }
-//     const message = await baileysProvider['getMessage'](key)
-//     assert.equal(message, undefined)
-// })
+            // Assert
+            expect(result).toBeUndefined()
+            expect(provider?.store?.loadMessage).toHaveBeenCalledWith(mockedKey.remoteJid, mockedKey.id)
+        })
+    })
 
-// test('getMessage - deberia retornar el mensaje de hola Mundo', async () => {
-//     const key = {
-//         remoteJid: 'ejemplo@whatsapp.com',
-//         id: '1234567890',
-//     }
+    describe('#saveFile', () => {
+        test('should save a file and return the path whit path', async () => {
+            // Arrange
+            const ctx: any = {
+                key: {},
+                message: null,
+            }
+            const options = { path: '/tmp' }
+            const getMimeTypeSpy = jest.spyOn(provider, 'getMimeType' as any).mockReturnValue('image/jpeg')
+            const generateFileNameSpy = jest.spyOn(provider, 'generateFileName' as any).mockReturnValue('file.jpeg')
+            jest.spyOn(path, 'join').mockImplementation(() => '/tmp/mock-file.jpeg')
 
-//     if (baileysProvider.store) {
-//         baileysProvider.store.loadMessage = loadMessageStub.resolves({ msg: { message: 'Hello' } })
-//     }
-//     await baileysProvider['getMessage'](key)
-//     assert.equal(loadMessageStub.args[0][0], key.remoteJid)
-//     assert.equal(loadMessageStub.args[0][1], key.id)
-// })
+            // Act
+            const filePath = await provider.saveFile(ctx, options)
 
-// test('initBusEvents asigna correctamente los eventos al socket', () => {
-//     const socketStub = {
-//         ev: {
-//             on: stub(),
-//         },
-//     } as any
-//     baileysProvider['initBusEvents'](socketStub as WASocket)
-//     assert.equal(socketStub.ev.on.called, true)
-// })
+            // Assert
+            expect(getMimeTypeSpy).toHaveBeenCalled()
+            expect(generateFileNameSpy).toHaveBeenCalled()
+            expect(filePath).toEqual('/tmp/mock-file.jpeg')
+        })
 
-// test('busEvents - messages.upsert should not broadcast a message', () => {
-//     const payload: any = {
-//         type: 'test',
-//         messages: [{ message: { protocolMessage: { type: 'EPHEMERAL_SETTING' } } }],
-//     }
-//     baileysProvider.emit = emitStub
-//     baileysProvider['busEvents']()[0].func(payload)
-//     assert.equal(emitStub.notCalled, true)
-// })
+        test('should save a file and return the path', async () => {
+            // Arrange
+            const ctx: any = {
+                key: {},
+                message: null,
+            }
+            const getMimeTypeSpy = jest.spyOn(provider, 'getMimeType' as any).mockReturnValue('image/jpeg')
+            const generateFileNameSpy = jest.spyOn(provider, 'generateFileName' as any).mockReturnValue('file.jpeg')
+            jest.spyOn(path, 'join').mockImplementation(() => '/tmp/mock-file.jpeg')
 
-// test('busEvents - messages.upsert should not broadcast a message', () => {
-//     const payload: any = {
-//         type: 'notify',
-//         messages: [{ message: { protocolMessage: { type: 'EPHEMERAL_SETTING' } } }],
-//     }
-//     baileysProvider.emit = emitStub
-//     baileysProvider['busEvents']()[0].func(payload)
-//     assert.equal(emitStub.notCalled, true)
-// })
+            // Act
+            const filePath = await provider.saveFile(ctx)
 
-// test('busEvents - messages.upsert should broadcast a location message', () => {
-//     const payload: any = {
-//         type: 'notify',
-//         messages: [
-//             {
-//                 message: {
-//                     protocolMessage: { type: 'OTHER' },
-//                     locationMessage: { degreesLatitude: 11223, degreesLongitude: 11223 },
-//                 },
-//                 extendedTextMessage: { text: 'Hello' },
-//                 pushName: 'test',
-//                 key: { remoteJid: '133354' },
-//             },
-//         ],
-//     }
-//     const expectedEmit = {
-//         message: {
-//             protocolMessage: { type: 'OTHER' },
-//             locationMessage: { degreesLatitude: 11223, degreesLongitude: 11223 },
-//         },
-//     }
-//     baileysProvider.emit = emitStub
-//     baileysProvider['busEvents']()[0].func(payload)
-//     assert.equal(emitStub.args[0][0], 'message')
-//     assert.equal(emitStub.args[0][1].message, expectedEmit.message)
-//     assert.equal(emitStub.args[0][1].body.includes('_event_location_'), true)
-// })
+            // Assert
+            expect(getMimeTypeSpy).toHaveBeenCalled()
+            expect(generateFileNameSpy).toHaveBeenCalled()
+            expect(filePath).toEqual('/tmp/mock-file.jpeg')
+        })
 
-// test('busEvents - messages.upsert should broadcast a video message', () => {
-//     const payload: any = {
-//         type: 'notify',
-//         messages: [
-//             {
-//                 message: {
-//                     protocolMessage: { type: 'OTHER' },
-//                     videoMessage: 'videp.mp4',
-//                 },
-//                 extendedTextMessage: { text: 'Hello' },
-//                 pushName: 'test',
-//                 key: { remoteJid: '133354' },
-//             },
-//         ],
-//     }
-//     const expectedEmit = {
-//         message: {
-//             protocolMessage: { type: 'OTHER' },
-//             videoMessage: 'videp.mp4',
-//         },
-//     }
-//     baileysProvider.emit = emitStub
-//     baileysProvider['busEvents']()[0].func(payload)
-//     assert.equal(emitStub.args[0][0], 'message')
-//     assert.equal(emitStub.args[0][1].message, expectedEmit.message)
-//     assert.equal(emitStub.args[0][1].body.includes('_event_media_'), true)
-// })
+        test('should throw an error when MIME type is not found', async () => {
+            // Arrange
+            const mockContext = { message: {} }
+            const getMimeTypeSpy = jest.spyOn(provider, 'getMimeType' as any).mockReturnValue(null)
 
-// test('busEvents - messages.upsert should broadcast a sticker message', () => {
-//     const payload: any = {
-//         type: 'notify',
-//         messages: [
-//             {
-//                 message: {
-//                     protocolMessage: { type: 'OTHER' },
-//                     stickerMessage: 'sticker.png',
-//                 },
-//                 extendedTextMessage: { text: 'Hello' },
-//                 pushName: 'test',
-//                 key: { remoteJid: '133354' },
-//             },
-//         ],
-//     }
-//     const expectedEmit = {
-//         message: {
-//             protocolMessage: { type: 'OTHER' },
-//             stickerMessage: 'sticker.png',
-//         },
-//     }
-//     baileysProvider.emit = emitStub
-//     baileysProvider['busEvents']()[0].func(payload)
-//     assert.equal(emitStub.args[0][0], 'message')
-//     assert.equal(emitStub.args[0][1].message, expectedEmit.message)
-//     assert.equal(emitStub.args[0][1].body.includes('_event_media_'), true)
-// })
+            // Act
+            const response = provider.saveFile(mockContext)
 
-// test('busEvents - messages.upsert should broadcast a image message', () => {
-//     const payload: any = {
-//         type: 'notify',
-//         messages: [
-//             {
-//                 message: {
-//                     protocolMessage: { type: 'OTHER' },
-//                     imageMessage: 'image.png',
-//                 },
-//                 extendedTextMessage: { text: 'Hello' },
-//                 pushName: 'test',
-//                 key: { remoteJid: '133354' },
-//             },
-//         ],
-//     }
-//     const expectedEmit = {
-//         message: {
-//             protocolMessage: { type: 'OTHER' },
-//             imageMessage: 'image.png',
-//         },
-//     }
-//     baileysProvider.emit = emitStub
-//     baileysProvider['busEvents']()[0].func(payload)
-//     assert.equal(emitStub.args[0][0], 'message')
-//     assert.equal(emitStub.args[0][1].message, expectedEmit.message)
-//     assert.equal(emitStub.args[0][1].body.includes('_event_media_'), true)
-// })
+            //  Assert
+            await expect(response).rejects.toThrow('MIME type not found')
+            expect(getMimeTypeSpy).toHaveBeenCalled()
+        })
+    })
 
-// test('busEvents -  messages.upsert should broadcast a audio message', () => {
-//     const payload: any = {
-//         type: 'notify',
-//         messages: [
-//             {
-//                 message: {
-//                     protocolMessage: { type: 'OTHER' },
-//                     audioMessage: 'audio.mp3',
-//                 },
-//                 extendedTextMessage: { text: 'Hello' },
-//                 pushName: 'test',
-//                 key: { remoteJid: '133354' },
-//             },
-//         ],
-//     }
-//     const expectedEmit = {
-//         message: {
-//             protocolMessage: { type: 'OTHER' },
-//             audioMessage: 'audio.mp3',
-//         },
-//     }
-//     baileysProvider.emit = emitStub
-//     baileysProvider['busEvents']()[0].func(payload)
-//     assert.equal(emitStub.args[0][0], 'message')
-//     assert.equal(emitStub.args[0][1].message, expectedEmit.message)
-// })
+    describe('#generateFileName', () => {
+        test('should generate a unique filename with the provided extension', () => {
+            // Arrange
+            const extension = 'jpg'
+            // Act
+            const fileName = provider['generateFileName'](extension)
+            // Assert
+            expect(fileName).toMatch(/^file-\d+\.(jpg)$/)
+        })
+    })
 
-// test('busEvents - messages.upsert should broadcast a document message', () => {
-//     const payload: any = {
-//         type: 'notify',
-//         messages: [
-//             {
-//                 message: {
-//                     protocolMessage: { type: 'OTHER' },
-//                     documentMessage: 'document.pdf',
-//                 },
-//                 extendedTextMessage: { text: 'Hello' },
-//                 pushName: 'test',
-//                 key: { remoteJid: '133354' },
-//             },
-//         ],
-//     }
-//     const expectedEmit = {
-//         message: {
-//             protocolMessage: { type: 'OTHER' },
-//             documentMessage: 'document.pdf',
-//         },
-//     }
-//     baileysProvider.emit = emitStub
-//     baileysProvider['busEvents']()[0].func(payload)
-//     assert.equal(emitStub.args[0][0], 'message')
-//     assert.equal(emitStub.args[0][1].message, expectedEmit.message)
-//     assert.equal(emitStub.args[0][1].body.includes('_event_document_'), true)
-// })
+    describe('#getMimeType', () => {
+        test('should return the file type image/jpeg ', () => {
+            // Arrange
+            const mockMessage = {
+                message: {
+                    imageMessage: {
+                        mimetype: 'image/jpeg',
+                    },
+                },
+            }
 
-// test('busEvents - messages.update should broadcast a document message', () => {
-//     const message = [
-//         {
-//             key: { remoteJid: '@s.whatsapp.net' },
-//             update: {
-//                 pollUpdates: [
-//                     {
-//                         pollUpdateMessageKey: { remoteJid: '@s.whatsapp.net', id: 1 },
-//                     },
-//                 ],
-//             },
-//         },
-//     ]
+            // Act
+            const mimeType = provider['getMimeType'](mockMessage as any)
 
-//     const getMessageStub = stub().resolves(true)
-//     baileysProvider['getMessage'] = getMessageStub
-//     baileysProvider.emit = emitStub
+            // Assert
+            expect(mimeType).toBe('image/jpeg')
+        })
 
-//     baileysProvider['busEvents']()[1].func(message)
-//     assert.equal(getMessageStub.args[0][0], { remoteJid: '@s.whatsapp.net' })
-// })
+        test('should return the file type video/mp4 ', () => {
+            // Arrange
+            const mockMessage = {
+                message: {
+                    videoMessage: {
+                        mimetype: 'video/mp4',
+                    },
+                },
+            }
 
-// test('initHttpServer - debería iniciar el servidor HTTP correctamente', async () => {
-//     const startStub = stub()
+            // Act
+            const mimeType = provider['getMimeType'](mockMessage as any)
 
-//     const testPort = 3000
-//     if (baileysProvider.http) {
-//         baileysProvider.http.start = startStub
-//     }
-//     baileysProvider.sendMessage = sendStub
+            // Assert
+            expect(mimeType).toBe('video/mp4')
+        })
 
-//     baileysProvider.initHttpServer(testPort, { blacklist: {} as any })
-//     assert.equal(startStub.called, true)
-//     await baileysProvider.http?.server.server?.close()
-// })
+        test('should return the file type application/pdf ', () => {
+            // Arrange
+            const mockMessage = {
+                message: {
+                    documentMessage: {
+                        mimetype: 'application/pdf',
+                    },
+                },
+            }
 
-// test('sendImage function sends image message with caption', async () => {
-//     const to = '1234567890'
-//     const message = 'Hello Word!'
-//     const image = 'image.png'
-//     const pathFile = 'test'
-//     const readFileSyncStub = stub(fs, 'readFileSync').returns(image)
-//     baileysProvider.vendor.sendMessage = sendStub
-//     await baileysProvider.sendImage(to, pathFile, message)
-//     assert.equal(sendStub.called, true)
-//     assert.equal(sendStub.args[0][0], to)
-//     assert.equal(sendStub.args[0][1].image, image)
-//     assert.equal(sendStub.args[0][1].caption, message)
-//     readFileSyncStub.restore()
-// })
+            // Act
+            const mimeType = provider['getMimeType'](mockMessage as any)
 
-// test('sendVideo  function sends video message with caption', async () => {
-//     const to = '1234567890'
-//     const message = 'Hello Word!'
-//     const video = 'vide.mp4'
-//     const pathFile = 'test'
-//     const readFileSyncStub = stub(fs, 'readFileSync').returns(video)
-//     baileysProvider.vendor.sendMessage = sendStub
-//     await baileysProvider.sendVideo(to, pathFile, message)
-//     assert.equal(sendStub.called, true)
-//     assert.equal(sendStub.args[0][0], to)
-//     assert.equal(sendStub.args[0][1].caption, message)
-//     assert.equal(sendStub.args[0][1].video, video)
-//     assert.equal(sendStub.args[0][1].gifPlayback, true)
-//     readFileSyncStub.restore()
-// })
+            // Assert
+            expect(mimeType).toBe('application/pdf')
+        })
 
-// test('generateFileName should return a valid filename with provided extension', () => {
-//     const extension = 'txt'
-//     const expectedPrefix = 'file-'
-//     const fixedTimestamp = 1628739872000
-//     const nowStub = stub(Date, 'now').returns(fixedTimestamp)
-//     const result = baileysProvider['generateFileName'](extension)
-//     assert.ok(result.startsWith(expectedPrefix))
-//     assert.ok(result.endsWith(`.${extension}`))
-//     assert.is(result.length, expectedPrefix.length + extension.length + 1 + fixedTimestamp.toString().length)
-//     nowStub.restore()
-// })
+        test('should return undefined if message is not available', () => {
+            // Arrange
+            const mockMessage = {}
 
-// test('getMimeType - should return the file type image/jpeg ', () => {
-//     const imageMessage = {
-//         mimetype: 'image/jpeg',
-//     }
+            // Act
+            const mimeType = provider['getMimeType'](mockMessage as any)
 
-//     const ctx: any = {
-//         message: {
-//             imageMessage,
-//         },
-//     }
+            // Assert
+            expect(mimeType).toBeUndefined()
+        })
+    })
 
-//     const result = baileysProvider['getMimeType'](ctx)
-//     assert.equal(result, 'image/jpeg')
-// })
+    describe('#sendSticker', () => {
+        test('should send a sticker message', async () => {
+            // Arrange
+            const remoteJid = 'recipient@example.com'
+            const stickerUrl = 'https://example.com/sticker.png'
+            const stickerOptions: Partial<IStickerOptions> = {}
+            const messages = 'Hello Word!'
+            const mockSendMessage = jest.fn() as any
+            provider.vendor.sendMessage = mockSendMessage
+            // Act
+            await provider.sendSticker(remoteJid, stickerUrl, stickerOptions, messages)
 
-// test('getMimeType - should return the file type video/mp4 ', () => {
-//     const videoMessage = {
-//         mimetype: 'video/mp4',
-//     }
-//     const ctx: any = {
-//         message: {
-//             videoMessage,
-//         },
-//     }
+            // Assert
+            expect(mockSendMessage).toHaveBeenCalledWith(remoteJid, expect.any(Buffer), { quoted: messages })
+        })
 
-//     const result = baileysProvider['getMimeType'](ctx)
-//     assert.equal(result, 'video/mp4')
-// })
+        test('should send a sticker message null', async () => {
+            // Arrange
+            const remoteJid = 'recipient@example.com'
+            const stickerUrl = 'https://example.com/sticker.png'
+            const stickerOptions: Partial<IStickerOptions> = {}
+            const mockSendMessage = jest.fn() as any
+            provider.vendor.sendMessage = mockSendMessage
+            // Act
+            await provider.sendSticker(remoteJid, stickerUrl, stickerOptions)
 
-// test('getMimeType - should return the file type application/pdf ', () => {
-//     const documentMessage = {
-//         mimetype: 'application/pdf',
-//     }
-//     const ctx: any = {
-//         message: {
-//             documentMessage,
-//         },
-//     }
+            // Assert
+            expect(mockSendMessage).toHaveBeenCalledWith(remoteJid, expect.any(Buffer), { quoted: null })
+        })
+    })
 
-//     const result = baileysProvider['getMimeType'](ctx)
-//     assert.equal(result, 'application/pdf')
-// })
+    describe('#sendPresenceUpdate', () => {
+        test('should send a presence update', async () => {
+            // Arrange
+            const remoteJid = 'recipient@example.com'
+            const WAPresence = 'recording'
+            const mockSendPresenceUpdate = jest.fn() as any
+            provider.vendor.sendPresenceUpdate = mockSendPresenceUpdate
 
-// test('getMimeType - should return undefined if no message is provided', () => {
-//     const ctx: any = { message: undefined }
-//     const result = baileysProvider['getMimeType'](ctx)
-//     assert.is(result, undefined)
-// })
+            // Act
+            await provider.sendPresenceUpdate(remoteJid, WAPresence)
 
-// test('saveFile should save the file properly', async () => {
-//     try {
-//         const ctx: any = {
-//             key: {},
-//             message: null,
-//         }
-//         baileysProvider['getMimeType'] = stub().returns(undefined)
+            // Assert
+            expect(mockSendPresenceUpdate).toHaveBeenCalledWith(WAPresence, remoteJid)
+        })
+    })
 
-//         const result = await baileysProvider.saveFile(ctx)
+    describe('#sendContact', () => {
+        test('should send a contact message', async () => {
+            // Arrange
+            const remoteJid = 'recipient@example.com'
+            const contactNumber = '+1234567890'
+            const displayName = 'John Doe'
+            const messages = 'Hello Word!'
+            const mockSendMessage = mockSendSuccess
+            provider.vendor.sendMessage = mockSendMessage
 
-//         console.log(result)
-//     } catch (error) {
-//         assert.equal(error.message, 'MIME type not found')
-//     }
-// })
+            // Act
+            const result = await provider.sendContact(
+                remoteJid,
+                { replaceAll: () => contactNumber },
+                displayName,
+                messages
+            )
 
-// test.after.each(() => {
-//     hookClose().then()
-// })
+            // Assert
+            expect(result).toEqual({ status: 'success' })
+            expect(mockSendMessage).toHaveBeenCalledWith(
+                remoteJid,
+                {
+                    contacts: {
+                        displayName: '.',
+                        contacts: [
+                            {
+                                vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:${displayName}\nORG:Ashoka Uni;\nTEL;type=CELL;type=VOICE;waid=${contactNumber.replace(
+                                    '+',
+                                    ''
+                                )}:${contactNumber}\nEND:VCARD`,
+                            },
+                        ],
+                    },
+                },
+                { quoted: messages }
+            )
+        })
 
-// test.run()
+        test('should send a contact message null', async () => {
+            // Arrange
+            const remoteJid = 'recipient@example.com'
+            const contactNumber = '+1234567890'
+            const displayName = 'John Doe'
+            const mockSendMessage = mockSendSuccess
+            provider.vendor.sendMessage = mockSendMessage
+
+            // Act
+            const result = await provider.sendContact(remoteJid, { replaceAll: () => contactNumber }, displayName)
+
+            // Assert
+            expect(result).toEqual({ status: 'success' })
+            expect(mockSendMessage).toHaveBeenCalledWith(
+                remoteJid,
+                {
+                    contacts: {
+                        displayName: '.',
+                        contacts: [
+                            {
+                                vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:${displayName}\nORG:Ashoka Uni;\nTEL;type=CELL;type=VOICE;waid=${contactNumber.replace(
+                                    '+',
+                                    ''
+                                )}:${contactNumber}\nEND:VCARD`,
+                            },
+                        ],
+                    },
+                },
+                { quoted: null }
+            )
+        })
+    })
+
+    describe('#sendLocation', () => {
+        test('should send a location message', async () => {
+            // Arrange
+            const remoteJid = 'recipient@example.com'
+            const latitude = 123.456
+            const longitude = 789.012
+            const messages = 'Hello Word!'
+
+            const mockSendMessage = mockSendSuccess
+            provider.vendor.sendMessage = mockSendMessage
+
+            // Act
+            const result = await provider.sendLocation(remoteJid, latitude, longitude, messages)
+
+            // Assert
+            expect(result).toEqual({ status: 'success' })
+            expect(mockSendMessage).toHaveBeenCalledWith(
+                remoteJid,
+                {
+                    location: {
+                        degreesLatitude: latitude,
+                        degreesLongitude: longitude,
+                    },
+                },
+                { quoted: messages }
+            )
+        })
+        test('should send a location message null', async () => {
+            // Arrange
+            const remoteJid = 'recipient@example.com'
+            const latitude = 123.456
+            const longitude = 789.012
+
+            const mockSendMessage = mockSendSuccess
+            provider.vendor.sendMessage = mockSendMessage
+
+            // Act
+            const result = await provider.sendLocation(remoteJid, latitude, longitude)
+
+            // Assert
+            expect(result).toEqual({ status: 'success' })
+            expect(mockSendMessage).toHaveBeenCalledWith(
+                remoteJid,
+                {
+                    location: {
+                        degreesLatitude: latitude,
+                        degreesLongitude: longitude,
+                    },
+                },
+                { quoted: null }
+            )
+        })
+    })
+
+    describe('#sendMessage', () => {
+        test('should send text message if no options provided', async () => {
+            // Arrange
+            const numberIn = phoneNumber
+            const message = 'Hello, world!'
+            const options = {}
+
+            const mockSendText = mockSendSuccess
+            provider.sendText = mockSendText
+
+            // Act
+            const result = await provider.sendMessage(numberIn, message, options)
+
+            // Assert
+            expect(result).toEqual('success')
+            expect(mockSendText).toHaveBeenCalledWith(numberIn, message)
+        })
+
+        test('should send buttons if options contain buttons', async () => {
+            // Arrange
+            const numberIn = phoneNumber
+            const message = 'Please select an option'
+            const options = {
+                buttons: [{ body: 'Option 1' }, { body: 'Option 2' }],
+            }
+
+            const mockSendButtons = mockSendSuccess
+            provider.sendButtons = mockSendButtons
+
+            // Act
+            const result = await provider.sendMessage(numberIn, message, options)
+
+            // Assert
+            expect(result).toEqual('success')
+            expect(mockSendButtons).toHaveBeenCalledWith(numberIn, message, options.buttons)
+        })
+
+        test('should send media if options contain media', async () => {
+            // Arrange
+            const numberIn = phoneNumber
+            const message = 'Please see the attached media'
+            const mediaUrl = 'https://example.com/image.jpg'
+            const options = {
+                media: mediaUrl,
+            }
+
+            const mockSendMedia = mockSendSuccess
+            provider.sendMedia = mockSendMedia
+
+            // Act
+            const result = await provider.sendMessage(numberIn, message, options)
+
+            // Assert
+            expect(result).toEqual('success')
+            expect(mockSendMedia).toHaveBeenCalledWith(numberIn, mediaUrl, message)
+        })
+    })
+
+    describe('#sendPoll', () => {
+        test('should send poll message with correct options', async () => {
+            // Arrange
+            const numberIn = phoneNumber
+            const text = 'Please vote'
+            const poll = {
+                options: ['Option 1', 'Option 2', 'Option 3'],
+                multiselect: false,
+            }
+
+            const mockSendMessage = mockSendSuccess
+            provider.vendor.sendMessage = mockSendMessage
+
+            // Act
+            const result = await provider.sendPoll(numberIn, text, poll)
+
+            // Assert
+            expect(result).toEqual('success')
+            expect(mockSendMessage).toHaveBeenCalled()
+        })
+
+        test('should send poll message with correct options multiselect undefined', async () => {
+            // Arrange
+            const numberIn = phoneNumber
+            const text = 'Please vote'
+            const poll = {
+                options: ['Option 1', 'Option 2', 'Option 3'],
+                multiselect: undefined,
+            }
+
+            const mockSendMessage = mockSendSuccess
+            provider.vendor.sendMessage = mockSendMessage
+
+            // Act
+            const result = await provider.sendPoll(numberIn, text, poll)
+
+            // Assert
+            expect(result).toEqual('success')
+            expect(mockSendMessage).toHaveBeenCalled()
+        })
+
+        test('should send poll message with correct options multiselect true', async () => {
+            // Arrange
+            const numberIn = phoneNumber
+            const text = 'Please vote'
+            const poll = {
+                options: ['Option 1', 'Option 2', 'Option 3'],
+                multiselect: true,
+            }
+
+            const mockSendMessage = mockSendSuccess
+            provider.vendor.sendMessage = mockSendSuccess
+
+            // Act
+            const result = await provider.sendPoll(numberIn, text, poll)
+
+            // Assert
+            expect(result).toEqual('success')
+            expect(mockSendMessage).toHaveBeenCalled()
+        })
+
+        test('should return false if options length is less than 2', async () => {
+            // Arrange
+            const numberIn = phoneNumber
+            const text = 'Please vote'
+            const poll = {
+                options: ['Option 1'],
+                multiselect: false,
+            }
+
+            // Act
+            const result = await provider.sendPoll(numberIn, text, poll)
+
+            // Assert
+            expect(result).toBeFalsy()
+        })
+    })
+
+    describe('#sendButtons', () => {
+        test('should emit notice event with correct details', async () => {
+            // Arrange
+            const number = phoneNumber
+            const text = 'Button message'
+            const buttons = [{ body: 'Button 1' }, { body: 'Button 2' }]
+
+            const mockEmit = jest.fn()
+            provider.emit = mockEmit
+            provider.vendor.sendMessage = mockSendSuccess
+            // Act
+            await provider.sendButtons(number, text, buttons)
+
+            // Assert
+            expect(mockEmit).toHaveBeenCalledWith('notice', {
+                title: 'DEPRECATED',
+                instructions: [
+                    'Currently sending buttons is not available with this provider',
+                    'this function is available with Meta or Twilio',
+                ],
+            })
+        })
+
+        test('should send button message with correct details', async () => {
+            // Arrange
+            const number = phoneNumber
+            const text = 'Button message'
+            const buttons = [{ body: 'Button 1' }, { body: 'Button 2' }]
+
+            // Mock del método sendMessage
+            const mockSendMessage = mockSendSuccess
+            provider.vendor.sendMessage = mockSendMessage
+
+            // Act
+            const result = await provider.sendButtons(number, text, buttons)
+
+            // Assert
+            expect(result).toEqual('success')
+            expect(mockSendMessage).toHaveBeenCalledWith(expect.any(String), {
+                text,
+                footer: '',
+                buttons: [
+                    { buttonId: 'id-btn-0', buttonText: { displayText: 'Button 1' }, type: 1 },
+                    { buttonId: 'id-btn-1', buttonText: { displayText: 'Button 2' }, type: 1 },
+                ],
+                headerType: 1,
+            })
+        })
+    })
+
+    describe('#sendFile', () => {
+        test('should send file message with correct MIME type and file name', async () => {
+            // Arrange
+            const number = phoneNumber
+            const filePath = '/path/to/file/example.txt'
+            const mimeType = 'text/plain'
+            const fileName = 'example.txt'
+            const mockSendMessage = mockSendSuccess
+            provider.vendor.sendMessage = mockSendMessage
+
+            // Act
+            const result = await provider.sendFile(number, filePath)
+
+            // Assert
+            expect(result).toEqual('success')
+            expect(mockSendMessage).toHaveBeenCalledWith(expect.any(String), {
+                document: { url: filePath },
+                mimetype: mimeType,
+                fileName: fileName,
+            })
+        })
+    })
+
+    describe('#sendText', () => {
+        test('should send text message with correct content', async () => {
+            // Arrange
+            const number = phoneNumber
+            const message = 'This is a test message'
+            const mockSendMessage = mockSendSuccess
+            provider.vendor.sendMessage = mockSendMessage
+
+            // Act
+            const result = await provider.sendText(number, message)
+
+            // Assert
+            expect(result).toEqual('success')
+            expect(mockSendMessage).toHaveBeenCalledWith(number, { text: message })
+        })
+    })
+
+    describe('#sendAudio ', () => {
+        test('should send audio message with correct URL', async () => {
+            // Arrange
+            const number = phoneNumber
+            const audioUrl = 'http://example.com/audio.mp3'
+            const mockSendMessage = mockSendSuccess
+            provider.vendor.sendMessage = mockSendMessage
+
+            // Act
+            const result = await provider.sendAudio(number, audioUrl)
+
+            // Assert
+            expect(result).toEqual('success')
+            expect(mockSendMessage).toHaveBeenCalledWith(number, {
+                audio: { url: audioUrl },
+                ptt: true,
+            })
+        })
+    })
+
+    describe('#sendVideo', () => {
+        test('should send video message with correct file path and text', async () => {
+            // Arrange
+            const number = phoneNumber
+            const filePath = '/path/to/video.mp4'
+            const text = 'This is a video message'
+            const mockSendMessage = mockSendSuccess
+            provider.vendor.sendMessage = mockSendMessage
+
+            jest.spyOn(fs, 'readFileSync').mockReturnValue(Buffer.from('sticker-buffer'))
+            // Act
+            const result = await provider.sendVideo(number, filePath, text)
+
+            // Assert
+            expect(result).toEqual('success')
+            expect(mockSendMessage).toHaveBeenCalledWith(number, {
+                video: expect.any(Buffer),
+                caption: text,
+                gifPlayback: provider.globalVendorArgs.gifPlayback,
+            })
+        })
+    })
+
+    describe('#sendImage', () => {
+        test('should send image message with correct file path and text', async () => {
+            // Arrange
+            const number = phoneNumber
+            const filePath = '/path/to/image.jpg'
+            const text = 'This is an image message'
+
+            const mockSendMessage = mockSendSuccess
+            provider.vendor.sendMessage = mockSendMessage
+
+            // Act
+            const result = await provider.sendImage(number, filePath, text)
+
+            // Assert
+            expect(result).toEqual('success')
+            expect(mockSendMessage).toHaveBeenCalledWith(number, {
+                image: { url: filePath },
+                caption: text,
+            })
+        })
+    })
+
+    describe('#busEvents ', () => {
+        test('Should return undefine if the type is different from notify', () => {
+            // Arrange
+            const message = {
+                messages: [],
+                type: 'other',
+            }
+            // Act
+            const resul = provider['busEvents']()[0].func(message)
+
+            // Assert
+            expect(resul).toBeUndefined()
+        })
+        test('Should return undefine if the type message is equal from EPHEMERAL_SETTING', () => {
+            // Arrange
+            const message = {
+                messages: [
+                    {
+                        message: {
+                            protocolMessage: {
+                                type: 'EPHEMERAL_SETTING',
+                            },
+                        },
+                    },
+                ],
+                type: 'notify',
+            }
+            // Act
+            const resul = provider['busEvents']()[0].func(message)
+
+            // Assert
+            expect(resul).toBeUndefined()
+        })
+    })
+})

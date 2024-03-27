@@ -75,6 +75,7 @@
     "fs-extra": "^11.1.1",
     "git-cz": "^4.9.0",
     "husky": "^8.0.3",
+    "jest": "^29.7.0",
     "lerna": "^8.0.2",
     "lerna-lcov-aggregate": "^1.0.0",
     "nx": "^17.2.8",
