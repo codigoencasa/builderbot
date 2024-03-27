@@ -18,6 +18,7 @@
     "clean.lib": "tsm ./scripts/clean.ts",
     "test:coverage": "npx lerna run test:coverage",
     "test:coverage:full": "npx lerna-lcov-aggregate && npx lcov-viewer lcov -o ./coverage/ ./coverage/lcov.info",
+    "test": "npx lerna run test",
     "publish:canary": "npx lerna publish from-package --canary",
     "prepare": "npx husky install",
     "publish:dev": "npx lerna publish from-package --dist-tag dev --yes",
