@@ -29,7 +29,7 @@
         "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
     },
     "dependencies": {
-        "@builderbot/bot": "^1.0.26-alpha.0",
+        "@builderbot/bot": "workspace:^",
         "@google-cloud/dialogflow": "^6.2.0"
     },
     "devDependencies": {

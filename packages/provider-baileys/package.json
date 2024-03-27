@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
   "devDependencies": {
-    "@builderbot/bot": "^1.0.23-alpha.0",
+    "@builderbot/bot": "^1.0.26-alpha.0",
     "@hapi/boom": "^10.0.1",
     "@jest/globals": "^29.7.0",
     "@rollup/plugin-commonjs": "^25.0.7",
