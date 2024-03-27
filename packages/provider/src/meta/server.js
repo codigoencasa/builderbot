@@ -44,8 +44,12 @@ class MetaWebHookServer extends EventEmitter {
 
         messages.forEach(async (message) => {
             const [contact] = contacts
-            const to = body.entry[0].changes[0].value?.metadata?.display_phone_number
-            const pushName = contact?.profile?.name
+            let contact;
+            if (Array.isArray(contacts)) {
+                contact = contacts[0];
+            }
+            const to = body.entry[0].changes[0].value?.metadata?.display_phone_number;
+            const pushName = contact?.profile?.name;
             let responseObj
 
             switch (message.type) {
