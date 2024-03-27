@@ -10,8 +10,8 @@
   "type": "module",
   "scripts": {
     "build": "rimraf dist && rollup --config",
-    "test": "jest --watchAll --coverage",
-    "test:coverage": "jest --coverage"
+    "test": "jest",
+    "test:coverage": "jest --watchAll --coverage"
   },
   "files": [
     "./dist/"
