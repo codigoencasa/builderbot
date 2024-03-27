@@ -4,7 +4,7 @@ import { writeFile } from 'fs/promises'
 // https://github.com/orkestral/venom/issues/2485
 const fixSendFiles = async () => {
     const path = './node_modules/venom-bot/dist/lib/wapi/wapi.js'
-    let toFix: any = readFileSync(path)
+    let toFix = readFileSync(path)
     toFix = toFix
         .toString()
         .replace(
@@ -39,4 +39,4 @@ const mainFix = async () => {
     await fixSendFiles()
 }
 
-export { mainFix }
+mainFix()

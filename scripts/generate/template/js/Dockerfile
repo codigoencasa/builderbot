@@ -24,5 +24,9 @@ COPY --from=builder /app/src ./src
 COPY --from=builder /app/package.json /app/pnpm-lock.yaml ./
 
 RUN pnpm install --frozen-lockfile --production
+
+ENV PORT $PORT
+EXPOSE $PORT
+
 # CMD ["pm2-runtime", "start", "./src/app.js", "--cron", "0 */12 * * *"]
 CMD ["npm", "start"]

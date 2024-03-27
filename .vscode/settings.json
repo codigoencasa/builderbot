@@ -10,5 +10,9 @@
         "starters",
         "conflict",
         "contexts"
+    ],
+    "cSpell.words": [
+        "dialogflow",
+        "wppconnect"
     ]
 }

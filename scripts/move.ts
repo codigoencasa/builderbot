@@ -1,11 +1,9 @@
 import { copy } from 'fs-extra'
 import { join } from 'path'
-import { readFileSync } from 'fs'
+import { readFileSync, readdirSync } from 'fs'
 
 const PACKAGES_PATH: string = join(process.cwd(), 'packages')
 const NAME_PREFIX: string = '@builderbot'
-
-const [, , appDir]: string[] = process.argv
 
 interface CopyLibPkgOptions {
     overwrite: boolean
@@ -31,7 +29,7 @@ const getPkgName = () => {
         const lerna = JSON.parse(json)
         return lerna.packages.map((pkg: string) => {
             const name = pkg.split('/').pop()
-            return { name }
+            return { name, pkg }
         })
     } catch (error) {
         console.log(`Error:`, error)
@@ -40,13 +38,21 @@ const getPkgName = () => {
 }
 
 const main = async (): Promise<void> => {
-    if (!appDir) {
-        throw new Error('appDir is not specified in the arguments.')
+    const onlyBase = readdirSync(process.cwd()).filter((i) => i.startsWith('base-'))
+    const copyPerBase = async (appDir: string) => {
+        const listLib: { name: string }[] = getPkgName()
+        for (const iterator of listLib) {
+            await copyLibPkg(iterator.name, appDir)
+            console.log(`✅ ${iterator.name} `)
+        }
     }
-    const listLib: { name: string }[] = getPkgName()
-    for (const iterator of listLib) {
-        await copyLibPkg(iterator.name, appDir)
-        console.log(`${iterator.name}: Copiado ✅`)
+
+    for (const base of onlyBase) {
+        console.log(``)
+        console.log(`➡️  Copying in ${base}...`)
+        await copyPerBase(base)
+        console.log(`🆗 Finish in ${base}`)
+        console.log(``)
     }
 }
 

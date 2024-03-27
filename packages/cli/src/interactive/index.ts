@@ -17,21 +17,25 @@ const handleLegacyCli = async (): Promise<void> => {
     await startInteractiveLegacy()
 }
 
-const bannerDone = (templateName: string = ''): void => {
-    note(
-        [
-            color.yellow(` cd ${templateName} `),
-            color.yellow(` npm install `),
-            color.yellow(` npm start `),
-            ``,
-            `📄 Documentation:`,
-            `   https://builderbot.vercel.app`,
-            ``,
-            `🤖 Issues? Join:`,
-            `   https://link.codigoencasa.com/DISCORD`,
-        ].join('\n'),
-        'Instructions:'
-    )
+const bannerDone = (templateName: string = '', language: string): void => {
+    const notes = [color.yellow(` cd ${templateName} `), color.yellow(` npm install `)]
+
+    if (language === 'ts') {
+        notes.push(color.yellow(` npm run dev `))
+    } else {
+        notes.push(color.yellow(` npm start `))
+    }
+
+    const doneNote = [
+        ``,
+        `📄 Documentation:`,
+        `   https://builderbot.vercel.app`,
+        ``,
+        `🤖 Issues? Join:`,
+        `   https://link.codigoencasa.com/DISCORD`,
+    ]
+
+    note([...notes, ...doneNote].join('\n'), 'Instructions:')
 }
 
 const systemRequirements = async (): Promise<void> => {
@@ -39,14 +43,14 @@ const systemRequirements = async (): Promise<void> => {
 
     if (!stepCheckGit.pass) {
         note(stepCheckGit.message)
-        cancel('Operacion cancelada')
+        cancel('Operation canceled')
         return process.exit(0)
     }
 
     const stepCheckNode: CheckResult = await checkNodeVersion()
     if (!stepCheckNode.pass) {
         note(stepCheckNode.message)
-        cancel('Operacion cancelada')
+        cancel('Operation canceled')
         return process.exit(0)
     }
 }
@@ -68,67 +72,67 @@ const startInteractive = async (): Promise<void> => {
         console.clear()
         console.log('')
 
-        intro(`Vamos a crear un ${color.bgBlue(' Chatbot ')} ✨`)
+        intro(` Let's create a ${color.bgCyan(' Chatbot ')} ✨`)
 
         const stepContinue = await confirm({
-            message: '¿Quieres continuar?',
+            message: 'Do you want to continue?',
         })
 
         if (!stepContinue) {
-            cancel('Operacion cancelada')
+            cancel('Operation canceled')
             return process.exit(0)
         }
 
         if (isCancel(stepContinue)) {
-            cancel('Operacion cancelada')
+            cancel('Operation canceled')
             return process.exit(0)
         }
 
         const stepProvider = await select({
-            message: '¿Cuál proveedor de whatsapp quieres utilizar?',
+            message: 'Which WhatsApp provider do you want to use?',
             options: PROVIDER_LIST,
         })
 
         if (isCancel(stepProvider)) {
-            cancel('Operacion cancelada')
+            cancel('Operation canceled')
             return process.exit(0)
         }
 
         const stepDatabase = await select({
-            message: '¿Cuál base de datos quieres utilizar?',
+            message: 'Which database do you want to use?',
             options: PROVIDER_DATA,
         })
 
         if (isCancel(stepDatabase)) {
-            cancel('Operacion cancelada')
+            cancel('Operation canceled')
             return process.exit(0)
         }
 
         const stepLanguage = await select({
-            message: '¿Que lenguaje prefieres usar?',
+            message: 'Which language do you prefer to use?',
             options: AVAILABLE_LANGUAGES,
         })
 
         if (isCancel(stepLanguage)) {
-            cancel('Operacion cancelada')
+            cancel('Operation canceled')
             return process.exit(0)
         }
 
         const s = spinner()
-        s.start('Comprobando requerimientos')
+        s.start('Checking requirements')
         await systemRequirements()
-        s.stop('Comprobando requerimientos')
+        s.stop('Checking requirements')
 
-        s.start(`Creando proyecto`)
+        s.start(`Creating project...`)
         const NAME_DIR: string = ['base', stepLanguage, stepProvider, stepDatabase].join('-')
         await createApp(NAME_DIR)
-        s.stop(`Creando proyecto`)
-        bannerDone(NAME_DIR)
-        outro(color.inverse('Finalizado correctamente!'))
+        s.stop(`Creating project...`)
+        bannerDone(NAME_DIR, stepLanguage as string)
+        outro(color.bgGreen(' Successfully completed! '))
     } catch (e: any) {
         console.log(e)
         if (e?.code === 'ERR_TTY_INIT_FAILED') return handleLegacyCli()
-        cancel([`Ups! 🙄 algo no va bien.`, `Revisa los requerimientos mínimos en la documentación`].join('\n'))
+        cancel([`Oops! 🙄 something is not right.`, `Check the minimum requirements in the documentation`].join('\n'))
         return process.exit(0)
     }
 }

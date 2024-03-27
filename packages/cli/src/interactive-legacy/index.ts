@@ -23,10 +23,10 @@ const bannerDone = (): void => {
     console.log(
         color.cyan(
             [
-                `[Agradecimientos]: Este es un proyecto OpenSource, si tienes intenciones de colaborar puedes hacerlo:`,
-                `[😉] Comprando un cafe https://www.buymeacoffee.com/leifermendez`,
-                `[⭐] Dar estrella  https://github.com/codigoencasa/bot-whatsapp`,
-                `[🚀] Realizando mejoras en el codigo`,
+                `[Acknowledgements]: This is an OpenSource project, if you intend to collaborate you can do so:`,
+                `[😉] Buying a coffee https://www.buymeacoffee.com/leifermendez`,
+                `[⭐] Giving a star  https://github.com/codigoencasa/bot-whatsapp`,
+                `[🚀] Making improvements in the code`,
             ].join('\n')
         )
     )
@@ -42,8 +42,8 @@ const startInteractiveLegacy = async (): Promise<void> => {
         console.clear()
         await nextSteps()
     } catch (e) {
-        console.error(color.bgRed(`Ups! 🙄 algo no va bien.`))
-        console.error(color.bgRed(`Revisa los requerimientos minimos en la documentacion`))
+        console.error(color.bgRed(`Oops! 🙄 something is not right.`))
+        console.error(color.bgRed(`Check the minimum requirements in the documentation`))
     }
 }
 
@@ -52,30 +52,30 @@ const nextSteps = async (): Promise<void> => {
         {
             type: 'text',
             name: 'outDir',
-            message: 'Quieres crear un bot? (Y/n)',
+            message: 'Do you want to create a bot? (Y/n)',
         },
         {
             type: 'multiselect',
             name: 'providerWs',
-            message: '¿Cuál proveedor de whatsapp quieres utilizar?',
+            message: 'Which WhatsApp provider do you want to use?',
             choices: PROVIDER_LIST.map((c: ProviderChoice) => ({ title: c.label, value: c.value })),
             max: 1,
-            hint: 'Espacio para seleccionar',
+            hint: 'Space to select',
             instructions: '↑/↓',
         },
         {
             type: 'multiselect',
             name: 'providerDb',
-            message: '¿Cuál base de datos quieres utilizar?',
+            message: 'Which database do you want to use?',
             choices: PROVIDER_DATA.map((c: ProviderChoice) => ({ title: c.label, value: c.value })),
             max: 1,
-            hint: 'Espacio para seleccionar',
+            hint: 'Space to select',
             instructions: '↑/↓',
         },
     ]
 
     const onCancel = (): boolean => {
-        console.log('¡Proceso cancelado!')
+        console.log('Process canceled!')
         return true
     }
     const response: Response = await prompts(questions, { onCancel })
@@ -98,7 +98,7 @@ const nextSteps = async (): Promise<void> => {
             if (!indexOfPath) throw new Error('Path does not exist: ' + indexOfPath)
             await copyBaseApp(indexOfPath, join(process.cwd(), templateName))
             console.log(``)
-            console.log(color.bgMagenta(`⚡⚡⚡ INSTRUCCIONES ⚡⚡⚡`))
+            console.log(color.bgMagenta(`⚡⚡⚡ INSTRUCTIONS ⚡⚡⚡`))
             console.log(color.yellow(`cd ${templateName}`))
             console.log(color.yellow(`npm install`))
             console.log(color.yellow(`npm start`))
@@ -112,7 +112,7 @@ const nextSteps = async (): Promise<void> => {
     const vendorProvider = async (): Promise<string> => {
         const [answer] = providerWs
         if (!providerWs.length) {
-            console.log(color.red(`Debes seleccionar un proveedor de whatsapp. Tecla [Space] para seleccionar`))
+            console.log(color.red(`You must select a WhatsApp provider. Press [Space] to select`))
             process.exit(1)
         }
         return answer
@@ -121,7 +121,7 @@ const nextSteps = async (): Promise<void> => {
     const dbProvider = async (): Promise<string> => {
         const [answer] = providerDb
         if (!providerDb.length) {
-            console.log(color.red(`Debes seleccionar un proveedor de base de datos. Tecla [Space] para seleccionar`))
+            console.log(color.red(`You must select a database provider. Press [Space] to select`))
             process.exit(1)
         }
         return answer

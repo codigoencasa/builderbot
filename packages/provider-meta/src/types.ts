@@ -62,7 +62,7 @@ export interface Message {
     id?: string
 }
 
-export interface ParamasIncomingMessage {
+export interface ParamsIncomingMessage {
     pushName: string
     to: string
     jwtToken: string

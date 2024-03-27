@@ -17,10 +17,10 @@ export interface ValueLabel {
 }
 
 export const PROVIDER_LIST: Provider[] = [
-    { value: 'baileys', label: 'Baileys', hint: 'gratis' },
-    { value: 'venom', label: 'Venom', hint: 'gratis' },
-    { value: 'wppconnect', label: 'WPPConnect', hint: 'gratis' },
-    // { value: 'wweb', label: 'Whatsapp-web.js', hint: 'gratis' },
+    { value: 'baileys', label: 'Baileys', hint: 'opensource' },
+    { value: 'venom', label: 'Venom', hint: 'opensource' },
+    { value: 'wppconnect', label: 'WPPConnect', hint: 'opensource' },
+    // { value: 'wweb', label: 'Whatsapp-web.js', hint: 'opensource' },
     { value: 'twilio', label: 'Twilio' },
     { value: 'meta', label: 'Meta' },
 ]

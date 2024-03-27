@@ -121,6 +121,10 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             func: (payload: any) => this.emit('auth_failure', payload),
         },
         {
+            event: 'notice',
+            func: ({ instructions, title }) => this.emit('notice', { instructions, title }),
+        },
+        {
             event: 'ready',
             func: () => this.emit('ready', true),
         },

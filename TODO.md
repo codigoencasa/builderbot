@@ -47,14 +47,15 @@
 - [x] remove space number
 - [x] que se puedae escribir a el mismo
 - [x] mysql port
-- [ ] meta image, media, audio
+- [x] Cambiar todos los mensajes a ingles
+- [x] meta image, media, audio
 - [ ] coverage
 - [ ] flowDynamic({media...})
-- [ ] elmintar vendor de handleCTX
 - [ ] test meta
 - [ ] try catch error http
 - [ ] test twilio
-- [ ] Cambiar todos los mensajes a ingles
+- [ ] Cambiar readme de los mono proyectos
+- [ ] meta recuerda activar los dos webhooks
 - [ ] cambiar el CONTRIBUTING.md
 - [ ] cambiar mensajes a ingles
 - [ ] state get('detail.name')

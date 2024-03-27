@@ -1,7 +1,7 @@
 import { utils } from '@builderbot/bot'
 
 import { getMediaUrl } from './mediaUrl'
-import type { Message, ParamasIncomingMessage } from '../types'
+import type { Message, ParamsIncomingMessage as ParamsIncomingMessage } from '../types'
 
 export const processIncomingMessage = async ({
     pushName,
@@ -10,7 +10,7 @@ export const processIncomingMessage = async ({
     jwtToken,
     version,
     numberId,
-}: ParamasIncomingMessage): Promise<Message> => {
+}: ParamsIncomingMessage): Promise<Message> => {
     let responseObj: Message
 
     switch (message.type) {

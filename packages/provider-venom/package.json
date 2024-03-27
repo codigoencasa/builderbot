@@ -9,13 +9,14 @@
     "types": "dist/index.d.ts",
     "type": "module",
     "files": [
+        "./scripts/",
         "./dist/"
     ],
     "scripts": {
         "build": "rimraf dist && rollup --config",
         "test": "npx uvu -r tsm ./__tests__",
         "test:coverage": "npx c8 npm run test",
-        "postinstall": ""
+        "postinstall": "node ./scripts/fix.js"
     },
     "directories": {
         "lib": "dist",

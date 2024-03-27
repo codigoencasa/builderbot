@@ -40,6 +40,30 @@ export class MetaCoreVendor extends EventEmitter {
         return mode === 'subscribe' && originToken === token
     }
 
+    private extractStatus(obj: { entry: any }) {
+        const entry = obj.entry || []
+        let statusArray: { status: any; reason: string }[] = []
+
+        entry.forEach((entryItem: { changes: any[] }) => {
+            const changes = entryItem.changes || []
+            changes.forEach((change) => {
+                const values = change.value || {}
+                const statuses = values.statuses || []
+                statuses.forEach(
+                    (status: { recipient_id: string; errors: { error_data: { details: string } }[]; status: any }) => {
+                        const recipient_id = status.recipient_id || 'N/A'
+                        const errorDetails = status.errors?.[0]?.error_data?.details || 'Unknown'
+                        statusArray.push({
+                            status: status.status || 'Unknown',
+                            reason: `Number(${recipient_id}): ${errorDetails}`,
+                        })
+                    }
+                )
+            })
+        })
+        return statusArray
+    }
+
     /**
      * Middleware function for verifying token.
      * @type {polka.Middleware}
@@ -75,6 +99,19 @@ export class MetaCoreVendor extends EventEmitter {
         const globalVendorArgs: MetaGlobalVendorArgs = req['globalVendorArgs'] ?? null
         const { body } = req
         const { jwtToken, numberId, version } = globalVendorArgs
+
+        const someErrors = this.extractStatus(body)
+        const findError = someErrors.find((s) => s.status === 'failed')
+
+        if (findError) {
+            this.emit('notice', {
+                title: '🔔  META ALERT  🔔',
+                instructions: [findError.reason],
+            })
+            res.writeHead(400, { 'Content-Type': 'application/json' })
+            return res.end(JSON.stringify(someErrors))
+        }
+
         const messages = body?.entry?.[0]?.changes?.[0]?.value?.messages
         const contacts = req?.body?.entry?.[0]?.changes?.[0]?.value?.contacts
         if (!messages?.length) {
@@ -96,8 +133,6 @@ export class MetaCoreVendor extends EventEmitter {
                 version,
             })
             if (response) {
-                //...EVENTS
-
                 this.queue.enqueue(() => this.processMessage(response))
             }
         })

@@ -11,7 +11,6 @@ import venom from 'venom-bot'
 
 import type { SaveFileOptions } from './types'
 import { venomCleanNumber, venomDeleteTokens, venomGenerateImage, venomisValidNumber } from './utils'
-import { mainFix } from './fix'
 
 /**
  * ⚙️ VenomProvider: Es una clase tipo adaptor
@@ -31,7 +30,6 @@ class VenomProvider extends ProviderClass {
     protected async initVendor(): Promise<any> {
         const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
         try {
-            await mainFix()
             const client = await venom.create(
                 NAME_DIR_SESSION,
                 (base) => this.generateQr(base),
