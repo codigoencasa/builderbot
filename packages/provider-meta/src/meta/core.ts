@@ -42,7 +42,7 @@ export class MetaCoreVendor extends EventEmitter {
 
     private extractStatus(obj: { entry: any }) {
         const entry = obj.entry || []
-        let statusArray: { status: any; reason: string }[] = []
+        const statusArray: { status: any; reason: string }[] = []
 
         entry.forEach((entryItem: { changes: any[] }) => {
             const changes = entryItem.changes || []
