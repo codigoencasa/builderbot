@@ -16,7 +16,7 @@ export default {
         json(),
         commonjs(),
         nodeResolve({
-            resolveOnly: (module) => !/ffmpeg|baileys|@builderbot\/bot|sharp/i.test(module),
+            resolveOnly: (module) => !/ffmpeg|baileys|link-preview-js|@builderbot\/bot|sharp/i.test(module),
         }),
         typescript(),
         // terser()

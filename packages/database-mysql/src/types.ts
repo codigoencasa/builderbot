@@ -5,6 +5,7 @@ export interface MysqlAdapterCredentials {
     user: string
     database: string
     password: string
+    port: number
 }
 
 export interface HistoryRow extends RowDataPacket {

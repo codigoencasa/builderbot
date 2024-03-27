@@ -21,4 +21,4 @@ export const setEvent = (name: string) => {
  * @param phone
  * @returns
  */
-export const removePlus = (phone: string) => phone.replace('+', '')
+export const removePlus = (phone: string) => phone.replace('+', '').replace(/\s/g, '')

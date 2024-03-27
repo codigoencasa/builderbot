@@ -6,7 +6,7 @@ import { tmpdir } from 'os'
 import { join } from 'path'
 
 const venomCleanNumber = (number: string, full: boolean = false): string => {
-    number = number.replace('@c.us', '').replace('+', '')
+    number = number.replace('@c.us', '').replace('+', '').replace(/\s/g, '')
     number = !full ? `${number}@c.us` : `${number}`
     return number
 }

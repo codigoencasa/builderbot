@@ -1,4 +1,5 @@
 import { CoreClass } from './core/coreClass'
+import { EventEmitterClass } from './core/eventEmitterClass'
 import { MemoryDB } from './db'
 import { LIST_ALL as EVENTS } from './io/events'
 import FlowClass from './io/flowClass'
@@ -64,6 +65,7 @@ export {
     addKeyword,
     addAnswer,
     ProviderClass,
+    EventEmitterClass,
     CoreClass,
     EVENTS,
     MemoryDB,

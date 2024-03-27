@@ -96,6 +96,8 @@ export class MetaCoreVendor extends EventEmitter {
                 version,
             })
             if (response) {
+                //...EVENTS
+
                 this.queue.enqueue(() => this.processMessage(response))
             }
         })
