@@ -1,38 +1,109 @@
-import { existsSync, unlinkSync } from 'fs'
-import * as path from 'path'
-import { test } from 'uvu'
-import * as assert from 'uvu/assert'
-
 import { baileyCleanNumber, baileyGenerateImage, baileyIsValidNumber } from '../src/utils'
+import { expect, describe, test, jest } from '@jest/globals'
+import { utils } from '@builderbot/bot'
+import { createWriteStream } from 'fs'
+import * as qr from 'qr-image'
+import { join } from 'path'
 
-test('baileyCleanNumber - adds the suffix "@s.whatsapp.net" if full is false', () => {
-    const cleanedNumber = baileyCleanNumber('1234567890', false)
-    assert.is(cleanedNumber, '1234567890@s.whatsapp.net')
+jest.mock('qr-image', () => ({
+    image: jest.fn(() => ({
+        pipe: jest.fn(),
+    })),
+}))
+
+jest.mock('@builderbot/bot', () => ({
+    utils: {
+        cleanImage: jest.fn(),
+    },
+}))
+
+jest.mock('fs', () => ({
+    createWriteStream: jest.fn().mockReturnValue({
+        on: jest.fn(),
+    }),
+}))
+
+describe('baileyCleanNumber', () => {
+    test('should remove @s.whatsapp.net and + when full is true', () => {
+        // Arrange
+        const originalNumber = '+1234567890@s.whatsapp.net'
+        // Act
+        const cleanedNumber = baileyCleanNumber(originalNumber, true)
+        // Assert
+        expect(cleanedNumber).toEqual('1234567890')
+    })
 })
 
-test('baileyCleanNumber - does not add the suffix "@s.whatsapp.net" if full is true', () => {
-    const cleanedNumber = baileyCleanNumber('1234567890', true)
-    assert.is(cleanedNumber, '1234567890')
+describe('#baileyIsValidNumber', () => {
+    test('should return true if the number is valid', () => {
+        // Arrange
+        const validNumber = '+1234567890@s.whatsapp.net'
+
+        // Act
+        const isValid = baileyIsValidNumber(validNumber)
+
+        // Assert
+        expect(isValid).toBe(true)
+    })
+
+    test('should return false if the number is invalid', () => {
+        // Arrange
+        const invalidNumber = '+1234567890@g.us'
+
+        // Act
+        const isValid = baileyIsValidNumber(invalidNumber)
+
+        // Assert
+        expect(isValid).toBeFalsy()
+    })
+
+    test('should return true if the number does not contain @g.us', () => {
+        // Arrange
+        const numberWithoutGroup = '+1234567890@s.whatsapp.net'
+
+        // Act
+        const isValid = baileyIsValidNumber(numberWithoutGroup)
+
+        // Assert
+        expect(isValid).toBeTruthy()
+    })
+
+    test('should return true if the number is empty', () => {
+        // Arrange
+        const emptyNumber = ''
+
+        // Act
+        const isValid = baileyIsValidNumber(emptyNumber)
+
+        // Assert
+        expect(isValid).toBeTruthy()
+    })
 })
 
-test('baileyIsValidNumber - returns true for numbers that do not contain the suffix "@g.us"', () => {
-    const result = baileyIsValidNumber('1234567890@s.whatsapp.net')
-    assert.is(result, true)
-})
+describe('#baileyGenerateImage', () => {
+    test('should generate an image file from a base64 string', () => {
+        // Arrange
+        const base64 = 'yourBase64String'
+        const imageName = 'test_image.png'
+        const imagePath = join(process.cwd(), imageName)
+        const mockWriteStream = {
+            on: jest.fn(),
+            write: jest.fn(),
+            end: jest.fn(),
+        }
+        const mockPipe = jest.fn().mockReturnValue(mockWriteStream)
+        const mockQrSvg = { pipe: mockPipe }
+        ;(qr.image as jest.Mock).mockReturnValue(mockQrSvg)
+        ;(createWriteStream as jest.Mock).mockReturnValue(jest.fn())
 
-test('baileyIsValidNumber - returns false for numbers containing the suffix "@g.us"', () => {
-    const result = baileyIsValidNumber('1234567890@g.us')
-    assert.is(result, false)
+        // Act
+        baileyGenerateImage(base64, imageName).then((result) => {
+            // Assert
+            expect(result).toBeTruthy()
+            expect(qr.image).toHaveBeenCalledWith(base64, { type: 'png', margin: 4 })
+            expect(utils.cleanImage).toHaveBeenCalledWith(imagePath)
+            expect(createWriteStream).toHaveBeenCalledWith(imagePath)
+            expect(mockWriteStream.on).toHaveBeenCalledWith('finish', expect.any(Function))
+        })
+    })
 })
-
-test('baileyGenerateImage - generate an image from a base64 string', async () => {
-    const base64String = 'TU_CADENA_BASE64'
-    const imageName = 'test_image.png'
-    const imagePath = path.join(process.cwd(), imageName)
-    await baileyGenerateImage(base64String, imageName)
-    assert.ok(existsSync(imagePath))
-    unlinkSync(imagePath)
-    assert.not.ok(existsSync(imagePath))
-})
-
-test.run()
