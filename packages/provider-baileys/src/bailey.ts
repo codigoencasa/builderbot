@@ -7,7 +7,7 @@ import { createReadStream, createWriteStream, readFileSync, existsSync } from 'f
 import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
 import { tmpdir } from 'os'
-import { join, basename } from 'path'
+import { join, basename, resolve } from 'path'
 import pino from 'pino'
 import type polka from 'polka'
 import { rimraf } from 'rimraf'
@@ -592,12 +592,18 @@ class BaileysProvider extends ProviderClass<WASocket> {
         const { message } = ctx
         if (!message) return undefined
 
-        const { imageMessage, videoMessage, documentMessage } = message
-        return imageMessage?.mimetype ?? videoMessage?.mimetype ?? documentMessage?.mimetype
+        const { imageMessage, videoMessage, documentMessage, audioMessage } = message
+        return imageMessage?.mimetype ?? audioMessage?.mimetype ?? videoMessage?.mimetype ?? documentMessage?.mimetype
     }
 
     private generateFileName = (extension: string): string => `file-${Date.now()}.${extension}`
 
+    /**
+     * Return Path absolute
+     * @param ctx
+     * @param options
+     * @returns
+     */
     saveFile = async (ctx: Partial<WAMessage & BotContext>, options?: { path: string }): Promise<string> => {
         const mimeType = this.getMimeType(ctx as WAMessage)
         if (!mimeType) throw new Error('MIME type not found')
@@ -607,7 +613,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
         const pathFile = join(options?.path ?? tmpdir(), fileName)
         await writeFile(pathFile, buffer)
-        return pathFile
+        return resolve(pathFile)
     }
 }
 

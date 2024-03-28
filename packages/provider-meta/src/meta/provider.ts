@@ -7,7 +7,7 @@ import { createReadStream } from 'fs'
 import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
 import { tmpdir } from 'os'
-import { join, basename } from 'path'
+import { join, basename, resolve } from 'path'
 import Queue from 'queue-promise'
 
 import { MetaCoreVendor } from './core'
@@ -108,7 +108,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             const fileName = `file-${Date.now()}.${extension}`
             const pathFile = join(options?.path ?? tmpdir(), fileName)
             await writeFile(pathFile, buffer)
-            return pathFile
+            return resolve(pathFile)
         } catch (err) {
             console.log(`[Error]:`, err.message)
             return 'ERROR'

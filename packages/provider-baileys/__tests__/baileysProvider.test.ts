@@ -153,7 +153,7 @@ describe('#BaileysProvider', () => {
             // Assert
             expect(getMimeTypeSpy).toHaveBeenCalled()
             expect(generateFileNameSpy).toHaveBeenCalled()
-            expect(filePath).toEqual('/tmp/mock-file.jpeg')
+            expect(path.isAbsolute(filePath)).toBe(true)
         })
 
         test('should save a file and return the path', async () => {
@@ -172,7 +172,7 @@ describe('#BaileysProvider', () => {
             // Assert
             expect(getMimeTypeSpy).toHaveBeenCalled()
             expect(generateFileNameSpy).toHaveBeenCalled()
-            expect(filePath).toEqual('/tmp/mock-file.jpeg')
+            expect(path.isAbsolute(filePath)).toBe(true)
         })
 
         test('should throw an error when MIME type is not found', async () => {

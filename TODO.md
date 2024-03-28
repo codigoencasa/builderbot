@@ -49,6 +49,7 @@
 - [x] mysql port
 - [x] Cambiar todos los mensajes a ingles
 - [x] meta image, media, audio
+- [ ] save voice note 'resolve'
 - [ ] coverage
 - [ ] flowDynamic({media...})
 - [ ] test meta
