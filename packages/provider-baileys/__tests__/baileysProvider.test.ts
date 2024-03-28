@@ -153,6 +153,7 @@ describe('#BaileysProvider', () => {
             // Assert
             expect(getMimeTypeSpy).toHaveBeenCalled()
             expect(generateFileNameSpy).toHaveBeenCalled()
+            expect(filePath).toContain('mock-file.jpeg')
             expect(path.isAbsolute(filePath)).toBe(true)
         })
 
@@ -172,6 +173,7 @@ describe('#BaileysProvider', () => {
             // Assert
             expect(getMimeTypeSpy).toHaveBeenCalled()
             expect(generateFileNameSpy).toHaveBeenCalled()
+            expect(filePath).toContain('mock-file.jpeg')
             expect(path.isAbsolute(filePath)).toBe(true)
         })
 

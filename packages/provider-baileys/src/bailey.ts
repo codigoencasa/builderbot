@@ -128,7 +128,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             })
 
             this.store?.bind(sock.ev)
-
+            this.vendor = sock
             if (this.globalVendorArgs.usePairingCode && !sock.authState.creds.registered) {
                 if (this.globalVendorArgs.phoneNumber) {
                     await sock.waitForConnectionUpdate((update) => !!update.qr)
@@ -152,20 +152,22 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 }
             }
 
-            sock.ev.on('connection.update', async (update) => {
+            sock.ev.on('connection.update', async (update: { connection: any; lastDisconnect: any; qr: any }) => {
                 const { connection, lastDisconnect, qr } = update
 
                 const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode
                 /** Connection closed for various reasons */
                 if (connection === 'close') {
                     if (statusCode !== DisconnectReason.loggedOut) {
-                        this.initVendor()
+                        this.initVendor().then((v) => this.listenOnEvents(v))
+                        return
                     }
 
                     if (statusCode === DisconnectReason.loggedOut) {
                         const PATH_BASE = join(process.cwd(), NAME_DIR_SESSION)
                         await rimraf(PATH_BASE)
-                        await this.initVendor()
+                        this.initVendor().then((v) => this.listenOnEvents(v))
+                        return
                     }
                 }
 
@@ -175,7 +177,6 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     const host = { ...sock?.user, phone: parseNumber }
                     this.emit('ready', true)
                     this.emit('host', host)
-                    this.vendor = sock
                 }
 
                 /** QR Code */

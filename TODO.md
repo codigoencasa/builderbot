@@ -49,7 +49,9 @@
 - [x] mysql port
 - [x] Cambiar todos los mensajes a ingles
 - [x] meta image, media, audio
-- [ ] save voice note 'resolve'
+- [x] save voice note 'resolve'
+- [ ] starterst .gitignore, .env precargado vacio
+- [ ] bailey need one restart ??
 - [ ] coverage
 - [ ] flowDynamic({media...})
 - [ ] test meta
