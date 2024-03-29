@@ -4,6 +4,8 @@ import { getMediaUrl } from './mediaUrl'
 import type { Message, ParamsIncomingMessage as ParamsIncomingMessage } from '../types'
 
 export const processIncomingMessage = async ({
+    messageId,
+    messageTimestamp,
     pushName,
     message,
     to,
@@ -164,5 +166,9 @@ export const processIncomingMessage = async ({
             // Lógica para manejar tipos de mensajes no reconocidos
             break
     }
-    return responseObj
+    return {
+        ...responseObj,
+        id: messageId,
+        timestamp: messageTimestamp,
+    }
 }
