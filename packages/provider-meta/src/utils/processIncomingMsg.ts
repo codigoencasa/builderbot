@@ -168,7 +168,7 @@ export const processIncomingMessage = async ({
     }
     return {
         ...responseObj,
-        id: messageId,
+        message_id: messageId,
         timestamp: messageTimestamp,
     }
 }

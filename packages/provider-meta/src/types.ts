@@ -45,6 +45,8 @@ export interface Order {
 }
 
 export interface Message {
+    message_id: string
+    timestamp: any
     type: string
     from: string
     to: string
