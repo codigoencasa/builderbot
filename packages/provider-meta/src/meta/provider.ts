@@ -20,7 +20,6 @@ import type {
     ParsedContact,
     Reaction,
     SaveFileOptions,
-    TextGenericParams,
     TextMessageBody,
 } from '../types'
 import { downloadFile, getProfile } from '../utils'
@@ -178,6 +177,21 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         return this.sendMessageMeta(body)
     }
 
+    sendImageUrl = async (to: string, url: string, caption = '') => {
+        to = parseMetaNumber(to);
+        const body ={
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to,
+            type: 'image',
+            image: {
+                link: url,
+                caption
+            },
+        }
+        return this.sendMessageMeta(body);
+    }
+
     sendVideo = async (to: string, pathVideo = null, caption: string) => {
         to = parseMetaNumber(to)
         if (!pathVideo) throw new Error(`MEDIA_INPUT_NULL_: ${pathVideo}`)
@@ -212,6 +226,22 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         }
         return this.sendMessageMeta(body)
     }
+
+    sendVideoUrl = async (to: string, url: string, caption = '') => {
+        to = parseMetaNumber(to);
+        const body = {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to,
+            type: 'video',
+            video: {
+                link: url,
+                caption
+            },
+        }
+        return this.sendMessageMeta(body);
+    }
+
     sendMedia = async (to: string, text = '', mediaInput: string) => {
         to = parseMetaNumber(to)
         const fileDownloaded = await utils.generalDownload(mediaInput)
@@ -238,6 +268,42 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             interactive: parseList,
         }
         return this.sendMessageMeta(body)
+    }
+
+    sendListComplete = async (to: string, header: string, text: string, footer: string, button: string, list: Record<string, any>) => {
+        to = parseMetaNumber(to);
+        const parseList = list.map((list) => ({
+            title: list.title,
+            rows: list.rows.map((row) => ({
+                id: row.id,
+                title: row.title,
+                description: row.description,
+            })),
+        }));
+        const body = {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to,
+            type: 'interactive',
+            interactive: {
+                type: 'list',
+                header: {
+                    type: 'text',
+                    text: header,
+                },
+                body: {
+                    text: text,
+                },
+                footer: {
+                    text: footer,
+                },
+                action: {
+                    button: button,
+                    sections: parseList,
+                },
+            },
+        };
+        return this.sendMessageMeta(body);
     }
 
     sendButtons = async (to: string, buttons: Button[] = [], text: string) => {
@@ -292,10 +358,93 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         return this.sendMessageMeta(body)
     }
 
-    sendTemplate = async (to: string, template: TextGenericParams) => {
-        to = parseMetaNumber(to)
-        const body: TextGenericParams = { ...template }
-        return this.sendMessageMeta(body)
+    sendButtonsMedia = async (to:string, media_type: string, buttons = [], text: string, url: string) => {
+        to = parseMetaNumber(to);
+        const parseButtons = buttons.map((btn, i) => ({
+            type: 'reply',
+            reply: {
+                id: `btn-${i}`,
+                title: btn.body.slice(0, 15),
+            },
+        }));
+        const body = {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to,
+            type: 'interactive',
+            interactive: {
+                type: 'button',
+                header: {
+                    type: media_type,
+                    [media_type === 'video' ? 'video' : 'image']: {
+                        link: url
+                    }
+                },
+                body: {
+                    text
+                },
+                action: {
+                    buttons: parseButtons
+                }
+            }
+        }
+        return this.sendMessageMeta(body);
+    }
+
+    sendTemplate = async (to: string, template: string, languageCode: string, components = []) => {
+        to = parseMetaNumber(to);
+        const body = {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to,
+            type: 'template',
+            template: {
+                name: template,
+                language: {
+                    code: languageCode // ---> examples: es_Mx, en_Us
+                },
+                components: components.length > 0 ? components : []
+            }
+        };
+        return this.sendMessageMeta(body);
+    }
+
+    sendFlow = async (to: string, headerText: string, bodyText: string, footerText: string, flowID: string , flowCta: string, screenName: string, data={}) => {
+        to = parseMetaNumber(to);
+        const body = {
+            messaging_product: 'whatsapp',
+            to,
+            recipient_type: 'individual',
+            type: 'interactive',
+            interactive: {
+                type: 'flow',
+                header: {
+                    type: 'text',
+                    text: headerText,
+                },
+                body:{
+                    text: bodyText
+                },
+                footer: {
+                    text: footerText,
+                },
+                action: {
+                    name: 'flow',
+                    parameters: {
+                        flow_message_version: '3',
+                        flow_action: 'navigate',
+                        flow_token: '<FLOW_TOKEN>',// opcional para cifrado con endpoint
+                        flow_id: flowID,
+                        flow_cta: flowCta,// open flow! -> mensaje del boton
+                        flow_action_payload: {
+                            screen: screenName,
+                            data: Array.isArray(data) && data.length > 0 ? data : {'<CUSTOM_KEY>': '<CUSTOM_VALUE>'}
+                        }
+                    }
+                }
+            }
+        }
+        return this.sendMessageMeta(body);
     }
 
     sendContacts = async (to: string, contacts: ParsedContact[] = []) => {
