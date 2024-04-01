@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/provider-twilio",
-    "version": "1.0.30-alpha.0",
+    "version": "1.0.31-alpha.0",
     "description": "> TODO: description",
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",

@@ -323,7 +323,7 @@ importers:
     packages/create-builderbot:
         dependencies:
             '@builderbot/cli':
-                specifier: ^1.0.30-alpha.0
+                specifier: ^1.0.31-alpha.0
                 version: link:../cli
         devDependencies:
             '@rollup/plugin-commonjs':
@@ -569,7 +569,7 @@ importers:
                 version: 2.1.2
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.0.30-alpha.0
+                specifier: ^1.0.31-alpha.0
                 version: link:../bot
             '@hapi/boom':
                 specifier: ^10.0.1
