@@ -102,32 +102,37 @@ export interface TextMessageBody {
         preview_url: boolean
         body: string
     }
-    image?: {
-        id: string
-        caption: string
-    }
-    video?: {
-        id: string
-        caption: string
-    }
+    image?: Image
+    video?: Video
     interactive?: any
     contacts?: any[]
     template?: TemplateMessage
 }
 
+interface Image {
+    id?: string
+    caption?: string
+    link?: string
+}
+
+interface Video {
+    id?: string
+    caption?: string
+    link?: string
+}
+
+
 interface TemplateMessage {
-    template: {
-        name: string
-        language: {
-            code: string
-        }
-        components: TemplateComponent[]
+    name: string
+    language: {
+        code: string
     }
+    components: TemplateComponent[]
 }
 
 interface TemplateComponent {
     type: 'header' | 'body' | 'button'
-    parameters: TemplateParameter[]
+    parameters?: TemplateParameter[]
 }
 
 interface TemplateParameter {
