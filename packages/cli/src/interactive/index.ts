@@ -1,5 +1,6 @@
 import { intro, outro, confirm, select, spinner, isCancel, cancel, note } from '@clack/prompts'
 import { existsSync } from 'fs'
+import { rename } from 'fs/promises'
 import { join } from 'path'
 import color from 'picocolors'
 
@@ -7,7 +8,6 @@ import { checkNodeVersion, checkGit } from '../check'
 import { PROVIDER_LIST, PROVIDER_DATA, AVAILABLE_LANGUAGES } from '../configuration'
 import { copyBaseApp } from '../create-app'
 import { startInteractiveLegacy } from '../interactive-legacy'
-import { rename } from 'fs/promises'
 
 interface CheckResult {
     pass: boolean
