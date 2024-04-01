@@ -2,7 +2,7 @@ import EventEmitter from 'node:events'
 import type polka from 'polka'
 import type Queue from 'queue-promise'
 
-import type { Message, MetaGlobalVendorArgs } from '../types'
+import type { Message, MetaGlobalVendorArgs, incomingMessage } from '../types'
 import { processIncomingMessage } from '../utils/processIncomingMsg'
 
 /**
@@ -97,7 +97,7 @@ export class MetaCoreVendor extends EventEmitter {
      */
     public incomingMsg: polka.Middleware = async (req: any, res: any) => {
         const globalVendorArgs: MetaGlobalVendorArgs = req['globalVendorArgs'] ?? null
-        const { body } = req
+        const body = req?.body as incomingMessage
         const { jwtToken, numberId, version } = globalVendorArgs
 
         const someErrors = this.extractStatus(body)
@@ -113,7 +113,9 @@ export class MetaCoreVendor extends EventEmitter {
         }
 
         const messages = body?.entry?.[0]?.changes?.[0]?.value?.messages
-        const contacts = req?.body?.entry?.[0]?.changes?.[0]?.value?.contacts
+        const contacts = body?.entry?.[0]?.changes?.[0]?.value?.contacts
+        const messageId = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0]?.id
+        const messageTimestamp = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0]?.timestamp
         if (!messages?.length) {
             res.statusCode = 200
             res.end('empty endpoint')
@@ -125,6 +127,8 @@ export class MetaCoreVendor extends EventEmitter {
             const to = body.entry[0].changes[0].value?.metadata?.display_phone_number
             const pushName = contact?.profile?.name
             const response: Message = await processIncomingMessage({
+                messageId,
+                messageTimestamp,
                 to,
                 pushName,
                 message,

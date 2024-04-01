@@ -165,7 +165,12 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
                     if (statusCode === DisconnectReason.loggedOut) {
                         const PATH_BASE = join(process.cwd(), NAME_DIR_SESSION)
-                        await rimraf(PATH_BASE)
+                        await rimraf(PATH_BASE, {
+                            retryDelay: 1000,
+                            maxRetries: 10,
+                            preserveRoot: true,
+                            signal: (new AbortController).signal
+                        }).catch((err)=>console.error(err?.message))
                         this.initVendor().then((v) => this.listenOnEvents(v))
                         return
                     }
