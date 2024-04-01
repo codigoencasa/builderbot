@@ -50,8 +50,8 @@
 - [x] Cambiar todos los mensajes a ingles
 - [x] meta image, media, audio
 - [x] save voice note 'resolve'
+- [x] bailey need one restart ??
 - [ ] starterst .gitignore, .env precargado vacio
-- [ ] bailey need one restart ??
 - [ ] coverage
 - [ ] flowDynamic({media...})
 - [ ] test meta
