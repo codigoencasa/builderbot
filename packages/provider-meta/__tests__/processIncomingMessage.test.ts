@@ -297,7 +297,8 @@ test('processIncomingMessage break', async () => {
         numberId: '12345',
     }
     const result: Message = await processIncomingMessage(params)
-    assert.equal(result, undefined)
+    assert.equal(result.message_id, undefined)
+    assert.equal(result.timestamp, undefined)
 })
 
 test.run()
