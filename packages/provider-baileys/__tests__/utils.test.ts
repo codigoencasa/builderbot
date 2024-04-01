@@ -11,6 +11,10 @@ jest.mock('qr-image', () => ({
     })),
 }))
 
+jest.mock('fs-extra', () => ({
+    emptyDir: jest.fn(),
+}))
+
 jest.mock('@builderbot/bot', () => ({
     utils: {
         cleanImage: jest.fn(),

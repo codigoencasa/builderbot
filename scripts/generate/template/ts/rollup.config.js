@@ -6,6 +6,8 @@ export default {
         file: 'dist/app.js',
         format: 'esm',
     },
-
+    onwarn: (warning) => {
+        if (warning.code === 'UNRESOLVED_IMPORT') return
+    },
     plugins: [typescript()],
 }

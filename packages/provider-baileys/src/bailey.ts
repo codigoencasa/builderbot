@@ -10,7 +10,6 @@ import { tmpdir } from 'os'
 import { join, basename, resolve } from 'path'
 import pino from 'pino'
 import type polka from 'polka'
-import { rimraf } from 'rimraf'
 import type { IStickerOptions } from 'wa-sticker-formatter'
 import { Sticker } from 'wa-sticker-formatter'
 
@@ -33,7 +32,7 @@ import {
     useMultiFileAuthState,
 } from './baileyWrapper'
 import type { BaileyGlobalVendorArgs } from './type'
-import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber } from './utils'
+import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber, emptyDirSessions } from './utils'
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/baileys.log`),
@@ -165,12 +164,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
                     if (statusCode === DisconnectReason.loggedOut) {
                         const PATH_BASE = join(process.cwd(), NAME_DIR_SESSION)
-                        await rimraf(PATH_BASE, {
-                            retryDelay: 1000,
-                            maxRetries: 10,
-                            preserveRoot: true,
-                            signal: new AbortController().signal,
-                        }).catch((err) => console.error(err?.message))
+                        await emptyDirSessions(PATH_BASE)
                         this.initVendor().then((v) => this.listenOnEvents(v))
                         return
                     }

@@ -14,7 +14,10 @@
     "baseUrl": "./",
     "rootDir": "./",
     "incremental": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "~/*": ["./src/*"]
+    }
   },
   "include": [
     "**/*.js",
@@ -22,6 +25,10 @@
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**e2e**",
+    "**mock**"
   ]
 }

@@ -567,6 +567,9 @@ importers:
             fluent-ffmpeg:
                 specifier: ^2.1.2
                 version: 2.1.2
+            fs-extra:
+                specifier: ^11.1.1
+                version: 11.2.0
         devDependencies:
             '@builderbot/bot':
                 specifier: ^1.0.31-alpha.0
