@@ -7,6 +7,7 @@ import { checkNodeVersion, checkGit } from '../check'
 import { PROVIDER_LIST, PROVIDER_DATA, AVAILABLE_LANGUAGES } from '../configuration'
 import { copyBaseApp } from '../create-app'
 import { startInteractiveLegacy } from '../interactive-legacy'
+import { rename } from 'fs/promises'
 
 interface CheckResult {
     pass: boolean
@@ -64,7 +65,9 @@ const createApp = async (templateName: string | null): Promise<void> => {
     ]
     const indexOfPath: string | undefined = possiblesPath.find((a) => existsSync(a))
     if (!indexOfPath) throw new Error('TEMPLATE_PATH_NOT_FOUND: ' + templateName)
-    await copyBaseApp(indexOfPath, join(process.cwd(), templateName))
+    const pathTemplate = join(process.cwd(), templateName)
+    await copyBaseApp(indexOfPath, pathTemplate)
+    await rename(join(pathTemplate, '_gitignore'), join(pathTemplate, '.gitignore'))
 }
 
 const startInteractive = async (): Promise<void> => {
