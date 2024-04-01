@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint . --no-ignore",
-    "dev": "node --no-warnings --watch-path=./src ./src/app.js",
+    "dev": "npm run lint && node --no-warnings --watch-path=./src ./src/app.js",
     "start": "node ./src/app.js"
   },
   "keywords": [],

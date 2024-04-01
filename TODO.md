@@ -51,7 +51,9 @@
 - [x] meta image, media, audio
 - [x] save voice note 'resolve'
 - [x] bailey need one restart ??
-- [ ] starterst .gitignore, .env precargado vacio
+- [x] problema session docker borrar
+- [x] starterst .gitignore, .env precargado vacio
+- [ ] elinter
 - [ ] coverage
 - [ ] flowDynamic({media...})
 - [ ] test meta
