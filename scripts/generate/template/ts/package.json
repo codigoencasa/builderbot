@@ -7,7 +7,7 @@
     "scripts": {
         "start": "node ./dist/app.js",
         "lint": "eslint . --no-ignore",
-        "dev": "node --no-warnings --env-file=.env --import=tsx --watch-path=./src ./src/app.ts",
+        "dev": "node --no-warnings --import=tsx --watch-path=./src ./src/app.ts",
         "build": "npx rollup -c"
     },
     "keywords": [],

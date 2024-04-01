@@ -1,3 +1,4 @@
+import { join } from 'path'
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@builderbot/bot'
 import { JsonFileDB as Database } from '@builderbot/database-json'
 import { MetaProvider as Provider } from '@builderbot/provider-meta'

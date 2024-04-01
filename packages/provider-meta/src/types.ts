@@ -45,8 +45,8 @@ export interface Order {
 }
 
 export interface Message {
-    message_id: string
-    timestamp: any
+    message_id?: string
+    timestamp?: any
     type: string
     from: string
     to: string
@@ -106,32 +106,37 @@ export interface TextMessageBody {
         preview_url: boolean
         body: string
     }
-    image?: {
-        id: string
-        caption: string
-    }
-    video?: {
-        id: string
-        caption: string
-    }
+    image?: Image
+    video?: Video
     interactive?: any
     contacts?: any[]
     template?: TemplateMessage
 }
 
+interface Image {
+    id?: string
+    caption?: string
+    link?: string
+}
+
+interface Video {
+    id?: string
+    caption?: string
+    link?: string
+}
+
+
 interface TemplateMessage {
-    template: {
-        name: string
-        language: {
-            code: string
-        }
-        components: TemplateComponent[]
+    name: string
+    language: {
+        code: string
     }
+    components: TemplateComponent[]
 }
 
 interface TemplateComponent {
     type: 'header' | 'body' | 'button'
-    parameters: TemplateParameter[]
+    parameters?: TemplateParameter[]
 }
 
 interface TemplateParameter {
@@ -184,7 +189,7 @@ export interface Value {
     messaging_product: string
     metadata: Metadata
     contacts: Contact[]
-    messages: Message[]
+    messages: MessageFromMeta[]
 }
 
 export interface Metadata {
@@ -201,7 +206,7 @@ export interface Profile {
     name: string
 }
 
-export interface Message {
+export interface MessageFromMeta {
     from: string
     id: string
     timestamp: string

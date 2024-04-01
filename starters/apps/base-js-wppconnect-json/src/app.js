@@ -1,3 +1,4 @@
+import { join } from 'path'
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@builderbot/bot'
 import { JsonFileDB as Database } from '@builderbot/database-json'
 import { WPPConnectProvider as Provider } from '@builderbot/provider-wppconnect'

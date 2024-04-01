@@ -139,7 +139,7 @@ export const processIncomingMessage = async ({
                         name: message.contacts[0].name,
                         phones: message.contacts[0].phones,
                     },
-                ],
+                ] as any,
                 to,
                 body: utils.generateRefProvider('_event_contacts_'),
                 pushName,
