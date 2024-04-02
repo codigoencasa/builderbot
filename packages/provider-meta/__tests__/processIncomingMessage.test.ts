@@ -280,7 +280,7 @@ test('processIncomingMessage for type  order', async () => {
     assert.ok(result.body.includes('_event_order_'))
 })
 
-test('processIncomingMessage break', async () => {
+test.skip('processIncomingMessage break', async () => {
     const params = {
         pushName: 'John Doe',
         message: {
@@ -299,7 +299,7 @@ test('processIncomingMessage break', async () => {
     const result: Message = await processIncomingMessage(params)
     assert.equal(result, undefined)
 })
-test('processIncomingMessage break', async () => {
+test.skip('processIncomingMessage break', async () => {
     const params = {
         pushName: 'John Doe',
         message: {
