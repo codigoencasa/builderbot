@@ -6,6 +6,16 @@ import { tmpdir, platform } from 'os'
 import { join } from 'path'
 import * as qr from 'qr-image'
 
+import { emptyDir } from 'fs-extra'
+
+const emptyDirSessions = async (pathBase: string) =>
+    new Promise((resolve, reject) => {
+        emptyDir(pathBase, (err) => {
+            if (err) reject(err)
+            resolve(true)
+        })
+    })
+
 const wwebGetChromeExecutablePath = () => {
     const myPlatform = platform()
     switch (myPlatform) {
@@ -56,7 +66,7 @@ const wwebGenerateImage = async (base64: string, name: string = 'qr.png'): Promi
 const wwebDeleteTokens = (session: string) => {
     try {
         const pathTokens = join(process.cwd(), session)
-        unlinkSync(pathTokens)
+        emptyDirSessions(pathTokens)
         console.log('Tokens clean..')
     } catch (e) {
         return

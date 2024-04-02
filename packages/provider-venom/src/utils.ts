@@ -4,6 +4,15 @@ import * as http from 'http'
 import * as https from 'https'
 import { tmpdir } from 'os'
 import { join } from 'path'
+import { emptyDir } from 'fs-extra'
+
+const emptyDirSessions = async (pathBase: string) =>
+    new Promise((resolve, reject) => {
+        emptyDir(pathBase, (err) => {
+            if (err) reject(err)
+            resolve(true)
+        })
+    })
 
 const venomCleanNumber = (number: string, full: boolean = false): string => {
     number = number.replace('@c.us', '').replace('+', '').replace(/\s/g, '')
@@ -67,7 +76,7 @@ const venomDownloadMedia = (url: string): Promise<string> => {
 const venomDeleteTokens = (session: string) => {
     try {
         const pathTokens = join(process.cwd(), session)
-        unlinkSync(pathTokens)
+        emptyDirSessions(pathTokens)
         console.log('Tokens clean..')
     } catch (e) {
         return
