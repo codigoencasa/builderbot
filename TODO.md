@@ -56,6 +56,7 @@
 - [x] elinter
 - [x] Cambiar readme de los mono proyectos
 - [x] cambiar mensajes a ingles
+- [x] emptyDir to other
 - [ ] coverage
 - [ ] test meta
 - [ ] try catch error http
