@@ -1,8 +1,17 @@
 import { utils } from '@builderbot/bot'
-import { unlinkSync, writeFile } from 'fs'
+import { writeFile } from 'fs'
+import { emptyDir } from 'fs-extra'
 import { join } from 'path'
 
 import type { Response } from './types'
+
+const emptyDirSessions = async (pathBase: string) =>
+    new Promise((resolve, reject) => {
+        emptyDir(pathBase, (err) => {
+            if (err) reject(err)
+            resolve(true)
+        })
+    })
 
 const WppConnectCleanNumber = (number: string, full: boolean = false): string => {
     number = number.replace('@c.us', '').replace('+', '').replace(/\s/g, '')
@@ -26,7 +35,7 @@ const writeFilePromise = (pathQr: string, response: Response): Promise<boolean> 
 const WppDeleteTokens = (session: string) => {
     try {
         const pathTokens = join(process.cwd(), session)
-        unlinkSync(pathTokens)
+        emptyDirSessions(pathTokens)
         console.log('Tokens clean..')
     } catch (e) {
         return
