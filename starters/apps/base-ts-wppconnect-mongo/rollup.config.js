@@ -7,7 +7,7 @@ export default {
         format: 'esm',
     },
     onwarn: (warning) => {
-        if (warning.code === 'UNRESOLVED_IMPORT') return;
+        if (warning.code === 'UNRESOLVED_IMPORT') return
     },
     plugins: [typescript()],
 }
