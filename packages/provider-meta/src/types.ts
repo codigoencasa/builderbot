@@ -1,8 +1,48 @@
 import type { GlobalVendorArgs } from '@builderbot/bot/dist/types'
 
+interface Image {
+    id?: string
+    caption?: string
+    link?: string
+}
+
+interface Video {
+    id?: string
+    caption?: string
+    link?: string
+}
+
+interface TemplateMessage {
+    name: string
+    language: {
+        code: string
+    }
+    components: TemplateComponent[]
+}
+
+interface TemplateComponent {
+    type: 'header' | 'body' | 'button'
+    parameters?: TemplateParameter[]
+}
+
+interface Section {
+    title: string
+    rows: Row[]
+}
+
+interface Row {
+    id: string
+    title: string
+    description: string
+}
+
+interface TemplateParameter {
+    type: string
+}
 export interface MediaResponse {
     url?: string
 }
+
 export interface MetaList {
     header: {
         type: string
@@ -16,27 +56,27 @@ export interface MetaList {
     }
     action: {
         button: string
-        sections: {
-            title: string
-            rows: {
-                id: string
-                title: string
-                description: string
-            }[]
-        }[]
+        sections: Section[]
     }
 }
 
-export type MetaGlobalVendorArgs = {
+export interface MetaGlobalVendorArgs extends GlobalVendorArgs {
     jwtToken: string
     numberId: string
     verifyToken: string
     version: string
-} & GlobalVendorArgs
+}
 
 export interface Order {
     catalog_id: string
     product_items: string[]
+}
+
+export interface Contact {
+    profile: Profile
+    wa_id: string
+    name: string
+    phones: string[]
 }
 
 export interface Message {
@@ -78,7 +118,7 @@ export type TextGenericParams = {
     [key: string]: any
 }
 
-export type ParsedContact = {
+export interface ParsedContact {
     name: {
         formatted_name: string
         first_name: string
@@ -108,39 +148,11 @@ export interface TextMessageBody {
     template?: TemplateMessage
 }
 
-interface Image {
-    id?: string
-    caption?: string
-    link?: string
-}
-
-interface Video {
-    id?: string
-    caption?: string
-    link?: string
-}
-
-interface TemplateMessage {
-    name: string
-    language: {
-        code: string
-    }
-    components: TemplateComponent[]
-}
-
-interface TemplateComponent {
-    type: 'header' | 'body' | 'button'
-    parameters?: TemplateParameter[]
-}
-
-interface TemplateParameter {
-    type: string
-}
-
 export interface Reaction {
     message_id: string
     emoji: string
 }
+
 export interface Localization {
     long_number: string
     lat_number: string
@@ -164,7 +176,7 @@ export interface WhatsAppProfile {
     id: string
 }
 
-export interface incomingMessage {
+export interface IncomingMessage {
     object: string
     entry: Entry[]
 }

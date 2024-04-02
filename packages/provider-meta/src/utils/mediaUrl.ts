@@ -1,7 +1,6 @@
 import axios from 'axios'
 import type { AxiosResponse } from 'axios'
-
-import type { MediaResponse } from '../types'
+import type { MediaResponse } from '~/types'
 
 async function getMediaUrl(
     version: string,

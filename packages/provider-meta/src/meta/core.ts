@@ -2,8 +2,8 @@ import EventEmitter from 'node:events'
 import type polka from 'polka'
 import type Queue from 'queue-promise'
 
-import type { Message, MetaGlobalVendorArgs, incomingMessage } from '../types'
-import { processIncomingMessage } from '../utils/processIncomingMsg'
+import type { Message, MetaGlobalVendorArgs, IncomingMessage } from '~/types'
+import { processIncomingMessage } from '~/utils/processIncomingMsg'
 
 /**
  * Class representing MetaCoreVendor, a vendor class for meta core functionality.
@@ -97,7 +97,7 @@ export class MetaCoreVendor extends EventEmitter {
      */
     public incomingMsg: polka.Middleware = async (req: any, res: any) => {
         const globalVendorArgs: MetaGlobalVendorArgs = req['globalVendorArgs'] ?? null
-        const body = req?.body as incomingMessage
+        const body = req?.body as IncomingMessage
         const { jwtToken, numberId, version } = globalVendorArgs
 
         const someErrors = this.extractStatus(body)
