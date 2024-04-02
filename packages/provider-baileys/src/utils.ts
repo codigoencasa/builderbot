@@ -1,8 +1,16 @@
 import { utils } from '@builderbot/bot'
 import type { WriteStream } from 'fs'
 import { createWriteStream } from 'fs'
+import { emptyDir } from 'fs-extra'
 import * as qr from 'qr-image'
 
+const emptyDirSessions = async (pathBase: string) =>
+    new Promise((resolve, reject) => {
+        emptyDir(pathBase, (err) => {
+            if (err) reject(err)
+            resolve(true)
+        })
+    })
 /**
  * Cleans the WhatsApp number format.
  * @param number The WhatsApp number to be cleaned.
@@ -46,4 +54,4 @@ const baileyIsValidNumber = (rawNumber: string): boolean => {
     return !exist
 }
 
-export { baileyCleanNumber, baileyGenerateImage, baileyIsValidNumber }
+export { baileyCleanNumber, baileyGenerateImage, baileyIsValidNumber, emptyDirSessions }

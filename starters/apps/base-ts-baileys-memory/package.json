@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node ./dist/app.js",
     "lint": "eslint . --no-ignore",
-    "dev": "node --no-warnings --import=tsx --watch-path=./src ./src/app.ts",
+    "dev": "npm run lint && node --no-warnings --import=tsx --watch-path=./src ./src/app.ts",
     "build": "npx rollup -c"
   },
   "keywords": [],
@@ -16,13 +16,15 @@
     "@builderbot/provider-baileys": "latest"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@types/node": "^20.11.30",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.4.0",
     "eslint": "^8.52.0",
     "eslint-plugin-builderbot": "latest",
     "rollup": "^4.10.0",
     "rollup-plugin-typescript2": "^0.36.0",
-    "tsx": "^4.7.1"
+    "tsx": "^4.7.1",
+    "typescript": "^5.4.3"
   },
   "author": "",
   "license": "ISC"

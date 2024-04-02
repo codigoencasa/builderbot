@@ -64,7 +64,7 @@ _tmp_*
 .nx/*
 nonExistingFilePath
 *.opus 
-
+!.gitignore
 /packages/provider-web-whatsapp/bot.qr.png
 /packages/bot/__mock__/*.opus
 /packages/provider-baileys/*_sessions

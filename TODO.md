@@ -51,14 +51,15 @@
 - [x] meta image, media, audio
 - [x] save voice note 'resolve'
 - [x] bailey need one restart ??
-- [ ] starterst .gitignore, .env precargado vacio
+- [x] problema session docker borrar
+- [x] starterst .gitignore, .env precargado vacio
+- [x] elinter
+- [x] Cambiar readme de los mono proyectos
+- [x] cambiar mensajes a ingles
 - [ ] coverage
-- [ ] flowDynamic({media...})
 - [ ] test meta
 - [ ] try catch error http
 - [ ] test twilio
-- [ ] Cambiar readme de los mono proyectos
 - [ ] meta recuerda activar los dos webhooks
 - [ ] cambiar el CONTRIBUTING.md
-- [ ] cambiar mensajes a ingles
 - [ ] state get('detail.name')

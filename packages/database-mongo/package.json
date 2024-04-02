@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/database-mongo",
-    "version": "1.0.30-alpha.0",
+    "version": "1.0.32-alpha.0",
     "description": "Esto es el conector a mongo DB",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",

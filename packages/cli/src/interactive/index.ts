@@ -1,5 +1,6 @@
 import { intro, outro, confirm, select, spinner, isCancel, cancel, note } from '@clack/prompts'
 import { existsSync } from 'fs'
+import { rename } from 'fs/promises'
 import { join } from 'path'
 import color from 'picocolors'
 
@@ -64,7 +65,9 @@ const createApp = async (templateName: string | null): Promise<void> => {
     ]
     const indexOfPath: string | undefined = possiblesPath.find((a) => existsSync(a))
     if (!indexOfPath) throw new Error('TEMPLATE_PATH_NOT_FOUND: ' + templateName)
-    await copyBaseApp(indexOfPath, join(process.cwd(), templateName))
+    const pathTemplate = join(process.cwd(), templateName)
+    await copyBaseApp(indexOfPath, pathTemplate)
+    await rename(join(pathTemplate, '_gitignore'), join(pathTemplate, '.gitignore'))
 }
 
 const startInteractive = async (): Promise<void> => {

@@ -323,7 +323,7 @@ importers:
     packages/create-builderbot:
         dependencies:
             '@builderbot/cli':
-                specifier: ^1.0.30-alpha.0
+                specifier: ^1.0.32-alpha.0
                 version: link:../cli
         devDependencies:
             '@rollup/plugin-commonjs':
@@ -567,9 +567,12 @@ importers:
             fluent-ffmpeg:
                 specifier: ^2.1.2
                 version: 2.1.2
+            fs-extra:
+                specifier: ^11.1.1
+                version: 11.2.0
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.0.30-alpha.0
+                specifier: ^1.0.32-alpha.0
                 version: link:../bot
             '@hapi/boom':
                 specifier: ^10.0.1

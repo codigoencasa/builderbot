@@ -3,11 +3,6 @@ import type { GlobalVendorArgs } from '@builderbot/bot/dist/types'
 export interface MediaResponse {
     url?: string
 }
-export interface Contact {
-    name: string
-    phones: string[]
-}
-
 export interface MetaList {
     header: {
         type: string
@@ -199,6 +194,8 @@ export interface Metadata {
 export interface ContactMeta {
     profile: Profile
     wa_id: string
+    name: string
+    phones: string[]
 }
 
 export interface Profile {
