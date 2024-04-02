@@ -182,7 +182,7 @@ export interface Change {
 export interface Value {
     messaging_product: string
     metadata: Metadata
-    contacts: Contact[]
+    contacts: ContactMeta[]
     messages: MessageFromMeta[]
 }
 
@@ -191,7 +191,7 @@ export interface Metadata {
     phone_number_id: string
 }
 
-export interface Contact {
+export interface ContactMeta {
     profile: Profile
     wa_id: string
     name: string

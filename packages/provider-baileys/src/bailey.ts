@@ -268,7 +268,6 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 if (payload.from === 'status@broadcast') return
 
                 // if (payload?.key?.fromMe) return
-
                 if (!baileyIsValidNumber(payload.from)) {
                     return
                 }
