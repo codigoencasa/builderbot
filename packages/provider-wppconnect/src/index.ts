@@ -6,7 +6,7 @@ import { createReadStream } from 'fs'
 import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
 import { tmpdir } from 'os'
-import { basename, join } from 'path'
+import { basename, join, resolve } from 'path'
 import type { Middleware } from 'polka'
 
 import type { SaveFileOptions } from './types'
@@ -318,7 +318,7 @@ class WPPConnectProvider extends ProviderClass {
             const fileName = this.generateFileName(extension)
             const pathFile = join(options?.path ?? tmpdir(), fileName)
             await writeFile(pathFile, buffer)
-            return pathFile
+            return resolve(pathFile)
         } catch (err) {
             console.log(`[Error]:`, err.message)
             return 'ERROR'

@@ -1,16 +1,18 @@
 import { utils } from '@builderbot/bot'
 
 import { getMediaUrl } from './mediaUrl'
-import type { Message, ParamasIncomingMessage } from '../types'
+import type { Message, ParamsIncomingMessage as ParamsIncomingMessage } from '../types'
 
 export const processIncomingMessage = async ({
+    messageId,
+    messageTimestamp,
     pushName,
     message,
     to,
     jwtToken,
     version,
     numberId,
-}: ParamasIncomingMessage): Promise<Message> => {
+}: ParamsIncomingMessage): Promise<Message> => {
     let responseObj: Message
 
     switch (message.type) {
@@ -137,7 +139,7 @@ export const processIncomingMessage = async ({
                         name: message.contacts[0].name,
                         phones: message.contacts[0].phones,
                     },
-                ],
+                ] as any,
                 to,
                 body: utils.generateRefProvider('_event_contacts_'),
                 pushName,
@@ -164,5 +166,9 @@ export const processIncomingMessage = async ({
             // Lógica para manejar tipos de mensajes no reconocidos
             break
     }
-    return responseObj
+    return {
+        ...responseObj,
+        message_id: messageId,
+        timestamp: messageTimestamp,
+    }
 }

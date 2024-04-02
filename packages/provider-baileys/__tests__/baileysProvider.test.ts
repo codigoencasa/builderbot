@@ -3,11 +3,35 @@ import { BaileysProvider } from '../src'
 import path from 'path'
 import { IStickerOptions } from 'wa-sticker-formatter'
 import fs from 'fs'
+import mime from 'mime-types'
+import { utils } from '@builderbot/bot'
+import { makeInMemoryStore, useMultiFileAuthState } from '@whiskeysockets/baileys'
 
 const phoneNumber = '+123456789'
 
 jest.mock('@whiskeysockets/baileys', () => ({
     downloadMediaMessage: jest.fn(),
+    proto: {
+        Message: {
+            fromObject: jest.fn().mockReturnValue({}),
+        },
+    },
+    useMultiFileAuthState: jest.fn().mockImplementation(() => ({
+        state: { creds: {}, keys: {} },
+        saveCreds: jest.fn(),
+    })),
+
+    makeInMemoryStore: jest.fn().mockReturnValue({
+        readFromFile: jest.fn(),
+        writeToFile: jest.fn(),
+        bind: jest.fn(),
+    }),
+    makeWASocketOther: jest.fn().mockImplementation(() => ({
+        ev: { on: jest.fn() },
+        authState: { creds: { registered: false } },
+        waitForConnectionUpdate: jest.fn(),
+        requestPairingCode: jest.fn(),
+    })),
 }))
 
 jest.mock('fs/promises', () => ({
@@ -24,6 +48,7 @@ jest.mock('wa-sticker-formatter', () => {
 
 jest.mock('../src/utils', () => ({
     baileyCleanNumber: jest.fn().mockImplementation(() => phoneNumber),
+    baileyIsValidNumber: jest.fn((number: string) => number === '1234567890'),
 }))
 
 const mimeType = 'text/plain'
@@ -32,6 +57,8 @@ jest.mock('mime-types', () => ({
     lookup: jest.fn().mockImplementation(() => mimeType),
     extension: jest.fn().mockImplementation(() => '.png'),
 }))
+
+jest.mock('@builderbot/bot')
 
 const mockSendSuccess = jest.fn().mockImplementation(() => 'success') as any
 
@@ -48,7 +75,7 @@ describe('#BaileysProvider', () => {
             usePairingCode: true,
             browser: ['Ubuntu', 'Chrome', '20.0.04'],
             phoneNumber: '+123456789',
-            useBaileysStore: false,
+            useBaileysStore: true,
             port: 3001,
         }
 
@@ -107,11 +134,10 @@ describe('#BaileysProvider', () => {
     })
 
     describe('#getMessage', () => {
-        test.skip('should return undefined when store is not present', async () => {
+        test('should return undefined when store is not present', async () => {
             // Arrange
             const mockedKey = { remoteJid: 'exampleRemoteJid', id: 'exampleId' }
             provider.store = null as any
-
             // Act
             const result = await provider['getMessage'](mockedKey)
 
@@ -153,7 +179,8 @@ describe('#BaileysProvider', () => {
             // Assert
             expect(getMimeTypeSpy).toHaveBeenCalled()
             expect(generateFileNameSpy).toHaveBeenCalled()
-            expect(filePath).toEqual('/tmp/mock-file.jpeg')
+            expect(filePath).toContain('mock-file.jpeg')
+            expect(path.isAbsolute(filePath)).toBe(true)
         })
 
         test('should save a file and return the path', async () => {
@@ -172,7 +199,8 @@ describe('#BaileysProvider', () => {
             // Assert
             expect(getMimeTypeSpy).toHaveBeenCalled()
             expect(generateFileNameSpy).toHaveBeenCalled()
-            expect(filePath).toEqual('/tmp/mock-file.jpeg')
+            expect(filePath).toContain('mock-file.jpeg')
+            expect(path.isAbsolute(filePath)).toBe(true)
         })
 
         test('should throw an error when MIME type is not found', async () => {
@@ -410,6 +438,7 @@ describe('#BaileysProvider', () => {
                 { quoted: messages }
             )
         })
+
         test('should send a location message null', async () => {
             // Arrange
             const remoteJid = 'recipient@example.com'
@@ -728,7 +757,86 @@ describe('#BaileysProvider', () => {
         })
     })
 
-    describe('#busEvents ', () => {
+    describe('#sendMedia', () => {
+        test('should send image when provided with image URL', async () => {
+            // Arrange
+            const number = '+123456789'
+            const imageUrl = 'https://example.com/image.jpg'
+            const text = 'Hello World'
+            const fileDownloaded = 'path/to/downloaded/image.jpg'
+            ;(utils.generalDownload as jest.MockedFunction<typeof utils.generalDownload>).mockResolvedValue(
+                fileDownloaded
+            )
+            jest.spyOn(mime, 'lookup').mockReturnValue('image/jpeg')
+            const sendImageSpy = jest.spyOn(provider, 'sendImage').mockImplementation(async () => undefined)
+
+            // Act
+            await provider.sendMedia(number, imageUrl, text)
+
+            // Assert
+            expect(sendImageSpy).toHaveBeenCalled()
+            expect(utils.generalDownload).toHaveBeenCalledWith(imageUrl)
+        })
+
+        test('should send video when provided with video URL', async () => {
+            // Arrange
+            const number = '+123456789'
+            const videoUrl = 'https://example.com/video.mp4'
+            const text = 'Hello World'
+            const fileDownloaded = 'path/to/downloaded/audio.mp3'
+            ;(utils.generalDownload as jest.MockedFunction<typeof utils.generalDownload>).mockResolvedValue(
+                fileDownloaded
+            )
+            jest.spyOn(mime, 'lookup').mockReturnValue('video/mp4')
+            const sendVideoSpy = jest.spyOn(provider, 'sendVideo').mockImplementation(async () => undefined)
+
+            // Act
+            await provider.sendMedia(number, videoUrl, text)
+            // Assert
+            expect(sendVideoSpy).toHaveBeenCalled()
+            expect(utils.generalDownload).toHaveBeenCalledWith(videoUrl)
+        })
+
+        test('should send audio when provided with audio URL', async () => {
+            // Arrange
+            const number = '+123456789'
+            const audioUrl = 'https://example.com/audio.mp3'
+            const text = 'Hello World'
+            const fileDownloaded = 'path/to/downloaded/audio.mp3'
+            ;(utils.generalDownload as jest.MockedFunction<typeof utils.generalDownload>).mockResolvedValue(
+                fileDownloaded
+            )
+            jest.spyOn(mime, 'lookup').mockReturnValue('audio/mp3')
+            const sendAudioSpy = jest.spyOn(provider, 'sendAudio').mockImplementation(async () => undefined)
+            // Act
+            await provider.sendMedia(number, audioUrl, text)
+
+            // Assert
+            expect(sendAudioSpy).toHaveBeenCalled()
+            expect(utils.generalDownload).toHaveBeenCalledWith(audioUrl)
+        })
+
+        test('should send file when provided with file URL', async () => {
+            // Arrange
+            const number = '+123456789'
+            const fileUrl = 'https://example.com/test.pdf'
+            const text = 'Hello World'
+            const fileDownloaded = 'path/to/downloaded/test.pdf'
+            ;(utils.generalDownload as jest.MockedFunction<typeof utils.generalDownload>).mockResolvedValue(
+                fileDownloaded
+            )
+            jest.spyOn(mime, 'lookup').mockReturnValue('text/plain')
+            const sendFileSpy = jest.spyOn(provider, 'sendFile').mockImplementation(async () => undefined)
+            // Act
+            await provider.sendMedia(number, fileUrl, text)
+
+            // Assert
+            expect(sendFileSpy).toHaveBeenCalled()
+            expect(utils.generalDownload).toHaveBeenCalledWith(fileUrl)
+        })
+    })
+
+    describe('#busEvents - messages.upsert ', () => {
         test('Should return undefine if the type is different from notify', () => {
             // Arrange
             const message = {
@@ -741,6 +849,7 @@ describe('#BaileysProvider', () => {
             // Assert
             expect(resul).toBeUndefined()
         })
+
         test('Should return undefine if the type message is equal from EPHEMERAL_SETTING', () => {
             // Arrange
             const message = {
@@ -760,6 +869,261 @@ describe('#BaileysProvider', () => {
 
             // Assert
             expect(resul).toBeUndefined()
+        })
+
+        test('Detect location in a message', async () => {
+            // Arrange
+            const mockMessage = {
+                message: {
+                    locationMessage: {
+                        degreesLatitude: 40.7128,
+                        degreesLongitude: -74.006,
+                    },
+                },
+                pushName: 'Sender Name',
+                key: {
+                    remoteJid: phoneNumber,
+                },
+            }
+
+            // Act
+            await provider['busEvents']()[0].func({ messages: [mockMessage], type: 'notify' })
+
+            // Assert
+            expect(provider.emit).toHaveBeenCalled()
+        })
+
+        test('Detect video in a message', async () => {
+            // Arrange
+            const mockMessage = {
+                message: {
+                    videoMessage: {
+                        url: 'https://example.com/video.mp4',
+                    },
+                },
+                pushName: 'Sender Name',
+                key: {
+                    remoteJid: 'remoteJid',
+                },
+            }
+
+            // Act
+            await provider['busEvents']()[0].func({ messages: [mockMessage], type: 'notify' })
+            // Assert
+            expect(provider.emit).toHaveBeenCalled()
+        })
+
+        test('Detect sticker in a message', async () => {
+            // Arrange
+            const mockMessage = {
+                message: {
+                    stickerMessage: {},
+                },
+                pushName: 'Sender Name',
+                key: {
+                    remoteJid: 'remoteJid',
+                },
+            }
+
+            // Act
+            await provider['busEvents']()[0].func({ messages: [mockMessage], type: 'notify' })
+
+            // Assert
+            expect(provider.emit).toHaveBeenCalled()
+        })
+
+        test('Detectar imagen en un mensaje', async () => {
+            // Arrange
+            const mockMessage = {
+                message: {
+                    imageMessage: {},
+                },
+                pushName: 'Sender Name',
+                key: {
+                    remoteJid: 'remoteJid',
+                },
+            }
+
+            // Act
+            await provider['busEvents']()[0].func({ messages: [mockMessage], type: 'notify' })
+
+            // Assert
+            expect(provider.emit).toHaveBeenCalled()
+        })
+
+        test('Detect file in a message', async () => {
+            // Arrange
+            const mockMessage = {
+                message: {
+                    documentMessage: {},
+                },
+                pushName: 'Sender Name',
+                key: {
+                    remoteJid: 'remoteJid',
+                },
+            }
+
+            // Act
+            await provider['busEvents']()[0].func({ messages: [mockMessage], type: 'notify' })
+
+            // Assert
+            expect(provider.emit).toHaveBeenCalled()
+        })
+
+        test('Detect voice memo in a message', async () => {
+            // Arrange
+            const mockMessage = {
+                message: {
+                    audioMessage: {},
+                },
+                pushName: 'Sender Name',
+                key: {
+                    remoteJid: 'remoteJid',
+                },
+            }
+
+            // Act
+            await provider['busEvents']()[0].func({ messages: [mockMessage], type: 'notify' })
+
+            // Assert
+            expect(provider.emit).toHaveBeenCalled()
+        })
+
+        test('Detect broadcast in a message', async () => {
+            // Arrange
+            const mockMessage = {
+                message: {},
+                key: {
+                    remoteJid: 'status@broadcast',
+                },
+            }
+
+            // Act
+            const response = await provider['busEvents']()[0].func({ messages: [mockMessage], type: 'notify' })
+
+            // Assert
+            expect(response).toBeUndefined()
+        })
+
+        test('Invalid number', async () => {
+            // Arrange
+            const mockMessage = {
+                pushName: 'Usuario1',
+                key: {
+                    remoteJid: 'remoteJid',
+                },
+                message: {
+                    extendedTextMessage: {
+                        text: 'Hola, ¿cómo estás?',
+                    },
+                },
+                from: '0987654321',
+            }
+            // Act
+            const response = await provider['busEvents']()[0].func({ messages: [mockMessage], type: 'notify' })
+
+            // Assert
+            expect(response).toBeUndefined()
+        })
+
+        test('btnCtx definite', async () => {
+            // Arrange
+            const mockMessage = {
+                pushName: 'Usuario1',
+                key: {
+                    remoteJid: '1234567890',
+                },
+                from: '1234567890',
+                message: {
+                    buttonsResponseMessage: {
+                        selectedDisplayText: 'Texto del botón',
+                    },
+                },
+            }
+            // Act
+            provider['busEvents']()[0].func({ messages: [mockMessage], type: 'notify' })
+
+            // Assert
+            expect(provider.emit).toHaveBeenCalled()
+        })
+
+        test('listRowId definite', async () => {
+            // Arrange
+            const mockMessage = {
+                message: {
+                    listResponseMessage: {
+                        title: 'Título de la lista',
+                    },
+                },
+                key: {
+                    remoteJid: '1234567890',
+                },
+                from: '1234567890',
+            }
+
+            // Act
+            provider['busEvents']()[0].func({ messages: [mockMessage], type: 'notify' })
+
+            // Assert
+            expect(provider.emit).toHaveBeenCalled()
+        })
+    })
+
+    describe('busEvents - messages.update', () => {
+        test('Survey update received', async () => {
+            // Arrange
+            const mockPollUpdate = {
+                pollUpdates: [],
+            }
+            const mockMessage = {
+                key: {
+                    remoteJid: 'remoto123',
+                },
+                update: mockPollUpdate,
+            }
+            provider.store = {
+                loadMessage: jest.fn(),
+            } as any
+            // Act
+            await provider['busEvents']()[1].func([mockMessage])
+
+            // Assert
+            expect(provider.emit).toHaveBeenCalled()
+        })
+    })
+
+    describe('#indexHome', () => {
+        test('should send the correct image file', () => {
+            // Arrange
+            const mockedReadStream = jest.fn()
+            const mockedFileStream = { pipe: jest.fn() }
+            mockedReadStream.mockReturnValueOnce(mockedFileStream)
+            require('fs').createReadStream = mockedReadStream
+            const req = { params: { idBotName: 'bot123' } }
+            const res = { writeHead: jest.fn(), end: jest.fn() }
+            const expectedImagePath = 'ruta/esperada/bot123.qr.png'
+            const mockedJoin = jest.spyOn(path, 'join')
+            mockedJoin.mockReturnValueOnce(expectedImagePath)
+
+            // Act
+            provider['indexHome'](req as any, res as any, mockNext)
+            // Assert
+            expect(res.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'image/png' })
+        })
+    })
+
+    describe('#initVendor', () => {
+        test('should initialize store when useBaileysStore is true', async () => {
+            // Arrange
+            jest.spyOn(fs, 'existsSync').mockReturnValueOnce(true)
+            provider.globalVendorArgs.usePairingCode = true
+            provider.globalVendorArgs.phoneNumber = phoneNumber
+            // Act
+            await provider['initVendor']()
+
+            // Assert
+            expect(useMultiFileAuthState).toHaveBeenCalled()
+            expect(makeInMemoryStore).toHaveBeenCalled()
         })
     })
 })

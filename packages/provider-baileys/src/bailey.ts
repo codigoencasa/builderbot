@@ -7,7 +7,7 @@ import { createReadStream, createWriteStream, readFileSync, existsSync } from 'f
 import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
 import { tmpdir } from 'os'
-import { join, basename } from 'path'
+import { join, basename, resolve } from 'path'
 import pino from 'pino'
 import type polka from 'polka'
 import { rimraf } from 'rimraf'
@@ -128,7 +128,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             })
 
             this.store?.bind(sock.ev)
-
+            this.vendor = sock
             if (this.globalVendorArgs.usePairingCode && !sock.authState.creds.registered) {
                 if (this.globalVendorArgs.phoneNumber) {
                     await sock.waitForConnectionUpdate((update) => !!update.qr)
@@ -152,20 +152,27 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 }
             }
 
-            sock.ev.on('connection.update', async (update) => {
+            sock.ev.on('connection.update', async (update: { connection: any; lastDisconnect: any; qr: any }) => {
                 const { connection, lastDisconnect, qr } = update
 
                 const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode
                 /** Connection closed for various reasons */
                 if (connection === 'close') {
                     if (statusCode !== DisconnectReason.loggedOut) {
-                        this.initVendor()
+                        this.initVendor().then((v) => this.listenOnEvents(v))
+                        return
                     }
 
                     if (statusCode === DisconnectReason.loggedOut) {
                         const PATH_BASE = join(process.cwd(), NAME_DIR_SESSION)
-                        await rimraf(PATH_BASE)
-                        await this.initVendor()
+                        await rimraf(PATH_BASE, {
+                            retryDelay: 1000,
+                            maxRetries: 10,
+                            preserveRoot: true,
+                            signal: new AbortController().signal,
+                        }).catch((err) => console.error(err?.message))
+                        this.initVendor().then((v) => this.listenOnEvents(v))
+                        return
                     }
                 }
 
@@ -175,7 +182,6 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     const host = { ...sock?.user, phone: parseNumber }
                     this.emit('ready', true)
                     this.emit('host', host)
-                    this.vendor = sock
                 }
 
                 /** QR Code */
@@ -268,7 +274,6 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 if (payload.from === 'status@broadcast') return
 
                 // if (payload?.key?.fromMe) return
-
                 if (!baileyIsValidNumber(payload.from)) {
                     return
                 }
@@ -592,12 +597,18 @@ class BaileysProvider extends ProviderClass<WASocket> {
         const { message } = ctx
         if (!message) return undefined
 
-        const { imageMessage, videoMessage, documentMessage } = message
-        return imageMessage?.mimetype ?? videoMessage?.mimetype ?? documentMessage?.mimetype
+        const { imageMessage, videoMessage, documentMessage, audioMessage } = message
+        return imageMessage?.mimetype ?? audioMessage?.mimetype ?? videoMessage?.mimetype ?? documentMessage?.mimetype
     }
 
     private generateFileName = (extension: string): string => `file-${Date.now()}.${extension}`
 
+    /**
+     * Return Path absolute
+     * @param ctx
+     * @param options
+     * @returns
+     */
     saveFile = async (ctx: Partial<WAMessage & BotContext>, options?: { path: string }): Promise<string> => {
         const mimeType = this.getMimeType(ctx as WAMessage)
         if (!mimeType) throw new Error('MIME type not found')
@@ -607,7 +618,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
         const pathFile = join(options?.path ?? tmpdir(), fileName)
         await writeFile(pathFile, buffer)
-        return pathFile
+        return resolve(pathFile)
     }
 }
 

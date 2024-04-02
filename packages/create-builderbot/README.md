@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://builderbot.vercel.app/">
-    <h2 align="center">@builderbot/contexts-dialogflow-cx</h2>
+    <h2 align="center">create-builderbot</h2>
   </a>
 </p>
 

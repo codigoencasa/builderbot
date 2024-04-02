@@ -1,20 +1,21 @@
-# @builderbot/cli
+<p align="center">
+  <a href="https://builderbot.vercel.app/">
+    <h2 align="center">@builderbot/cli</h2>
+  </a>
+</p>
 
--   [x] Revisar version de NODE
--   [x] Revisar OS
--   [x] Obtener Package Manager
--   [x] Revisar las libreria de WhatsappWeb para obtener version reciente
--   [x] Opcion interactiva de limpiar session
--   [x] Opcion de generar `json` con la configuracion
--   [x] Agregar `rollup` para limpiar el codigo
 
----
+## Documentation
 
-**Comunidad**
+Visit [builderbot](https://builderbot.vercel.app/) to view the full documentation.
 
-> Forma parte de este proyecto.
 
--   [Discord](https://link.codigoencasa.com/DISCORD)
--   [Twitter](https://twitter.com/leifermendez)
--   [Youtube](https://www.youtube.com/watch?v=5lEMCeWEJ8o&list=PL_WGMLcL4jzWPhdhcUyhbFU6bC0oJd2BR)
--   [Telegram](https://t.me/leifermendez)
+## Official Course
+
+If you want to discover all the functions and features offered by the library you can take the course.
+[View Course](https://app.codigoencasa.com/courses/builderbot?refCode=LEIFER)
+
+
+## Contact Us
+- [💻 Discord](https://link.codigoencasa.com/DISCORD)
+- [👌 𝕏 (Twitter)](https://twitter.com/leifermendez)

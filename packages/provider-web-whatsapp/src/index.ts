@@ -4,7 +4,7 @@ import { createReadStream, readFileSync } from 'fs'
 import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
 import { tmpdir } from 'os'
-import { basename, join } from 'path'
+import { basename, join, resolve } from 'path'
 import type { Middleware } from 'polka'
 import type WAWebJS from 'whatsapp-web.js'
 import { Client, LocalAuth, MessageMedia, Buttons } from 'whatsapp-web.js'
@@ -93,7 +93,7 @@ class WebWhatsappProvider extends ProviderClass {
         const pathFile = join(options?.path ?? tmpdir(), fileName)
         const buffer = Buffer.from(fileData.data, 'base64')
         await writeFile(pathFile, buffer)
-        return pathFile
+        return resolve(pathFile)
     }
 
     /**

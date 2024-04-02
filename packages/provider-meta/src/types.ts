@@ -45,6 +45,8 @@ export interface Order {
 }
 
 export interface Message {
+    message_id?: string
+    timestamp?: any
     type: string
     from: string
     to: string
@@ -62,7 +64,9 @@ export interface Message {
     id?: string
 }
 
-export interface ParamasIncomingMessage {
+export interface ParamsIncomingMessage {
+    messageId?: string
+    messageTimestamp?: any
     pushName: string
     to: string
     jwtToken: string
@@ -102,32 +106,36 @@ export interface TextMessageBody {
         preview_url: boolean
         body: string
     }
-    image?: {
-        id: string
-        caption: string
-    }
-    video?: {
-        id: string
-        caption: string
-    }
+    image?: Image
+    video?: Video
     interactive?: any
     contacts?: any[]
     template?: TemplateMessage
 }
 
+interface Image {
+    id?: string
+    caption?: string
+    link?: string
+}
+
+interface Video {
+    id?: string
+    caption?: string
+    link?: string
+}
+
 interface TemplateMessage {
-    template: {
-        name: string
-        language: {
-            code: string
-        }
-        components: TemplateComponent[]
+    name: string
+    language: {
+        code: string
     }
+    components: TemplateComponent[]
 }
 
 interface TemplateComponent {
     type: 'header' | 'body' | 'button'
-    parameters: TemplateParameter[]
+    parameters?: TemplateParameter[]
 }
 
 interface TemplateParameter {
@@ -159,4 +167,52 @@ export interface WhatsAppProfile {
         level: string
     }
     id: string
+}
+
+export interface incomingMessage {
+    object: string
+    entry: Entry[]
+}
+
+export interface Entry {
+    id: string
+    changes: Change[]
+}
+
+export interface Change {
+    value: Value
+    field: string
+}
+
+export interface Value {
+    messaging_product: string
+    metadata: Metadata
+    contacts: ContactMeta[]
+    messages: MessageFromMeta[]
+}
+
+export interface Metadata {
+    display_phone_number: string
+    phone_number_id: string
+}
+
+export interface ContactMeta {
+    profile: Profile
+    wa_id: string
+}
+
+export interface Profile {
+    name: string
+}
+
+export interface MessageFromMeta {
+    from: string
+    id: string
+    timestamp: string
+    text: Text
+    type: string
+}
+
+export interface Text {
+    body: string
 }

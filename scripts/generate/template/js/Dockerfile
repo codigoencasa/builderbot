@@ -1,28 +1,37 @@
+# Image size ~ 330MB
 FROM node:21-alpine3.18 as builder
+
+WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 ENV PNPM_HOME=/usr/local/bin
 
+COPY . .
+
+COPY package*.json *-lock.yaml ./
+
+RUN apk add --no-cache --virtual .gyp \
+        python3 \
+        make \
+        g++ \
+    && apk add --no-cache git \
+    && pnpm install \
+    && apk del .gyp
+
+FROM node:21-alpine3.18 as deploy
+
 WORKDIR /app
 
-COPY package*.json pnpm-lock.yaml ./
-
-RUN apk add --no-cache \
-    git 
-
-# RUN pnpm install  pm2 -g
-
-COPY . .
-RUN pnpm i
-
-FROM builder as deploy
-
-ARG RAILWAY_STATIC_URL
-ARG PUBLIC_URL
 ARG PORT
-COPY --from=builder /app/src ./src
-COPY --from=builder /app/package.json /app/pnpm-lock.yaml ./
+ENV PORT $PORT
+EXPOSE $PORT
 
-RUN pnpm install --frozen-lockfile --production
-# CMD ["pm2-runtime", "start", "./src/app.js", "--cron", "0 */12 * * *"]
+COPY --from=builder /app .
+
+RUN corepack enable && corepack prepare pnpm@latest --activate 
+ENV PNPM_HOME=/usr/local/bin
+
+RUN npm cache clean --force && pnpm install --frozen-lockfile --production --ignore-scripts \
+    && rm -rf $PNPM_HOME/.npm $PNPM_HOME/.node-gyp
+
 CMD ["npm", "start"]

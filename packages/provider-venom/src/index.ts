@@ -5,11 +5,10 @@ import { createReadStream } from 'fs'
 import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
 import { tmpdir } from 'os'
-import { basename, join } from 'path'
+import { basename, join, resolve } from 'path'
 import type polka from 'polka'
 import venom from 'venom-bot'
 
-import { mainFix } from './fix'
 import type { SaveFileOptions } from './types'
 import { venomCleanNumber, venomDeleteTokens, venomGenerateImage, venomisValidNumber } from './utils'
 
@@ -31,7 +30,6 @@ class VenomProvider extends ProviderClass {
     protected async initVendor(): Promise<any> {
         const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
         try {
-            await mainFix()
             const client = await venom.create(
                 NAME_DIR_SESSION,
                 (base) => this.generateQr(base),
@@ -322,7 +320,7 @@ class VenomProvider extends ProviderClass {
             const fileName = this.generateFileName(extension)
             const pathFile = join(options?.path ?? tmpdir(), fileName)
             await writeFile(pathFile, buffer)
-            return pathFile
+            return resolve(pathFile)
         } catch (err) {
             console.log(`[Error]:`, err.message)
             return 'ERROR'

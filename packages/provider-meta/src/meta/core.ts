@@ -2,7 +2,7 @@ import EventEmitter from 'node:events'
 import type polka from 'polka'
 import type Queue from 'queue-promise'
 
-import type { Message, MetaGlobalVendorArgs } from '../types'
+import type { Message, MetaGlobalVendorArgs, incomingMessage } from '../types'
 import { processIncomingMessage } from '../utils/processIncomingMsg'
 
 /**
@@ -40,6 +40,30 @@ export class MetaCoreVendor extends EventEmitter {
         return mode === 'subscribe' && originToken === token
     }
 
+    private extractStatus(obj: { entry: any }) {
+        const entry = obj.entry || []
+        const statusArray: { status: any; reason: string }[] = []
+
+        entry.forEach((entryItem: { changes: any[] }) => {
+            const changes = entryItem.changes || []
+            changes.forEach((change) => {
+                const values = change.value || {}
+                const statuses = values.statuses || []
+                statuses.forEach(
+                    (status: { recipient_id: string; errors: { error_data: { details: string } }[]; status: any }) => {
+                        const recipient_id = status.recipient_id || 'N/A'
+                        const errorDetails = status.errors?.[0]?.error_data?.details || 'Unknown'
+                        statusArray.push({
+                            status: status.status || 'Unknown',
+                            reason: `Number(${recipient_id}): ${errorDetails}`,
+                        })
+                    }
+                )
+            })
+        })
+        return statusArray
+    }
+
     /**
      * Middleware function for verifying token.
      * @type {polka.Middleware}
@@ -73,10 +97,25 @@ export class MetaCoreVendor extends EventEmitter {
      */
     public incomingMsg: polka.Middleware = async (req: any, res: any) => {
         const globalVendorArgs: MetaGlobalVendorArgs = req['globalVendorArgs'] ?? null
-        const { body } = req
+        const body = req?.body as incomingMessage
         const { jwtToken, numberId, version } = globalVendorArgs
+
+        const someErrors = this.extractStatus(body)
+        const findError = someErrors.find((s) => s.status === 'failed')
+
+        if (findError) {
+            this.emit('notice', {
+                title: '🔔  META ALERT  🔔',
+                instructions: [findError.reason],
+            })
+            res.writeHead(400, { 'Content-Type': 'application/json' })
+            return res.end(JSON.stringify(someErrors))
+        }
+
         const messages = body?.entry?.[0]?.changes?.[0]?.value?.messages
-        const contacts = req?.body?.entry?.[0]?.changes?.[0]?.value?.contacts
+        const contacts = body?.entry?.[0]?.changes?.[0]?.value?.contacts
+        const messageId = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0]?.id
+        const messageTimestamp = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0]?.timestamp
         if (!messages?.length) {
             res.statusCode = 200
             res.end('empty endpoint')
@@ -88,6 +127,8 @@ export class MetaCoreVendor extends EventEmitter {
             const to = body.entry[0].changes[0].value?.metadata?.display_phone_number
             const pushName = contact?.profile?.name
             const response: Message = await processIncomingMessage({
+                messageId,
+                messageTimestamp,
                 to,
                 pushName,
                 message,
@@ -96,8 +137,6 @@ export class MetaCoreVendor extends EventEmitter {
                 version,
             })
             if (response) {
-                //...EVENTS
-
                 this.queue.enqueue(() => this.processMessage(response))
             }
         })

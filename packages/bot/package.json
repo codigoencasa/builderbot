@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/bot",
-    "version": "1.0.26-alpha.0",
+    "version": "1.0.30-alpha.0",
     "description": "core typescript",
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
@@ -11,8 +11,7 @@
     "scripts": {
         "build": "rimraf dist && rollup --config",
         "test": " npx uvu -r tsm ./__tests__  ",
-        "test:coverage": "npx c8  npm run test ",
-        "test:debug": " npx uvu -r tsm ./__tests__ 0.2.2-case.test.ts"
+        "test:coverage": "npx c8  npm run test "
     },
     "files": [
         "./dist/"

@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/database-mongo",
-    "version": "1.0.26-alpha.0",
+    "version": "1.0.30-alpha.0",
     "description": "Esto es el conector a mongo DB",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
@@ -30,7 +30,7 @@
     },
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
     "dependencies": {
-        "@builderbot/bot": "^1.0.26-alpha.0",
+        "@builderbot/bot": "workspace:^",
         "mongodb": "^4.17.2"
     },
     "devDependencies": {
