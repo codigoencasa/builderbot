@@ -1,7 +1,15 @@
 import { Console } from 'console'
 import { createWriteStream } from 'fs'
 
-import type { DispatchFn, DynamicBlacklist, FlagsRuntime, ProviderEventTypes, TContext } from './../types'
+import type {
+    BotStateGlobal,
+    BotStateStandAlone,
+    DispatchFn,
+    DynamicBlacklist,
+    FlagsRuntime,
+    ProviderEventTypes,
+    TContext,
+} from './../types'
 import type { HostEventTypes } from './eventEmitterClass'
 import { EventEmitterClass } from './eventEmitterClass'
 import { GlobalState, IdleState, SingleState } from '../context'
@@ -712,13 +720,13 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     httpServer = (port: number) => {
         this.provider.initAll(port, {
             blacklist: this.dynamicBlacklist,
-            state: (number: string) => ({
+            state: (number: string): BotStateStandAlone => ({
                 getMyState: this.stateHandler.getMyState(number),
                 get: this.stateHandler.get(number),
                 update: this.stateHandler.updateState({ from: number }),
                 clear: this.stateHandler.clear(number),
             }),
-            globalState: () => ({
+            globalState: (): BotStateGlobal => ({
                 get: this.globalStateHandler.get(),
                 getAllState: this.globalStateHandler.getAllState,
                 update: this.globalStateHandler.updateState(),
@@ -739,6 +747,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                       provider: P
                       blacklist: DynamicBlacklist
                       dispatch: DispatchFn
+                      state: (number: string) => BotStateStandAlone
+                      globalState: () => BotStateGlobal
                   })
                 | undefined,
             req: any,
