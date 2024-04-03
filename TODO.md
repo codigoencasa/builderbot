@@ -57,6 +57,10 @@
 - [x] Cambiar readme de los mono proyectos
 - [x] cambiar mensajes a ingles
 - [x] emptyDir to other
+- [ ] meta avisa connecto cunado no tiene webhook
+- [ ] aviso node node 20.12.1 npm v10.5.0 o superior de lo contrario sharp
+- [ ] Error: ENOENT: no such file or directory, open './node_modules/venom-bot/dist/utils/spinnies.js'
+- [ ] handleCtx bot.state globalState
 - [ ] coverage
 - [ ] test meta
 - [ ] try catch error http

@@ -268,6 +268,8 @@ export type BotCtxMiddlewareOptions = {
     provider: any
     blacklist: DynamicBlacklist
     dispatch: DispatchFn
+    state: any
+    globalState: any
 }
 
 export type BotCtxMiddleware<P = ProviderClass> = Partial<P & BotCtxMiddlewareOptions>

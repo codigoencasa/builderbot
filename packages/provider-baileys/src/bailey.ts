@@ -97,17 +97,22 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
         this.saveCredsGlobal = saveCreds
 
-        if (this.globalVendorArgs.useBaileysStore) {
-            this.store = makeInMemoryStore({ logger: loggerBaileys })
+        try {
+            if (this.globalVendorArgs.useBaileysStore) {
+                this.store = makeInMemoryStore({ logger: loggerBaileys })
 
-            if (this.store?.readFromFile) this.store?.readFromFile(`${NAME_DIR_SESSION}/baileys_store.json`)
+                if (this.store?.readFromFile) this.store?.readFromFile(`${NAME_DIR_SESSION}/baileys_store.json`)
 
-            setInterval(() => {
-                const path = `${NAME_DIR_SESSION}/baileys_store.json`
-                if (existsSync(NAME_DIR_SESSION)) {
-                    this.store?.writeToFile(path)
-                }
-            }, 10_000)
+                setInterval(() => {
+                    const path = `${NAME_DIR_SESSION}/baileys_store.json`
+                    if (existsSync(NAME_DIR_SESSION)) {
+                        this.store?.writeToFile(path)
+                    }
+                }, 10_000)
+            }
+        } catch (e) {
+            logger.log(e)
+            this.initVendor().then((v) => this.listenOnEvents(v))
         }
 
         try {

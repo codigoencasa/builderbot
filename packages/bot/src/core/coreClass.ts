@@ -136,14 +136,12 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         const state = {
             getMyState: this.stateHandler.getMyState(messageCtxInComing.from),
             get: this.stateHandler.get(messageCtxInComing.from),
-            // getAllState: this.stateHandler.getAllState,
             update: this.stateHandler.updateState(messageCtxInComing),
             clear: this.stateHandler.clear(messageCtxInComing.from),
         }
 
         // 📄 Mantener estado global
         const globalState = {
-            // getMyState: this.globalStateHandler.getMyState(),
             get: this.globalStateHandler.get(),
             getAllState: this.globalStateHandler.getAllState,
             update: this.globalStateHandler.updateState(),
@@ -714,6 +712,18 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     httpServer = (port: number) => {
         this.provider.initAll(port, {
             blacklist: this.dynamicBlacklist,
+            state: (number: string) => ({
+                getMyState: this.stateHandler.getMyState(number),
+                get: this.stateHandler.get(number),
+                update: this.stateHandler.updateState({ from: number }),
+                clear: this.stateHandler.clear(number),
+            }),
+            globalState: () => ({
+                get: this.globalStateHandler.get(),
+                getAllState: this.globalStateHandler.getAllState,
+                update: this.globalStateHandler.updateState(),
+                clear: this.globalStateHandler.clear(),
+            }),
         })
     }
 
