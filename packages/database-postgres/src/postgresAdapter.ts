@@ -47,7 +47,7 @@ class PostgreSQLAdapter extends MemoryDB {
     }
 
     async save(ctx: HistoryEntry): Promise<void> {
-        const values = [ctx.ref, ctx.keyword, ctx.answer, ctx.refSerialize, ctx.phone || String(ctx.from), JSON.stringify(ctx.options)]
+        const values = [ctx.ref, ctx.keyword, ctx.answer, ctx.refSerialize, ctx.phone, JSON.stringify(ctx.options)]
         const query = `SELECT save_or_update_history_and_contact($1, $2, $3, $4, $5, $6)`
 
         try {
@@ -60,7 +60,7 @@ class PostgreSQLAdapter extends MemoryDB {
     }
 
     async getContact(ctx: HistoryEntry): Promise<Contact | undefined> {
-        const from = ctx.phone || ctx?.from
+        const from = ctx.phone
         const query = `SELECT * FROM public.contact WHERE phone = $1 LIMIT 1`
         try {
             const result = await this.db.query(query, [from])
@@ -97,7 +97,7 @@ class PostgreSQLAdapter extends MemoryDB {
         const contact = `
             CREATE TABLE IF NOT EXISTS contact (
                 id SERIAL PRIMARY KEY,
-                phone VARCHAR(255) NOT NULL,
+                phone VARCHAR(255) DEFAULT NULL,
                 created_at TIMESTAMP DEFAULT current_timestamp,
                 updated_in TIMESTAMP,
                 last_interaction TIMESTAMP,
@@ -117,7 +117,7 @@ class PostgreSQLAdapter extends MemoryDB {
                 keyword VARCHAR(255),
                 answer TEXT NOT NULL,
                 refSerialize TEXT NOT NULL,
-                phone VARCHAR(255) NOT NULL,
+                phone VARCHAR(255) DEFAULT NULL,
                 options JSONB,
                 created_at TIMESTAMP DEFAULT current_timestamp,
                 updated_in TIMESTAMP,

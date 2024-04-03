@@ -4,7 +4,6 @@ export type HistoryEntry = {
     answer: string
     refSerialize: string
     phone: string
-    from?: string
     options?: Record<string, any>
 }
 
