@@ -10,11 +10,11 @@ const checkNodeVersion = (): Promise<CheckResult> => {
     return new Promise((resolve) => {
         const version = nodeVersion
         const majorVersion = parseInt(version().replace('v', '').split('.')[0])
-        if (majorVersion < 18) {
-            resolve({ pass: false, message: `Se requiere Node.js 18 o superior. (${version})` })
+        if (majorVersion < 20) {
+            resolve({ pass: false, message: `Node.js 20 or higher is required.. (${version})` })
         }
 
-        resolve({ pass: true, message: `Node: ${version} compatible` })
+        resolve({ pass: true, message: `Node: ${version} supported` })
     })
 }
 
@@ -22,7 +22,7 @@ const checkOs = (): Promise<string> => {
     return new Promise((resolve) => {
         const os = platform()
         if (!os.includes('win32')) {
-            resolve(`OS: ${os} (revisar documentación)`)
+            resolve(`OS: ${os}`)
         }
         resolve(`OS: ${os}`)
     })
@@ -32,9 +32,9 @@ const checkGit = (): Promise<CheckResult> => {
     return new Promise((resolve, reject) => {
         exec('git --version', (error) => {
             if (error) {
-                reject({ pass: false, message: `Requiere instalar GIT` })
+                reject({ pass: false, message: `Requires GIT installation` })
             } else {
-                resolve({ pass: true, message: `Git: compatible` })
+                resolve({ pass: true, message: `Git: supported` })
             }
         })
     })
