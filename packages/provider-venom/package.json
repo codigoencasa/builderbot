@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/provider-venom",
-    "version": "1.1.2-alpha.1",
+    "version": "1.1.2-alpha.2",
     "description": "Now I’m the model of a modern major general / The venerated Virginian veteran whose men are all / Lining up, to put me up on a pedestal / Writin’ letters to relatives / Embellishin’ my elegance and eloquence / But the elephant is in the room / The truth is in ya face when ya hear the British cannons go / BOOM",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
@@ -55,8 +55,7 @@
     "dependencies": {
         "body-parser": "^1.20.2",
         "polka": "^0.5.2",
-        "sharp": "0.32.6",
-        "spinnies": "^0.5.1",
+        "sharp": "0.33.3",
         "venom-bot": "^5.1.0"
     },
     "gitHead": "f21e49621dffad2a1226aecea535668016f07b14"

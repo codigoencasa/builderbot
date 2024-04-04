@@ -4,6 +4,14 @@ settings:
     autoInstallPeers: true
     excludeLinksFromLockfile: false
 
+patchedDependencies:
+    '@whiskeysockets/baileys@6.6.0':
+        hash: t7argtzx7qitinftvll4djb6dy
+        path: patches/@whiskeysockets__baileys@6.6.0.patch
+    venom-bot@5.1.0:
+        hash: j4pm6dhmo3e7qfthqczgqumw6i
+        path: patches/venom-bot@5.1.0.patch
+
 importers:
     .:
         devDependencies:
@@ -116,8 +124,8 @@ importers:
                 specifier: ^0.5.2
                 version: 0.5.2
             sharp:
-                specifier: 0.32.6
-                version: 0.32.6
+                specifier: 0.33.3
+                version: 0.33.3
         devDependencies:
             '@microsoft/api-extractor':
                 specifier: ^7.43.0
@@ -563,13 +571,16 @@ importers:
                 version: 0.5.7
             '@whiskeysockets/baileys':
                 specifier: ^6.6.0
-                version: 6.6.0
+                version: 6.6.0(patch_hash=t7argtzx7qitinftvll4djb6dy)(sharp@0.33.3)
             fluent-ffmpeg:
                 specifier: ^2.1.2
                 version: 2.1.2
             fs-extra:
                 specifier: ^11.2.0
                 version: 11.2.0
+            sharp:
+                specifier: 0.33.3
+                version: 0.33.3
         devDependencies:
             '@builderbot/bot':
                 specifier: workspace:^
@@ -808,14 +819,11 @@ importers:
                 specifier: ^0.5.2
                 version: 0.5.2
             sharp:
-                specifier: 0.32.6
-                version: 0.32.6
-            spinnies:
-                specifier: ^0.5.1
-                version: 0.5.1
+                specifier: 0.33.3
+                version: 0.33.3
             venom-bot:
                 specifier: ^5.1.0
-                version: 5.1.0(typescript@5.4.3)
+                version: 5.1.0(patch_hash=j4pm6dhmo3e7qfthqczgqumw6i)(typescript@5.4.3)
         devDependencies:
             '@builderbot/bot':
                 specifier: workspace:^
@@ -889,6 +897,9 @@ importers:
             polka:
                 specifier: ^0.5.2
                 version: 0.5.2
+            sharp:
+                specifier: 0.33.3
+                version: 0.33.3
             whatsapp-web.js:
                 specifier: ^1.23.0
                 version: 1.23.0
@@ -959,6 +970,9 @@ importers:
             polka:
                 specifier: ^0.5.2
                 version: 0.5.2
+            sharp:
+                specifier: 0.33.3
+                version: 0.33.3
         devDependencies:
             '@builderbot/bot':
                 specifier: workspace:^
@@ -6440,7 +6454,7 @@ packages:
             codec-parser: 2.4.3
         dev: false
 
-    /@whiskeysockets/baileys@6.6.0:
+    /@whiskeysockets/baileys@6.6.0(patch_hash=t7argtzx7qitinftvll4djb6dy)(sharp@0.33.3):
         resolution:
             {
                 integrity: sha512-4aIPHztdLZP24Qac7mudZTMR7qIsEDQxlpCBJE4atYHFAa5tlwCGPcUy249q3aaayxYtQAwheVG42L6AkRxAwg==,
@@ -6472,6 +6486,7 @@ packages:
             node-cache: 5.1.2
             pino: 7.11.0
             protobufjs: 7.2.6
+            sharp: 0.33.3
             uuid: 9.0.1
             ws: 8.16.0
         transitivePeerDependencies:
@@ -6480,6 +6495,7 @@ packages:
             - supports-color
             - utf-8-validate
         dev: false
+        patched: true
 
     /@wppconnect-team/wppconnect@1.30.1(puppeteer-core@21.11.0)(typescript@5.4.3):
         resolution:
@@ -10749,6 +10765,7 @@ packages:
                 integrity: sha512-XYfuKMvj4O35f/pOXLObndIRvyQ+/+6AhODh+OKWj9S9498pHHn/IMszH+gt0fBCRWMNfk1ZSp5x3AifmnI2vg==,
             }
         engines: { node: '>=6' }
+        dev: true
 
     /expect@29.7.0:
         resolution:
@@ -11725,6 +11742,7 @@ packages:
             {
                 integrity: sha512-SyHy3T1v2NUXn29OsWdxmK6RwHD+vkj3v8en8AOBZ1wBQ/hCAQ5bAQTD02kW4W9tUp/3Qh6J8r9EvntiyCmOOw==,
             }
+        dev: true
 
     /glob-parent@5.1.2:
         resolution:
@@ -13217,7 +13235,7 @@ packages:
         hasBin: true
         dependencies:
             async: 3.2.5
-            chalk: 4.1.0
+            chalk: 4.1.2
             filelist: 1.0.4
             minimatch: 3.1.2
         dev: true
@@ -15634,6 +15652,7 @@ packages:
             {
                 integrity: sha512-ONmRUqK7zj7DWX0D9ADe03wbwOBZxNAfF20PlGfCWQcD3+/MakShIHrMqx9YwPTfxDdF1zLeL+RGZiR9kGMLdg==,
             }
+        dev: true
 
     /natural-compare@1.4.0:
         resolution:
@@ -15706,6 +15725,7 @@ packages:
         engines: { node: '>=10' }
         dependencies:
             semver: 7.6.0
+        dev: true
 
     /node-addon-api@5.1.0:
         resolution:
@@ -15713,13 +15733,6 @@ packages:
                 integrity: sha512-eh0GgfEkpnoWDq+VY8OyvYhFEzBk6jIYbRKdIlyTiAXIVJ8PyBaKb0rp7oDtoddbdoHWhq8wwr+XZ81F1rpNdA==,
             }
         dev: true
-
-    /node-addon-api@6.1.0:
-        resolution:
-            {
-                integrity: sha512-+eawOlIgy680F0kBzPUNFhMZGtJ1YmqM6l4+Crf4IkImjYrO/mqPwRMh352g23uIaQKFItcQ64I7KMaJxHgAVA==,
-            }
-        dev: false
 
     /node-cache@5.1.2:
         resolution:
@@ -17395,6 +17408,7 @@ packages:
             simple-get: 4.0.1
             tar-fs: 2.1.1
             tunnel-agent: 0.6.0
+        dev: true
 
     /prelude-ls@1.2.1:
         resolution:
@@ -19065,24 +19079,6 @@ packages:
             tunnel-agent: 0.6.0
         dev: true
 
-    /sharp@0.32.6:
-        resolution:
-            {
-                integrity: sha512-KyLTWwgcR9Oe4d9HwCwNM2l7+J0dUQwn/yf7S0EnTtb0eVS4RxO0eUSvxPtzT4F3SY+C4K6fqdv/DO27sJ/v/w==,
-            }
-        engines: { node: '>=14.15.0' }
-        requiresBuild: true
-        dependencies:
-            color: 4.2.3
-            detect-libc: 2.0.3
-            node-addon-api: 6.1.0
-            prebuild-install: 7.1.2
-            semver: 7.6.0
-            simple-get: 4.0.1
-            tar-fs: 3.0.5
-            tunnel-agent: 0.6.0
-        dev: false
-
     /sharp@0.33.2:
         resolution:
             {
@@ -19228,6 +19224,7 @@ packages:
             {
                 integrity: sha512-cSFtAPtRhljv69IK0hTVZQ+OfE9nePi/rtJmw5UjHeVyVroEqJXP1sFztKUy1qU+xvz3u/sfYJLa947b7nAN2Q==,
             }
+        dev: true
 
     /simple-get@4.0.1:
         resolution:
@@ -19238,6 +19235,7 @@ packages:
             decompress-response: 6.0.0
             once: 1.4.0
             simple-concat: 1.0.1
+        dev: true
 
     /simple-swizzle@0.2.2:
         resolution:
@@ -20529,6 +20527,7 @@ packages:
             }
         dependencies:
             safe-buffer: 5.2.1
+        dev: true
 
     /tweetnacl@0.14.5:
         resolution:
@@ -21095,7 +21094,7 @@ packages:
             }
         engines: { node: '>= 0.8' }
 
-    /venom-bot@5.1.0(typescript@5.4.3):
+    /venom-bot@5.1.0(patch_hash=j4pm6dhmo3e7qfthqczgqumw6i)(typescript@5.4.3):
         resolution:
             {
                 integrity: sha512-C5pNupmD1QsTPz4qJnt7uUhzN3fnzrpDcqOExECcsVbXgWMFU3y/GuFWpD7l4A4YFc/n5SmH2wUbzwqPNAluqQ==,
@@ -21141,6 +21140,7 @@ packages:
             - typescript
             - utf-8-validate
         dev: false
+        patched: true
 
     /verror@1.10.0:
         resolution:
