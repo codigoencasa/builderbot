@@ -16,7 +16,7 @@ test('checkOs - returns the operating system correctly  not Windows systems', as
     Object.defineProperty(process, 'platform', { value: 'linux' })
 
     const result = await checkOs()
-    assert.is(result, 'OS: linux (revisar documentación)')
+    assert.is(result, 'OS: linux')
     Object.defineProperty(process, 'platform', { value: originalPlatform })
 })
 
