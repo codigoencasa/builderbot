@@ -1,0 +1,25 @@
+diff --git a/WASignalGroup/readme.md b/WASignalGroup/readme.md
+deleted file mode 100644
+index 8290d9c1d952f1f239ec03334cf71ac485e5fe1e..0000000000000000000000000000000000000000
+diff --git a/package.json b/package.json
+index 8b0fb8ca84e3743512ed34090c5e4402aa52234b..0560049979d01d14b6a53f22e66d985fc6e6bb55 100644
+--- a/package.json
++++ b/package.json
+@@ -72,7 +72,7 @@
+     "open": "^8.4.2",
+     "qrcode-terminal": "^0.12.0",
+     "release-it": "^15.10.3",
+-    "sharp": "^0.30.5",
++    "sharp": "^0.33.3",
+     "ts-jest": "^27.0.3",
+     "ts-node": "^10.8.1",
+     "typedoc": "^0.24.7",
+@@ -82,7 +82,7 @@
+     "jimp": "^0.16.1",
+     "link-preview-js": "^3.0.0",
+     "qrcode-terminal": "^0.12.0",
+-    "sharp": "^0.32.2"
++    "sharp": "^0.33.3"
+   },
+   "peerDependenciesMeta": {
+     "jimp": {

@@ -77,7 +77,6 @@ const venomDeleteTokens = (session: string) => {
     try {
         const pathTokens = join(process.cwd(), session)
         emptyDirSessions(pathTokens)
-        console.log('Tokens clean..')
     } catch (e) {
         return
     }
