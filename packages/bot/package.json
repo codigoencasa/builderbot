@@ -57,8 +57,11 @@
         "follow-redirects": "^1.15.6",
         "mime-types": "^2.1.35",
         "picocolors": "^1.0.0",
-        "polka": "^0.5.2",
-        "sharp": "0.33.3"
+        "polka": "^0.5.2"
+  
     },
+    "optionalDependencies": {
+        "sharp": "0.33.3"
+      },
     "gitHead": "f21e49621dffad2a1226aecea535668016f07b14"
 }

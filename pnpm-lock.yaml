@@ -5,9 +5,6 @@ settings:
     excludeLinksFromLockfile: false
 
 patchedDependencies:
-    '@whiskeysockets/baileys@6.6.0':
-        hash: t7argtzx7qitinftvll4djb6dy
-        path: patches/@whiskeysockets__baileys@6.6.0.patch
     venom-bot@5.1.0:
         hash: j4pm6dhmo3e7qfthqczgqumw6i
         path: patches/venom-bot@5.1.0.patch
@@ -123,6 +120,7 @@ importers:
             polka:
                 specifier: ^0.5.2
                 version: 0.5.2
+        optionalDependencies:
             sharp:
                 specifier: 0.33.3
                 version: 0.33.3
@@ -571,7 +569,7 @@ importers:
                 version: 0.5.7
             '@whiskeysockets/baileys':
                 specifier: ^6.6.0
-                version: 6.6.0(patch_hash=t7argtzx7qitinftvll4djb6dy)(sharp@0.33.3)
+                version: 6.6.0(sharp@0.33.3)
             fluent-ffmpeg:
                 specifier: ^2.1.2
                 version: 2.1.2
@@ -6454,7 +6452,7 @@ packages:
             codec-parser: 2.4.3
         dev: false
 
-    /@whiskeysockets/baileys@6.6.0(patch_hash=t7argtzx7qitinftvll4djb6dy)(sharp@0.33.3):
+    /@whiskeysockets/baileys@6.6.0(sharp@0.33.3):
         resolution:
             {
                 integrity: sha512-4aIPHztdLZP24Qac7mudZTMR7qIsEDQxlpCBJE4atYHFAa5tlwCGPcUy249q3aaayxYtQAwheVG42L6AkRxAwg==,
@@ -6495,7 +6493,6 @@ packages:
             - supports-color
             - utf-8-validate
         dev: false
-        patched: true
 
     /@wppconnect-team/wppconnect@1.30.1(puppeteer-core@21.11.0)(typescript@5.4.3):
         resolution:

@@ -100,7 +100,6 @@
   "author": "Leifer Mendez <leifer.contacto@gmail.com>",
   "pnpm": {
     "patchedDependencies": {
-      "@whiskeysockets/baileys@6.6.0": "patches/@whiskeysockets__baileys@6.6.0.patch",
       "venom-bot@5.1.0": "patches/venom-bot@5.1.0.patch"
     }
   }
