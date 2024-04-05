@@ -80,7 +80,7 @@ export class MetaCoreVendor extends EventEmitter {
             res.end('No token!')
             return
         }
-        if (this.tokenIsValid(mode, token, globalVendorArgs.verifyToken)) {
+        if (this.tokenIsValid(mode, token, globalVendorArgs?.verifyToken)) {
             this.emit('ready')
             res.statusCode = 200
             res.end(challenge)
