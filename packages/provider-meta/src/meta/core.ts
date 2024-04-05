@@ -3,7 +3,7 @@ import type polka from 'polka'
 import type Queue from 'queue-promise'
 
 import type { Message, MetaGlobalVendorArgs, IncomingMessage } from '~/types'
-import { processIncomingMessage } from '~/utils/processIncomingMsg'
+import { processIncomingMessage } from '../utils/processIncomingMsg'
 
 /**
  * Class representing MetaCoreVendor, a vendor class for meta core functionality.
