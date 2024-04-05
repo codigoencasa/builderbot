@@ -1,33 +1,37 @@
-import { test } from 'uvu'
-import * as assert from 'uvu/assert'
-
-import { httpsMock } from '../__mock__/http'
 import { getProfile } from '../src/utils'
+import axios from 'axios'
+import { describe, expect, jest, test } from '@jest/globals'
 
-test('getProfile - should return profile infocorrectly', async () => {
-    const jwtToken = 'your_jwt_token'
-    const numberId = 'your_number_id'
-    const version = 'v16.0'
-    const responseData = {
-        verified_name: 'Test Number',
-        code_verification_status: 'NOT_VERIFIED',
-        display_phone_number: '+1 555-060-5214',
-        quality_rating: 'GREEN',
-        platform_type: 'CLOUD_API',
-        throughput: {
-            level: 'STANDARD',
-        },
-        id: '108483132111799',
-    }
+jest.mock('axios')
 
-    const mockedResponse = {
-        data: responseData,
-    }
+describe('#getProfile ', () => {
+    test('should return WhatsApp profile data correctly', async () => {
+        // Arrange
+        const version = '1.0'
+        const numberId = '123456789'
+        const token = 'fakeToken'
+        const expectedProfileData = {
+            id: '123456789',
+            name: 'John Doe',
+            profile_pic: 'https://example.com/profile_pic.jpg',
+            status: 'Hey there! I am using WhatsApp.',
+        }
 
-    httpsMock.get.resolves(mockedResponse)
+        // Simular la respuesta de axios
+        const axiosResponse = {
+            data: expectedProfileData,
+        }
+        ;(axios.get as jest.MockedFunction<typeof axios.get>).mockResolvedValue(axiosResponse)
 
-    const result = await getProfile(version, jwtToken, numberId)
-    assert.equal(result, responseData)
+        // Act
+        const result = await getProfile(version, numberId, token)
+
+        // Assert
+        expect(result).toEqual(expectedProfileData)
+        expect(axios.get).toHaveBeenCalledWith(`https://graph.facebook.com/${version}/${numberId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+    })
 })
-
-test.run()

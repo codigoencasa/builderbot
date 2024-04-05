@@ -1,323 +1,464 @@
-import proxyquire from 'proxyquire'
-import { stub } from 'sinon'
-import { test } from 'uvu'
-import * as assert from 'uvu/assert'
+import { describe, expect, jest, test } from '@jest/globals'
+import { processIncomingMessage } from '../src/utils'
 
-import type { Message } from '../src/types'
+jest.mock('../src/utils/mediaUrl', () => ({
+    getMediaUrl: jest.fn(),
+}))
 
-const mockedProvider = 'mocked-ref-provider'
-const utilsMock = {
-    generateRefProvider: stub().returns(mockedProvider),
-}
+describe('#processIncomingMessage ', () => {
+    test('should process text message correctly', async () => {
+        const params = {
+            messageId: '123',
+            messageTimestamp: Date.now(),
+            pushName: 'John Doe',
+            message: { type: 'text', from: 'sender', text: { body: 'Hello' } },
+            to: 'receiver',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+        }
 
-test.before.each(() => {
-    utilsMock.generateRefProvider.resetHistory()
-})
-
-const getMediaUrlStub = stub().resolves('mocked-image-url')
-
-const { processIncomingMessage } = proxyquire('../src/utils', {
-    getMediaUrl: { getMediaUrl: getMediaUrlStub() },
-    '@builderbot/bot': { utils: utilsMock },
-})
-
-test('processIncomingMessage - for text message', async () => {
-    const params = {
-        pushName: 'John Doe',
-        message: {
+        const expectedResponse = {
             type: 'text',
-            from: 'sender-id',
-            text: { body: 'Hola, mundo!' },
-        },
-        to: 'recipient-id',
-        jwtToken: 'jwt-token',
-        version: '1.0',
-        numberId: '12345',
-    }
+            from: 'sender',
+            to: 'receiver',
+            body: 'Hello',
+            name: 'John Doe',
+            pushName: 'John Doe',
+            message_id: '123',
+            timestamp: expect.any(Number),
+        }
 
-    const result = await processIncomingMessage(params)
-    assert.equal(result.type, 'text')
-    assert.equal(result.from, 'sender-id')
-    assert.equal(result.to, 'recipient-id')
-    assert.equal(result.body, 'Hola, mundo!')
-    assert.equal(result.pushName, 'John Doe')
-})
+        const result = await processIncomingMessage(params)
 
-test('processIncomingMessage for text interactive', async () => {
-    const params = {
-        pushName: 'John Doe',
-        message: {
+        expect(result).toEqual(expectedResponse)
+    })
+
+    test('should process interactive message correctly', async () => {
+        // Arrange
+        const params = {
+            messageId: '123',
+            messageTimestamp: Date.now(),
+            pushName: 'John Doe',
+            message: {
+                type: 'interactive',
+                from: 'sender',
+                interactive: {
+                    button_reply: { title: 'Button Reply' },
+                    list_reply: { id: 'List Reply' },
+                },
+            },
+            to: 'receiver',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+        }
+
+        // Act
+        const result = await processIncomingMessage(params)
+
+        // Assert
+        expect(result).toEqual({
             type: 'interactive',
-            from: 'sender-id',
-            interactive: {
-                button_reply: { title: 'Button Title' },
-                list_reply: { id: 'List ID', title: 'List Title' },
+            from: 'sender',
+            to: 'receiver',
+            body: 'Button Reply',
+            title_button_reply: 'Button Reply',
+            pushName: 'John Doe',
+            name: 'John Doe',
+            message_id: '123',
+            timestamp: expect.any(Number),
+        })
+    })
+
+    test('should process interactive message with list_reply correctly', async () => {
+        // Arrange
+        const params = {
+            messageId: '123',
+            messageTimestamp: Date.now(),
+            pushName: 'John Doe',
+            message: {
+                type: 'interactive',
+                from: 'sender',
+                interactive: {
+                    list_reply: { id: 'List Reply' },
+                },
             },
-        },
-        to: 'recipient-id',
-        jwtToken: 'jwt-token',
-        version: '1.0',
-        numberId: '12345',
-    }
+            to: 'receiver',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+        }
 
-    const result = await processIncomingMessage(params)
-    assert.equal(result.type, 'interactive')
-    assert.equal(result.from, 'sender-id')
-    assert.equal(result.to, 'recipient-id')
-    assert.equal(result.pushName, 'John Doe')
-    assert.equal(result.body, 'Button Title')
-    assert.equal(result.title_button_reply, 'Button Title')
-    assert.equal(result.title_list_reply, 'List Title')
-})
+        // Act
+        const result = await processIncomingMessage(params)
 
-test('processIncomingMessage for type  button', async () => {
-    const params = {
-        pushName: 'John Doe',
-        message: {
+        // Assert
+        expect(result).toEqual({
+            type: 'interactive',
+            from: 'sender',
+            to: 'receiver',
+            body: 'List Reply',
+            title_button_reply: undefined,
+            title_list_reply: undefined,
+            pushName: 'John Doe',
+            name: 'John Doe',
+            message_id: '123',
+            timestamp: expect.any(Number),
+        })
+    })
+
+    test('should process button message correctly', async () => {
+        // Arrange
+        const params = {
+            messageId: '123',
+            messageTimestamp: Date.now(),
+            pushName: 'John Doe',
+            message: {
+                type: 'button',
+                from: 'sender',
+                button: { text: 'Click me', payload: 'ButtonPayload' },
+            },
+            to: 'receiver',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+        }
+
+        // Act
+        const result = await processIncomingMessage(params)
+
+        // Assert
+        expect(result).toEqual({
             type: 'button',
-            from: 'sender-id',
-            button: {
-                text: 'Click me!',
-                payload: 'button-payload',
+            from: 'sender',
+            to: 'receiver',
+            body: 'Click me',
+            payload: 'ButtonPayload',
+            title_button_reply: 'ButtonPayload',
+            pushName: 'John Doe',
+            name: 'John Doe',
+            message_id: '123',
+            timestamp: expect.any(Number),
+        })
+    })
+
+    test('should process image message correctly', async () => {
+        // Arrange
+        const imageUrl = 'https://example.com/image.jpg'
+        const params = {
+            messageId: '123',
+            messageTimestamp: Date.now(),
+            pushName: 'John Doe',
+            message: {
+                type: 'image',
+                from: 'sender',
+                image: { id: 'imageId' },
             },
-        },
-        to: 'recipient-id',
-        jwtToken: 'jwt-token',
-        version: '1.0',
-        numberId: '12345',
-    }
+            to: 'receiver',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+        }
 
-    const result = await processIncomingMessage(params)
-    assert.equal(result.type, 'button')
-    assert.equal(result.from, 'sender-id')
-    assert.equal(result.to, 'recipient-id')
-    assert.equal(result.pushName, 'John Doe')
-    assert.equal(result.body, 'Click me!')
-    assert.equal(result.payload, 'button-payload')
-    assert.equal(result.title_button_reply, 'button-payload')
-})
+        ;(require('../src/utils/mediaUrl').getMediaUrl as jest.Mock).mockImplementation(() => imageUrl)
 
-test('processIncomingMessage for type  image', async () => {
-    const params = {
-        pushName: 'John Doe',
-        message: {
+        // Act
+        const result = await processIncomingMessage(params)
+
+        // Assert
+        expect(result).toEqual({
             type: 'image',
-            from: 'sender-id',
-            image: {
-                id: 'image-id',
-            },
-        },
-        to: 'recipient-id',
-        jwtToken: 'jwt-token',
-        version: '1.0',
-        numberId: '12345',
-    }
-    getMediaUrlStub()
-    const result: Message = await processIncomingMessage(params)
-    assert.equal(result.type, 'image')
-    assert.equal(result.from, 'sender-id')
-    assert.equal(result.to, 'recipient-id')
-    assert.equal(result.pushName, 'John Doe')
-    assert.ok(result.body.includes('_event_media__'))
-})
+            from: 'sender',
+            to: 'receiver',
+            url: imageUrl,
+            body: expect.any(String),
+            pushName: 'John Doe',
+            name: 'John Doe',
+            message_id: '123',
+            timestamp: expect.any(Number),
+        })
+    })
 
-test('processIncomingMessage for type  document', async () => {
-    const params = {
-        pushName: 'John Doe',
-        message: {
+    test('should process document message correctly', async () => {
+        // Arrange
+        const documentUrl = 'https://example.com/image.jpg'
+        const params = {
+            messageId: '123',
+            messageTimestamp: Date.now(),
+            pushName: 'John Doe',
+            message: {
+                type: 'document',
+                from: 'sender',
+                document: { id: 'documentId' },
+            },
+            to: 'receiver',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+        }
+
+        ;(require('../src/utils/mediaUrl').getMediaUrl as jest.Mock).mockImplementation(() => documentUrl)
+        // Act
+        const result = await processIncomingMessage(params)
+
+        // Assert
+        expect(result).toEqual({
             type: 'document',
-            document: { id: '12344' },
-            from: 'sender-id',
-        },
-        to: 'recipient-id',
-        jwtToken: 'jwt-token',
-        version: '1.0',
-        numberId: '12345',
-    }
-    getMediaUrlStub()
-    const result: Message = await processIncomingMessage(params)
-    assert.equal(result.type, 'document')
-    assert.equal(result.from, 'sender-id')
-    assert.equal(result.to, 'recipient-id')
-    assert.equal(result.pushName, 'John Doe')
-    assert.ok(result.body.includes('_event_document_'))
-})
+            from: 'sender',
+            to: 'receiver',
+            url: documentUrl,
+            body: expect.any(String),
+            pushName: 'John Doe',
+            name: 'John Doe',
+            message_id: '123',
+            timestamp: expect.any(Number),
+        })
+    })
 
-test('processIncomingMessage for type  video', async () => {
-    const params = {
-        pushName: 'John Doe',
-        message: {
-            type: 'video',
-            video: { id: '12344' },
-            from: 'sender-id',
-        },
-        to: 'recipient-id',
-        jwtToken: 'jwt-token',
-        version: '1.0',
-        numberId: '12345',
-    }
-    const result: Message = await processIncomingMessage(params)
-    assert.equal(result.type, 'video')
-    assert.equal(result.from, 'sender-id')
-    assert.equal(result.to, 'recipient-id')
-    assert.equal(result.pushName, 'John Doe')
-    assert.ok(result.body.includes('_event_media_'))
-})
-
-test('processIncomingMessage for type  location', async () => {
-    const params = {
-        pushName: 'John Doe',
-        message: {
-            type: 'location',
-            from: 'sender-id',
-            location: {
-                latitude: 2733,
-                longitude: 2733,
+    test('should process video message correctly', async () => {
+        // Arrange
+        const videoUrl = 'https://example.com/video.mp4'
+        const params = {
+            messageId: '123',
+            messageTimestamp: Date.now(),
+            pushName: 'John Doe',
+            message: {
+                type: 'video',
+                from: 'sender',
+                video: { id: 'videoId' },
             },
-        },
-        to: 'recipient-id',
-        jwtToken: 'jwt-token',
-        version: '1.0',
-        numberId: '12345',
-    }
-    const result: Message = await processIncomingMessage(params)
-    assert.equal(result.type, 'location')
-    assert.equal(result.from, 'sender-id')
-    assert.equal(result.to, 'recipient-id')
-    assert.equal(result.pushName, 'John Doe')
-    assert.ok(result.body.includes('_event_location_'))
-})
+            to: 'receiver',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+        }
 
-test('processIncomingMessage for type  audio', async () => {
-    const params = {
-        pushName: 'John Doe',
-        message: {
+        ;(require('../src/utils/mediaUrl').getMediaUrl as jest.Mock).mockImplementation(() => videoUrl)
+        // Act
+        const result = await processIncomingMessage(params)
+
+        // Assert
+        expect(result).toEqual({
+            type: 'video',
+            from: 'sender',
+            to: 'receiver',
+            url: videoUrl,
+            body: expect.any(String),
+            pushName: 'John Doe',
+            name: 'John Doe',
+            message_id: '123',
+            timestamp: expect.any(Number),
+        })
+    })
+
+    test('should process location message correctly', async () => {
+        // Arrange
+        const params = {
+            messageId: '123',
+            messageTimestamp: Date.now(),
+            pushName: 'John Doe',
+            message: {
+                type: 'location',
+                from: 'sender',
+                location: { latitude: 40.7128, longitude: -74.006 },
+            },
+            to: 'receiver',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+        }
+
+        // Act
+        const result = await processIncomingMessage(params)
+
+        // Assert
+        expect(result).toEqual({
+            type: 'location',
+            from: 'sender',
+            to: 'receiver',
+            latitude: 40.7128,
+            longitude: -74.006,
+            body: expect.any(String),
+            pushName: 'John Doe',
+            name: 'John Doe',
+            message_id: '123',
+            timestamp: expect.any(Number),
+        })
+    })
+
+    test('should process audio message correctly', async () => {
+        // Arrange
+        const audioUrl = 'https://example.com/audio.mp3'
+        const params = {
+            messageId: '123',
+            messageTimestamp: Date.now(),
+            pushName: 'John Doe',
+            message: {
+                type: 'audio',
+                from: 'sender',
+                audio: { id: 'audioId' },
+            },
+            to: 'receiver',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+        }
+        ;(require('../src/utils/mediaUrl').getMediaUrl as jest.Mock).mockImplementation(() => audioUrl)
+        // Act
+        const result = await processIncomingMessage(params)
+
+        // Assert
+        expect(result).toEqual({
             type: 'audio',
-            from: 'sender-id',
-            audio: { id: '12344' },
-        },
-        to: 'recipient-id',
-        jwtToken: 'jwt-token',
-        version: '1.0',
-        numberId: '12345',
-    }
-    const result: Message = await processIncomingMessage(params)
-    assert.equal(result.type, 'audio')
-    assert.equal(result.from, 'sender-id')
-    assert.equal(result.to, 'recipient-id')
-    assert.equal(result.pushName, 'John Doe')
-    assert.ok(result.body.includes('_event_audio_'))
-})
+            from: 'sender',
+            to: 'receiver',
+            url: audioUrl,
+            body: expect.any(String),
+            pushName: 'John Doe',
+            name: 'John Doe',
+            message_id: '123',
+            timestamp: expect.any(Number),
+        })
+    })
 
-test('processIncomingMessage for type  sticker', async () => {
-    const params = {
-        pushName: 'John Doe',
-        message: {
+    test('should process sticker message correctly', async () => {
+        // Arrange
+        const params = {
+            messageId: '123',
+            messageTimestamp: Date.now(),
+            pushName: 'John Doe',
+            message: {
+                type: 'sticker',
+                from: 'sender',
+                sticker: { id: 'stickerId' },
+            },
+            to: 'receiver',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+        }
+
+        // Act
+        const result = await processIncomingMessage(params)
+
+        // Assert
+        expect(result).toEqual({
             type: 'sticker',
-            from: 'sender-id',
-            sticker: { id: '12344' },
-        },
-        to: 'recipient-id',
-        jwtToken: 'jwt-token',
-        version: '1.0',
-        numberId: '12345',
-    }
-    const result: Message = await processIncomingMessage(params)
-    assert.equal(result.type, 'sticker')
-    assert.equal(result.from, 'sender-id')
-    assert.equal(result.to, 'recipient-id')
-    assert.equal(result.pushName, 'John Doe')
-    assert.ok(result.body.includes('_event_media_'))
-})
+            from: 'sender',
+            to: 'receiver',
+            id: 'stickerId',
+            body: expect.any(String),
+            pushName: 'John Doe',
+            name: 'John Doe',
+            message_id: '123',
+            timestamp: expect.any(Number),
+        })
+    })
 
-test('processIncomingMessage for type  contacts', async () => {
-    const params = {
-        pushName: 'John Doe',
-        message: {
+    test('should process contacts message correctly', async () => {
+        // Arrange
+        const params = {
+            messageId: '123',
+            messageTimestamp: Date.now(),
+            pushName: 'John Doe',
+            message: {
+                type: 'contacts',
+                from: 'sender',
+                contacts: [{ name: 'John Smith', phones: ['123456789'] }],
+            },
+            to: 'receiver',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+        }
+
+        // Act
+        const result = await processIncomingMessage(params)
+
+        // Assert
+        expect(result).toEqual({
             type: 'contacts',
-            from: 'sender-id',
+            from: 'sender',
+            to: 'receiver',
             contacts: [
                 {
-                    name: 'Test',
-                    phones: '122355',
+                    name: 'John Smith',
+                    phones: ['123456789'],
                 },
             ],
-        },
-        to: 'recipient-id',
-        jwtToken: 'jwt-token',
-        version: '1.0',
-        numberId: '12345',
-    }
-    const result: Message = await processIncomingMessage(params)
-    assert.equal(result.type, 'contacts')
-    assert.equal(result.from, 'sender-id')
-    assert.equal(result.to, 'recipient-id')
-    assert.equal(result.pushName, 'John Doe')
-    assert.ok(result.body.includes('_event_contacts_'))
-})
+            body: expect.any(String),
+            pushName: 'John Doe',
+            name: 'John Doe',
+            message_id: '123',
+            timestamp: expect.any(Number),
+        })
+    })
 
-test('processIncomingMessage for type  order', async () => {
-    const params = {
-        pushName: 'John Doe',
-        message: {
+    test('should process order message correctly', async () => {
+        // Arrange
+        const params = {
+            messageId: '123',
+            messageTimestamp: Date.now(),
+            pushName: 'John Doe',
+            message: {
+                type: 'order',
+                from: 'sender',
+                order: {
+                    catalog_id: 'catalogId',
+                    product_items: [{ id: 'productId', quantity: 2 }],
+                },
+            },
+            to: 'receiver',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+        }
+
+        // Act
+        const result = await processIncomingMessage(params)
+
+        // Assert
+        expect(result).toEqual({
             type: 'order',
-            from: 'sender-id',
+            from: 'sender',
+            to: 'receiver',
             order: {
-                catalog_id: '3636336',
-                product_items: '9994',
+                catalog_id: 'catalogId',
+                product_items: [{ id: 'productId', quantity: 2 }],
             },
-        },
-        to: 'recipient-id',
-        jwtToken: 'jwt-token',
-        version: '1.0',
-        numberId: '12345',
-    }
-    const result: Message = await processIncomingMessage(params)
-    assert.equal(result.type, 'order')
-    assert.equal(result.from, 'sender-id')
-    assert.equal(result.to, 'recipient-id')
-    assert.equal(result.pushName, 'John Doe')
-    assert.ok(result.body.includes('_event_order_'))
-})
+            body: expect.any(String),
+            pushName: 'John Doe',
+            name: 'John Doe',
+            message_id: '123',
+            timestamp: expect.any(Number),
+        })
+    })
 
-test.skip('processIncomingMessage break', async () => {
-    const params = {
-        pushName: 'John Doe',
-        message: {
-            type: 'test',
-            from: 'sender-id',
-            order: {
-                catalog_id: '3636336',
-                product_items: '9994',
+    test('should handle unknown message type correctly', async () => {
+        // Arrange
+        const params = {
+            messageId: '123',
+            messageTimestamp: Date.now(),
+            pushName: 'John Doe',
+            message: {
+                type: 'unknown',
+                from: 'sender',
+                unknownField: 'example',
             },
-        },
-        to: 'recipient-id',
-        jwtToken: 'jwt-token',
-        version: '1.0',
-        numberId: '12345',
-    }
-    const result: Message = await processIncomingMessage(params)
-    assert.equal(result, undefined)
-})
-test.skip('processIncomingMessage break', async () => {
-    const params = {
-        pushName: 'John Doe',
-        message: {
-            type: 'test',
-            from: 'sender-id',
-            order: {
-                catalog_id: '3636336',
-                product_items: '9994',
-            },
-        },
-        to: 'recipient-id',
-        jwtToken: 'jwt-token',
-        version: '1.0',
-        numberId: '12345',
-    }
-    const result: Message = await processIncomingMessage(params)
-    assert.equal(result.message_id, undefined)
-    assert.equal(result.timestamp, undefined)
-})
+            to: 'receiver',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+        }
 
-test.run()
+        // Act
+        const result = await processIncomingMessage(params)
+
+        // Assert
+        expect(result).toEqual({
+            message_id: '123',
+            timestamp: expect.any(Number),
+        })
+    })
+})

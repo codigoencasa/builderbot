@@ -1,9 +1,10 @@
-import { baileyCleanNumber, baileyGenerateImage, baileyIsValidNumber } from '../src/utils'
+import { baileyCleanNumber, baileyGenerateImage, baileyIsValidNumber, emptyDirSessions } from '../src/utils'
 import { expect, describe, test, jest } from '@jest/globals'
 import { utils } from '@builderbot/bot'
 import { createWriteStream } from 'fs'
 import * as qr from 'qr-image'
 import { join } from 'path'
+import { NoParamCallback, emptyDir } from 'fs-extra'
 
 jest.mock('qr-image', () => ({
     image: jest.fn(() => ({
@@ -12,7 +13,7 @@ jest.mock('qr-image', () => ({
 }))
 
 jest.mock('fs-extra', () => ({
-    emptyDir: jest.fn(),
+    emptyDir: jest.fn((_path: string, callback: NoParamCallback) => callback(null)),
 }))
 
 jest.mock('@builderbot/bot', () => ({
@@ -108,6 +109,19 @@ describe('#baileyGenerateImage', () => {
             expect(utils.cleanImage).toHaveBeenCalledWith(imagePath)
             expect(createWriteStream).toHaveBeenCalledWith(imagePath)
             expect(mockWriteStream.on).toHaveBeenCalledWith('finish', expect.any(Function))
+        })
+    })
+
+    describe('#emptyDirSessions', () => {
+        test('should resolve with true when emptyDir callback succeeds', async () => {
+            // Arrange
+            const pathBase = '/ruta/a/directorio'
+            // Act
+            const result = await emptyDirSessions(pathBase)
+
+            // Assert
+            expect(emptyDir).toHaveBeenCalledWith(pathBase, expect.any(Function))
+            expect(result).toBe(true)
         })
     })
 })
