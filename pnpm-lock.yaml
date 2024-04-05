@@ -569,16 +569,13 @@ importers:
                 version: 0.5.7
             '@whiskeysockets/baileys':
                 specifier: ^6.6.0
-                version: 6.6.0(sharp@0.33.3)
+                version: 6.6.0
             fluent-ffmpeg:
                 specifier: ^2.1.2
                 version: 2.1.2
             fs-extra:
                 specifier: ^11.2.0
                 version: 11.2.0
-            sharp:
-                specifier: 0.33.3
-                version: 0.33.3
         devDependencies:
             '@builderbot/bot':
                 specifier: workspace:^
@@ -6464,7 +6461,7 @@ packages:
             codec-parser: 2.4.3
         dev: false
 
-    /@whiskeysockets/baileys@6.6.0(sharp@0.33.3):
+    /@whiskeysockets/baileys@6.6.0:
         resolution:
             {
                 integrity: sha512-4aIPHztdLZP24Qac7mudZTMR7qIsEDQxlpCBJE4atYHFAa5tlwCGPcUy249q3aaayxYtQAwheVG42L6AkRxAwg==,
@@ -6496,7 +6493,6 @@ packages:
             node-cache: 5.1.2
             pino: 7.11.0
             protobufjs: 7.2.6
-            sharp: 0.33.3
             uuid: 9.0.1
             ws: 8.16.0
         transitivePeerDependencies:
