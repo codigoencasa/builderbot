@@ -2,8 +2,9 @@ import EventEmitter from 'node:events'
 import type polka from 'polka'
 import type Queue from 'queue-promise'
 
-import type { Message, MetaGlobalVendorArgs, IncomingMessage } from '~/types'
 import { processIncomingMessage } from '../utils/processIncomingMsg'
+
+import type { Message, MetaGlobalVendorArgs, IncomingMessage } from '~/types'
 
 /**
  * Class representing MetaCoreVendor, a vendor class for meta core functionality.
