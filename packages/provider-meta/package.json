@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/provider-meta",
-    "version": "1.0.32-alpha.0",
+    "version": "1.1.2-alpha.2",
     "description": "> TODO: description",
     "author": "vicente1992 <vic_ortiz20@hotmail.es>",
     "homepage": "https://github.com/vicente1992/bot-whatsapp#readme",
@@ -29,7 +29,7 @@
         "url": "https://github.com/vicente1992/bot-whatsapp/issues"
     },
     "dependencies": {
-        "axios": "^1.6.5",
+        "axios": "^1.6.8",
         "body-parser": "^1.20.2",
         "file-type": "^19.0.0",
         "form-data": "^4.0.0",

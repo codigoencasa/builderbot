@@ -72,12 +72,13 @@ class VenomProvider extends ProviderClass {
                 name: pushname,
                 phone: id.user,
             }
-            this.emit('ready', true)
-            this.emit('host', host)
+
             client.onIncomingCall(async (call) => {
                 console.log(call)
                 // client.sendText(call.peerJid, "Sorry, I still can't answer calls");
             })
+            this.emit('ready', true)
+            this.emit('host', host)
             return client
         } catch (e) {
             console.log(e)

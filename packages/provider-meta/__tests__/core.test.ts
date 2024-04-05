@@ -9,7 +9,6 @@ jest.mock('../src/utils/processIncomingMsg', () => ({
 
 describe('#MetaCoreVendor ', () => {
     let metaCoreVendor: MetaCoreVendor
-    // let queue: Queue;
     let mockNext: any
     beforeEach(() => {
         jest.mock('queue-promise', () => ({
@@ -18,7 +17,6 @@ describe('#MetaCoreVendor ', () => {
             })),
         }))
 
-        // queue = new Queue();
         const queue = new Queue()
         metaCoreVendor = new MetaCoreVendor(queue)
         mockNext = jest.fn()

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.32-alpha.0",
+  "version": "1.1.2-alpha.2",
   "packages": [
     "packages/bot",
     "packages/cli",

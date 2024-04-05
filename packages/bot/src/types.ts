@@ -11,6 +11,7 @@ export type CustomNameEvent = string
 export type GlobalVendorArgs<V = { [key: string]: any }> = {
     name?: string
     port?: number
+    writeMyself?: boolean
 } & V
 
 export type ProviderEventTypes = {
@@ -268,6 +269,8 @@ export type BotCtxMiddlewareOptions = {
     provider: any
     blacklist: DynamicBlacklist
     dispatch: DispatchFn
+    state: (number: string) => BotStateStandAlone
+    globalState: () => BotStateGlobal
 }
 
 export type BotCtxMiddleware<P = ProviderClass> = Partial<P & BotCtxMiddlewareOptions>

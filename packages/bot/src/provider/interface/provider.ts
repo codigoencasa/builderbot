@@ -251,12 +251,17 @@ abstract class ProviderClass<V = any> extends EventEmitterClass<ProviderEventTyp
      * @param {Pick<BotCtxMiddlewareOptions, 'blacklist'>} opts - Middleware options.
      * @returns {void}
      */
-    public initAll = (port: number, opts: Pick<BotCtxMiddlewareOptions, 'blacklist'>): void => {
+    public initAll = (
+        port: number,
+        opts: Pick<BotCtxMiddlewareOptions, 'blacklist' | 'state' | 'globalState'>
+    ): void => {
         this.globalVendorArgs.port = port
         const methods: BotCtxMiddleware<ProviderClass> = {
             sendMessage: this.sendMessage,
             provider: this,
             blacklist: opts.blacklist,
+            state: opts.state,
+            globalState: opts.globalState,
             dispatch: (customEvent, payload) => {
                 this.emit('message', {
                     ...payload,

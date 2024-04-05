@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/contexts-dialogflow-cx",
-    "version": "1.0.32-alpha.0",
+    "version": "1.1.2-alpha.2",
     "description": "contexts typescript",
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
@@ -30,13 +30,13 @@
     },
     "dependencies": {
         "@builderbot/bot": "workspace:^",
-        "@google-cloud/dialogflow-cx": "^4.3.1"
+        "@google-cloud/dialogflow-cx": "^4.4.0"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-terser": "^0.4.4",
-        "@types/node": "^20.11.0",
+        "@types/node": "^20.12.3",
         "@types/proxyquire": "^1.3.31",
         "@types/sinon": "^17.0.3",
         "proxyquire": "^2.1.3",

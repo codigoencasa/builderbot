@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/database-mysql",
-    "version": "1.0.32-alpha.0",
+    "version": "1.1.2-alpha.2",
     "description": "Esto es el conector a Mysql",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
@@ -37,7 +37,7 @@
         "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-terser": "^0.4.4",
-        "@types/node": "^20.11.0",
+        "@types/node": "^20.12.3",
         "@types/sinon": "^17.0.3",
         "kleur": "^4.1.5",
         "rimraf": "^3.0.2",

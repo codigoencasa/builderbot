@@ -1,6 +1,6 @@
 {
     "name": "eslint-plugin-builderbot",
-    "version": "1.0.32-alpha.0",
+    "version": "1.1.2-alpha.2",
     "description": "> TODO: description",
     "author": "vicente1992 <vic_ortiz20@hotmail.es>",
     "homepage": "https://github.com/vicente1992/bot-whatsapp#readme",
@@ -32,8 +32,8 @@
         "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-terser": "^0.4.4",
-        "@types/eslint": "^8.56.2",
-        "@types/node": "^20.11.0",
+        "@types/eslint": "^8.56.7",
+        "@types/node": "^20.12.3",
         "@types/sinon": "^17.0.3",
         "kleur": "^4.1.5",
         "rimraf": "^3.0.2",

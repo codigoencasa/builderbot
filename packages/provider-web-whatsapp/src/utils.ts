@@ -1,10 +1,19 @@
 import { utils } from '@builderbot/bot'
-import { createWriteStream, existsSync, unlinkSync } from 'fs'
+import { createWriteStream, existsSync } from 'fs'
+import { emptyDir } from 'fs-extra'
 import * as http from 'http'
 import * as https from 'https'
 import { tmpdir, platform } from 'os'
 import { join } from 'path'
 import * as qr from 'qr-image'
+
+const emptyDirSessions = async (pathBase: string) =>
+    new Promise((resolve, reject) => {
+        emptyDir(pathBase, (err) => {
+            if (err) reject(err)
+            resolve(true)
+        })
+    })
 
 const wwebGetChromeExecutablePath = () => {
     const myPlatform = platform()
@@ -56,7 +65,7 @@ const wwebGenerateImage = async (base64: string, name: string = 'qr.png'): Promi
 const wwebDeleteTokens = (session: string) => {
     try {
         const pathTokens = join(process.cwd(), session)
-        unlinkSync(pathTokens)
+        emptyDirSessions(pathTokens)
         console.log('Tokens clean..')
     } catch (e) {
         return
