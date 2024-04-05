@@ -12,7 +12,7 @@ import { parseNumberFrom } from '../utils'
  * @extends ProviderClass
  * @implements {TwilioInterface}
  */
-class TwilioProvider extends ProviderClass implements TwilioInterface {
+class TwilioProvider extends ProviderClass<TwilioCoreVendor> implements TwilioInterface {
     globalVendorArgs: ITwilioProviderARgs
 
     constructor(args: ITwilioProviderARgs) {
@@ -36,7 +36,7 @@ class TwilioProvider extends ProviderClass implements TwilioInterface {
     protected async initVendor(): Promise<any> {
         const vendor = new TwilioCoreVendor(this.globalVendorArgs)
         this.vendor = vendor
-        return Promise.resolve(this.vendor)
+        return Promise.resolve(vendor)
     }
 
     protected beforeHttpServerInit(): void {

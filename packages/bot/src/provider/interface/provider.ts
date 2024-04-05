@@ -272,18 +272,19 @@ abstract class ProviderClass<V = any> extends EventEmitterClass<ProviderEventTyp
             },
         }
 
-        this.initVendor().then((v) => this.listenOnEvents(v))
+        this.initVendor()
+            .then((v) => this.listenOnEvents(v))
+            .then(() => {
+                this.beforeHttpServerInit()
 
-        this.beforeHttpServerInit()
-
-        this.start(methods, (routes) => {
-            this.emit('notice', {
-                title: '🛜  HTTP Server ON ',
-                instructions: routes,
+                this.start(methods, (routes) => {
+                    this.emit('notice', {
+                        title: '🛜  HTTP Server ON ',
+                        instructions: routes,
+                    })
+                    this.afterHttpServerInit()
+                })
             })
-            this.afterHttpServerInit()
-        })
-
         return
     }
 }

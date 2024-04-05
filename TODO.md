@@ -76,6 +76,13 @@
 - [ ] win venom node 20.10
 - [ ] win venom node 21.7.2 --> pnpm probar
 
+- [x] docker bailey-ts
+- [x] docker bailey-js
+- [x] docker venom-ts
+- [x] docker venom-js
+- [ ] docker twilio-ts
+- [ ] docker twilio-js
+
 - [ ] meta avisa connecto cunado no tiene webhook
 - [ ] aviso node node 20.12.1 npm v10.5.0 o superior de lo contrario sharp
 - [ ] Error: ENOENT: no such file or directory, open './node_modules/venom-bot/dist/utils/spinnies.js'
