@@ -26,7 +26,7 @@ class WPPConnectProvider extends ProviderClass {
         })
     }
 
-    globalVendorArgs = { name: 'bot', port: 3000 }
+    globalVendorArgs = { name: 'bot', port: 3000, writeMyself: false }
     vendor: Whatsapp
 
     constructor(args: { name: string }) {

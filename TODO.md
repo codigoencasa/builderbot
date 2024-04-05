@@ -57,23 +57,28 @@
 - [x] Cambiar readme de los mono proyectos
 - [x] cambiar mensajes a ingles
 - [x] emptyDir to other
+- [x] handleCtx bot.state globalState
+- [ ] cunado escribes a whatsapp al contacto el bot tmb responde (globalArg con boolean)
+
 - [x] ubuntu baileys node 18.19
 - [x] ubuntu baileys node 20.10
 - [x] ubuntu baileys node 21.7.2
+
 - [x] win baileys node 18.19
 - [x] win baileys node 20.10
 - [x] win baileys node 21.7.2
+
 - [ ] ubuntu venom node 18.19
 - [ ] ubuntu venom node 20.10
 - [ ] ubuntu venom node 21.7.2
+
 - [ ] win venom node 18.19
 - [ ] win venom node 20.10
-- [E] win venom node 21.7.2 --> pnpm probar
-- [ ] cunado escribes a whatsapp al contacto el bot tmb responde (globalArg con boolean)
+- [ ] win venom node 21.7.2 --> pnpm probar
+
 - [ ] meta avisa connecto cunado no tiene webhook
 - [ ] aviso node node 20.12.1 npm v10.5.0 o superior de lo contrario sharp
 - [ ] Error: ENOENT: no such file or directory, open './node_modules/venom-bot/dist/utils/spinnies.js'
-- [x] handleCtx bot.state globalState
 - [ ] coverage
 - [ ] test meta
 - [ ] try catch error http

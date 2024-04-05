@@ -23,6 +23,7 @@ class TwilioProvider extends ProviderClass implements TwilioInterface {
             vendorNumber: undefined,
             name: 'bot',
             port: 3000,
+            writeMyself: false,
         }
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
     }

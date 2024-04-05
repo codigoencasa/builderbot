@@ -39,6 +39,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         verifyToken: '',
         version: 'v18.0',
         port: 3000,
+        writeMyself: false,
     }
 
     constructor(args: MetaGlobalVendorArgs) {

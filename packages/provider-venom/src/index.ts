@@ -18,7 +18,7 @@ import { venomCleanNumber, venomDeleteTokens, venomGenerateImage, venomisValidNu
  * https://github.com/orkestral/venom
  */
 class VenomProvider extends ProviderClass {
-    globalVendorArgs = { name: `bot`, gifPlayback: false, port: 3000 }
+    globalVendorArgs = { name: `bot`, gifPlayback: false, port: 3000, writeMyself: false }
     vendor: venom.Whatsapp
     constructor(args: { name: string; gifPlayback: boolean }) {
         super()

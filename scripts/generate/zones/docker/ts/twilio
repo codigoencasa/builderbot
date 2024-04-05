@@ -15,7 +15,7 @@ RUN apk add --no-cache --virtual .gyp \
         make \
         g++ \
     && apk add --no-cache git \
-    && pnpm install \
+    && pnpm install && pnpm run build \
     && apk del .gyp
 
 FROM node:21-alpine3.18 as deploy

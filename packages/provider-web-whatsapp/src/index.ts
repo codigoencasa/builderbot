@@ -23,7 +23,7 @@ import {
  * https://github.com/pedroslopez/whatsapp-web.js
  */
 class WebWhatsappProvider extends ProviderClass {
-    globalVendorArgs = { name: `bot`, gifPlayback: false, port: 3000 }
+    globalVendorArgs = { name: `bot`, gifPlayback: false, port: 3000, writeMyself: false }
     vendor: Client
     constructor(args: { name: string; gifPlayback: boolean }) {
         super()
