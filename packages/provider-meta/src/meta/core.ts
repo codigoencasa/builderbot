@@ -2,8 +2,9 @@ import EventEmitter from 'node:events'
 import type polka from 'polka'
 import type Queue from 'queue-promise'
 
+import { processIncomingMessage } from '../utils/processIncomingMsg'
+
 import type { Message, MetaGlobalVendorArgs, IncomingMessage } from '~/types'
-import { processIncomingMessage } from '~/utils/processIncomingMsg'
 
 /**
  * Class representing MetaCoreVendor, a vendor class for meta core functionality.
@@ -80,7 +81,7 @@ export class MetaCoreVendor extends EventEmitter {
             res.end('No token!')
             return
         }
-        if (this.tokenIsValid(mode, token, globalVendorArgs.verifyToken)) {
+        if (this.tokenIsValid(mode, token, globalVendorArgs?.verifyToken)) {
             this.emit('ready')
             res.statusCode = 200
             res.end(challenge)

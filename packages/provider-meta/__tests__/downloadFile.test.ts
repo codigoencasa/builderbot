@@ -1,85 +1,109 @@
-import type { AxiosResponse } from 'axios'
-import { test } from 'uvu'
-import * as assert from 'uvu/assert'
-
-import { httpsMock } from '../__mock__/http'
+import { describe, expect, jest, test } from '@jest/globals'
+import axios, { AxiosResponse } from 'axios'
+import mime from 'mime-types'
 import { downloadFile, fileTypeFromFile } from '../src/utils'
 
-const token = 'myToken'
+jest.mock('axios')
 
-test('downloadFile - should return media url correctly', async () => {
-    const url = 'https://example.com/file.jpg'
+describe('#fileTypeFromFile', () => {
+    test('should return type and extension from response headers', async () => {
+        // Arrange
+        const response = {
+            headers: { 'content-type': 'image/jpg' },
+        }
+        jest.spyOn(mime, 'extension').mockReturnValue('jpg')
+        // Act
+        const result = await fileTypeFromFile(response as any)
 
-    const responseData = new Uint8Array([72, 101, 108, 108, 111])
-    const responseHeaders = { 'content-type': 'image/jpeg' }
-    const mockedResponse = {
-        data: responseData,
-        headers: responseHeaders,
-    }
+        // Assert
+        expect(result).toEqual({ type: 'image/jpg', ext: 'jpg' })
+    })
 
-    httpsMock.get.resolves(mockedResponse)
+    test('should return null type and false extension when content-type is not present', async () => {
+        // Arrange
+        const response = {
+            headers: {},
+        }
+        jest.spyOn(mime, 'extension').mockReturnValue(false)
+        // Act
+        const result = await fileTypeFromFile(response as any)
 
-    const result = await downloadFile(url, token)
-    assert.equal(result.buffer, responseData)
-    assert.is(result.extension, 'jpeg')
+        // Assert
+        expect(result).toEqual({ type: '', ext: false })
+    })
 })
 
-test('downloadFile  - It should return an invalid extension error', async () => {
-    const url = 'https://example.com/file.jpg'
+describe('#downloadFile', () => {
+    test('should download a file and return its buffer and extension', async () => {
+        // Arrange
+        const url = 'http://example.com/test.pdf'
+        const token = 'fakeToken'
+        const fakeResponseData = Buffer.from('fake file data')
+        const fakeResponseHeaders = { 'content-type': 'application/pdf' }
+        const fakeExtension = 'pdf'
 
-    const responseData = new Uint8Array([72, 101, 108, 108, 111])
-    const responseHeaders = { 'content-type': 'test' }
-    const mockedResponse = {
-        data: responseData,
-        headers: responseHeaders,
-    }
+        ;(axios.get as jest.MockedFunction<typeof axios.get>).mockResolvedValueOnce({
+            data: fakeResponseData,
+            headers: fakeResponseHeaders,
+        } as unknown as AxiosResponse)
 
-    httpsMock.get.resolves(mockedResponse)
-    const errorMessage = ' Unable to determine file extension'
-
-    try {
+        jest.spyOn(mime, 'extension').mockReturnValue(fakeExtension)
+        // Act
         const result = await downloadFile(url, token)
-        assert.is(result, undefined)
-    } catch (error) {
-        assert.equal(error.message, errorMessage)
-    }
+
+        // Assert
+        expect(result).toEqual({ buffer: fakeResponseData, extension: fakeExtension })
+        expect(axios.get).toHaveBeenCalledTimes(1)
+        expect(axios.get).toHaveBeenCalledWith(url, {
+            headers: { Authorization: `Bearer ${token}` },
+            maxBodyLength: Infinity,
+            responseType: 'arraybuffer',
+        })
+    })
+
+    test('should throw an error if unable to determine file extension', async () => {
+        // Arrange
+        const url = 'http://example.com/test.pdf'
+        const token = 'fakeToken'
+        const fakeResponseData = Buffer.from('fake file data')
+        const fakeResponseHeaders = { 'content-type': 'application/pdf' }
+
+        ;(axios.get as jest.MockedFunction<typeof axios.get>).mockResolvedValueOnce({
+            data: fakeResponseData,
+            headers: fakeResponseHeaders,
+        } as unknown as AxiosResponse)
+
+        jest.spyOn(mime, 'extension').mockReturnValue(false)
+        const consoleErrorSpy = jest.spyOn(console, 'error')
+        // Act
+        await downloadFile(url, token)
+
+        // Assert
+        expect(consoleErrorSpy).toHaveBeenCalledWith('Unable to determine file extension')
+        expect(axios.get).toHaveBeenCalledWith(url, {
+            headers: { Authorization: `Bearer ${token}` },
+            maxBodyLength: Infinity,
+            responseType: 'arraybuffer',
+        })
+    })
+
+    test('should handle axios error', async () => {
+        // Arrange
+        const url = 'http://example.com/test.pdf'
+        const token = 'fakeToken'
+        const errorMessage = 'Network Error'
+
+        ;(axios.get as jest.MockedFunction<typeof axios.get>).mockRejectedValueOnce(new Error(errorMessage))
+        const consoleErrorSpy = jest.spyOn(console, 'error')
+        // Act
+        await downloadFile(url, token)
+
+        //Assert
+        expect(consoleErrorSpy).toHaveBeenCalledWith(errorMessage)
+        expect(axios.get).toHaveBeenCalledWith(url, {
+            headers: { Authorization: `Bearer ${token}` },
+            maxBodyLength: Infinity,
+            responseType: 'arraybuffer',
+        })
+    })
 })
-
-test('downloadFile  - should handle errors and return undefined', async () => {
-    const url = 'https://example.com/file.jpg'
-    const errorMessage = 'Some error'
-    httpsMock.get.throws(errorMessage)
-
-    try {
-        const result = await await downloadFile(url, token)
-        assert.is(result, undefined)
-    } catch (error) {
-        assert.equal(error.message, errorMessage)
-    }
-})
-
-test('fileTypeFromFile extracts type and extension correctly', async () => {
-    const response: AxiosResponse = {
-        headers: {
-            'content-type': 'image/jpeg',
-        },
-    } as unknown as AxiosResponse
-
-    const result = await fileTypeFromFile(response)
-
-    assert.is(result.type, 'image/jpeg')
-    assert.is(result.ext, 'jpeg')
-})
-
-test('fileTypeFromFile - It should return the type empty and the extension false', async () => {
-    const response: AxiosResponse = {
-        headers: {},
-    } as unknown as AxiosResponse
-
-    const result = await fileTypeFromFile(response)
-
-    assert.is(result.type, '')
-    assert.is(result.ext, false)
-})
-
-test.run()

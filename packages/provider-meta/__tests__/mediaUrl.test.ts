@@ -1,31 +1,58 @@
-import { test } from 'uvu'
-import * as assert from 'uvu/assert'
-
-import { httpsMock } from '../__mock__/http'
+import axios from 'axios'
+import { jest, describe, test, expect, afterEach } from '@jest/globals'
 import { getMediaUrl } from '../src/utils'
 
-const version = 'v1'
-const idMedia = '123'
-const numberId = '456'
-const token = 'myToken'
+jest.mock('axios')
 
-test('getMediaUrl - should return media url correctly', async () => {
-    const url = 'https://example.com/media'
-    const responseData = {
-        data: {
-            url,
-        },
-    }
+describe('#getMediaUrl', () => {
+    afterEach(() => {
+        jest.clearAllMocks()
+    })
 
-    httpsMock.get.resolves(responseData)
-    const result = await getMediaUrl(version, idMedia, numberId, token)
-    assert.is(result, url)
+    test('should return media URL when request is successful', async () => {
+        // Arrange
+        const version = 'v1'
+        const idMedia = '123'
+        const numberId = '456'
+        const token = 'abc'
+        const expectedUrl = 'https://example.com/media'
+        const responseData = { url: expectedUrl }
+        const axiosResponse = { data: responseData }
+        ;(axios.get as jest.MockedFunction<typeof axios.get>).mockResolvedValue(axiosResponse)
+
+        // Act
+        const result = await getMediaUrl(version, idMedia, numberId, token)
+
+        // Assert
+        expect(result).toBe(expectedUrl)
+        expect(axios.get).toHaveBeenCalledWith(
+            `https://graph.facebook.com/${version}/${idMedia}?phone_number_id=${numberId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                maxBodyLength: Infinity,
+            }
+        )
+    })
+
+    test('should return undefined when request fails', async () => {
+        // Arrange
+        const version = 'v1'
+        const idMedia = '123'
+        const numberId = '456'
+        const token = 'abc'
+        const expectedErrorMessage = 'Error fetching media'
+        const axiosError = new Error(expectedErrorMessage)
+
+        const consoleErrorSpy = jest.spyOn(console, 'error')
+        ;(axios.get as jest.MockedFunction<typeof axios.get>).mockRejectedValue(axiosError)
+
+        // Act
+        const result = await getMediaUrl(version, idMedia, numberId, token)
+
+        // Assert
+        expect(result).toBeUndefined()
+        expect(consoleErrorSpy).toHaveBeenCalledWith(expectedErrorMessage)
+    })
 })
-
-test('getMediaUrl should handle errors and return undefined', async () => {
-    httpsMock.get.throws('Some error')
-    const result = await getMediaUrl(version, idMedia, numberId, token)
-    assert.is(result, undefined)
-})
-
-test.run()
