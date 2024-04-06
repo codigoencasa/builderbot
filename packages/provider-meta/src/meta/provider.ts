@@ -23,8 +23,8 @@ import type {
     SaveFileOptions,
     TextMessageBody,
 } from '~/types'
-import { downloadFile, getProfile } from '~/utils'
-import { parseMetaNumber } from '~/utils/number'
+import { downloadFile, getProfile } from '../utils'
+import { parseMetaNumber } from '../utils/number'
 
 const URL = `https://graph.facebook.com`
 
