@@ -11,6 +11,8 @@ import { join, basename, resolve } from 'path'
 import Queue from 'queue-promise'
 
 import { MetaCoreVendor } from './core'
+import { downloadFile, getProfile } from '../utils'
+import { parseMetaNumber } from '../utils/number'
 
 import type { MetaInterface } from '~/interface/meta'
 import type {
@@ -23,8 +25,6 @@ import type {
     SaveFileOptions,
     TextMessageBody,
 } from '~/types'
-import { downloadFile, getProfile } from '~/utils'
-import { parseMetaNumber } from '~/utils/number'
 
 const URL = `https://graph.facebook.com`
 
