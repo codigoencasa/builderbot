@@ -1,32 +1,61 @@
-import { test } from 'uvu'
-import * as assert from 'uvu/assert'
+import { describe, expect, test } from '@jest/globals'
+import { parseNumber, parseNumberFrom } from '../src/utils'
 
-import { parseNumber } from '../src/utils'
+describe('#parseNumber ', () => {
+    test('should parse number correctly by removing "whatsapp:" and spaces', () => {
+        // Arrange
+        const phoneNumber = 'whatsapp: +123 456 789'
 
-test.skip('parseNumber', () => {
-    assert.type(parseNumber, 'function')
+        // Act
+        const result = parseNumber(phoneNumber)
 
-    assert.is(parseNumber('whatsapp:123456789'), '123456789', 'Should remove "whatsapp:" prefix')
-    assert.is(parseNumber('whatsapp:+123456789'), '123456789', 'Should remove "whatsapp:" prefix and "+" sign')
+        // Assert
+        expect(result).toBe('+123456789')
+    })
 
-    assert.is(parseNumber('+123456789'), '123456789', 'Should remove "+" sign')
-    assert.is(parseNumber('123456789'), '123456789', 'Should not alter a string without "whatsapp:" or "+"')
+    test('should handle numbers without spaces correctly', () => {
+        // Arrange
+        const phoneNumber = 'whatsapp:+111222333'
 
-    assert.is(
-        parseNumber('tel:123456789'),
-        'tel:123456789',
-        'Should not alter a string that does not start with "whatsapp:" or "+"'
-    )
-    assert.is(
-        parseNumber('123:456789'),
-        '123:456789',
-        'Should not alter a string that does not start with "whatsapp:" or "+"'
-    )
+        // Act
+        const result = parseNumber(phoneNumber)
 
-    assert.is(parseNumber(''), '', 'Should return an empty string if input is empty')
-    assert.is(parseNumber('whatsapp:'), '', 'Should return an empty string if input is only "whatsapp:"')
-    assert.is(parseNumber('+'), '', 'Should return an empty string if input is only "+"')
-    assert.is(parseNumber('whatsapp:+'), '', 'Should return an empty string if input is only "whatsapp:+"')
+        // Assert
+        expect(result).toBe('+111222333')
+    })
 })
 
-test.run()
+describe('#parseNumberFrom ', () => {
+    test('should parse number correctly by removing "whatsapp:", "+" and spaces', () => {
+        // Arrange
+        const phoneNumber = 'whatsapp: +123 456 789'
+
+        // Act
+        const result = parseNumberFrom(phoneNumber)
+
+        // Assert
+        expect(result).toBe('whatsapp:+123456789')
+    })
+
+    test('should handle numbers without "whatsapp:" correctly', () => {
+        // Arrange
+        const phoneNumber = '+987 654 321'
+
+        // Act
+        const result = parseNumberFrom(phoneNumber)
+
+        // Assert
+        expect(result).toBe('whatsapp:+987654321')
+    })
+
+    test('should handle numbers without spaces correctly', () => {
+        // Arrange
+        const phoneNumber = 'whatsapp:+111222333'
+
+        // Act
+        const result = parseNumberFrom(phoneNumber)
+
+        // Assert
+        expect(result).toBe('whatsapp:+111222333')
+    })
+})
