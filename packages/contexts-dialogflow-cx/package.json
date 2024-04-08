@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/contexts-dialogflow-cx",
-    "version": "1.1.2-alpha.5",
+    "version": "1.1.2-alpha.6",
     "description": "contexts typescript",
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
