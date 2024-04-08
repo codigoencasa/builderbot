@@ -7,6 +7,7 @@ import { TwilioCoreVendor } from './core'
 import type { TwilioInterface } from '../interface/twilio'
 import type { ITwilioProviderARgs, TwilioRequestBody } from '../types'
 import { parseNumberFrom } from '../utils'
+import { MessageListInstanceCreateOptions } from 'twilio/lib/rest/api/v2010/account/message'
 /**
  * A class representing a TwilioProvider for interacting with Twilio messaging service.
  * @extends ProviderClass
@@ -136,11 +137,27 @@ class TwilioProvider extends ProviderClass<TwilioCoreVendor> implements TwilioIn
         this.emit('notice', {
             title: '📃 INFO 📃',
             instructions: [
-                `Twilio presents a different way to implement buttons`,
+                `Twilio presents a different way to implement buttons and lists`,
                 `To understand more about how it works, I recommend you check the following URLs`,
                 `https://builderbot.vercel.app/en/providers/twilio/uses-cases`,
             ],
         })
+    }
+
+    /**
+     *
+     * @param number
+     * @param message
+     * @returns
+     */
+    send = async (number: string, message: string, options?: MessageListInstanceCreateOptions): Promise<any> => {
+        const response = await this.vendor.twilio.messages.create({
+            ...options,
+            body: message,
+            from: parseNumberFrom(this.globalVendorArgs.vendorNumber),
+            to: parseNumberFrom(number),
+        })
+        return response
     }
 
     /**

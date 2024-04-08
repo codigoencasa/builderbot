@@ -2,6 +2,7 @@
     "IMPORT": "import { VenomProvider as Provider } from '@builderbot/provider-venom'\n",
     "IMPLEMENTATION": "\n    const adapterProvider = createProvider(Provider)",
     "DEPENDENCIES":{
+        "@builderbot/bot": "latest",
         "@builderbot/provider-venom": "latest"
     },
     "DEV_DEPENDENCIES":{}

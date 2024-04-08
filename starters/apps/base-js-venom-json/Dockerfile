@@ -49,7 +49,7 @@ RUN addgroup -S pptruser && adduser -S -G pptruser pptruser
 
 WORKDIR /app
 
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app ./
 COPY --from=builder /app/package.json /app/pnpm-lock.yaml ./
 
 RUN chown -R pptruser:pptruser /app

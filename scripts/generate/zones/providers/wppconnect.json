@@ -2,6 +2,7 @@
     "IMPORT": "import { WPPConnectProvider as Provider } from '@builderbot/provider-wppconnect'\n",
     "IMPLEMENTATION": "\n    const adapterProvider = createProvider(Provider)",
     "DEPENDENCIES":{
+        "@builderbot/bot": "latest",
         "@builderbot/provider-wppconnect": "latest"
     },
     "DEV_DEPENDENCIES":{}

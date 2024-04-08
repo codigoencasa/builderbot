@@ -2,6 +2,7 @@
     "IMPORT": "import { BaileysProvider as Provider } from '@builderbot/provider-baileys'\n",
     "IMPLEMENTATION": "\n    const adapterProvider = createProvider(Provider)",
     "DEPENDENCIES":{
+        "@builderbot/bot": "latest",
         "@builderbot/provider-baileys": "latest"
     },
     "DEV_DEPENDENCIES":{}
