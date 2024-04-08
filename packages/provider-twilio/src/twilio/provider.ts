@@ -2,12 +2,12 @@ import { ProviderClass, utils } from '@builderbot/bot'
 import type { BotContext, SendOptions } from '@builderbot/bot/dist/types'
 import { tmpdir } from 'os'
 import { join } from 'path'
+import type { MessageListInstanceCreateOptions } from 'twilio/lib/rest/api/v2010/account/message'
 
 import { TwilioCoreVendor } from './core'
 import type { TwilioInterface } from '../interface/twilio'
 import type { ITwilioProviderARgs, TwilioRequestBody } from '../types'
 import { parseNumberFrom } from '../utils'
-import { MessageListInstanceCreateOptions } from 'twilio/lib/rest/api/v2010/account/message'
 /**
  * A class representing a TwilioProvider for interacting with Twilio messaging service.
  * @extends ProviderClass
