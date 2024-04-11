@@ -1,13 +1,12 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals'
 import { writeFile } from 'fs/promises'
+import { utils } from '@builderbot/bot'
 import path from 'path'
 import mime from 'mime-types'
+import venom from 'venom-bot'
 import { VenomProvider } from '../src'
-import { utils } from '@builderbot/bot'
 
 const phoneNumber = '1234567890'
-
-jest.mock('venom-bot')
 
 jest.mock('fs/promises', () => ({
     writeFile: jest.fn(),
@@ -17,9 +16,14 @@ jest.mock('../src/utils', () => ({
     venomCleanNumber: jest.fn().mockImplementation(() => phoneNumber),
     venomisValidNumber: jest.fn().mockImplementation(() => true),
     venomGenerateImage: jest.fn(),
+    venomDeleteTokens: jest.fn(),
 }))
 
 jest.mock('@builderbot/bot')
+
+jest.mock('venom-bot', () => ({
+    create: jest.fn(),
+}))
 
 describe('#VenomProvider', () => {
     let venomProvider: VenomProvider
@@ -557,6 +561,42 @@ describe('#VenomProvider', () => {
 
             // Assert
             expect(venomProvider.vendor).toEqual(mockVendor)
+        })
+    })
+
+    describe('#initVendor', () => {
+        test('should initialize the vendor successfully', async () => {
+            // Arrange
+            const mockHostDevice = { id: { user: 'mockUserId' }, pushname: 'mockPushName' }
+            ;(venom.create as jest.Mock).mockImplementationOnce((_, qrCallback, statusCallback, options) => {
+                return Promise.resolve({
+                    getHostDevice: async () => mockHostDevice,
+                    onIncomingCall: jest.fn(),
+                } as any)
+            })
+
+            // Act
+            await venomProvider['initVendor']()
+
+            // Assert
+            expect(venom.create).toHaveBeenCalled()
+            expect(venomProvider.vendor).toBeDefined()
+        })
+
+        test('should handle initialization error', async () => {
+            // Arrange
+            ;(require('../src/utils').venomDeleteTokens as jest.Mock).mockImplementation(() => false)
+            const mockEmit = jest.fn()
+            const mockEventEmitter = {
+                emit: mockEmit,
+            }
+            venomProvider.emit = (mockEventEmitter as any).emit.bind(mockEventEmitter)
+            // Act
+            await venomProvider['initVendor']()
+
+            // Assert
+            expect(venom.create).toHaveBeenCalled()
+            expect(mockEmit).toHaveBeenCalled()
         })
     })
 })
