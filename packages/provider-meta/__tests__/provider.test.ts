@@ -54,7 +54,6 @@ describe('#MetaProvider', () => {
                 verifyToken: 'ddldldl',
             }
             metaProvider.globalVendorArgs = fakeArgs
-
             ;(require('../src/utils').getProfile as jest.Mock).mockImplementation(() => fakeProfile)
             const mockEmit = jest.fn()
             const mockEventEmitter = {
@@ -79,7 +78,6 @@ describe('#MetaProvider', () => {
                 emit: mockEmit,
             }
             metaProvider.emit = (mockEventEmitter as any).emit.bind(mockEventEmitter)
-
             ;(require('../src/utils').getProfile as jest.Mock).mockImplementation(() => mockGetProfile)
 
             const noticeSpy = jest.spyOn(metaProvider, 'emit')
