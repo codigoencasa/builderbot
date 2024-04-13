@@ -127,7 +127,8 @@ describe('#venomGenerateImage', () => {
         })
     })
 })
-describe('# const mockEmptyDir = ', () => {
+
+describe('#mockEmptyDir', () => {
     test('should empty the directory correctly', async () => {
         // Arrange
         const pathBase = '/path/to/directory'
