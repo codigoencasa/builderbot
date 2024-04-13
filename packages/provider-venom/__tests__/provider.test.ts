@@ -291,7 +291,6 @@ describe('#VenomProvider', () => {
     describe('#sendButtons', () => {
         test('Send buttons successfully', async () => {
             // Arrange
-            const venomProvider = new VenomProvider({ name: 'test', gifPlayback: false })
             venomProvider.emit = jest.fn()
             venomProvider.vendor = {
                 sendText: jest.fn().mockImplementation(() => 'Buttons sent'),
