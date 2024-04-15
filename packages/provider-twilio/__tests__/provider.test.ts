@@ -129,7 +129,7 @@ describe('#TwilioProvider', () => {
             const mockTwilio = {
                 twilio: { messages: { create: mockCreate } },
             }
-            twilioProvider.vendor = mockTwilio
+            twilioProvider.vendor = mockTwilio as any
 
             // Act
             const result = await twilioProvider.sendMessage(number, message, fakeOptions)
@@ -157,7 +157,7 @@ describe('#TwilioProvider', () => {
             expect(mockEmit).toHaveBeenCalledWith('notice', {
                 title: '📃 INFO 📃',
                 instructions: [
-                    `Twilio presents a different way to implement buttons`,
+                    `Twilio presents a different way to implement buttons and lists`,
                     `To understand more about how it works, I recommend you check the following URLs`,
                     `https://builderbot.vercel.app/en/providers/twilio/uses-cases`,
                 ],
@@ -175,7 +175,7 @@ describe('#TwilioProvider', () => {
             const mockTwilio = {
                 twilio: { messages: { create: mockCreate } },
             }
-            twilioProvider.vendor = mockTwilio
+            twilioProvider.vendor = mockTwilio as any
             ;(utils.encryptData as jest.MockedFunction<typeof utils.encryptData>).mockImplementation(
                 (data) => `mockEncrypted${data}`
             )
@@ -206,7 +206,7 @@ describe('#TwilioProvider', () => {
             const mockTwilio = {
                 twilio: { messages: { create: mockCreate } },
             }
-            twilioProvider.vendor = mockTwilio
+            twilioProvider.vendor = mockTwilio as any
             ;(utils.encryptData as jest.MockedFunction<typeof utils.encryptData>).mockImplementation(
                 (data) => `mockEncrypted${data}`
             )
@@ -237,7 +237,7 @@ describe('#TwilioProvider', () => {
             const mockTwilio = {
                 twilio: { messages: { create: mockCreate } },
             }
-            twilioProvider.vendor = mockTwilio
+            twilioProvider.vendor = mockTwilio as any
             ;(utils.encryptData as jest.MockedFunction<typeof utils.encryptData>).mockImplementation(
                 (data) => `mockEncrypted${data}`
             )
@@ -356,7 +356,7 @@ describe('#TwilioProvider', () => {
             const mockTwilio = {
                 indexHome: mockIndexHome,
             }
-            twilioProvider.vendor = mockTwilio
+            twilioProvider.vendor = mockTwilio as any
 
             twilioProvider.server = mockPolka() as any
             // Act
