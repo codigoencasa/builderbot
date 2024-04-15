@@ -17,7 +17,6 @@ interface PromiseFunctionWrapper<T> {
 
 class Queue<T> {
     private queue: Map<string, QueueItem<T>[]>
-    private queueTime: Map<string, string>
     private timers: Map<string, NodeJS.Timeout | boolean>
     private idsCallbacks: Map<string, string[]>
     private workingOnPromise: Map<string, boolean>
@@ -27,7 +26,6 @@ class Queue<T> {
 
     constructor(logger: Logger, concurrencyLimit = 15, timeout = 50000) {
         this.queue = new Map()
-        this.queueTime = new Map()
         this.timers = new Map()
         this.idsCallbacks = new Map()
         this.workingOnPromise = new Map()
@@ -43,7 +41,7 @@ class Queue<T> {
      */
     public clearAndDone(from: string, item: { fingerIdRef: string }) {
         this.clearIdFromCallback(from, item.fingerIdRef)
-        this.logger.log(`${from}:SUCCESS ${item.fingerIdRef}`)
+        this.logger.log(`${from}: SUCCESS: ${item.fingerIdRef}`)
     }
 
     private async processItem(from: string, item: QueueItem<T>): Promise<void> {
@@ -65,7 +63,7 @@ class Queue<T> {
     }
 
     async enqueue(from: string, promiseInFunc: () => Promise<T>, fingerIdRef: string): Promise<T> {
-        this.logger.log(`${from}:ENCOLADO ${fingerIdRef}`)
+        this.logger.log(`${from}: QUEUE: ${fingerIdRef}`)
 
         if (!this.timers.has(fingerIdRef)) {
             this.timers.set(fingerIdRef, false)
@@ -135,7 +133,7 @@ class Queue<T> {
             })
 
             if (!workingByFrom) {
-                this.logger.log(`EJECUTANDO:${fingerIdRef}`)
+                this.logger.log(`${from}: EXECUTING: ${fingerIdRef}`)
                 this.processQueue(from)
                 this.workingOnPromise.set(from, true)
             }
@@ -169,6 +167,7 @@ class Queue<T> {
                 }
             } finally {
                 this.queue.set(from, [])
+                this.idsCallbacks.set(from, [])
             }
 
             if (workingByFrom) {
@@ -179,16 +178,18 @@ class Queue<T> {
         }
     }
 
-    setFingerTime(from: string, fingerTime: string): void {
-        this.queueTime.set(from, fingerTime)
-    }
-
     setIdsCallbacks(from: string, ids: string[] = []): void {
         this.idsCallbacks.set(from, ids)
     }
 
     getIdsCallback(from: string): string[] {
         return this.idsCallbacks.get(from) || []
+    }
+
+    getIdWithFrom(from: string, id: string): number {
+        const ids = this.idsCallbacks.get(from) || []
+        const index = ids.indexOf(id)
+        return index
     }
 
     clearIdFromCallback(from: string, id: string): void {

@@ -1,5 +1,5 @@
 import { ProviderClass, utils } from '@builderbot/bot'
-import type { BotContext, Button, GlobalVendorArgs, SendOptions } from '@builderbot/bot/dist/types'
+import type { BotContext, Button, SendOptions } from '@builderbot/bot/dist/types'
 import type { Boom } from '@hapi/boom'
 import { Console } from 'console'
 import type { PathOrFileDescriptor } from 'fs'
@@ -39,7 +39,7 @@ const logger = new Console({
 })
 
 class BaileysProvider extends ProviderClass<WASocket> {
-    public globalVendorArgs: GlobalVendorArgs<BaileyGlobalVendorArgs> = {
+    public globalVendorArgs: BaileyGlobalVendorArgs = {
         name: `bot`,
         gifPlayback: false,
         usePairingCode: false,

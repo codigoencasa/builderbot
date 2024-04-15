@@ -319,7 +319,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         const continueFlow = async (initRef = undefined): Promise<any> => {
             try {
                 const currentPrev = await this.database.getPrevByNumber(from)
-
+                if (!currentPrev?.keyword) return
                 let nextFlow = this.flowClass.find(refToContinue?.ref, true) || []
                 if (initRef && !initRef?.idleFallBack) {
                     nextFlow = this.flowClass.find(initRef?.ref, true) || []
@@ -465,8 +465,6 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                 if (endFlowFlag && !privateOptions?.omitEndFlow) {
                     return
                 }
-
-                this.queuePrincipal.setFingerTime(from, inRef)
 
                 for (const msg of parseListMsg) {
                     if (privateOptions?.idleCtx) {

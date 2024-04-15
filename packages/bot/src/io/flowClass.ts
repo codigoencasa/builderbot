@@ -12,7 +12,7 @@ class FlowClass {
     flowRaw: TFlow[]
 
     constructor(_flow: TFlow[]) {
-        if (!Array.isArray(_flow)) throw new Error('Esto debe ser un ARRAY')
+        if (!Array.isArray(_flow)) throw new Error('Must be an array of flows')
         this.flowRaw = _flow
 
         this.allCallbacks = flatObject(_flow)

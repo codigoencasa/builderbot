@@ -86,6 +86,7 @@ const setVersionTemplate = async (projectPath: string, version: string) => {
         const dependencies = parseRaw.dependencies
         const newDependencies = Object.keys(dependencies).map((dep) => {
             if (dep.startsWith('@builderbot/')) return [dep, version]
+            if (dep === 'eslint-plugin-builderbot') return [dep, version]
             return [dep, dependencies[dep]]
         })
 
