@@ -14,8 +14,9 @@
     ],
     "scripts": {
         "build": "rimraf dist && rollup --config",
-        "test": "npx uvu -r tsm ./__tests__",
-        "test:coverage": "npx c8 npm run test"
+        "test": "jest",
+        "test:coverage": "jest --coverage",
+        "test:watch": "jest --watchAll --coverage"
     },
     "directories": {
         "lib": "dist",
@@ -31,6 +32,7 @@
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
     "devDependencies": {
         "@builderbot/bot": "workspace:^",
+        "@jest/globals": "^29.7.0",
         "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",

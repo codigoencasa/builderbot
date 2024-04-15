@@ -71,4 +71,5 @@ export {
     WppConnectCleanNumber,
     notMatches,
     writeFilePromise,
+    emptyDirSessions,
 }

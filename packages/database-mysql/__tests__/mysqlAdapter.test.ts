@@ -5,7 +5,7 @@ import * as assert from 'uvu/assert'
 
 import { MysqlAdapter } from '../src/'
 
-const mockCredentials = {
+const mockCredentials: any = {
     host: 'localhost',
     user: 'test',
     database: 'test',
@@ -205,6 +205,7 @@ test('checkTableExists - should return true if table exists', async () => {
         },
     }
     const result = await mockMysqlAdapter.checkTableExists()
+    console.log(result)
     assert.is(result, true)
     assert.is(createTableSpy.notCalled, true)
 })
