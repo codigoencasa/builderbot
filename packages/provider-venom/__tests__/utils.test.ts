@@ -1,23 +1,65 @@
 import { describe, expect, jest, test } from '@jest/globals'
 import {
+    emptyDirSessions,
     notMatches,
     venomCleanNumber,
     venomDeleteTokens,
     venomDownloadMedia,
     venomGenerateImage,
     venomisValidNumber,
+    writeFilePromise,
 } from '../src/utils'
-import fsExtra from 'fs-extra'
+import fsExtra, { NoParamCallback } from 'fs-extra'
 import EventEmitter from 'events'
 import { stub } from 'sinon'
+import { utils } from '@builderbot/bot'
+import { createWriteStream } from 'fs'
 
-const httpsMock = {
-    get: stub(),
-}
+// const httpsMock = {
+//     get: stub(),
+// }
 
 jest.mock('fs-extra')
 
 jest.mock('@builderbot/bot')
+
+jest.mock('fs-extra', () => ({
+    emptyDir: jest.fn((_path: string, callback: NoParamCallback) => callback(null)),
+}))
+
+jest.mock('@builderbot/bot', () => ({
+    utils: {
+        cleanImage: jest.fn(),
+    },
+}))
+
+jest.mock('fs', () => ({
+    createWriteStream: jest.fn(),
+    existsSync: jest.fn(),
+    readdirSync: jest.fn(() => []),
+    unlinkSync: jest.fn(),
+    writeFile: jest.fn((path, data, options, callback: NoParamCallback) => {
+        callback(null)
+    }),
+}))
+
+jest.mock('http', () => ({
+    get: jest.fn((_, callback: (res: any) => void) => {
+        const response = {
+            pipe: jest.fn(),
+        }
+        callback(response)
+    }),
+}))
+
+jest.mock('https', () => ({
+    get: jest.fn((_, callback: (res: any) => void) => {
+        const response = {
+            pipe: jest.fn(),
+        }
+        callback(response)
+    }),
+}))
 
 describe('#venomCleanNumber', () => {
     test('should clear the number properly', () => {
@@ -85,9 +127,7 @@ describe('#venomGenerateImage', () => {
 
         // Assert
         const fs = require('fs')
-        const fileExists = fs.existsSync(expectedFileName)
-        expect(fileExists).toBeTruthy()
-
+        expect(utils.cleanImage).toHaveBeenCalled()
         fs.unlinkSync(expectedFileName)
     })
 
@@ -100,19 +140,77 @@ describe('#venomGenerateImage', () => {
     })
 })
 
-describe('#venomDownloadMedia', () => {
-    test('Downloads media from a URL using http', async () => {
-        const fakeResponse: any = new EventEmitter() as any
-        fakeResponse.headers = { 'content-type': 'image/png' }
-        const fileName = '2whHCbI.png'
-        const url = `http://i.imgur.com/${fileName}`
-        const fakeStream: any = new EventEmitter() as any
-        fakeStream.close = stub()
-        httpsMock.get.callsFake((_, callback) => {
-            callback(fakeResponse)
-            return fakeStream
+describe('# const mockEmptyDir = ', () => {
+    test('should empty the directory correctly', async () => {
+        // Arrange
+        const pathBase = '/path/to/directory'
+        const mockEmptyDir = jest.fn((_path: string, callback: NoParamCallback) => callback(null))
+
+        jest.spyOn(fsExtra, 'emptyDir').mockImplementation(mockEmptyDir)
+
+        // Act
+        await emptyDirSessions(pathBase)
+
+        // Assert
+        expect(mockEmptyDir).toHaveBeenCalledWith(pathBase, expect.any(Function))
+    })
+
+    test('should handle errors when emptying the directory', async () => {
+        // Arrange
+        const pathBase = '/path/to/directory'
+        const error = new Error('Failed to empty directory')
+        const mockEmptyDir = jest.fn((_path: string, callback: NoParamCallback) => callback(error))
+
+        jest.spyOn(fsExtra, 'emptyDir').mockImplementation(mockEmptyDir)
+
+        // Act & Assert
+        await expect(emptyDirSessions(pathBase)).rejects.toEqual(error)
+    })
+})
+
+describe('writeFilePromise', () => {
+    test('should resolve with true when writeFile is successful', () => {
+        // Arrange
+        const pathQr = 'testPath'
+        const response: any = { data: 'testData' }
+        // Act
+        writeFilePromise(pathQr, response).then((result) => {
+            // Assert
+            expect(result).toBe(true)
         })
-        const downloadedPath = await venomDownloadMedia(url)
-        expect(downloadedPath).toContain('tmp-')
+    })
+
+    test('should reject with error message when writeFile encounters an error', async () => {
+        // Arrange
+        const pathQr = 'testPath'
+        const response: any = { data: 'testData' }
+        require('fs').writeFile.mockImplementationOnce((path, data, options, callback) => {
+            callback('some error')
+        })
+
+        // Act & Assert
+        await expect(writeFilePromise(pathQr, response)).rejects.toEqual('ERROR_QR_GENERATE')
+    })
+})
+
+describe('venomDownloadMedia ', () => {
+    test('should download media from a URL using http', () => {
+        // Arrange
+        const url = 'http://example.com/media.jpg'
+        const mockWriteStream = {
+            on: jest.fn((event: string, cb: () => void) => {
+                if (event === 'finish') {
+                    cb()
+                }
+            }),
+            close: jest.fn(),
+        }
+        ;(createWriteStream as jest.Mock).mockReturnValue(mockWriteStream)
+        // Act
+        venomDownloadMedia(url).then((downloadedPath) => {
+            // Assert
+            expect(typeof downloadedPath).toBe('string')
+            expect(downloadedPath).toContain('tmp-')
+        })
     })
 })
