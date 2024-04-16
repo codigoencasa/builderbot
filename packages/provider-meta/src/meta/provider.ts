@@ -642,6 +642,8 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
     }
 
     sendMessageToApi = async (body: TextMessageBody): Promise<any> => {
+        body.to = body.to.startsWith('549') ? '54' + body.to.substring(3) : body.to
+
         try {
             const fullUrl = `${URL}/${this.globalVendorArgs.version}/${this.globalVendorArgs.numberId}/messages`
             const response = await axios.post(fullUrl, body, {
