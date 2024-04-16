@@ -79,10 +79,10 @@ class MysqlAdapter extends MemoryDB {
             (id INT AUTO_INCREMENT PRIMARY KEY, 
             ref varchar(255) DEFAULT NULL,
             keyword varchar(255) NULL,
-            answer longtext NOT NULL,
-            refSerialize varchar(255) NOT NULL,
+            answer longtext NULL,
+            refSerialize varchar(255) NULL,
             phone varchar(255) NOT NULL,
-            options longtext NOT NULL,
+            options longtext NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP) 
             CHARACTER SET utf8mb4 COLLATE utf8mb4_General_ci`
 
