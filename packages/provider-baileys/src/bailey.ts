@@ -541,7 +541,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             'BEGIN:VCARD\n' +
             'VERSION:3.0\n' +
             `FN:${displayName}\n` +
-            'ORG:Ashoka Uni;\n' +
+            `ORG:${displayName}\n` +
             `TEL;type=CELL;type=VOICE;waid=${waid}:${cleanContactNumber}\n` +
             'END:VCARD'
 
