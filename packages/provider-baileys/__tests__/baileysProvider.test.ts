@@ -346,6 +346,7 @@ describe('#BaileysProvider', () => {
             const remoteJid = 'recipient@example.com'
             const contactNumber = '+1234567890'
             const displayName = 'John Doe'
+            const orgName = 'My Company'
             const messages = 'Hello Word!'
             const mockSendMessage = mockSendSuccess
             provider.vendor.sendMessage = mockSendMessage
@@ -355,6 +356,7 @@ describe('#BaileysProvider', () => {
                 remoteJid,
                 { replaceAll: () => contactNumber },
                 displayName,
+                orgName,
                 messages
             )
 
@@ -367,7 +369,7 @@ describe('#BaileysProvider', () => {
                         displayName: '.',
                         contacts: [
                             {
-                                vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:${displayName}\nORG:Ashoka Uni;\nTEL;type=CELL;type=VOICE;waid=${contactNumber.replace(
+                                vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:${displayName}\nORG:${orgName};\nTEL;type=CELL;type=VOICE;waid=${contactNumber.replace(
                                     '+',
                                     ''
                                 )}:${contactNumber}\nEND:VCARD`,
@@ -384,11 +386,17 @@ describe('#BaileysProvider', () => {
             const remoteJid = 'recipient@example.com'
             const contactNumber = '+1234567890'
             const displayName = 'John Doe'
+            const orgName = 'My Company'
             const mockSendMessage = mockSendSuccess
             provider.vendor.sendMessage = mockSendMessage
 
             // Act
-            const result = await provider.sendContact(remoteJid, { replaceAll: () => contactNumber }, displayName)
+            const result = await provider.sendContact(
+                remoteJid,
+                { replaceAll: () => contactNumber },
+                displayName,
+                orgName
+            )
 
             // Assert
             expect(result).toEqual({ status: 'success' })
@@ -399,7 +407,7 @@ describe('#BaileysProvider', () => {
                         displayName: '.',
                         contacts: [
                             {
-                                vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:${displayName}\nORG:Ashoka Uni;\nTEL;type=CELL;type=VOICE;waid=${contactNumber.replace(
+                                vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:${displayName}\nORG:${orgName};\nTEL;type=CELL;type=VOICE;waid=${contactNumber.replace(
                                     '+',
                                     ''
                                 )}:${contactNumber}\nEND:VCARD`,

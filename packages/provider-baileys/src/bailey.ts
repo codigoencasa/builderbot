@@ -524,6 +524,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
      * @param {string} remoteJid
      * @param {string} contactNumber
      * @param {string} displayName
+     * @param {string} orgName
      * @param {any} messages - optional
      * @example await sendContact("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "+xxxxxxxxxxx", "Robin Smith", messages)
      */
@@ -531,7 +532,8 @@ class BaileysProvider extends ProviderClass<WASocket> {
     sendContact = async (
         remoteJid: any,
         contactNumber: { replaceAll: (arg0: string, arg1: string) => any },
-        displayName: any,
+        displayName: string,
+        orgName: string,
         messages: any = null
     ) => {
         const cleanContactNumber = contactNumber.replaceAll(' ', '')
@@ -541,7 +543,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             'BEGIN:VCARD\n' +
             'VERSION:3.0\n' +
             `FN:${displayName}\n` +
-            `ORG:${displayName}\n` +
+            `ORG:${orgName};\n` +
             `TEL;type=CELL;type=VOICE;waid=${waid}:${cleanContactNumber}\n` +
             'END:VCARD'
 
