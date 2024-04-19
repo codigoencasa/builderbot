@@ -1,4 +1,4 @@
-# Image size ~ 330MB
+# Image size ~ 400MB
 FROM node:21-alpine3.18 as builder
 
 WORKDIR /app
@@ -26,7 +26,8 @@ ARG PORT
 ENV PORT $PORT
 EXPOSE $PORT
 
-COPY --from=builder /app .
+COPY --from=builder /app ./
+COPY --from=builder /app/*.json /app/*-lock.yaml ./
 
 RUN corepack enable && corepack prepare pnpm@latest --activate 
 ENV PNPM_HOME=/usr/local/bin

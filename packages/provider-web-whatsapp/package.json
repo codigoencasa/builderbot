@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/provider-web-whatsapp",
-    "version": "1.1.0",
+    "version": "1.1.3",
     "description": "Now I’m the model of a modern major general / The venerated Virginian veteran whose men are all / Lining up, to put me up on a pedestal / Writin’ letters to relatives / Embellishin’ my elegance and eloquence / But the elephant is in the room / The truth is in ya face when ya hear the British cannons go / BOOM",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
@@ -10,8 +10,9 @@
     "type": "module",
     "scripts": {
         "build": "rimraf dist && rollup --config",
-        "test": "npx uvu -r tsm ./__tests__",
-        "test:coverage": "npx c8 npm run test"
+        "test": "jest",
+        "test:coverage": "jest --coverage",
+        "test:watch": "jest --watchAll --coverage"
     },
     "directories": {
         "lib": "dist",
@@ -30,13 +31,14 @@
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
     "devDependencies": {
         "@builderbot/bot": "workspace:^",
+        "@jest/globals": "^29.7.0",
         "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@types/body-parser": "^1.19.5",
         "@types/cors": "^2.8.17",
         "@types/mime-types": "^2.1.4",
-        "@types/node": "^20.11.0",
+        "@types/node": "^20.12.3",
         "@types/polka": "^0.5.7",
         "@types/qr-image": "^3.2.9",
         "@types/sinon": "^17.0.3",
@@ -51,6 +53,7 @@
     "dependencies": {
         "body-parser": "^1.20.2",
         "polka": "^0.5.2",
+        "sharp": "0.33.3",
         "whatsapp-web.js": "^1.23.0"
     },
     "gitHead": "f21e49621dffad2a1226aecea535668016f07b14"

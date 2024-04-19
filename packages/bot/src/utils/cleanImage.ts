@@ -1,14 +1,13 @@
 import { promises as fsPromises } from 'fs'
-import sharp from 'sharp'
 
 /**
- * Agregar un borde alrededor para mejorar la lectura de QR
- * @param FROM - La ruta del archivo de imagen a limpiar
- * @returns Una promesa que se resuelve cuando la imagen ha sido procesada
+ * Add a border around to improve QR readability
+ * @param FROM - The path of the image file to clean up
+ * @returns A promise to be resolved when the image has been processed
  */
 const cleanImage = async (FROM: string | null = null): Promise<void> => {
     if (!FROM) {
-        throw new Error('No se proporcionó una ruta de archivo válida.')
+        throw new Error('A valid file path was not provided.')
     }
 
     const readBuffer = async (): Promise<Buffer> => {
@@ -18,20 +17,28 @@ const cleanImage = async (FROM: string | null = null): Promise<void> => {
 
     const imgBuffer: Buffer = await readBuffer()
 
-    return new Promise((resolve, reject) => {
-        sharp(imgBuffer)
-            .extend({
-                top: 15,
-                bottom: 15,
-                left: 15,
-                right: 15,
-                background: { r: 255, g: 255, b: 255, alpha: 1 },
+    try {
+        return new Promise((resolve, reject) => {
+            import('sharp').then(({ default: sharp }) => {
+                sharp(imgBuffer)
+                    .extend({
+                        top: 15,
+                        bottom: 15,
+                        left: 15,
+                        right: 15,
+                        background: { r: 255, g: 255, b: 255, alpha: 1 },
+                    })
+                    .toFile(FROM, (err) => {
+                        if (err) reject(err)
+                        resolve()
+                    })
             })
-            .toFile(FROM, (err) => {
-                if (err) reject(err)
-                resolve()
-            })
-    })
+        })
+    } catch (e) {
+        console.log(`******** npm install sharp *******`)
+        console.log(`Error:`, e)
+        return Promise.reject(e)
+    }
 }
 
 export { cleanImage }

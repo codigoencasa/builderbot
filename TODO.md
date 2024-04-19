@@ -57,10 +57,39 @@
 - [x] Cambiar readme de los mono proyectos
 - [x] cambiar mensajes a ingles
 - [x] emptyDir to other
+- [x] handleCtx bot.state globalState
+- [ ] cunado escribes a whatsapp al contacto el bot tmb responde (globalArg con boolean)
+
+- [x] ubuntu baileys node 18.19
+- [x] ubuntu baileys node 20.10
+- [x] ubuntu baileys node 21.7.2
+
+- [x] win baileys node 18.19
+- [x] win baileys node 20.10
+- [x] win baileys node 21.7.2
+
+- [ ] ubuntu venom node 18.19
+- [ ] ubuntu venom node 20.10
+- [ ] ubuntu venom node 21.7.2
+
+- [ ] win venom node 18.19
+- [ ] win venom node 20.10
+- [ ] win venom node 21.7.2 --> pnpm probar
+
+- [x] docker bailey-ts
+- [x] docker bailey-js
+- [x] docker venom-ts
+- [x] docker venom-js
+- [ ] docker twilio-ts
+- [ ] docker twilio-js
+
+- [ ] espera que se genere el qr code validar controler si no consige la imagn
+- [ ] meta avisa connecto cunado no tiene webhook
+- [ ] aviso node node 20.12.1 npm v10.5.0 o superior de lo contrario sharp
+- [ ] Error: ENOENT: no such file or directory, open './node_modules/venom-bot/dist/utils/spinnies.js'
 - [ ] coverage
 - [ ] test meta
 - [ ] try catch error http
 - [ ] test twilio
 - [ ] meta recuerda activar los dos webhooks
 - [ ] cambiar el CONTRIBUTING.md
-- [ ] state get('detail.name')

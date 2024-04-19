@@ -1,5 +1,5 @@
 import { MemoryDB } from '../src/db'
-import { ProviderMock } from '../src/provider/providerMock'
+import { TestProvider } from '../src/provider/providerMock'
 
 interface Callbacks {
     ref: () => number
@@ -37,12 +37,11 @@ class MockFlow {
  * @param context The test context
  */
 const setup = async (context: { [key: string]: any }): Promise<void> => {
-    context.provider = new ProviderMock()
+    context.provider = new TestProvider()
     context.database = new MemoryDB()
     context.flow = new MockFlow()
     await delay(10)
 }
-//__call_action__ __goto_flow__ __capture_only_intended__
 
 const clear = async (context: any): Promise<void> => {
     context.provider = null

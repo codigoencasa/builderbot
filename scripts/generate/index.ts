@@ -74,14 +74,23 @@ const replaceZones = async (fullPath: string, database: string, provider: string
  * @param database
  * @param provider
  */
-const mergeDependencies = async (fullPath: string, database: string, provider: string): Promise<void> => {
+const mergeDependencies = async (
+    fullPath: string,
+    database: string,
+    provider: string,
+    language: 'js' | 'ts'
+): Promise<void> => {
     try {
         const pkg = join(fullPath, 'package.json')
+        const targetDocker = join(fullPath, 'Dockerfile')
         const ZONE_PATH_PROVIDERS = join(BASE_TEMPLATE, 'zones', 'providers', `${provider}.json`)
         const ZONE_PATH_DATABASES = join(BASE_TEMPLATE, 'zones', 'databases', `${database}.json`)
+        const ZONE_PATH_DOCKER = join(BASE_TEMPLATE, 'zones', 'docker', language, provider)
+
         const dbDep: genericProps = JSON.parse(readFileSync(ZONE_PATH_DATABASES, 'utf8'))
         const provDep: genericProps = JSON.parse(readFileSync(ZONE_PATH_PROVIDERS, 'utf8'))
         const projectDep = JSON.parse(readFileSync(pkg, 'utf8'))
+        const dockerFile = readFileSync(ZONE_PATH_DOCKER, 'utf-8')
 
         const updatedDependencies = {
             ...projectDep,
@@ -97,6 +106,7 @@ const mergeDependencies = async (fullPath: string, database: string, provider: s
             },
         }
 
+        writeFileSync(targetDocker, dockerFile)
         writeFileSync(pkg, JSON.stringify(updatedDependencies, null, 2))
     } catch (err) {
         console.log(`Error: `, err)
@@ -112,25 +122,25 @@ const main = async (): Promise<void> => {
 
         for (const database of PROVIDER_DATA) {
             for (const provider of PROVIDER_LIST) {
-                await delay(50)
+                await delay(10)
                 const full = await copyBase('js', database.value, provider.value)
                 await replaceZones(full, database.value, provider.value)
-                await mergeDependencies(full, database.value, provider.value)
+                await mergeDependencies(full, database.value, provider.value, 'js')
                 console.log(`Generated JS 🌟: ${database.value}-${provider.value}`)
             }
         }
 
         for (const database of PROVIDER_DATA) {
             for (const provider of PROVIDER_LIST) {
-                await delay(50)
+                await delay(10)
                 const full = await copyBase('ts', database.value, provider.value)
                 await replaceZones(full, database.value, provider.value)
-                await mergeDependencies(full, database.value, provider.value)
+                await mergeDependencies(full, database.value, provider.value, 'ts')
                 console.log(`Generated TS 👌: ${database.value}-${provider.value}`)
             }
         }
 
-        console.info(`[INFO]: Package ${inputLanguage} created successfully`)
+        console.info(`[INFO]: Packages created successfully`)
     } catch (err) {
         console.error('[ERROR]:', err?.message)
     }

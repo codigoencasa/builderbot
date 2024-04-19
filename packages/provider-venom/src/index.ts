@@ -18,7 +18,7 @@ import { venomCleanNumber, venomDeleteTokens, venomGenerateImage, venomisValidNu
  * https://github.com/orkestral/venom
  */
 class VenomProvider extends ProviderClass {
-    globalVendorArgs = { name: `bot`, gifPlayback: false, port: 3000 }
+    globalVendorArgs = { name: `bot`, gifPlayback: false, port: 3000, writeMyself: false }
     vendor: venom.Whatsapp
     constructor(args: { name: string; gifPlayback: boolean }) {
         super()
@@ -72,12 +72,13 @@ class VenomProvider extends ProviderClass {
                 name: pushname,
                 phone: id.user,
             }
-            this.emit('ready', true)
-            this.emit('host', host)
+
             client.onIncomingCall(async (call) => {
                 console.log(call)
                 // client.sendText(call.peerJid, "Sorry, I still can't answer calls");
             })
+            this.emit('ready', true)
+            this.emit('host', host)
             return client
         } catch (e) {
             console.log(e)

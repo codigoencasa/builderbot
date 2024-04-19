@@ -2,6 +2,7 @@
     "IMPORT": "import { MetaProvider as Provider } from '@builderbot/provider-meta'\n",
     "IMPLEMENTATION": "const adapterProvider = createProvider(Provider, {\n        jwtToken: 'jwtToken',\n        numberId: 'numberId',\n        verifyToken: 'verifyToken',\n        version: 'v18.0'\n    })",
     "DEPENDENCIES":{
+        "@builderbot/bot": "latest",
         "@builderbot/provider-meta": "latest"
     },
     "DEV_DEPENDENCIES":{}

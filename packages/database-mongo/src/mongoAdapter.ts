@@ -20,7 +20,7 @@ class MongoAdapter extends MemoryDB {
             const client = new MongoClient(this.credentials.dbUri, {})
             await client.connect()
 
-            console.log('🆗 Conexión Correcta DB')
+            console.log(`🆗 Connection successfully established`)
             const db = client.db(this.credentials.dbName)
             this.db = db
             return true

@@ -1,4 +1,6 @@
-export type BaileyGlobalVendorArgs = {
+import type { GlobalVendorArgs } from '@builderbot/bot/dist/types'
+
+export interface BaileyGlobalVendorArgs extends GlobalVendorArgs {
     gifPlayback: boolean
     usePairingCode: boolean
     phoneNumber: string | null

@@ -1,9 +1,10 @@
-import { baileyCleanNumber, baileyGenerateImage, baileyIsValidNumber } from '../src/utils'
+import { baileyCleanNumber, baileyGenerateImage, baileyIsValidNumber, emptyDirSessions } from '../src/utils'
 import { expect, describe, test, jest } from '@jest/globals'
 import { utils } from '@builderbot/bot'
 import { createWriteStream } from 'fs'
 import * as qr from 'qr-image'
 import { join } from 'path'
+import fsExtra, { NoParamCallback } from 'fs-extra'
 
 jest.mock('qr-image', () => ({
     image: jest.fn(() => ({
@@ -12,7 +13,7 @@ jest.mock('qr-image', () => ({
 }))
 
 jest.mock('fs-extra', () => ({
-    emptyDir: jest.fn(),
+    emptyDir: jest.fn((_path: string, callback: NoParamCallback) => callback(null)),
 }))
 
 jest.mock('@builderbot/bot', () => ({
@@ -109,5 +110,33 @@ describe('#baileyGenerateImage', () => {
             expect(createWriteStream).toHaveBeenCalledWith(imagePath)
             expect(mockWriteStream.on).toHaveBeenCalledWith('finish', expect.any(Function))
         })
+    })
+})
+
+describe('#mockEmptyDir', () => {
+    test('should empty the directory correctly', async () => {
+        // Arrange
+        const pathBase = '/path/to/directory'
+        const mockEmptyDir = jest.fn((_path: string, callback: NoParamCallback) => callback(null))
+
+        jest.spyOn(fsExtra, 'emptyDir').mockImplementation(mockEmptyDir)
+
+        // Act
+        await emptyDirSessions(pathBase)
+
+        // Assert
+        expect(mockEmptyDir).toHaveBeenCalledWith(pathBase, expect.any(Function))
+    })
+
+    test('should handle errors when emptying the directory', async () => {
+        // Arrange
+        const pathBase = '/path/to/directory'
+        const error = new Error('Failed to empty directory')
+        const mockEmptyDir = jest.fn((_path: string, callback: NoParamCallback) => callback(error))
+
+        jest.spyOn(fsExtra, 'emptyDir').mockImplementation(mockEmptyDir)
+
+        // Act & Assert
+        await expect(emptyDirSessions(pathBase)).rejects.toEqual(error)
     })
 })

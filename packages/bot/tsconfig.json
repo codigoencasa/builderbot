@@ -5,6 +5,7 @@
         "allowSyntheticDefaultImports": true,
         "outDir": "./dist",
         "rootDir": "./src",
+        "module": "ES2020",
         "declaration": true,
         "declarationMap": true,
         "moduleResolution": "node",

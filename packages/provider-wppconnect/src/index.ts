@@ -26,7 +26,7 @@ class WPPConnectProvider extends ProviderClass {
         })
     }
 
-    globalVendorArgs = { name: 'bot', port: 3000 }
+    globalVendorArgs = { name: 'bot', port: 3000, writeMyself: false }
     vendor: Whatsapp
 
     constructor(args: { name: string }) {
@@ -73,7 +73,7 @@ class WPPConnectProvider extends ProviderClass {
             return createInstance
         } catch (error) {
             this.emit('auth_failure', {
-                instructions: [`An error occurred during Venom initialization`, `trying again in 5 seconds...`],
+                instructions: [`An error occurred during WPP initialization`, `trying again in 5 seconds...`],
             })
             WppDeleteTokens(NAME_DIR_SESSION)
             setTimeout(async () => {

@@ -109,4 +109,6 @@ export {
     wwebIsValidNumber,
     wwebDownloadMedia,
     wwebGetChromeExecutablePath,
+    emptyDirSessions,
+    wwebGetWindowsChromeExecutablePath,
 }

@@ -40,7 +40,7 @@ test('cleanImage - throws error when no path is provided', async () => {
         assert.unreachable('cleanImage should have thrown an error')
     } catch (error) {
         assert.instance(error, Error)
-        assert.is(error.message, 'No se proporcionó una ruta de archivo válida.')
+        assert.is(error.message, 'A valid file path was not provided.')
     }
 })
 

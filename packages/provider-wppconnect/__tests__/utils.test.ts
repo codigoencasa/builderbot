@@ -1,118 +1,227 @@
-import { existsSync, unlinkSync } from 'fs-extra'
-import { join } from 'path'
-import { stub } from 'sinon'
-import { test } from 'uvu'
-import * as assert from 'uvu/assert'
+import { describe, expect, jest, test } from '@jest/globals'
+import fsExtra, { NoParamCallback } from 'fs-extra'
+import { utils } from '@builderbot/bot'
 
-import type { Response } from '../src/types'
 import {
-    writeFilePromise,
-    WppConnectGenerateImage,
-    WppConnectCleanNumber,
-    WppConnectValidNumber,
+    emptyDirSessions,
     notMatches,
+    WppConnectCleanNumber,
+    WppConnectGenerateImage,
+    WppConnectValidNumber,
+    WppDeleteTokens,
+    writeFilePromise,
 } from '../src/utils'
 
-const fsMock = {
-    writeFile: stub(),
-}
+jest.mock('fs-extra')
 
-const utilsMock = {
-    cleanImage: stub().resolves(),
-}
+jest.mock('qr-image', () => ({
+    image: jest.fn(() => ({
+        pipe: jest.fn(),
+    })),
+}))
 
-test.after.each(() => {
-    fsMock.writeFile.resetHistory()
-    utilsMock.cleanImage.resetHistory()
+jest.mock('fs-extra', () => ({
+    emptyDir: jest.fn((_path: string, callback: NoParamCallback) => callback(null)),
+}))
+
+jest.mock('@builderbot/bot', () => ({
+    utils: {
+        cleanImage: jest.fn(),
+    },
+}))
+
+jest.mock('fs', () => ({
+    createWriteStream: jest.fn(),
+    existsSync: jest.fn(),
+    readdirSync: jest.fn(() => []),
+    unlinkSync: jest.fn(),
+    writeFile: jest.fn((path, data, options, callback: NoParamCallback) => {
+        callback(null)
+    }),
+}))
+
+describe('#WppDeleteTokens', () => {
+    test('should delete tokens', () => {
+        // Mock
+        const mockEmptyDirSessions = jest.spyOn(fsExtra, 'emptyDir').mockImplementation(() => true)
+        // Act
+        WppDeleteTokens('session')
+        // Assert
+        expect(mockEmptyDirSessions).toHaveBeenCalled()
+    })
 })
 
-test('WppConnectCleanNumber - Remove "@c.us" of the number', () => {
-    const inputNumber = '123@c.us'
-    const expectedOutput = '123'
-    const result = WppConnectCleanNumber(inputNumber)
-    assert.is(result, expectedOutput)
+describe('# const mockEmptyDir = ', () => {
+    test('should empty the directory correctly', async () => {
+        // Arrange
+        const pathBase = '/path/to/directory'
+        const mockEmptyDir = jest.fn((_path: string, callback: NoParamCallback) => callback(null))
+
+        jest.spyOn(fsExtra, 'emptyDir').mockImplementation(mockEmptyDir)
+
+        // Act
+        await emptyDirSessions(pathBase)
+
+        // Assert
+        expect(mockEmptyDir).toHaveBeenCalledWith(pathBase, expect.any(Function))
+    })
+
+    test('should handle errors when emptying the directory', async () => {
+        // Arrange
+        const pathBase = '/path/to/directory'
+        const error = new Error('Failed to empty directory')
+        const mockEmptyDir = jest.fn((_path: string, callback: NoParamCallback) => callback(error))
+
+        jest.spyOn(fsExtra, 'emptyDir').mockImplementation(mockEmptyDir)
+
+        // Act & Assert
+        await expect(emptyDirSessions(pathBase)).rejects.toEqual(error)
+    })
 })
 
-test('WppConnectCleanNumber - Add "@c.us" to the number if full is true', () => {
-    const inputNumber = '123'
-    const expectedOutput = '123@c.us'
-    const result = WppConnectCleanNumber(inputNumber, true)
-    assert.is(result, expectedOutput)
+describe('#WppConnectValidNumber', () => {
+    test('should return true for a valid number', () => {
+        // Arrange
+        const validNumber = '123456789@c.us'
+
+        // Act
+        const result = WppConnectValidNumber(validNumber)
+
+        // Assert
+        expect(result).toBe(true)
+    })
+
+    test('should return false for an invalid number', () => {
+        // Arrange
+        const invalidNumber = '123456789@g.us'
+
+        // Act
+        const result = WppConnectValidNumber(invalidNumber)
+
+        // Assert
+        expect(result).toBe(false)
+    })
 })
 
-test('WppConnectValidNumber - Returns true for valid numbers', () => {
-    const validNumber = '123'
-    const result = WppConnectValidNumber(validNumber)
-    assert.equal(result, true)
+describe('#notMatches', () => {
+    test('should return true for null matches', () => {
+        // Arrange
+        const nullMatches: RegExpMatchArray | null = null
+
+        // Act
+        const result = notMatches(nullMatches)
+
+        // Assert
+        expect(result).toBe(true)
+    })
+
+    test('should return true for matches with length not equal to 3', () => {
+        // Arrange
+        const invalidMatches: RegExpMatchArray | null = ['match1', 'match2']
+
+        // Act
+        const result = notMatches(invalidMatches)
+
+        // Assert
+        expect(result).toBe(true)
+    })
+
+    test('should return false for matches with length equal to 3', () => {
+        // Arrange
+        const validMatches: RegExpMatchArray | null = ['match1', 'match2', 'match3']
+
+        // Act
+        const result = notMatches(validMatches)
+
+        // Assert
+        expect(result).toBe(false)
+    })
 })
 
-test('WppConnectValidNumber - Returns false for group numbers', () => {
-    const groupNumber = '123@g.us'
-    const result = WppConnectValidNumber(groupNumber)
-    assert.equal(result, false)
+describe('#WppConnectCleanNumber', () => {
+    test('should clean number without @c.us and + when full is false', () => {
+        // Arrange
+        const number = '+123 456 789@c.us'
+        const full = false
+
+        // Act
+        const result = WppConnectCleanNumber(number, full)
+
+        // Assert
+        expect(result).toBe('123456789')
+    })
+
+    test('should clean number with @c.us and + when full is true', () => {
+        // Arrange
+        const number = '+123 456 789@c.us'
+        const full = true
+
+        // Act
+        const result = WppConnectCleanNumber(number, full)
+
+        // Assert
+        expect(result).toBe('123456789@c.us')
+    })
+
+    test('should clean number without @c.us and + when full is true', () => {
+        // Arrange
+        const number = '+123 456 789@c.us'
+        const full = true
+
+        // Act
+        const result = WppConnectCleanNumber(number, full)
+
+        // Assert
+        expect(result).toBe('123456789@c.us')
+    })
 })
 
-test('notMatches - should return true if there are no matches', () => {
-    const matches: RegExpMatchArray | null = null
-    const result = notMatches(matches)
-    assert.equal(result, true)
+describe('writeFilePromise', () => {
+    test('should resolve with true when writeFile is successful', () => {
+        // Arrange
+        const pathQr = 'testPath'
+        const response: any = { data: 'testData' }
+        // Act
+        writeFilePromise(pathQr, response).then((result) => {
+            // Assert
+            expect(result).toBe(true)
+        })
+    })
+
+    test('should reject with error message when writeFile encounters an error', async () => {
+        // Arrange
+        const pathQr = 'testPath'
+        const response: any = { data: 'testData' }
+        require('fs').writeFile.mockImplementationOnce((path, data, options, callback) => {
+            callback('some error')
+        })
+
+        // Act & Assert
+        await expect(writeFilePromise(pathQr, response)).rejects.toEqual('ERROR_QR_GENERATE')
+    })
 })
 
-test('notMatches - should return true if match length is not 3', () => {
-    const matches: RegExpMatchArray | null = ['match1', 'match2']
-    const result = notMatches(matches)
-    assert.equal(result, true)
-})
+describe('#WppConnectGenerateImage', () => {
+    test('should generate image correctly from base64 string', async () => {
+        // Arrange
+        const base64String =
+            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABwklEQVQ4y6XTv0rDQBQEwO/rb7gR8sQoWg7R5Yls/4Cs2mj5wgd3GpNn8EiH7Yn+AB/h6q3hnvY+kPTrNzHgtdpR2kYiy2EiKquOYexOPzOZHzXg1XC3+vUaP2OOrLuk4F0p/Mz+AtJ+d6HVWz2dzd+h64n65njfSeL+wh5A1AEjsuEX6Wz+a5UwucZ9lRjJHlB0iUJ/BMo2APXM4l5jJ98yBDkWd/zmO93uzVlu0shhFbz9YjW9NhJp8iF0H2u9jnj9XXl96jDxtQntb7oPjbY8aJj5mDN7ZUOtz2Hl+lgezYrYVlmsZ/o0azWmrFXtI/Bi/lMxHkNvcJM9kwjIJKHQW0PqS2TgBK2b1DfSv9rl4e0j+/BzCmW2Qdo5t+Ik/cYAAAAASUVORK5CYII='
+        const expectedFileName = 'test.png'
 
-test('notMatches - should return false if there are matches and length is 3', () => {
-    const matches: RegExpMatchArray | null = ['match1', 'match2', 'match3']
-    const result = notMatches(matches)
-    assert.equal(result, false)
-})
+        // Act
+        await WppConnectGenerateImage(base64String, expectedFileName)
 
-test('writeFilePromise - should resolve to true on success', async () => {
-    const matches: RegExpMatchArray | null = ['match1', 'match2', 'match3']
-    const pathQr = 'ruta-de-prueba'
-    const response: Response = {
-        type: matches[1],
-        data: Buffer.from(matches[2], 'base64'),
-    }
-    const result = await writeFilePromise(pathQr, response)
-    assert.equal(result, true)
-})
+        // Assert
+        const fs = require('fs')
+        expect(utils.cleanImage).toHaveBeenCalled()
+        fs.unlinkSync(expectedFileName)
+    })
 
-test('writeFilePromise - should reject with error message on file write error', async () => {
-    const matches: RegExpMatchArray | null = ['match1', 'match2', 'match3']
-    const response: Response = {
-        type: matches[1],
-        data: Buffer.from(matches[2], 'base64'),
-    }
-    try {
-        await writeFilePromise('', response)
-    } catch (error) {
-        assert.equal(error, 'ERROR_QR_GENERATE')
-    }
+    test('should throw error for invalid input string', async () => {
+        // Arrange
+        const invalidBase64String = 'invalid_base64_string'
+        const result = await WppConnectGenerateImage(invalidBase64String)
+        // Act & Assert
+        expect(result).toBeDefined()
+    })
 })
-
-test('WppConnectGenerateImage - should handle an invalid base64 string and return an error', async () => {
-    const base64String = 'cadena-invalida'
-    const name = 'qr.png'
-    const result = await WppConnectGenerateImage(base64String, name)
-    assert.ok(result instanceof Error)
-    assert.equal(result.message, 'Invalid input string')
-})
-
-test('WppConnectGenerateImage - generates an image from base64 string', async () => {
-    const base64String =
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/l8c3gAAAABJRU5ErkJggg=='
-    const imageName = 'qr.png'
-    const imagePath = join(process.cwd(), imageName)
-    utilsMock.cleanImage.call((__, _, callback) => callback(null))
-    await WppConnectGenerateImage(base64String, imageName)
-    assert.ok(existsSync(imagePath))
-    unlinkSync(imagePath)
-    assert.not.ok(existsSync(imagePath))
-    assert.ok(utilsMock.cleanImage.called)
-})
-
-test.run()

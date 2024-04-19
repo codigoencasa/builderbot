@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/bot",
-    "version": "1.1.0",
+    "version": "1.1.3",
     "description": "core typescript",
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
@@ -10,7 +10,7 @@
     "type": "module",
     "scripts": {
         "build": "rimraf dist && rollup --config",
-        "test": " npx uvu -r tsm ./__tests__  ",
+        "test": " npx uvu -r tsm ./__tests__ ",
         "test:coverage": "npx c8  npm run test "
     },
     "files": [
@@ -28,7 +28,7 @@
         "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
     },
     "devDependencies": {
-        "@microsoft/api-extractor": "^7.39.1",
+        "@microsoft/api-extractor": "^7.43.0",
         "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
@@ -38,7 +38,7 @@
         "@types/fluent-ffmpeg": "^2.1.24",
         "@types/follow-redirects": "^1.14.4",
         "@types/mime-types": "^2.1.4",
-        "@types/node": "^20.11.5",
+        "@types/node": "^20.12.3",
         "@types/polka": "^0.5.7",
         "@types/proxyquire": "^1.3.31",
         "@types/sinon": "^17.0.3",
@@ -54,11 +54,13 @@
         "body-parser": "^1.20.2",
         "cors": "^2.8.5",
         "fluent-ffmpeg": "^2.1.2",
-        "follow-redirects": "^1.15.5",
+        "follow-redirects": "^1.15.6",
         "mime-types": "^2.1.35",
         "picocolors": "^1.0.0",
-        "polka": "^0.5.2",
-        "sharp": "^0.33.2"
+        "polka": "^0.5.2"
+    },
+    "optionalDependencies": {
+        "sharp": "0.33.3"
     },
     "gitHead": "f21e49621dffad2a1226aecea535668016f07b14"
 }

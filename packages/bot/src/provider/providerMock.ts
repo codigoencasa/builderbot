@@ -1,41 +1,38 @@
 import { ProviderClass } from './interface/provider'
 import type { ProviderEventTypes } from '../types'
+import { delay } from '../utils'
 
-function delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms))
-}
+class TestProvider extends ProviderClass {
+    protected afterHttpServerInit(): void {}
 
-type PayloadType = any
-
-class ProviderMock extends ProviderClass {
-    protected beforeHttpServerInit(): void {}
-    protected initVendor(): Promise<any> {
-        return Promise.resolve()
+    public globalVendorArgs = {
+        name: '_mock_',
     }
+
+    protected beforeHttpServerInit(): void {}
+
+    protected async initVendor(): Promise<void> {}
 
     protected busEvents(): { event: string; func: Function }[] {
         return []
     }
-    public globalVendorArgs: any
 
-    public saveFile(): Promise<string> {
-        return Promise.resolve('')
+    public async saveFile(): Promise<string> {
+        return ''
     }
 
-    protected afterHttpServerInit(): void {}
-
-    delaySendMessage = async (
+    public async delaySendMessage(
         milliseconds: number,
         eventName: keyof ProviderEventTypes,
-        payload: PayloadType
-    ): Promise<void> => {
+        payload: any
+    ): Promise<void> {
         await delay(milliseconds)
         this.emit(eventName, payload)
     }
 
-    sendMessage = async (userId: string, message: string): Promise<any> => {
+    public async sendMessage(userId: string, message: string): Promise<any> {
         return Promise.resolve({ userId, message })
     }
 }
 
-export { ProviderMock }
+export { TestProvider }

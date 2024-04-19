@@ -1,5 +1,5 @@
 import { ProviderClass, utils } from '@builderbot/bot'
-import type { BotContext, Button, GlobalVendorArgs, SendOptions } from '@builderbot/bot/dist/types'
+import type { BotContext, Button, SendOptions } from '@builderbot/bot/dist/types'
 import type { Boom } from '@hapi/boom'
 import { Console } from 'console'
 import type { PathOrFileDescriptor } from 'fs'
@@ -39,7 +39,7 @@ const logger = new Console({
 })
 
 class BaileysProvider extends ProviderClass<WASocket> {
-    public globalVendorArgs: GlobalVendorArgs<BaileyGlobalVendorArgs> = {
+    public globalVendorArgs: BaileyGlobalVendorArgs = {
         name: `bot`,
         gifPlayback: false,
         usePairingCode: false,
@@ -47,6 +47,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
         phoneNumber: null,
         useBaileysStore: true,
         port: 3000,
+        writeMyself: false,
     }
 
     store?: ReturnType<typeof makeInMemoryStore>
@@ -97,17 +98,22 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
         this.saveCredsGlobal = saveCreds
 
-        if (this.globalVendorArgs.useBaileysStore) {
-            this.store = makeInMemoryStore({ logger: loggerBaileys })
+        try {
+            if (this.globalVendorArgs.useBaileysStore) {
+                this.store = makeInMemoryStore({ logger: loggerBaileys })
 
-            if (this.store?.readFromFile) this.store?.readFromFile(`${NAME_DIR_SESSION}/baileys_store.json`)
+                if (this.store?.readFromFile) this.store?.readFromFile(`${NAME_DIR_SESSION}/baileys_store.json`)
 
-            setInterval(() => {
-                const path = `${NAME_DIR_SESSION}/baileys_store.json`
-                if (existsSync(NAME_DIR_SESSION)) {
-                    this.store?.writeToFile(path)
-                }
-            }, 10_000)
+                setInterval(() => {
+                    const path = `${NAME_DIR_SESSION}/baileys_store.json`
+                    if (existsSync(NAME_DIR_SESSION)) {
+                        this.store?.writeToFile(path)
+                    }
+                }, 10_000)
+            }
+        } catch (e) {
+            logger.log(e)
+            this.initVendor().then((v) => this.listenOnEvents(v))
         }
 
         try {
@@ -267,7 +273,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
                 if (payload.from === 'status@broadcast') return
 
-                // if (payload?.key?.fromMe) return
+                if (this.globalVendorArgs.writeMyself && payload?.key?.fromMe) return
                 if (!baileyIsValidNumber(payload.from)) {
                     return
                 }
@@ -535,7 +541,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             'BEGIN:VCARD\n' +
             'VERSION:3.0\n' +
             `FN:${displayName}\n` +
-            'ORG:Ashoka Uni;\n' +
+            `ORG:${displayName}\n` +
             `TEL;type=CELL;type=VOICE;waid=${waid}:${cleanContactNumber}\n` +
             'END:VCARD'
 

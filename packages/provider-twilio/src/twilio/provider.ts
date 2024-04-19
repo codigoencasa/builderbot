@@ -2,6 +2,7 @@ import { ProviderClass, utils } from '@builderbot/bot'
 import type { BotContext, SendOptions } from '@builderbot/bot/dist/types'
 import { tmpdir } from 'os'
 import { join } from 'path'
+import type { MessageListInstanceCreateOptions } from 'twilio/lib/rest/api/v2010/account/message'
 
 import { TwilioCoreVendor } from './core'
 import type { TwilioInterface } from '../interface/twilio'
@@ -12,7 +13,7 @@ import { parseNumberFrom } from '../utils'
  * @extends ProviderClass
  * @implements {TwilioInterface}
  */
-class TwilioProvider extends ProviderClass implements TwilioInterface {
+class TwilioProvider extends ProviderClass<TwilioCoreVendor> implements TwilioInterface {
     globalVendorArgs: ITwilioProviderARgs
 
     constructor(args: ITwilioProviderARgs) {
@@ -23,6 +24,7 @@ class TwilioProvider extends ProviderClass implements TwilioInterface {
             vendorNumber: undefined,
             name: 'bot',
             port: 3000,
+            writeMyself: false,
         }
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
     }
@@ -35,7 +37,7 @@ class TwilioProvider extends ProviderClass implements TwilioInterface {
     protected async initVendor(): Promise<any> {
         const vendor = new TwilioCoreVendor(this.globalVendorArgs)
         this.vendor = vendor
-        return Promise.resolve(this.vendor)
+        return Promise.resolve(vendor)
     }
 
     protected beforeHttpServerInit(): void {
@@ -135,11 +137,27 @@ class TwilioProvider extends ProviderClass implements TwilioInterface {
         this.emit('notice', {
             title: '📃 INFO 📃',
             instructions: [
-                `Twilio presents a different way to implement buttons`,
+                `Twilio presents a different way to implement buttons and lists`,
                 `To understand more about how it works, I recommend you check the following URLs`,
                 `https://builderbot.vercel.app/en/providers/twilio/uses-cases`,
             ],
         })
+    }
+
+    /**
+     *
+     * @param number
+     * @param message
+     * @returns
+     */
+    send = async (number: string, message: string, options?: MessageListInstanceCreateOptions): Promise<any> => {
+        const response = await this.vendor.twilio.messages.create({
+            ...options,
+            body: message,
+            from: parseNumberFrom(this.globalVendorArgs.vendorNumber),
+            to: parseNumberFrom(number),
+        })
+        return response
     }
 
     /**
