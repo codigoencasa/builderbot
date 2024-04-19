@@ -97,7 +97,7 @@ class PostgreSQLAdapter extends MemoryDB {
         const contact = `
             CREATE TABLE IF NOT EXISTS contact (
                 id SERIAL PRIMARY KEY,
-                phone VARCHAR(255) NOT NULL,
+                phone VARCHAR(255) DEFAULT NULL,
                 created_at TIMESTAMP DEFAULT current_timestamp,
                 updated_in TIMESTAMP,
                 last_interaction TIMESTAMP,
@@ -116,8 +116,8 @@ class PostgreSQLAdapter extends MemoryDB {
                 ref VARCHAR(255) NOT NULL,
                 keyword VARCHAR(255),
                 answer TEXT NOT NULL,
-                refSerialize TEXT NULL,
-                phone VARCHAR(255) NULL,
+                refSerialize TEXT NOT NULL,
+                phone VARCHAR(255) DEFAULT NULL,
                 options JSONB,
                 created_at TIMESTAMP DEFAULT current_timestamp,
                 updated_in TIMESTAMP,
@@ -129,7 +129,7 @@ class PostgreSQLAdapter extends MemoryDB {
             console.error('🚫 Error creating the history table:', error)
             throw error
         }
-
+        
         await this.createSP()
     }
 
