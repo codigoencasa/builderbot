@@ -21,6 +21,7 @@ export type ProviderEventTypes = {
     ready: any
     auth_failure: any
     host: any
+    [key: string]: any
 }
 
 export type GeneralArgs = {

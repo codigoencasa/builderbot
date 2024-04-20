@@ -27,7 +27,7 @@ class TestProvider extends ProviderClass {
         payload: any
     ): Promise<void> {
         await delay(milliseconds)
-        this.emit(eventName, payload)
+        this.emit(`${eventName}`, payload)
     }
 
     public async sendMessage(userId: string, message: string): Promise<any> {
