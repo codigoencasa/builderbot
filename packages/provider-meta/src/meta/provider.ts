@@ -641,7 +641,23 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         return this.queue.add(() => this.sendMessageToApi(body))
     }
 
+    prefixMap = {
+        '549': '54', // ARG prefix
+        '521': '52', // MEX prefix
+    }
+
+    fixPrefixMetaNumber = (phoneNumber) => {
+        for (const [prev, current] of Object.entries(this.prefixMap)) {
+            if (phoneNumber.startsWith(prev)) {
+                return phoneNumber.replace(prev, current)
+            }
+        }
+        return phoneNumber
+    }
+
     sendMessageToApi = async (body: TextMessageBody): Promise<any> => {
+        body.to = this.fixPrefixMetaNumber(body.to)
+
         try {
             const fullUrl = `${URL}/${this.globalVendorArgs.version}/${this.globalVendorArgs.numberId}/messages`
             const response = await axios.post(fullUrl, body, {
