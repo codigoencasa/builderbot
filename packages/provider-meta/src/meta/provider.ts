@@ -41,6 +41,10 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         port: 3000,
         writeMyself: false,
     }
+    public prefixMap = {
+        '549': '54', // ARG prefix
+        '521': '52', // MEX prefix
+    }
 
     constructor(args: MetaGlobalVendorArgs) {
         super()
@@ -96,6 +100,15 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
 
         this.vendor = vendor
         return Promise.resolve(this.vendor)
+    }
+
+    protected fixPrefixMetaNumber = (phoneNumber: string) => {
+        for (const [prev, current] of Object.entries(this.prefixMap)) {
+            if (phoneNumber.startsWith(prev)) {
+                return phoneNumber.replace(prev, current)
+            }
+        }
+        return phoneNumber
     }
     /**
      *
@@ -639,20 +652,6 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
 
     sendMessageMeta = (body: TextMessageBody): void => {
         return this.queue.add(() => this.sendMessageToApi(body))
-    }
-
-    prefixMap = {
-        '549': '54', // ARG prefix
-        '521': '52', // MEX prefix
-    }
-
-    fixPrefixMetaNumber = (phoneNumber) => {
-        for (const [prev, current] of Object.entries(this.prefixMap)) {
-            if (phoneNumber.startsWith(prev)) {
-                return phoneNumber.replace(prev, current)
-            }
-        }
-        return phoneNumber
     }
 
     sendMessageToApi = async (body: TextMessageBody): Promise<any> => {
