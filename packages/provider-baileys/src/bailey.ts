@@ -113,7 +113,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     }
                 }, 10_000)
 
-                releaseTmp(NAME_DIR_SESSION, this.globalVendorArgs.timeRelease)
+                await releaseTmp(NAME_DIR_SESSION, this.globalVendorArgs.timeRelease)
             }
         } catch (e) {
             logger.log(e)

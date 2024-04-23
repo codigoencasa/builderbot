@@ -1,3 +1,4 @@
+import { existsSync } from 'fs'
 import { readdir, unlink } from 'fs/promises'
 import { join } from 'path'
 
@@ -9,6 +10,10 @@ const keepFiles = ['creds.json', 'baileys_store.json', 'app-state-sync']
  */
 export const releaseTmp = async (sessionName: string, ms: number) => {
     const PATH_SRC = join(process.cwd(), sessionName)
+
+    if (!existsSync(PATH_SRC)) {
+        return
+    }
 
     const filesToClean = await readdir(PATH_SRC)
 
