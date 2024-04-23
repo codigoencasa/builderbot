@@ -31,6 +31,7 @@ import {
     proto,
     useMultiFileAuthState,
 } from './baileyWrapper'
+import { releaseTmp } from './releaseTmp'
 import type { BaileyGlobalVendorArgs } from './type'
 import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber, emptyDirSessions } from './utils'
 
@@ -47,6 +48,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
         phoneNumber: null,
         useBaileysStore: true,
         port: 3000,
+        timeRelease: 21600000,
         writeMyself: false,
     }
 
@@ -110,6 +112,8 @@ class BaileysProvider extends ProviderClass<WASocket> {
                         this.store?.writeToFile(path)
                     }
                 }, 10_000)
+
+                releaseTmp(NAME_DIR_SESSION, this.globalVendorArgs.timeRelease)
             }
         } catch (e) {
             logger.log(e)
