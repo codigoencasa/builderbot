@@ -112,7 +112,7 @@ export const processIncomingMessage = async ({
                 from: message.from,
                 url: audioUrl,
                 to,
-                body: utils.generateRefProvider('_event_audio_'),
+                body: utils.generateRefProvider('_event_voice_note_'),
                 pushName,
                 name: pushName,
             }
