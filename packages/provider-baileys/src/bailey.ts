@@ -184,6 +184,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 if (connection === 'open') {
                     const parseNumber = `${sock?.user?.id}`.split(':').shift()
                     const host = { ...sock?.user, phone: parseNumber }
+                    this.globalVendorArgs.host = host
                     this.emit('ready', true)
                     this.emit('host', host)
                 }
@@ -230,6 +231,8 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 if (type !== 'notify') return
                 const [messageCtx] = messages
 
+                if (messageCtx?.messageStubParameters?.length && messageCtx.messageStubParameters[0].includes('absent'))
+                    return
                 if (messageCtx?.message?.protocolMessage?.type === 'EPHEMERAL_SETTING') return
 
                 let payload = {
@@ -276,8 +279,10 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 }
 
                 if (payload.from === 'status@broadcast') return
+                payload.from = baileyCleanNumber(payload.from, true)
 
-                if (this.globalVendorArgs.writeMyself && payload?.key?.fromMe) return
+                if (this.globalVendorArgs.host?.phone !== payload.from && payload?.key?.fromMe) return
+                if (this.globalVendorArgs.host?.phone === payload.from && !this.globalVendorArgs.writeMyself) return
                 if (!baileyIsValidNumber(payload.from)) {
                     return
                 }
@@ -288,7 +293,6 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 const listRowId = payload?.message?.listResponseMessage?.title
                 if (listRowId) payload.body = listRowId
 
-                payload.from = baileyCleanNumber(payload.from, true)
                 this.emit('message', payload)
             },
         },
