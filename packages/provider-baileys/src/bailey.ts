@@ -54,6 +54,8 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
     store?: ReturnType<typeof makeInMemoryStore>
 
+    private idsDuplicates = []
+
     constructor(args: Partial<BaileyGlobalVendorArgs>) {
         super()
         this.store = null
@@ -231,9 +233,17 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 if (type !== 'notify') return
                 const [messageCtx] = messages
 
+                const idWs = messageCtx?.key?.id ?? null
+                const checkIfPrevious = this.idsDuplicates.findIndex((i) => i === idWs)
+
+                if (checkIfPrevious !== -1) return
+                if (this.idsDuplicates.length > 10) this.idsDuplicates = []
+
                 if (messageCtx?.messageStubParameters?.length && messageCtx.messageStubParameters[0].includes('absent'))
                     return
                 if (messageCtx?.message?.protocolMessage?.type === 'EPHEMERAL_SETTING') return
+
+                this.idsDuplicates.push(idWs)
 
                 let payload = {
                     ...messageCtx,
