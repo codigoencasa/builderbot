@@ -233,18 +233,11 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 if (type !== 'notify') return
                 const [messageCtx] = messages
 
-                const idWs = messageCtx?.key?.id ?? null
-                const checkIfPrevious = this.idsDuplicates.findIndex((i) => i === idWs)
-
-                if (checkIfPrevious !== -1) return
-
-                if (this.idsDuplicates.length > 10) this.idsDuplicates = []
-
                 if (messageCtx?.messageStubParameters?.length && messageCtx.messageStubParameters[0].includes('absent'))
                     return
                 if (messageCtx?.message?.protocolMessage?.type === 'EPHEMERAL_SETTING') return
 
-                if (idWs) this.idsDuplicates.push(idWs)
+                // if (idWs) this.idsDuplicates.push(idWs)
 
                 let payload = {
                     ...messageCtx,
@@ -319,7 +312,24 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 const listRowId = payload?.message?.listResponseMessage?.title
                 if (listRowId) payload.body = listRowId
 
-                this.emit('message', payload)
+                const processDuplicate = () => {
+                    if (messageCtx?.key?.id) {
+                        const idWs = `${messageCtx.key.id}__${payload.from}`
+                        const isDuplicate = this.idsDuplicates.includes(idWs)
+                        if (isDuplicate) {
+                            this.idsDuplicates = []
+                            return false
+                        }
+                        if (this.idsDuplicates.length > 10) {
+                            this.idsDuplicates = []
+                        }
+                    }
+                    return true
+                }
+
+                if (processDuplicate()) {
+                    this.emit('message', payload)
+                }
             },
         },
         {
