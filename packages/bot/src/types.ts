@@ -11,7 +11,7 @@ export type CustomNameEvent = string
 export type GlobalVendorArgs<V = { [key: string]: any }> = {
     name?: string
     port?: number
-    writeMyself?: boolean
+    writeMyself?: 'none' | 'host' | 'both'
 } & V
 
 export type ProviderEventTypes = {

@@ -49,7 +49,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
         useBaileysStore: true,
         port: 3000,
         timeRelease: 21600000,
-        writeMyself: false,
+        writeMyself: 'none',
     }
 
     store?: ReturnType<typeof makeInMemoryStore>
@@ -281,8 +281,23 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 if (payload.from === 'status@broadcast') return
                 payload.from = baileyCleanNumber(payload.from, true)
 
-                if (this.globalVendorArgs.host?.phone !== payload.from && payload?.key?.fromMe) return
-                if (this.globalVendorArgs.host?.phone === payload.from && !this.globalVendorArgs.writeMyself) return
+                if (this.globalVendorArgs.writeMyself === 'none' && payload?.key?.fromMe) return
+                if (
+                    this.globalVendorArgs.host?.phone !== payload.from &&
+                    payload?.key?.fromMe &&
+                    !['both'].includes(this.globalVendorArgs.writeMyself)
+                )
+                    return
+                if (
+                    this.globalVendorArgs.host?.phone === payload.from &&
+                    !['both', 'host'].includes(this.globalVendorArgs.writeMyself)
+                )
+                    return
+
+                if (!baileyIsValidNumber(payload.from)) {
+                    return
+                }
+
                 if (!baileyIsValidNumber(payload.from)) {
                     return
                 }
