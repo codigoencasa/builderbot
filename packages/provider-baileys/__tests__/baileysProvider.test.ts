@@ -101,7 +101,7 @@ describe('#BaileysProvider', () => {
             phoneNumber: null,
             useBaileysStore: true,
             port: 3000,
-            writeMyself: false,
+            writeMyself: 'none',
         }
         // Act
         const baileysProvider = new BaileysProvider({})

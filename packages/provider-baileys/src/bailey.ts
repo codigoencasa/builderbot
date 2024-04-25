@@ -237,13 +237,14 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 const checkIfPrevious = this.idsDuplicates.findIndex((i) => i === idWs)
 
                 if (checkIfPrevious !== -1) return
+
                 if (this.idsDuplicates.length > 10) this.idsDuplicates = []
 
                 if (messageCtx?.messageStubParameters?.length && messageCtx.messageStubParameters[0].includes('absent'))
                     return
                 if (messageCtx?.message?.protocolMessage?.type === 'EPHEMERAL_SETTING') return
 
-                this.idsDuplicates.push(idWs)
+                if (idWs) this.idsDuplicates.push(idWs)
 
                 let payload = {
                     ...messageCtx,
