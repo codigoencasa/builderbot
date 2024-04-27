@@ -338,6 +338,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
                         if (this.idsDuplicates.length > 10) {
                             this.idsDuplicates = []
                         }
+                        this.idsDuplicates.push(idWs)
                     }
                     return true
                 }
