@@ -237,6 +237,11 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     return
                 if (
                     messageCtx?.messageStubParameters?.length &&
+                    messageCtx.messageStubParameters[0].includes('No session')
+                )
+                    return
+                if (
+                    messageCtx?.messageStubParameters?.length &&
                     messageCtx.messageStubParameters[0].includes('Bad MAC')
                 )
                     return
