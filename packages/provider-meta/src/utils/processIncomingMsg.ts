@@ -32,7 +32,7 @@ export const processIncomingMessage = async ({
                 type: 'interactive',
                 from: message.from,
                 to,
-                body: message.interactive?.button_reply?.title || message.interactive?.list_reply?.id,
+                body: message.interactive?.button_reply?.title || message.interactive?.list_reply?.id || message.interactive?.nfm_reply?.response_json,
                 title_button_reply: message.interactive?.button_reply?.title,
                 title_list_reply: message.interactive?.list_reply?.title,
                 pushName,
