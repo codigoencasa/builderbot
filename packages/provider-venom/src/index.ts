@@ -1,6 +1,6 @@
 import { ProviderClass, utils } from '@builderbot/bot'
 import type { Vendor } from '@builderbot/bot/dist/provider/interface/provider'
-import type { BotContext, Button, SendOptions } from '@builderbot/bot/dist/types'
+import type { BotContext, Button, GlobalVendorArgs, SendOptions } from '@builderbot/bot/dist/types'
 import { createReadStream } from 'fs'
 import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
@@ -18,7 +18,12 @@ import { venomCleanNumber, venomDeleteTokens, venomGenerateImage, venomisValidNu
  * https://github.com/orkestral/venom
  */
 class VenomProvider extends ProviderClass {
-    globalVendorArgs = { name: `bot`, gifPlayback: false, port: 3000, writeMyself: false }
+    globalVendorArgs: GlobalVendorArgs = {
+        name: 'bot',
+        gifPlayback: false,
+        port: 3000,
+        writeMyself: 'none',
+    }
     vendor: venom.Whatsapp
     constructor(args: { name: string; gifPlayback: boolean }) {
         super()

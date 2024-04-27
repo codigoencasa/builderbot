@@ -29,7 +29,7 @@ describe('#MetaProvider', () => {
             verifyToken: 'your_verify_token',
             version: 'v18.0',
             port: 3000,
-            writeMyself: false,
+            writeMyself: 'none',
         })
     })
 

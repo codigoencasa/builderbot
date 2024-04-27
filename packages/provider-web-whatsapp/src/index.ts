@@ -1,5 +1,5 @@
 import { ProviderClass, utils } from '@builderbot/bot'
-import type { BotContext, SendOptions } from '@builderbot/bot/dist/types'
+import type { BotContext, GlobalVendorArgs, SendOptions } from '@builderbot/bot/dist/types'
 import { createReadStream, readFileSync } from 'fs'
 import { writeFile } from 'fs/promises'
 import mime from 'mime-types'
@@ -23,7 +23,7 @@ import {
  * https://github.com/pedroslopez/whatsapp-web.js
  */
 class WebWhatsappProvider extends ProviderClass {
-    globalVendorArgs = { name: `bot`, gifPlayback: false, port: 3000, writeMyself: false }
+    globalVendorArgs: GlobalVendorArgs = { name: `bot`, gifPlayback: false, port: 3000, writeMyself: 'none' }
     vendor: Client
     constructor(args: { name: string; gifPlayback: boolean }) {
         super()

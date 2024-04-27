@@ -46,7 +46,7 @@ describe('#TwilioProvider', () => {
                 vendorNumber: 'mockVendorNumber',
                 name: 'bot',
                 port: 3000,
-                writeMyself: false,
+                writeMyself: 'none',
             })
         })
     })

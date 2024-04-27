@@ -39,7 +39,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         verifyToken: '',
         version: 'v18.0',
         port: 3000,
-        writeMyself: false,
+        writeMyself: 'none',
     }
     public prefixMap = {
         '549': '54', // ARG prefix

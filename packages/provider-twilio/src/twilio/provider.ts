@@ -24,7 +24,7 @@ class TwilioProvider extends ProviderClass<TwilioCoreVendor> implements TwilioIn
             vendorNumber: undefined,
             name: 'bot',
             port: 3000,
-            writeMyself: false,
+            writeMyself: 'none',
         }
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
     }

@@ -48,7 +48,7 @@ describe('#VenomProvider', () => {
                 name: 'test',
                 gifPlayback: false,
                 port: 3000,
-                writeMyself: false,
+                writeMyself: 'none',
             })
         })
     })

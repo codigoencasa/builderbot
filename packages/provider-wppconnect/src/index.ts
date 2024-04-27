@@ -1,5 +1,5 @@
 import { ProviderClass, utils } from '@builderbot/bot'
-import type { BotContext, SendOptions } from '@builderbot/bot/dist/types'
+import type { BotContext, GlobalVendorArgs, SendOptions } from '@builderbot/bot/dist/types'
 import type { Message, Whatsapp } from '@wppconnect-team/wppconnect'
 import { create, defaultLogger } from '@wppconnect-team/wppconnect'
 import { createReadStream } from 'fs'
@@ -26,7 +26,7 @@ class WPPConnectProvider extends ProviderClass {
         })
     }
 
-    globalVendorArgs = { name: 'bot', port: 3000, writeMyself: false }
+    globalVendorArgs: GlobalVendorArgs = { name: 'bot', port: 3000, writeMyself: 'none' }
     vendor: Whatsapp
 
     constructor(args: { name: string }) {
