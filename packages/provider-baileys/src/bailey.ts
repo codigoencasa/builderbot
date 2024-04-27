@@ -235,6 +235,16 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
                 if (messageCtx?.messageStubParameters?.length && messageCtx.messageStubParameters[0].includes('absent'))
                     return
+                if (
+                    messageCtx?.messageStubParameters?.length &&
+                    messageCtx.messageStubParameters[0].includes('Bad MAC')
+                )
+                    return
+                if (
+                    messageCtx?.messageStubParameters?.length &&
+                    messageCtx.messageStubParameters[0].includes('Invalid')
+                )
+                    return
                 if (messageCtx?.message?.protocolMessage?.type === 'EPHEMERAL_SETTING') return
 
                 // if (idWs) this.idsDuplicates.push(idWs)

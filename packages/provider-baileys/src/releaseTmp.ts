@@ -21,9 +21,16 @@ export const releaseTmp = async (sessionName: string, ms: number) => {
         for (const iterator of filesToClean) {
             const checkFile = keepFiles.some((i) => iterator.includes(i))
             if (!checkFile) {
-                const fileToDelete = join(PATH_SRC, iterator)
-                await unlink(fileToDelete)
-                console.log(`🏷️ Clean:`, iterator)
+                try {
+                    const fileToDelete = join(PATH_SRC, iterator)
+                    if (!existsSync(fileToDelete)) {
+                        return
+                    }
+                    await unlink(fileToDelete)
+                    console.log(`🏷️ Clean:`, iterator)
+                } catch (e) {
+                    console.log(`Error:`, e)
+                }
             }
         }
     }
