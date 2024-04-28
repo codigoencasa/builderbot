@@ -635,6 +635,26 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         return this.sendMessageMeta(body)
     }
 
+    sendLocationRequest = async (to: string, bodyText: string) => {
+        to = parseMetaNumber(to)
+        const body = {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to,
+            type: 'interactive',
+            interactive: {
+                type: 'location_request_message',
+                body: {
+                    text: bodyText,
+                },
+                action: {
+                    name: 'send_location',
+                },
+            },
+        }
+        return this.sendMessageMeta(body)
+    }
+
     sendText = async (to: string, message: string) => {
         to = parseMetaNumber(to)
         const body: TextMessageBody = {
