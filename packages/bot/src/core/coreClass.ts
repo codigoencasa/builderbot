@@ -81,11 +81,11 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
      * Event handler
      */
     listenerBusEvents = (): {
-        event: string 
+        event: string
         func: ProviderEventTypes[keyof ProviderEventTypes]
     }[] => [
         {
-            event: '',
+            event: 'require_action',
             func: ({ instructions, title = '' }) => printer(instructions, title),
         },
         {
