@@ -45,6 +45,7 @@ export interface MetaInterface {
     sendMessage: (number: string, message: string, options?: SendOptions) => Promise<any>
     sendReaction: (number: string, react: Reaction) => Promise<any>
     sendLocation: (to: string, localization: Localization) => Promise<any>
+    sendLocationRequest: (to: string, bodyText: string) => Promise<any>
     saveFile: (ctx: Partial<Message & BotContext>, options?: SaveFileOptions) => Promise<string>
     sendFile: (to: string, mediaInput: string | null, caption: string) => Promise<any>
     sendAudio: (to: string, fileOpus: string) => void

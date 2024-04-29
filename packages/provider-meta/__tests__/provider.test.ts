@@ -212,6 +212,35 @@ describe('#MetaProvider', () => {
         })
     })
 
+    describe('#sendLocationRequest', () => {
+        test('should send location request message to the provided recipient', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeText = 'Please share your location'
+            metaProvider.sendMessageMeta = jest.fn()
+
+            // Act
+            await metaProvider.sendLocationRequest(fakeRecipient, fakeText)
+
+            // Assert
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith({
+                messaging_product: 'whatsapp',
+                recipient_type: 'individual',
+                to: fakeRecipient,
+                type: 'interactive',
+                interactive: {
+                    type: 'location_request_message',
+                    body: {
+                        text: fakeText,
+                    },
+                    action: {
+                        name: 'send_location',
+                    },
+                },
+            })
+        })
+    })
+
     describe('#sendReaction', () => {
         test('should send reaction message to the provided recipient', async () => {
             // Arrange
