@@ -97,6 +97,7 @@ export interface Message {
     contacts?: Contact[]
     order?: Order
     id?: string
+    caption?: string
 }
 
 export interface ParamsIncomingMessage {
