@@ -563,8 +563,8 @@ importers:
                 specifier: ^0.5.7
                 version: 0.5.7
             '@whiskeysockets/baileys':
-                specifier: ^6.6.0
-                version: 6.7.0(qrcode-terminal@0.12.0)(sharp@0.33.3)
+                specifier: ~6.6.0
+                version: 6.6.0(qrcode-terminal@0.12.0)(sharp@0.33.3)
             fluent-ffmpeg:
                 specifier: ^2.1.2
                 version: 2.1.2
@@ -754,7 +754,7 @@ importers:
                 specifier: ^0.5.2
                 version: 0.5.2
             twilio:
-                specifier: 4.20.0
+                specifier: ~4.20.0
                 version: 4.20.0
         devDependencies:
             '@builderbot/bot':
@@ -827,7 +827,7 @@ importers:
                 specifier: 0.33.3
                 version: 0.33.3
             venom-bot:
-                specifier: ^5.1.0
+                specifier: ~5.1.0
                 version: 5.1.0(encoding@0.1.13)(typescript@5.4.5)
         devDependencies:
             '@builderbot/bot':
@@ -909,7 +909,7 @@ importers:
                 specifier: 0.33.3
                 version: 0.33.3
             whatsapp-web.js:
-                specifier: ^1.23.0
+                specifier: ~1.23.0
                 version: 1.23.0(encoding@0.1.13)
         devDependencies:
             '@builderbot/bot':
@@ -976,7 +976,7 @@ importers:
                 specifier: ^29.7.0
                 version: 29.7.0
             '@wppconnect-team/wppconnect':
-                specifier: ^1.30.1
+                specifier: ~1.30.1
                 version: 1.30.2(encoding@0.1.13)(puppeteer-core@21.11.0(encoding@0.1.13))(typescript@5.4.5)
             body-parser:
                 specifier: ^1.20.2
@@ -4009,10 +4009,10 @@ packages:
                 integrity: sha512-skAN3NIrRzMkVouyfyq3gYT/op/K9iutMZr7kr5/9fnIaCnpYdrdbv69X8PZ6y3K2J5zy5KuGno5kzH8yGLOOg==,
             }
 
-    '@whiskeysockets/baileys@6.7.0':
+    '@whiskeysockets/baileys@6.6.0':
         resolution:
             {
-                integrity: sha512-FopALFLE1zdBdfU3Jqd/SqcD4SOZP36QjzV6ZR8qcjKLmRp99ueqJdt81UbndhsHHYQOabUdeaw7qifCQxrTwg==,
+                integrity: sha512-4aIPHztdLZP24Qac7mudZTMR7qIsEDQxlpCBJE4atYHFAa5tlwCGPcUy249q3aaayxYtQAwheVG42L6AkRxAwg==,
             }
         peerDependencies:
             jimp: ^0.16.1
@@ -16591,7 +16591,7 @@ snapshots:
             '@wasm-audio-decoders/common': 9.0.5
             codec-parser: 2.4.3
 
-    '@whiskeysockets/baileys@6.7.0(qrcode-terminal@0.12.0)(sharp@0.33.3)':
+    '@whiskeysockets/baileys@6.6.0(qrcode-terminal@0.12.0)(sharp@0.33.3)':
         dependencies:
             '@adiwajshing/keyed-db': 0.2.4
             '@hapi/boom': 9.1.4
