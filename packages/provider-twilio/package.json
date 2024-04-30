@@ -54,6 +54,6 @@
         "fluent-ffmpeg": "^2.1.2",
         "mime-types": "^2.1.35",
         "polka": "^0.5.2",
-        "twilio": "4.20.0"
+        "twilio": "~4.20.0"
     }
 }
