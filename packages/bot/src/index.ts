@@ -52,9 +52,6 @@ const createProvider = <T = ProviderClass, K = typeof ProviderClass.prototype.gl
     args: K = null
 ): T => {
     const providerInstance = new providerClass(args)
-    if (!(providerClass.prototype instanceof ProviderClass)) {
-        throw new Error('Provider does not implement ProviderClass')
-    }
     return providerInstance
 }
 
