@@ -31,7 +31,7 @@
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
     "dependencies": {
         "@builderbot/bot": "workspace:^",
-        "mysql2": "^2.3.3"
+        "mysql2": "^3.9.7"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^25.0.7",
