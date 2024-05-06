@@ -112,14 +112,8 @@ const createApp = async (templateName: string | null): Promise<string> => {
     return pathTemplate
 }
 
-const startInteractive = async (): Promise<void> => {
+const startInteractive = async (version: string): Promise<void> => {
     try {
-        const version = await getVersion()
-        console.clear()
-        console.log('')
-
-        intro(` Let's create a ${color.bgCyan(' Chatbot ' + 'v' + version)} ✨`)
-
         const stepContinue = await confirm({
             message: 'Do you want to continue?',
         })
@@ -164,6 +158,29 @@ const startInteractive = async (): Promise<void> => {
             return process.exit(0)
         }
 
+        await createBot({
+            stepLanguage: stepLanguage as string,
+            stepProvider: stepProvider as string,
+            stepDatabase: stepDatabase as string,
+            version,
+        })
+    } catch (e: any) {
+        logError(e)
+    }
+}
+
+const createBot = async ({
+    stepLanguage,
+    stepProvider,
+    stepDatabase,
+    version,
+}: {
+    stepLanguage: string
+    stepProvider: string
+    stepDatabase: string
+    version: string
+}): Promise<void> => {
+    try {
         const s = spinner()
         s.start('Checking requirements')
         await systemRequirements()
@@ -177,11 +194,79 @@ const startInteractive = async (): Promise<void> => {
         await setVersionTemplate(projectPath, version)
         outro(color.bgGreen(' Successfully completed! '))
     } catch (e: any) {
-        console.log(e)
-        if (e?.code === 'ERR_TTY_INIT_FAILED') return handleLegacyCli()
-        cancel([`Oops! 🙄 something is not right.`, `Check the minimum requirements in the documentation`].join('\n'))
-        return process.exit(0)
+        logError(e)
     }
 }
 
-export { startInteractive }
+const startWithArgs = async (version: string, args: Record<string, string>): Promise<void> => {
+    try {
+        const stepProvider = args['provider']
+        const stepDatabase = args['database']
+        const stepLanguage = args['language']
+        await createBot({
+            stepLanguage,
+            stepProvider,
+            stepDatabase,
+            version,
+        })
+    } catch (e: any) {
+        logError(e)
+    }
+}
+
+function getArgs(args: string[]): Record<string, string> {
+    const result: Record<string, string> = {}
+    for (let i = 0; i < args.length; i++) {
+        const arg = args[i]
+        if (arg.startsWith('--')) {
+            const [key, value] = arg.split('=')
+            result[key.slice(2)] = value
+        }
+    }
+    return result
+}
+
+function validateArgs(args: Record<string, string>): void {
+    if (!args['provider'] || !args['database'] || !args['language']) {
+        cancel(`\nInvalid arguments: You must send all three arguments: --provider, --database and --language
+        \nExample: --provider=baileys --database=mongo --language=js
+        \nIf you want to use the interactive mode, just run the command without arguments.`)
+        process.exit(0)
+    }
+    if (args['provider'] && !PROVIDER_LIST.some((p) => p.value === args['provider'])) {
+        cancel(`Invalid provider: ${args['provider']}`)
+        process.exit(0)
+    }
+    if (args['database'] && !PROVIDER_DATA.some((p) => p.value === args['database'])) {
+        cancel(`Invalid database: ${args['database']}`)
+        process.exit(0)
+    }
+    if (args['language'] && !AVAILABLE_LANGUAGES.some((p) => p.value === args['language'])) {
+        cancel(`Invalid language: ${args['language']}`)
+        process.exit(0)
+    }
+}
+
+const logError = async (e: any): Promise<void> => {
+    console.log(e)
+    if (e?.code === 'ERR_TTY_INIT_FAILED') return handleLegacyCli()
+    cancel([`Oops! 🙄 something is not right.`, `Check the minimum requirements in the documentation`].join('\n'))
+    return process.exit(0)
+}
+
+const start = async (): Promise<void> => {
+    const version = await getVersion()
+    console.clear()
+    console.log('')
+
+    intro(` Let's create a ${color.bgCyan(' Chatbot ' + 'v' + version)} ✨`)
+    const args = getArgs(process.argv.slice(2))
+    if (!Object.keys(args).length) {
+        await startInteractive(version)
+    } else {
+        validateArgs(args)
+        await startWithArgs(version, args)
+    }
+}
+
+export { start }
