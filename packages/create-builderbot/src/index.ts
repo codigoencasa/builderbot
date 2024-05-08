@@ -1,8 +1,8 @@
-import { startInteractive } from '@builderbot/cli'
+import { start } from '@builderbot/cli'
 /**
  * Voy a llamar directo a CLI
  * Temporalmente luego mejoro esta
  * parte
  * @returns
  */
-export const main = () => startInteractive()
+export const main = () => start()
