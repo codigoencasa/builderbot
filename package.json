@@ -1,7 +1,7 @@
 {
   "name": "@builderbot/root",
   "version": "0.1.35",
-  "description": "Bot de wahtsapp open source para MVP o pequeños negocios",
+  "description": "Bot de whatsapp open source para MVP o pequeños negocios",
   "main": "app.js",
   "private": true,
   "scripts": {
