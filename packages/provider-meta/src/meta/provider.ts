@@ -518,7 +518,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         options = { ...options, ...options['options'] }
         if (options?.buttons?.length) return this.sendButtons(to, options.buttons, message)
         if (options?.media) return this.sendMedia(to, message, options.media)
-        this.sendText(to, message)
+        this.sendText(to, message, options)
     }
 
     sendFile = async (to: string, mediaInput = null, caption: string) => {
@@ -655,7 +655,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         return this.sendMessageMeta(body)
     }
 
-    sendText = async (to: string, message: string) => {
+    sendText = async (to: string, message: string, options?: SendOptions) => {
         to = parseMetaNumber(to)
         const body: TextMessageBody = {
             messaging_product: 'whatsapp',
@@ -663,7 +663,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             to,
             type: 'text',
             text: {
-                preview_url: false,
+                preview_url: options.preview_url,
                 body: message,
             },
         }

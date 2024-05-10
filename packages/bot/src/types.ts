@@ -50,6 +50,7 @@ export type Button = {
  * @property {number} [delay] - Tiempo de retraso para la acción.
  * @property {boolean} [regex] - Indica si se debe usar una expresión regular.
  * @property {boolean} [sensitive] - Indica si la acción es sensible.
+ * @property {boolean} [preview_url] - Indica si debe embeber un thumbnail del link que se envía.
  */
 export type ActionPropertiesKeyword = {
     /** @deprecated Intern use. */
@@ -62,6 +63,7 @@ export type ActionPropertiesKeyword = {
     delay?: number
     regex?: boolean
     sensitive?: boolean
+    preview_url?: boolean
 }
 
 /**
@@ -254,6 +256,7 @@ export interface TFlow<P = any, B = any> {
 export interface SendOptions {
     buttons?: Button[]
     media?: string
+    preview_url?: boolean
     [key: string]: any
 }
 

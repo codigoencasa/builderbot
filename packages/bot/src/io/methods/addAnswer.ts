@@ -34,6 +34,7 @@ const _addAnswer =
             buttons: Array.isArray(options?.buttons) ? options.buttons : [],
             capture: typeof options?.capture === 'boolean' ? options.capture : false,
             delay: typeof options?.delay === 'number' ? options.delay : 0,
+            preview_url: typeof options?.preview_url ==='boolean' ? options.preview_url : false,
             idle: typeof options?.idle === 'number' ? options.idle : undefined,
             ref: typeof options?.ref === 'string' ? options.ref : undefined,
         })
