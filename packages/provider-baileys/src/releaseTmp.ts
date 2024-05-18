@@ -2,7 +2,7 @@ import { existsSync } from 'fs'
 import { readdir, unlink } from 'fs/promises'
 import { join } from 'path'
 
-const keepFiles = ['creds.json', 'baileys_store.json', 'app-state-sync']
+const keepFiles = ['creds.json', 'baileys_store.json', 'app-state-sync', 'session']
 
 /**
  * @alpha
