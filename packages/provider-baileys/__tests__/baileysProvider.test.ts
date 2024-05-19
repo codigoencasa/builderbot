@@ -97,7 +97,7 @@ describe('#BaileysProvider', () => {
             gifPlayback: false,
             usePairingCode: false,
             browser: ['Ubuntu', 'Chrome', '20.0.04'],
-            timeRelease: 21600000,
+            timeRelease: 0,
             phoneNumber: null,
             useBaileysStore: true,
             port: 3000,
