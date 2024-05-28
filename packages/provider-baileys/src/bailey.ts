@@ -48,7 +48,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
         phoneNumber: null,
         useBaileysStore: true,
         port: 3000,
-        timeRelease: 21600000,
+        timeRelease: 0, //21600000
         writeMyself: 'none',
     }
 
@@ -115,7 +115,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     }
                 }, 10_000)
 
-                await releaseTmp(NAME_DIR_SESSION, this.globalVendorArgs.timeRelease)
+                if (this.globalVendorArgs.timeRelease > 0) {
+                    await releaseTmp(NAME_DIR_SESSION, this.globalVendorArgs.timeRelease)
+                }
             }
         } catch (e) {
             logger.log(e)
