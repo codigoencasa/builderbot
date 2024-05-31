@@ -200,6 +200,16 @@ abstract class ProviderClass<V = any> extends EventEmitterClass<ProviderEventTyp
     }
 
     /**
+     * Trigger send inside event
+     * @param payload
+     */
+    public sendIn(payload: { body: string; name: string; from: string }) {
+        this.emit('message', {
+            ...payload,
+        })
+    }
+
+    /**
      * Get list of routes registered on the server.
      * @public
      * @param {Polka} app - Polka application instance.
