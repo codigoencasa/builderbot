@@ -203,7 +203,7 @@ abstract class ProviderClass<V = any> extends EventEmitterClass<ProviderEventTyp
      * Trigger send inside event
      * @param payload
      */
-    public sendIn(payload: { body: string; name: string; from: string }) {
+    public dispatchInside(payload: { body: string; name: string; from: string }) {
         this.emit('message', {
             ...payload,
         })
