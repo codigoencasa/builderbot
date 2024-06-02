@@ -38,7 +38,20 @@ class GlobalState {
      * @returns A function that returns the value of the specified property when called.
      */
     get = (): ((prop: string) => any) => {
-        return (prop: string) => this.STATE.get('__global__')?.[prop]
+        return (prop: string) => {
+            const globalState = this.STATE.get('__global__')
+            if (!globalState) return undefined
+
+            const properties = prop.split('.')
+            let result = globalState
+
+            for (const property of properties) {
+                result = result[property]
+                if (result === undefined) return undefined
+            }
+
+            return result
+        }
     }
 
     /**

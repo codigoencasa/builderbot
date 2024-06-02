@@ -39,6 +39,17 @@ test('GlobalState - get', async () => {
     assert.is(getFn('key3'), undefined)
 })
 
+test('GlobalState - get', async () => {
+    const updateFn = globalState.updateState()
+    const getFn = globalState.get()
+
+    await updateFn({ key1: 'value1', user: { name: 'leifer', email: 'leifer@test.com' } })
+    assert.is(getFn('key1'), 'value1')
+    assert.is(getFn('user.email'), 'leifer@test.com')
+    assert.is(getFn('user.name'), 'leifer')
+    assert.is(getFn('key3'), undefined)
+})
+
 test('GlobalState - getAllState', async () => {
     const updateFn = globalState.updateState()
     await updateFn({ key1: 'value1' })
