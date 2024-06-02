@@ -40,7 +40,20 @@ class SingleState {
      * @returns A function that takes a property name and returns its value.
      */
     get = (from: string): ((prop: string) => any) => {
-        return (prop: string) => this.STATE.get(from)?.[prop]
+        return (prop: string) => {
+            const state = this.STATE.get(from)
+            if (!state) return undefined
+
+            const properties = prop.split('.')
+            let result = state
+
+            for (const property of properties) {
+                result = result[property]
+                if (result === undefined) return undefined
+            }
+
+            return result
+        }
     }
 
     /**

@@ -36,6 +36,16 @@ test('get', async () => {
     assert.is(getKey('nonExistentKey'), undefined)
 })
 
+test('get.join', async () => {
+    const from = 'user3'
+    await singleState.updateState({ from })({ user: { name: 'leifer', email: 'leifer@test.com' } })
+
+    const getKey = singleState.get(from)
+    assert.is(getKey('user.name'), 'leifer')
+    assert.is(getKey('user.email'), 'leifer@test.com')
+    assert.is(getKey('nonExistentKey'), undefined)
+})
+
 test('getAllState', async () => {
     const from1 = 'user4'
     const from2 = 'user5'
