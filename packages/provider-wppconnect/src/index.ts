@@ -53,6 +53,7 @@ class WPPConnectProvider extends ProviderClass {
                             `Remember that the QR code updates every minute`,
                             `Need help: https://link.codigoencasa.com/DISCORD`,
                         ],
+                        payload: { qr: base64QRImg },
                     })
                     WppConnectGenerateImage(base64QRImg, `${this.globalVendorArgs.name}.qr.png`)
                 },

@@ -16,7 +16,7 @@ export type GlobalVendorArgs<V = { [key: string]: any }> = {
 
 export type ProviderEventTypes = {
     message: [arg1: BotContext]
-    require_action: [arg1: { title: string; instructions: string[] }]
+    require_action: [arg1: { title: string; instructions: string[]; payload?: { [key: string]: any } }]
     notice: [arg1: { title: string; instructions: string[] }]
     ready: any
     auth_failure: any

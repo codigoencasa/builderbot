@@ -158,6 +158,7 @@ class VenomProvider extends ProviderClass {
                 `Remember that the QR code updates every minute`,
                 `Need help: https://link.codigoencasa.com/DISCORD`,
             ],
+            payload: { qr },
         })
 
         await venomGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)

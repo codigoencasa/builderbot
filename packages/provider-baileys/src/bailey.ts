@@ -202,6 +202,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
                             `Remember that the QR code updates every minute`,
                             `Need help: https://link.codigoencasa.com/DISCORD`,
                         ],
+                        payload: { qr },
                     })
                     await baileyGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)
                 }
