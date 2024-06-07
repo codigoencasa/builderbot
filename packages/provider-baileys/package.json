@@ -10,7 +10,7 @@
   "type": "module",
   "scripts": {
     "build": "rimraf dist && rollup --config",
-    "test": "jest",
+    "test": "jest baileysProvider.test.ts",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watchAll --coverage"
   },
@@ -54,7 +54,8 @@
     "sinon": "^17.0.1",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
-    "wa-sticker-formatter": "^4.4.4"
+    "wa-sticker-formatter": "^4.4.4",
+    "wtfnode": "^0.9.2"
   },
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",

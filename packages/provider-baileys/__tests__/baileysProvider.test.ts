@@ -669,7 +669,7 @@ describe('#BaileysProvider', () => {
             const filePath = '/path/to/file/example.txt'
             const mimeType = 'text/plain'
             const fileName = 'example.txt'
-            const caption = 'caption'
+            const caption = 'Hello Word'
             const mockSendMessage = mockSendSuccess
             provider.vendor.sendMessage = mockSendMessage
 
