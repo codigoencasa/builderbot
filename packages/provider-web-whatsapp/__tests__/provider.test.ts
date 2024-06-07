@@ -486,6 +486,7 @@ describe('#WebWhatsappProvider', () => {
                     'Need help: https://link.codigoencasa.com/DISCORD',
                 ],
                 title: '⚡⚡ ACTION REQUIRED ⚡⚡',
+                payload: { qr: 'qr' },
             })
         })
     })

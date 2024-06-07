@@ -10,8 +10,6 @@ import {
     writeFilePromise,
 } from '../src/utils'
 import fsExtra, { NoParamCallback } from 'fs-extra'
-import EventEmitter from 'events'
-import { stub } from 'sinon'
 import { utils } from '@builderbot/bot'
 import { createWriteStream } from 'fs'
 

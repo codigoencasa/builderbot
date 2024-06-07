@@ -669,11 +669,12 @@ describe('#BaileysProvider', () => {
             const filePath = '/path/to/file/example.txt'
             const mimeType = 'text/plain'
             const fileName = 'example.txt'
+            const caption = 'caption'
             const mockSendMessage = mockSendSuccess
             provider.vendor.sendMessage = mockSendMessage
 
             // Act
-            const result = await provider.sendFile(number, filePath)
+            const result = await provider.sendFile(number, filePath, caption)
 
             // Assert
             expect(result).toEqual('success')
@@ -681,6 +682,7 @@ describe('#BaileysProvider', () => {
                 document: { url: filePath },
                 mimetype: mimeType,
                 fileName: fileName,
+                caption,
             })
         })
     })

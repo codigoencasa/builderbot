@@ -403,7 +403,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             const fileOpus = await utils.convertAudio(fileDownloaded)
             return this.sendAudio(number, fileOpus)
         }
-        return this.sendFile(number, fileDownloaded)
+        return this.sendFile(number, fileDownloaded, text)
     }
 
     /**
@@ -472,7 +472,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
      * @example await sendMessage('+XXXXXXXXXXX', './document/file.pdf')
      */
 
-    sendFile = async (number: string, filePath: string) => {
+    sendFile = async (number: string, filePath: string, text: string) => {
         const mimeType = mime.lookup(filePath)
         const fileName = basename(filePath)
 
@@ -480,6 +480,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             document: { url: filePath },
             mimetype: `${mimeType}`,
             fileName: fileName,
+            caption: text,
         }
 
         return this.vendor.sendMessage(number, payload)

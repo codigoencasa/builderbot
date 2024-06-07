@@ -469,6 +469,7 @@ describe('#VenomProvider', () => {
                     'Remember that the QR code updates every minute',
                     'Need help: https://link.codigoencasa.com/DISCORD',
                 ],
+                payload: { qr: mockQr },
             })
         })
     })
