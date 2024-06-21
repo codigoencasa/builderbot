@@ -62,6 +62,12 @@ class BaileysProvider extends ProviderClass<WASocket> {
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
     }
 
+    public static async releaseSessionFiles(name: string) {
+        const NAME_DIR_SESSION = `${name}_sessions`
+        const idTimer = await releaseTmp(NAME_DIR_SESSION, 0)
+        clearInterval(idTimer)
+    }
+
     protected beforeHttpServerInit(): void {
         this.server = this.server
             .use((req, _, next) => {
@@ -688,10 +694,4 @@ class BaileysProvider extends ProviderClass<WASocket> {
     }
 }
 
-const releaseSessions = async (botName: string) => {
-    const NAME_DIR_SESSION = `${botName}_sessions`
-    const idTimer = await releaseTmp(NAME_DIR_SESSION, 0)
-    clearInterval(idTimer)
-}
-
-export { BaileysProvider, releaseSessions }
+export { BaileysProvider }
