@@ -688,4 +688,10 @@ class BaileysProvider extends ProviderClass<WASocket> {
     }
 }
 
-export { BaileysProvider }
+const releaseSessions = async (botName: string) => {
+    const NAME_DIR_SESSION = `${botName}_sessions`
+    const idTimer = await releaseTmp(NAME_DIR_SESSION, 0)
+    clearInterval(idTimer)
+}
+
+export { BaileysProvider, releaseSessions }

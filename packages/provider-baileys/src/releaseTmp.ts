@@ -8,7 +8,7 @@ const keepFiles = ['creds.json', 'baileys_store.json', 'app-state-sync', 'sessio
  * @alpha
  * @param sessionName
  */
-export const releaseTmp = async (sessionName: string, ms: number) => {
+export const releaseTmp = async (sessionName: string, ms: number): Promise<NodeJS.Timeout> => {
     const PATH_SRC = join(process.cwd(), sessionName)
 
     if (!existsSync(PATH_SRC)) {
@@ -35,5 +35,6 @@ export const releaseTmp = async (sessionName: string, ms: number) => {
         }
     }
 
-    setInterval(deleteFiles, ms)
+    const idTimer = setInterval(deleteFiles, ms)
+    return idTimer
 }
