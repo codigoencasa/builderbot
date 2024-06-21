@@ -62,8 +62,8 @@ class BaileysProvider extends ProviderClass<WASocket> {
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
     }
 
-    public static async releaseSessionFiles(name: string) {
-        const NAME_DIR_SESSION = `${name}_sessions`
+    public async releaseSessionFiles() {
+        const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
         const idTimer = await releaseTmp(NAME_DIR_SESSION, 0)
         clearInterval(idTimer)
     }
