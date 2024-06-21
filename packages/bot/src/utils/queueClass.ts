@@ -163,19 +163,25 @@ class Queue<T> {
                 for (const item of queueByFrom) {
                     item.cancelled = true
                     this.clearAndDone(from, item)
-                    item.resolve('Queue cleared' as unknown as T)
+                    item.reject('Queue cleared')
                 }
             } finally {
                 this.queue.set(from, [])
                 this.idsCallbacks.set(from, [])
+                this.timers.forEach((timer, key) => {
+                    if (timer !== false) {
+                        clearTimeout(timer as NodeJS.Timeout)
+                    }
+                    this.timers.delete(key)
+                })
             }
 
             if (workingByFrom) {
                 this.workingOnPromise.set(from, false)
             }
-            const queueNumber = queueByFrom.length
-            return Promise.resolve(queueNumber)
+            return queueByFrom.length
         }
+        return 0
     }
 
     setIdsCallbacks(from: string, ids: string[] = []): void {
