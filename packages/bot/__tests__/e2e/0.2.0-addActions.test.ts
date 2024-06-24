@@ -235,4 +235,5 @@ suiteCase(`Encadenanos addAction con captures (infinity)`, async ({ database, pr
     assert.is('chao', history[13])
     assert.is(undefined, history[14])
 })
+
 suiteCase.run()
