@@ -10,7 +10,7 @@
   "type": "module",
   "scripts": {
     "build": "rimraf dist && rollup --config",
-    "test": "jest baileysProvider.test.ts",
+    "test": "jest --forceExit",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watchAll --coverage"
   },
