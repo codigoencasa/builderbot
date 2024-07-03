@@ -334,7 +334,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             type: 'reply',
             reply: {
                 id: `btn-${i}`,
-                title: btn.body.slice(0, 15),
+                title: btn.body.slice(0, 16),
             },
         }))
 
@@ -371,7 +371,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
                 action: {
                     name: 'cta_url',
                     parameters: {
-                        display_text: button.body.slice(0, 15),
+                        display_text: button.body.slice(0, 16),
                         url: button.url,
                     },
                 },
@@ -386,7 +386,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             type: 'reply',
             reply: {
                 id: `btn-${i}`,
-                title: btn.body.slice(0, 15),
+                title: btn.body.slice(0, 16),
             },
         }))
         const body = {
@@ -439,7 +439,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         flowID: string,
         flowCta: string,
         screenName: string,
-        data = {}
+        data: Record<string, any>
     ) => {
         to = parseMetaNumber(to)
         const body = {
@@ -469,7 +469,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
                         flow_cta: flowCta, // open flow! -> mensaje del boton
                         flow_action_payload: {
                             screen: screenName,
-                            data: Array.isArray(data) && data.length > 0 ? data : { '<CUSTOM_KEY>': '<CUSTOM_VALUE>' },
+                            data: data ? data : { '<CUSTOM_KEY>': '<CUSTOM_VALUE>' },
                         },
                     },
                 },
