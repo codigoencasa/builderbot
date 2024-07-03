@@ -297,7 +297,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 }
 
                 //Detectar file
-                if (messageCtx.message?.documentMessage) {
+                if (messageCtx.message?.documentMessage || messageCtx.message?.documentWithCaptionMessage) {
                     payload = { ...payload, body: utils.generateRefProvider('_event_document_') }
                 }
 
