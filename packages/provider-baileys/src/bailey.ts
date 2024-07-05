@@ -146,7 +146,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 ...this.globalVendorArgs,
             })
 
-            this.store?.bind(sock.ev)
+            if (this?.store) this.store.bind(sock.ev)
             this.vendor = sock
             if (this.globalVendorArgs.usePairingCode && !sock.authState.creds.registered) {
                 if (this.globalVendorArgs.phoneNumber) {
