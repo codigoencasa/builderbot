@@ -556,6 +556,9 @@ importers:
 
     packages/provider-baileys:
         dependencies:
+            '@adiwajshing/keyed-db':
+                specifier: ^0.2.4
+                version: 0.2.4
             '@ffmpeg-installer/ffmpeg':
                 specifier: ^1.1.0
                 version: 1.1.0

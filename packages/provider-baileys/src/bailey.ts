@@ -34,6 +34,7 @@ import {
 import { releaseTmp } from './releaseTmp'
 import type { BaileyGlobalVendorArgs } from './type'
 import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber, emptyDirSessions } from './utils'
+import bindStore from './bindStore'
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/baileys.log`),
@@ -110,7 +111,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
         try {
             if (this.globalVendorArgs.useBaileysStore) {
-                this.store = makeInMemoryStore({ logger: loggerBaileys })
+                this.store = bindStore({ logger: loggerBaileys })
 
                 if (this.store?.readFromFile) this.store?.readFromFile(`${NAME_DIR_SESSION}/baileys_store.json`)
 
