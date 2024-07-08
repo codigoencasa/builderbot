@@ -9,13 +9,9 @@ import type {
     PresenceData,
     WAMessageCursor,
     WAMessageKey,
-    jidDecode,
-    md5,
-    updateMessageWithReaction,
-    updateMessageWithReceipt,
-    type Chat,
-    type WAMessage,
-    type makeWASocket,
+    Chat,
+    WAMessage,
+    makeWASocket,
 } from '@whiskeysockets/baileys'
 import { ObjectRepository } from '@whiskeysockets/baileys/lib/Store/object-repository'
 import type { Label } from '@whiskeysockets/baileys/lib/Types/Label'
@@ -139,7 +135,6 @@ export type BaileysInMemoryStoreConfig = {
 const makeMessagesDictionary = () => makeOrderedDictionary(waMessageID)
 
 export default (config: BaileysInMemoryStoreConfig) => {
-    const socket = config.socket
     const chatKey = config.chatKey || waChatKey(true)
     const labelAssociationKey = config.labelAssociationKey || waLabelAssociationKey
     const logger: Logger = config.logger || DEFAULT_CONNECTION_CONFIG.logger.child({ stream: 'in-mem-store' })

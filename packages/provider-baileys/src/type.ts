@@ -7,5 +7,6 @@ export interface BaileyGlobalVendorArgs extends GlobalVendorArgs {
     browser: string[]
     useBaileysStore: boolean
     timeRelease?: number
+    experimentalStore?: boolean
     host?: any
 }

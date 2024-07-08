@@ -95,6 +95,7 @@ export interface Message {
     latitude?: number
     longitude?: number
     contacts?: Contact[]
+    nfm_reply?: string
     order?: Order
     id?: string
     caption?: string

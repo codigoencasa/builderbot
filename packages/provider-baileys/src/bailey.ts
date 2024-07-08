@@ -20,9 +20,9 @@ import type {
     PollMessageOptions,
     WAMessage,
     WASocket,
-    makeInMemoryStore,
 } from './baileyWrapper'
 import {
+    makeInMemoryStore,
     DisconnectReason,
     downloadMediaMessage,
     getAggregateVotesInPollMessage,
@@ -51,6 +51,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
         port: 3000,
         timeRelease: 0, //21600000
         writeMyself: 'none',
+        experimentalStore: false,
     }
 
     store?: ReturnType<typeof makeInMemoryStore>
@@ -111,7 +112,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
         try {
             if (this.globalVendorArgs.useBaileysStore) {
-                this.store = bindStore({ logger: loggerBaileys })
+                this.store = !this.globalVendorArgs.experimentalStore
+                    ? makeInMemoryStore({ logger: loggerBaileys })
+                    : bindStore({ logger: loggerBaileys })
 
                 if (this.store?.readFromFile) this.store?.readFromFile(`${NAME_DIR_SESSION}/baileys_store.json`)
 
