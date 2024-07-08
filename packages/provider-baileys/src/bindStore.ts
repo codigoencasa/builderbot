@@ -1,20 +1,16 @@
 import type KeyedDB from '@adiwajshing/keyed-db'
 import type { Comparable } from '@adiwajshing/keyed-db/lib/Types'
-import type { Logger } from 'pino'
-import {
+import { DEFAULT_CONNECTION_CONFIG, jidNormalizedUser, proto, toNumber } from '@whiskeysockets/baileys'
+import type {
     BaileysEventEmitter,
     ConnectionState,
     Contact,
-    DEFAULT_CONNECTION_CONFIG,
     GroupMetadata,
     PresenceData,
     WAMessageCursor,
     WAMessageKey,
     jidDecode,
-    jidNormalizedUser,
     md5,
-    proto,
-    toNumber,
     updateMessageWithReaction,
     updateMessageWithReceipt,
     type Chat,
@@ -22,12 +18,10 @@ import {
     type makeWASocket,
 } from '@whiskeysockets/baileys'
 import { ObjectRepository } from '@whiskeysockets/baileys/lib/Store/object-repository'
-import { Label } from '@whiskeysockets/baileys/lib/Types/Label'
-import {
-    LabelAssociation,
-    LabelAssociationType,
-    MessageLabelAssociation,
-} from '@whiskeysockets/baileys/lib/Types/LabelAssociation'
+import type { Label } from '@whiskeysockets/baileys/lib/Types/Label'
+import type { LabelAssociation, MessageLabelAssociation } from '@whiskeysockets/baileys/lib/Types/LabelAssociation'
+import { LabelAssociationType } from '@whiskeysockets/baileys/lib/Types/LabelAssociation'
+import type { Logger } from 'pino'
 
 type WASocket = ReturnType<typeof makeWASocket>
 
@@ -472,7 +466,7 @@ export default (config: BaileysInMemoryStoreConfig) => {
         loadMessages: async (jid: string, count: number, cursor: WAMessageCursor) => {
             const list = assertMessageList(jid)
             const mode = !cursor || 'before' in cursor ? 'before' : 'after'
-            const cursorKey = !!cursor ? ('before' in cursor ? cursor.before : cursor.after) : undefined
+            const cursorKey = cursor ? ('before' in cursor ? cursor.before : cursor.after) : undefined
             const cursorValue = cursorKey ? list.get(cursorKey.id!) : undefined
 
             let messages: WAMessage[]

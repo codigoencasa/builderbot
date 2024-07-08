@@ -20,21 +20,21 @@ import type {
     PollMessageOptions,
     WAMessage,
     WASocket,
+    makeInMemoryStore,
 } from './baileyWrapper'
 import {
     DisconnectReason,
     downloadMediaMessage,
     getAggregateVotesInPollMessage,
     makeCacheableSignalKeyStore,
-    makeInMemoryStore,
     makeWASocketOther,
     proto,
     useMultiFileAuthState,
 } from './baileyWrapper'
+import bindStore from './bindStore'
 import { releaseTmp } from './releaseTmp'
 import type { BaileyGlobalVendorArgs } from './type'
 import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber, emptyDirSessions } from './utils'
-import bindStore from './bindStore'
 
 const logger = new Console({
     stdout: createWriteStream(`${process.cwd()}/baileys.log`),
