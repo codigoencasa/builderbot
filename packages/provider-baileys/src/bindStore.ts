@@ -1,6 +1,6 @@
 import type KeyedDB from '@adiwajshing/keyed-db'
 import type { Comparable } from '@adiwajshing/keyed-db/lib/Types'
-import { DEFAULT_CONNECTION_CONFIG, jidNormalizedUser, proto, toNumber } from '@whiskeysockets/baileys'
+import { DEFAULT_CONNECTION_CONFIG, jidDecode, jidNormalizedUser, md5, proto, toNumber } from '@whiskeysockets/baileys'
 import type {
     BaileysEventEmitter,
     ConnectionState,
@@ -132,9 +132,20 @@ export type BaileysInMemoryStoreConfig = {
     socket?: WASocket
 }
 
+type CustomaileysInMemoryStoreConfig = {
+    experimentalStoreArgs: {
+        messagesTypesAllowed: string[]
+        storeContacts: boolean
+        storeLabels: boolean
+    }
+}
+
+export type bindStoreConfig = BaileysInMemoryStoreConfig & CustomaileysInMemoryStoreConfig
+
 const makeMessagesDictionary = () => makeOrderedDictionary(waMessageID)
 
-export default (config: BaileysInMemoryStoreConfig) => {
+export default (config: bindStoreConfig) => {
+    const socket = config.socket
     const chatKey = config.chatKey || waChatKey(true)
     const labelAssociationKey = config.labelAssociationKey || waLabelAssociationKey
     const logger: Logger = config.logger || DEFAULT_CONNECTION_CONFIG.logger.child({ stream: 'in-mem-store' })
@@ -151,6 +162,9 @@ export default (config: BaileysInMemoryStoreConfig) => {
         LabelAssociation,
         string
     >
+    const messagesTypesAllowed = config.experimentalStoreArgs.messagesTypesAllowed
+    const storeContacts = config.experimentalStoreArgs.storeContacts
+    const storeLabels = config.experimentalStoreArgs.storeLabels
 
     const assertMessageList = (jid: string) => {
         if (!messages[jid]) {
@@ -187,71 +201,80 @@ export default (config: BaileysInMemoryStoreConfig) => {
             Object.assign(state, update)
         })
 
-        // ev.on('messaging-history.set', ({
-        //     chats: newChats,
-        //     contacts: newContacts,
-        //     messages: newMessages,
-        //     isLatest
-        // }) => {
-        //     if (isLatest) {
-        //         chats.clear()
+        ev.on(
+            'messaging-history.set',
+            ({ chats: newChats, contacts: newContacts, messages: newMessages, isLatest }) => {
+                if (isLatest) {
+                    chats.clear()
 
-        //         for (const id in messages) {
-        //             delete messages[id]
-        //         }
-        //     }
+                    for (const id in messages) {
+                        delete messages[id]
+                    }
+                }
 
-        //     const chatsAdded = chats.insertIfAbsent(...newChats).length
-        //     logger.debug({ chatsAdded }, 'synced chats')
+                const chatsAdded = chats.insertIfAbsent(...newChats).length
+                logger.debug({ chatsAdded }, 'synced chats')
 
-        //     const oldContacts = contactsUpsert(newContacts)
-        //     if (isLatest) {
-        //         for (const jid of oldContacts) {
-        //             delete contacts[jid]
-        //         }
-        //     }
+                if (storeContacts) {
+                    const oldContacts = contactsUpsert(newContacts)
+                    if (isLatest) {
+                        for (const jid of oldContacts) {
+                            delete contacts[jid]
+                        }
+                    }
+                    logger.debug({ deletedContacts: isLatest ? oldContacts.size : 0, newContacts }, 'synced contacts')
+                }
 
-        //     logger.debug({ deletedContacts: isLatest ? oldContacts.size : 0, newContacts }, 'synced contacts')
+                for (const msg of newMessages) {
+                    const jid = msg.key.remoteJid!
+                    const keys = Object.keys(msg.message)
+                    if (keys.some((key) => messagesTypesAllowed.includes(key))) {
+                        const list = assertMessageList(jid)
+                        list.upsert(msg, 'prepend')
+                    }
+                }
 
-        //     for (const msg of newMessages) {
-        //         const jid = msg.key.remoteJid!
-        //         const list = assertMessageList(jid)
-        //         list.upsert(msg, 'prepend')
-        //     }
+                logger.debug({ messages: newMessages.length }, 'synced messages')
+            }
+        )
 
-        //     logger.debug({ messages: newMessages.length }, 'synced messages')
-        // })
+        ev.on('contacts.upsert', (contacts) => {
+            if (!storeContacts) return
+            contactsUpsert(contacts)
+        })
 
-        // ev.on('contacts.upsert', contacts => {
-        //     contactsUpsert(contacts)
-        // })
+        ev.on('contacts.update', async (updates) => {
+            if (!storeContacts) return
+            for (const update of updates) {
+                let contact: Contact
+                if (contacts[update.id!]) {
+                    contact = contacts[update.id!]
+                } else {
+                    const contactHashes = await Promise.all(
+                        Object.keys(contacts).map(async (contactId) => {
+                            const { user } = jidDecode(contactId)!
+                            return [
+                                contactId,
+                                (await md5(Buffer.from(user + 'WA_ADD_NOTIF', 'utf8'))).toString('base64').slice(0, 3),
+                            ]
+                        })
+                    )
+                    contact = contacts[contactHashes.find(([, b]) => b === update.id)?.[0] || ''] // find contact by attrs.hash, when user is not saved as a contact
+                }
 
-        // ev.on('contacts.update', async updates => {
-        //     for (const update of updates) {
-        //         let contact: Contact
-        //         if (contacts[update.id!]) {
-        //             contact = contacts[update.id!]
-        //         } else {
-        //             const contactHashes = await Promise.all(Object.keys(contacts).map(async contactId => {
-        //                 const { user } = jidDecode(contactId)!
-        //                 return [contactId, (await md5(Buffer.from(user + 'WA_ADD_NOTIF', 'utf8'))).toString('base64').slice(0, 3)]
-        //             }))
-        //             contact = contacts[contactHashes.find(([, b]) => b === update.id)?.[0] || ''] // find contact by attrs.hash, when user is not saved as a contact
-        //         }
+                if (contact) {
+                    if (update.imgUrl === 'changed') {
+                        contact.imgUrl = socket ? await socket?.profilePictureUrl(contact.id) : undefined
+                    } else if (update.imgUrl === 'removed') {
+                        delete contact.imgUrl
+                    }
+                } else {
+                    return logger.debug({ update }, 'got update for non-existant contact')
+                }
 
-        //         if (contact) {
-        //             if (update.imgUrl === 'changed') {
-        //                 contact.imgUrl = socket ? await socket?.profilePictureUrl(contact.id) : undefined
-        //             } else if (update.imgUrl === 'removed') {
-        //                 delete contact.imgUrl
-        //             }
-        //         } else {
-        //             return logger.debug({ update }, 'got update for non-existant contact')
-        //         }
-
-        //         Object.assign(contacts[contact.id], contact)
-        //     }
-        // })
+                Object.assign(contacts[contact.id], contact)
+            }
+        })
         ev.on('chats.upsert', (newChats) => {
             chats.upsert(...newChats)
         })
@@ -271,36 +294,39 @@ export default (config: BaileysInMemoryStoreConfig) => {
             }
         })
 
-        // ev.on('labels.edit', (label: Label) => {
-        //     if (label.deleted) {
-        //         return labels.deleteById(label.id)
-        //     }
+        ev.on('labels.edit', (label: Label) => {
+            if (!storeLabels) return
 
-        //     // WhatsApp can store only up to 20 labels
-        //     if (labels.count() < 20) {
-        //         return labels.upsertById(label.id, label)
-        //     }
+            if (label.deleted) {
+                return labels.deleteById(label.id)
+            }
 
-        //     logger.error('Labels count exceed')
-        // })
+            // WhatsApp can store only up to 20 labels
+            if (labels.count() < 20) {
+                return labels.upsertById(label.id, label)
+            }
 
-        // ev.on('labels.association', ({ type, association }) => {
-        //     switch (type) {
-        //         case 'add':
-        //             labelAssociations.upsert(association)
-        //             break
-        //         case 'remove':
-        //             labelAssociations.delete(association)
-        //             break
-        //         default:
-        //             console.error(`unknown operation type [${type}]`)
-        //     }
-        // })
-
-        ev.on('presence.update', ({ id, presences: update }) => {
-            presences[id] = presences[id] || {}
-            Object.assign(presences[id], update)
+            logger.error('Labels count exceed')
         })
+
+        ev.on('labels.association', ({ type, association }) => {
+            if (!storeLabels) return
+            switch (type) {
+                case 'add':
+                    labelAssociations.upsert(association)
+                    break
+                case 'remove':
+                    labelAssociations.delete(association)
+                    break
+                default:
+                    console.error(`unknown operation type [${type}]`)
+            }
+        })
+
+        // ev.on('presence.update', ({ id, presences: update }) => {
+        //     presences[id] = presences[id] || {}
+        //     Object.assign(presences[id], update)
+        // })
         // ev.on('chats.delete', deletions => {
         //     for (const item of deletions) {
         //         if (chats.get(item)) {
@@ -313,19 +339,23 @@ export default (config: BaileysInMemoryStoreConfig) => {
                 case 'append':
                 case 'notify':
                     for (const msg of newMessages) {
-                        const jid = jidNormalizedUser(msg.key.remoteJid!)
-                        const list = assertMessageList(jid)
-                        list.upsert(msg, 'append')
+                        const keys = Object.keys(msg.message)
 
-                        if (type === 'notify') {
-                            if (!chats.get(jid)) {
-                                ev.emit('chats.upsert', [
-                                    {
-                                        id: jid,
-                                        conversationTimestamp: toNumber(msg.messageTimestamp),
-                                        unreadCount: 1,
-                                    },
-                                ])
+                        if (keys.some((key) => messagesTypesAllowed.includes(key))) {
+                            const jid = jidNormalizedUser(msg.key.remoteJid!)
+                            const list = assertMessageList(jid)
+                            list.upsert(msg, 'append')
+
+                            if (type === 'notify') {
+                                if (!chats.get(jid)) {
+                                    ev.emit('chats.upsert', [
+                                        {
+                                            id: jid,
+                                            conversationTimestamp: toNumber(msg.messageTimestamp),
+                                            unreadCount: 1,
+                                        },
+                                    ])
+                                }
                             }
                         }
                     }
@@ -333,37 +363,37 @@ export default (config: BaileysInMemoryStoreConfig) => {
                     break
             }
         })
-        // ev.on('messages.update', updates => {
-        //     for (const { update, key } of updates) {
-        //         const list = assertMessageList(jidNormalizedUser(key.remoteJid!))
-        //         if (update?.status) {
-        //             const listStatus = list.get(key.id!)?.status
-        //             if (listStatus && update?.status <= listStatus) {
-        //                 logger.debug({ update, storedStatus: listStatus }, 'status stored newer then update')
-        //                 delete update.status
-        //                 logger.debug({ update }, 'new update object')
-        //             }
-        //         }
+        ev.on('messages.update', (updates) => {
+            for (const { update, key } of updates) {
+                const list = assertMessageList(jidNormalizedUser(key.remoteJid!))
+                if (update?.status) {
+                    const listStatus = list.get(key.id!)?.status
+                    if (listStatus && update?.status <= listStatus) {
+                        logger.debug({ update, storedStatus: listStatus }, 'status stored newer then update')
+                        delete update.status
+                        logger.debug({ update }, 'new update object')
+                    }
+                }
 
-        //         const result = list.updateAssign(key.id!, update)
-        //         if (!result) {
-        //             logger.debug({ update }, 'got update for non-existent message')
-        //         }
-        //     }
-        // })
-        // ev.on('messages.delete', item => {
-        //     if ('all' in item) {
-        //         const list = messages[item.jid]
-        //         list?.clear()
-        //     } else {
-        //         const jid = item.keys[0].remoteJid!
-        //         const list = messages[jid]
-        //         if (list) {
-        //             const idSet = new Set(item.keys.map(k => k.id))
-        //             list.filter(m => !idSet.has(m.key.id))
-        //         }
-        //     }
-        // })
+                const result = list.updateAssign(key.id!, update)
+                if (!result) {
+                    logger.debug({ update }, 'got update for non-existent message')
+                }
+            }
+        })
+        ev.on('messages.delete', (item) => {
+            if ('all' in item) {
+                const list = messages[item.jid]
+                list?.clear()
+            } else {
+                const jid = item.keys[0].remoteJid!
+                const list = messages[jid]
+                if (list) {
+                    const idSet = new Set(item.keys.map((k) => k.id))
+                    list.filter((m) => !idSet.has(m.key.id))
+                }
+            }
+        })
 
         // ev.on('groups.update', updates => {
         //     for (const update of updates) {

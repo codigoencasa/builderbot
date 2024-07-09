@@ -103,6 +103,16 @@ describe('#BaileysProvider', () => {
             port: 3000,
             writeMyself: 'none',
             experimentalStore: false,
+            experimentalStoreArgs: {
+                messagesTypesAllowed: [
+                    'pollCreationMessage',
+                    'pollCreationMessageV2',
+                    'pollCreationMessageV3',
+                    'pollUpdateMessage',
+                ],
+                storeContacts: false,
+                storeLabels: false,
+            },
         }
         // Act
         const baileysProvider = new BaileysProvider({})
