@@ -63,81 +63,88 @@ class Queue<T> {
     }
 
     async enqueue(from: string, promiseInFunc: () => Promise<T>, fingerIdRef: string): Promise<T> {
-        this.logger.log(`${from}: QUEUE: ${fingerIdRef}`)
+        try {
+            this.logger.log(`${from}: QUEUE: ${fingerIdRef}`)
 
-        if (!this.timers.has(fingerIdRef)) {
-            this.timers.set(fingerIdRef, false)
-        }
-
-        if (!this.queue.has(from)) {
-            this.queue.set(from, [])
-            this.workingOnPromise.set(from, false)
-        }
-
-        const queueByFrom = this.queue.get(from)!
-        const workingByFrom = this.workingOnPromise.get(from)!
-
-        /**
-         *
-         * @param item
-         * @returns
-         */
-        const promiseFunc = (item: QueueItem<T>): PromiseFunctionWrapper<T> => {
-            type ITimerPromise = {
-                resolve: (value: T | PromiseLike<T>) => void
-                reject: (value: T | PromiseLike<T>) => void
+            if (!this.timers.has(fingerIdRef)) {
+                this.timers.set(fingerIdRef, false)
             }
 
-            const timer = ({ resolve }: ITimerPromise) =>
-                setTimeout(() => {
-                    console.log('no debe aparecer si la otra funcion del race se ejecuta primero 🙉🙉🙉🙉', fingerIdRef)
-                    resolve('timeout' as unknown as T)
-                }, this.timeout)
+            if (!this.queue.has(from)) {
+                this.queue.set(from, [])
+                this.workingOnPromise.set(from, false)
+            }
 
-            const timerPromise = new Promise<T>((resolve, reject) => {
-                if (item.cancelled) {
-                    reject('cancelled')
+            const queueByFrom = this.queue.get(from)!
+            const workingByFrom = this.workingOnPromise.get(from)!
+
+            /**
+             *
+             * @param item
+             * @returns
+             */
+            const promiseFunc = (item: QueueItem<T>): PromiseFunctionWrapper<T> => {
+                type ITimerPromise = {
+                    resolve: (value: T | PromiseLike<T>) => void
+                    reject: (value: T | PromiseLike<T>) => void
                 }
-                if (!this.timers.has(fingerIdRef)) {
-                    const refIdTimeOut = timer({ reject, resolve })
+
+                const timer = ({ resolve }: ITimerPromise) =>
+                    setTimeout(() => {
+                        console.log(
+                            'no debe aparecer si la otra funcion del race se ejecuta primero 🙉🙉🙉🙉',
+                            fingerIdRef
+                        )
+                        resolve('timeout' as unknown as T)
+                    }, this.timeout)
+
+                const timerPromise = new Promise<T>((resolve, reject) => {
+                    if (item.cancelled) {
+                        reject('cancelled')
+                    }
+                    if (!this.timers.has(fingerIdRef)) {
+                        const refIdTimeOut = timer({ reject, resolve })
+                        clearTimeout(this.timers.get(fingerIdRef) as NodeJS.Timeout)
+                        this.timers.set(fingerIdRef, refIdTimeOut)
+                        this.clearAndDone(from, item)
+                        this.clearQueue(from)
+                        return refIdTimeOut
+                    }
+
+                    return this.timers.get(fingerIdRef) as unknown as Promise<T>
+                })
+
+                const cancel = () => {
                     clearTimeout(this.timers.get(fingerIdRef) as NodeJS.Timeout)
-                    this.timers.set(fingerIdRef, refIdTimeOut)
+                    this.timers.delete(fingerIdRef)
                     this.clearAndDone(from, item)
+                }
+                return { promiseInFunc, timer, timerPromise, cancel }
+            }
+
+            return new Promise<T>((resolve, reject) => {
+                const pid = queueByFrom.findIndex((i) => i.fingerIdRef === fingerIdRef)
+                if (pid !== -1) {
                     this.clearQueue(from)
-                    return refIdTimeOut
                 }
 
-                return this.timers.get(fingerIdRef) as unknown as Promise<T>
-            })
+                queueByFrom.push({
+                    promiseFunc,
+                    fingerIdRef,
+                    cancelled: false,
+                    resolve,
+                    reject,
+                })
 
-            const cancel = () => {
-                clearTimeout(this.timers.get(fingerIdRef) as NodeJS.Timeout)
-                this.timers.delete(fingerIdRef)
-                this.clearAndDone(from, item)
-            }
-            return { promiseInFunc, timer, timerPromise, cancel }
+                if (!workingByFrom) {
+                    this.logger.log(`${from}: EXECUTING: ${fingerIdRef}`)
+                    this.processQueue(from)
+                    this.workingOnPromise.set(from, true)
+                }
+            })
+        } catch (e) {
+            this.logger.log(`${from}: CLEAN QUEUE: ${fingerIdRef}`)
         }
-
-        return new Promise<T>((resolve, reject) => {
-            const pid = queueByFrom.findIndex((i) => i.fingerIdRef === fingerIdRef)
-            if (pid !== -1) {
-                this.clearQueue(from)
-            }
-
-            queueByFrom.push({
-                promiseFunc,
-                fingerIdRef,
-                cancelled: false,
-                resolve,
-                reject,
-            })
-
-            if (!workingByFrom) {
-                this.logger.log(`${from}: EXECUTING: ${fingerIdRef}`)
-                this.processQueue(from)
-                this.workingOnPromise.set(from, true)
-            }
-        })
     }
 
     async processQueue(from: string): Promise<void> {
