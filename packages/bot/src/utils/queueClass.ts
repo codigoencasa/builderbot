@@ -163,7 +163,7 @@ class Queue<T> {
                 for (const item of queueByFrom) {
                     item.cancelled = true
                     this.clearAndDone(from, item)
-                    // item.reject('Queue cleared')
+                    item.reject('Queue cleared')
                 }
             } finally {
                 this.queue.set(from, [])
