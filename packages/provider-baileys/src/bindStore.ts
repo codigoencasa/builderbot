@@ -1,6 +1,15 @@
 import type KeyedDB from '@adiwajshing/keyed-db'
 import type { Comparable } from '@adiwajshing/keyed-db/lib/Types'
-import { DEFAULT_CONNECTION_CONFIG, jidDecode, jidNormalizedUser, md5, proto, toNumber } from '@whiskeysockets/baileys'
+import {
+    DEFAULT_CONNECTION_CONFIG,
+    jidDecode,
+    jidNormalizedUser,
+    md5,
+    proto,
+    toNumber,
+    updateMessageWithReceipt,
+    updateMessageWithReaction,
+} from '@whiskeysockets/baileys'
 import type {
     BaileysEventEmitter,
     ConnectionState,
@@ -135,6 +144,8 @@ export type BaileysInMemoryStoreConfig = {
 type CustomaileysInMemoryStoreConfig = {
     experimentalStoreArgs: {
         messagesTypesAllowed: string[]
+        storeMessages: boolean
+        storeChats: boolean
         storeContacts: boolean
         storeLabels: boolean
     }
@@ -163,6 +174,8 @@ export default (config: bindStoreConfig) => {
         string
     >
     const messagesTypesAllowed = config.experimentalStoreArgs.messagesTypesAllowed
+    const storeChats = config.experimentalStoreArgs?.storeChats
+    const storeMessages = config.experimentalStoreArgs?.storeMessages
     const storeContacts = config.experimentalStoreArgs.storeContacts
     const storeLabels = config.experimentalStoreArgs.storeLabels
 
@@ -211,9 +224,10 @@ export default (config: bindStoreConfig) => {
                         delete messages[id]
                     }
                 }
-
-                const chatsAdded = chats.insertIfAbsent(...newChats).length
-                logger.debug({ chatsAdded }, 'synced chats')
+                if (storeChats) {
+                    const chatsAdded = chats.insertIfAbsent(...newChats).length
+                    logger.debug({ chatsAdded }, 'synced chats')
+                }
 
                 if (storeContacts) {
                     const oldContacts = contactsUpsert(newContacts)
@@ -225,16 +239,20 @@ export default (config: bindStoreConfig) => {
                     logger.debug({ deletedContacts: isLatest ? oldContacts.size : 0, newContacts }, 'synced contacts')
                 }
 
-                for (const msg of newMessages) {
-                    const jid = msg.key.remoteJid!
-                    const keys = Object.keys(msg.message)
-                    if (keys.some((key) => messagesTypesAllowed.includes(key))) {
-                        const list = assertMessageList(jid)
-                        list.upsert(msg, 'prepend')
+                if (storeMessages) {
+                    for (const msg of newMessages) {
+                        const jid = msg.key.remoteJid!
+                        if (msg.message) {
+                            const keys = Object.keys(msg.message)
+                            if (keys.some((key) => messagesTypesAllowed.includes(key))) {
+                                const list = assertMessageList(jid)
+                                list.upsert(msg, 'prepend')
+                            }
+                        }
                     }
-                }
 
-                logger.debug({ messages: newMessages.length }, 'synced messages')
+                    logger.debug({ messages: newMessages.length }, 'synced messages')
+                }
             }
         )
 
@@ -276,9 +294,11 @@ export default (config: bindStoreConfig) => {
             }
         })
         ev.on('chats.upsert', (newChats) => {
+            if (!storeChats) return
             chats.upsert(...newChats)
         })
         ev.on('chats.update', (updates) => {
+            if (!storeChats) return
             for (let update of updates) {
                 const result = chats.update(update.id!, (chat) => {
                     if (update.unreadCount! > 0) {
@@ -323,18 +343,21 @@ export default (config: bindStoreConfig) => {
             }
         })
 
-        // ev.on('presence.update', ({ id, presences: update }) => {
-        //     presences[id] = presences[id] || {}
-        //     Object.assign(presences[id], update)
-        // })
-        // ev.on('chats.delete', deletions => {
-        //     for (const item of deletions) {
-        //         if (chats.get(item)) {
-        //             chats.deleteById(item)
-        //         }
-        //     }
-        // })
+        ev.on('presence.update', ({ id, presences: update }) => {
+            presences[id] = presences[id] || {}
+            Object.assign(presences[id], update)
+        })
+
+        ev.on('chats.delete', (deletions) => {
+            if (!storeChats) return
+            for (const item of deletions) {
+                if (chats.get(item)) {
+                    chats.deleteById(item)
+                }
+            }
+        })
         ev.on('messages.upsert', ({ messages: newMessages, type }) => {
+            if (!storeMessages) return
             switch (type) {
                 case 'append':
                 case 'notify':
@@ -364,6 +387,7 @@ export default (config: bindStoreConfig) => {
             }
         })
         ev.on('messages.update', (updates) => {
+            if (!storeMessages) return
             for (const { update, key } of updates) {
                 const list = assertMessageList(jidNormalizedUser(key.remoteJid!))
                 if (update?.status) {
@@ -382,6 +406,7 @@ export default (config: bindStoreConfig) => {
             }
         })
         ev.on('messages.delete', (item) => {
+            if (!storeMessages) return
             if ('all' in item) {
                 const list = messages[item.jid]
                 list?.clear()
@@ -429,25 +454,27 @@ export default (config: bindStoreConfig) => {
         //     }
         // })
 
-        // ev.on('message-receipt.update', updates => {
-        //     for (const { key, receipt } of updates) {
-        //         const obj = messages[key.remoteJid!]
-        //         const msg = obj?.get(key.id!)
-        //         if (msg) {
-        //             updateMessageWithReceipt(msg, receipt)
-        //         }
-        //     }
-        // })
+        ev.on('message-receipt.update', (updates) => {
+            if (!storeMessages) return
+            for (const { key, receipt } of updates) {
+                const obj = messages[key.remoteJid!]
+                const msg = obj?.get(key.id!)
+                if (msg) {
+                    updateMessageWithReceipt(msg, receipt)
+                }
+            }
+        })
 
-        // ev.on('messages.reaction', (reactions) => {
-        //     for (const { key, reaction } of reactions) {
-        //         const obj = messages[key.remoteJid!]
-        //         const msg = obj?.get(key.id!)
-        //         if (msg) {
-        //             updateMessageWithReaction(msg, reaction)
-        //         }
-        //     }
-        // })
+        ev.on('messages.reaction', (reactions) => {
+            if (!storeMessages) return
+            for (const { key, reaction } of reactions) {
+                const obj = messages[key.remoteJid!]
+                const msg = obj?.get(key.id!)
+                if (msg) {
+                    updateMessageWithReaction(msg, reaction)
+                }
+            }
+        })
     }
 
     const toJSON = () => ({

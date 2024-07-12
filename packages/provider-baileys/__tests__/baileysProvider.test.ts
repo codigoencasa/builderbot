@@ -110,6 +110,8 @@ describe('#BaileysProvider', () => {
                     'pollCreationMessageV3',
                     'pollUpdateMessage',
                 ],
+                storeMessages: false,
+                storeChats: false,
                 storeContacts: false,
                 storeLabels: false,
             },

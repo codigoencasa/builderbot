@@ -10,6 +10,8 @@ export interface BaileyGlobalVendorArgs extends GlobalVendorArgs {
     experimentalStore?: boolean
     experimentalStoreArgs?: {
         messagesTypesAllowed: string[]
+        storeMessages: boolean
+        storeChats: boolean
         storeContacts: boolean
         storeLabels: boolean
     }

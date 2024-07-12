@@ -59,6 +59,8 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 'pollCreationMessageV3',
                 'pollUpdateMessage',
             ],
+            storeMessages: false,
+            storeChats: false,
             storeContacts: false,
             storeLabels: false,
         },
