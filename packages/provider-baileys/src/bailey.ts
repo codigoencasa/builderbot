@@ -673,8 +673,14 @@ class BaileysProvider extends ProviderClass<WASocket> {
         const { message } = ctx
         if (!message) return undefined
 
-        const { imageMessage, videoMessage, documentMessage, audioMessage } = message
-        return imageMessage?.mimetype ?? audioMessage?.mimetype ?? videoMessage?.mimetype ?? documentMessage?.mimetype
+        const { imageMessage, videoMessage, documentMessage, audioMessage, documentWithCaptionMessage } = message
+        return (
+            imageMessage?.mimetype ??
+            audioMessage?.mimetype ??
+            videoMessage?.mimetype ??
+            documentMessage?.mimetype ??
+            documentWithCaptionMessage?.message?.documentMessage?.mimetype
+        )
     }
 
     private generateFileName = (extension: string): string => `file-${Date.now()}.${extension}`
