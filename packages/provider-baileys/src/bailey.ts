@@ -306,6 +306,11 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     payload = { ...payload, body: utils.generateRefProvider('_event_voice_note_') }
                 }
 
+                //Detectar order message
+                if (messageCtx.message?.orderMessage) {
+                    payload = { ...payload, body: utils.generateRefProvider('_event_order_') }
+                }
+
                 if (payload.from === 'status@broadcast') return
                 payload.from = baileyCleanNumber(payload.from, true)
 
