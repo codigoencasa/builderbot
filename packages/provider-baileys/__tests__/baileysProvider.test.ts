@@ -102,6 +102,7 @@ describe('#BaileysProvider', () => {
             useBaileysStore: true,
             port: 3000,
             writeMyself: 'none',
+            experimentalStore: false,
         }
         // Act
         const baileysProvider = new BaileysProvider({})

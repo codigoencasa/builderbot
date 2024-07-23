@@ -22,15 +22,16 @@ import type {
     WASocket,
 } from './baileyWrapper'
 import {
+    makeInMemoryStore,
     DisconnectReason,
     downloadMediaMessage,
     getAggregateVotesInPollMessage,
     makeCacheableSignalKeyStore,
-    makeInMemoryStore,
     makeWASocketOther,
     proto,
     useMultiFileAuthState,
 } from './baileyWrapper'
+import bindStore from './bindStore'
 import { releaseTmp } from './releaseTmp'
 import type { BaileyGlobalVendorArgs } from './type'
 import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber, emptyDirSessions } from './utils'
@@ -50,6 +51,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
         port: 3000,
         timeRelease: 0, //21600000
         writeMyself: 'none',
+        experimentalStore: false,
     }
 
     store?: ReturnType<typeof makeInMemoryStore>
@@ -110,7 +112,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
         try {
             if (this.globalVendorArgs.useBaileysStore) {
-                this.store = makeInMemoryStore({ logger: loggerBaileys })
+                this.store = !this.globalVendorArgs.experimentalStore
+                    ? makeInMemoryStore({ logger: loggerBaileys })
+                    : bindStore({ logger: loggerBaileys })
 
                 if (this.store?.readFromFile) this.store?.readFromFile(`${NAME_DIR_SESSION}/baileys_store.json`)
 
@@ -146,7 +150,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 ...this.globalVendorArgs,
             })
 
-            this.store?.bind(sock.ev)
+            if (this?.store) this.store.bind(sock.ev)
             this.vendor = sock
             if (this.globalVendorArgs.usePairingCode && !sock.authState.creds.registered) {
                 if (this.globalVendorArgs.phoneNumber) {
@@ -674,8 +678,14 @@ class BaileysProvider extends ProviderClass<WASocket> {
         const { message } = ctx
         if (!message) return undefined
 
-        const { imageMessage, videoMessage, documentMessage, audioMessage } = message
-        return imageMessage?.mimetype ?? audioMessage?.mimetype ?? videoMessage?.mimetype ?? documentMessage?.mimetype
+        const { imageMessage, videoMessage, documentMessage, audioMessage, documentWithCaptionMessage } = message
+        return (
+            imageMessage?.mimetype ??
+            audioMessage?.mimetype ??
+            videoMessage?.mimetype ??
+            documentMessage?.mimetype ??
+            documentWithCaptionMessage?.message?.documentMessage?.mimetype
+        )
     }
 
     private generateFileName = (extension: string): string => `file-${Date.now()}.${extension}`

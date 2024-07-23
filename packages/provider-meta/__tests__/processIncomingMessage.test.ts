@@ -102,6 +102,7 @@ describe('#processIncomingMessage ', () => {
             title_button_reply: undefined,
             title_list_reply: undefined,
             pushName: 'John Doe',
+            nfm_reply: undefined,
             name: 'John Doe',
             message_id: '123',
             timestamp: expect.any(Number),

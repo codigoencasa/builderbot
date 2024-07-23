@@ -1,6 +1,6 @@
 {
   "name": "@builderbot/provider-baileys",
-  "version": "1.1.7",
+  "version": "1.1.9-alpha.1",
   "description": "Now I’m the model of a modern major general / The venerated Virginian veteran whose men are all / Lining up, to put me up on a pedestal / Writin’ letters to relatives / Embellishin’ my elegance and eloquence / But the elephant is in the room / The truth is in ya face when ya hear the British cannons go / BOOM",
   "keywords": [],
   "author": "Leifer Mendez <leifer33@gmail.com>",
@@ -58,9 +58,10 @@
     "wtfnode": "^0.9.2"
   },
   "dependencies": {
+    "@adiwajshing/keyed-db": "^0.2.4",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@types/polka": "^0.5.7",
-    "@whiskeysockets/baileys": "~6.6.0",
+    "@whiskeysockets/baileys": "~6.7.5",
     "fluent-ffmpeg": "^2.1.2",
     "fs-extra": "^11.2.0"
   },

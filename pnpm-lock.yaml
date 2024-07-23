@@ -556,6 +556,9 @@ importers:
 
     packages/provider-baileys:
         dependencies:
+            '@adiwajshing/keyed-db':
+                specifier: ^0.2.4
+                version: 0.2.4
             '@ffmpeg-installer/ffmpeg':
                 specifier: ^1.1.0
                 version: 1.1.0
@@ -563,8 +566,8 @@ importers:
                 specifier: ^0.5.7
                 version: 0.5.7
             '@whiskeysockets/baileys':
-                specifier: ~6.6.0
-                version: 6.6.0(qrcode-terminal@0.12.0)(sharp@0.33.3)
+                specifier: ~6.7.5
+                version: 6.7.5(qrcode-terminal@0.12.0)(sharp@0.33.3)
             fluent-ffmpeg:
                 specifier: ^2.1.2
                 version: 2.1.2
@@ -4012,10 +4015,10 @@ packages:
                 integrity: sha512-skAN3NIrRzMkVouyfyq3gYT/op/K9iutMZr7kr5/9fnIaCnpYdrdbv69X8PZ6y3K2J5zy5KuGno5kzH8yGLOOg==,
             }
 
-    '@whiskeysockets/baileys@6.6.0':
+    '@whiskeysockets/baileys@6.7.5':
         resolution:
             {
-                integrity: sha512-4aIPHztdLZP24Qac7mudZTMR7qIsEDQxlpCBJE4atYHFAa5tlwCGPcUy249q3aaayxYtQAwheVG42L6AkRxAwg==,
+                integrity: sha512-5kDwir6wT1BY0aIdsJXDAHoq7Gy3oYwRXj3qFoS6MOC0udzF4e2D4vTbA/LVLg7a54dtDxXj+iEnrWcaE9jQZA==,
             }
         peerDependencies:
             jimp: ^0.16.1
@@ -4422,6 +4425,12 @@ packages:
                 integrity: sha512-x1FCFnFifvYDDzTaLII71vG5uvDwgtmDTEVWAxrgeiR8VjMONcCXJx7E+USjDtHlwFmt9MysbqgF9b9Vjr6w+w==,
             }
         engines: { node: '>=4' }
+
+    async-lock@1.4.1:
+        resolution:
+            {
+                integrity: sha512-Az2ZTpuytrtqENulXwO3GGv1Bztugx6TT37NIo7imr/Qo0gsYiGtSdBa2B6fsXhTpVZDNfu1Qn3pk531e3q+nQ==,
+            }
 
     async-mutex@0.4.1:
         resolution:
@@ -13601,6 +13610,13 @@ packages:
             }
         engines: { node: '>= 0.4.0' }
 
+    uuid@10.0.0:
+        resolution:
+            {
+                integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==,
+            }
+        hasBin: true
+
     uuid@3.4.0:
         resolution:
             {
@@ -16601,10 +16617,11 @@ snapshots:
             '@wasm-audio-decoders/common': 9.0.5
             codec-parser: 2.4.3
 
-    '@whiskeysockets/baileys@6.6.0(qrcode-terminal@0.12.0)(sharp@0.33.3)':
+    '@whiskeysockets/baileys@6.7.5(qrcode-terminal@0.12.0)(sharp@0.33.3)':
         dependencies:
             '@adiwajshing/keyed-db': 0.2.4
             '@hapi/boom': 9.1.4
+            async-lock: 1.4.1
             audio-decode: 2.2.0
             axios: 1.6.8
             cache-manager: 4.0.1
@@ -16615,7 +16632,7 @@ snapshots:
             node-cache: 5.1.2
             pino: 7.11.0
             protobufjs: 7.2.6
-            uuid: 9.0.1
+            uuid: 10.0.0
             ws: 8.17.0
         optionalDependencies:
             qrcode-terminal: 0.12.0
@@ -16916,6 +16933,8 @@ snapshots:
     ast-types@0.13.4:
         dependencies:
             tslib: 2.6.2
+
+    async-lock@1.4.1: {}
 
     async-mutex@0.4.1:
         dependencies:
@@ -23315,6 +23334,8 @@ snapshots:
     util-deprecate@1.0.2: {}
 
     utils-merge@1.0.1: {}
+
+    uuid@10.0.0: {}
 
     uuid@3.4.0: {}
 
