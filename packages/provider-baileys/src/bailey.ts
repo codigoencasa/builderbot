@@ -379,6 +379,15 @@ class BaileysProvider extends ProviderClass<WASocket> {
                             })
                             const [messageCtx] = message
 
+                            if (
+                                !messageCtx ||
+                                !messageCtx.update ||
+                                !messageCtx.update.pollUpdates ||
+                                messageCtx.update.pollUpdates.length === 0
+                            ) {
+                                continue
+                            }
+
                             const messageOriginalKey = messageCtx?.update?.pollUpdates[0]?.pollUpdateMessageKey
                             const messageOriginal = await this.store?.loadMessage(
                                 messageOriginalKey.remoteJid,
