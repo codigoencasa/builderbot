@@ -173,11 +173,11 @@ export default (config: bindStoreConfig) => {
         LabelAssociation,
         string
     >
-    const messagesTypesAllowed = config.experimentalStoreArgs.messagesTypesAllowed
-    const storeChats = config.experimentalStoreArgs?.storeChats
-    const storeMessages = config.experimentalStoreArgs?.storeMessages
-    const storeContacts = config.experimentalStoreArgs.storeContacts
-    const storeLabels = config.experimentalStoreArgs.storeLabels
+    const messagesTypesAllowed = config.experimentalStoreArgs?.messagesTypesAllowed || []
+    const storeChats = config.experimentalStoreArgs?.storeChats || false
+    const storeMessages = config.experimentalStoreArgs?.storeMessages || false
+    const storeContacts = config.experimentalStoreArgs?.storeContacts || false
+    const storeLabels = config.experimentalStoreArgs?.storeLabels || false
 
     const assertMessageList = (jid: string) => {
         if (!messages[jid]) {
@@ -492,14 +492,20 @@ export default (config: bindStoreConfig) => {
         labels: { [labelId: string]: Label }
         labelAssociations: LabelAssociation[]
     }) => {
-        chats.upsert(...json.chats)
-        labelAssociations.upsert(...(json.labelAssociations || []))
-        contactsUpsert(Object.values(json.contacts))
+        chats.upsert(...(!storeChats ? [] : json.chats))
+        labelAssociations.upsert(...(!storeLabels ? [] : json.labelAssociations || []))
+        contactsUpsert(!storeContacts ? [] : Object.values(json.contacts))
         labelsUpsert(Object.values(json.labels || {}))
+
+        if (!storeMessages) return
+
         for (const jid in json.messages) {
             const list = assertMessageList(jid)
             for (const msg of json.messages[jid]) {
-                list.upsert(proto.WebMessageInfo.fromObject(msg), 'append')
+                const keys = Object.keys(msg.message)
+                if (keys.some((key) => messagesTypesAllowed.includes(key))) {
+                    list.upsert(proto.WebMessageInfo.fromObject(msg), 'append')
+                }
             }
         }
     }
