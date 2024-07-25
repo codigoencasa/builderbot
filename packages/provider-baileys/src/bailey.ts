@@ -154,8 +154,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
             this.vendor = sock
             if (this.globalVendorArgs.usePairingCode && !sock.authState.creds.registered) {
                 if (this.globalVendorArgs.phoneNumber) {
-                    await sock.waitForConnectionUpdate((update) => !!update.qr)
-                    const code = await sock.requestPairingCode(this.globalVendorArgs.phoneNumber)
+                    await sock.waitForConnectionUpdate((update: { qr: any }) => !!update.qr)
+                    const phoneNumberClean = utils.removePlus(this.globalVendorArgs.phoneNumber)
+                    const code = await sock.requestPairingCode(phoneNumberClean)
 
                     this.emit('require_action', {
                         title: '⚡⚡ ACTION REQUIRED ⚡⚡',
@@ -164,6 +165,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
                             `The token for linking is: ${code}`,
                             `Need help: https://link.codigoencasa.com/DISCORD`,
                         ],
+                        payload: { qr: null, code },
                     })
                 } else {
                     this.emit('auth_failure', [
