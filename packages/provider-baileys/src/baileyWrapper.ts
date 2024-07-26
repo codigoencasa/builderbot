@@ -12,6 +12,7 @@ import {
     PollMessageOptions,
     downloadMediaMessage,
     WAMessage,
+    MessageUpsertType,
 } from '@whiskeysockets/baileys'
 
 const makeWASocketOther = require('@whiskeysockets/baileys').default
@@ -31,4 +32,5 @@ export {
     PollMessageOptions,
     downloadMediaMessage,
     WAMessage,
+    MessageUpsertType,
 }

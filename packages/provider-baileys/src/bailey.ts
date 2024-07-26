@@ -20,6 +20,7 @@ import type {
     PollMessageOptions,
     WAMessage,
     WASocket,
+    MessageUpsertType,
 } from './baileyWrapper'
 import {
     makeInMemoryStore,
@@ -244,7 +245,8 @@ class BaileysProvider extends ProviderClass<WASocket> {
     protected busEvents = (): { event: keyof BaileysEventMap; func: (arg?: any, arg2?: any) => any }[] => [
         {
             event: 'messages.upsert',
-            func: ({ messages, type }) => {
+            func: (argFromProvider) => {
+                const { messages, type } = argFromProvider as { type: MessageUpsertType; messages: WAMessage[] }
                 if (type !== 'notify') return
                 const [messageCtx] = messages
 
@@ -265,13 +267,18 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     messageCtx.messageStubParameters[0].includes('Invalid')
                 )
                     return
-                if (messageCtx?.message?.protocolMessage?.type === 'EPHEMERAL_SETTING') return
+                // if (messageCtx?.message?.protocolMessage?.type === 'EPHEMERAL_SETTING') return
+
+                const textToBody =
+                    messageCtx?.message?.extendedTextMessage?.text ??
+                    messageCtx?.message?.conversation ??
+                    messageCtx?.message?.ephemeralMessage?.message?.conversation
 
                 // if (idWs) this.idsDuplicates.push(idWs)
 
                 let payload = {
                     ...messageCtx,
-                    body: messageCtx?.message?.extendedTextMessage?.text ?? messageCtx?.message?.conversation,
+                    body: textToBody,
                     name: messageCtx?.pushName,
                     from: messageCtx?.key?.remoteJid,
                 }
