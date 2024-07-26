@@ -6,6 +6,7 @@ import FlowClass from './io/flowClass'
 import { addAnswer } from './io/methods/addAnswer'
 import { addKeyword } from './io/methods/addKeyword'
 import { ProviderClass } from './provider/interface/provider'
+import { TestProvider } from './provider/providerMock'
 import type { GeneralArgs, TFlow } from './types'
 import * as utils from './utils'
 
@@ -55,6 +56,11 @@ const createProvider = <T = ProviderClass, K = typeof ProviderClass.prototype.gl
     return providerInstance
 }
 
+const TestTool = {
+    TestProvider,
+    TestDB: MemoryDB,
+}
+
 export {
     createBot,
     createFlow,
@@ -66,5 +72,6 @@ export {
     CoreClass,
     EVENTS,
     MemoryDB,
+    TestTool,
     utils,
 }
