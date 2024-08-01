@@ -187,40 +187,38 @@ export default (config: BaileysInMemoryStoreConfig) => {
             Object.assign(state, update)
         })
 
-        // ev.on('messaging-history.set', ({
-        //     chats: newChats,
-        //     contacts: newContacts,
-        //     messages: newMessages,
-        //     isLatest
-        // }) => {
-        //     if (isLatest) {
-        //         chats.clear()
+        ev.on(
+            'messaging-history.set',
+            ({ chats: newChats, contacts: newContacts, messages: newMessages, isLatest }) => {
+                if (isLatest) {
+                    chats.clear()
 
-        //         for (const id in messages) {
-        //             delete messages[id]
-        //         }
-        //     }
+                    for (const id in messages) {
+                        delete messages[id]
+                    }
+                }
 
-        //     const chatsAdded = chats.insertIfAbsent(...newChats).length
-        //     logger.debug({ chatsAdded }, 'synced chats')
+                const chatsAdded = chats.insertIfAbsent(...newChats).length
+                logger.debug({ chatsAdded }, 'synced chats')
 
-        //     const oldContacts = contactsUpsert(newContacts)
-        //     if (isLatest) {
-        //         for (const jid of oldContacts) {
-        //             delete contacts[jid]
-        //         }
-        //     }
+                const oldContacts = contactsUpsert(newContacts)
+                if (isLatest) {
+                    for (const jid of oldContacts) {
+                        delete contacts[jid]
+                    }
+                }
 
-        //     logger.debug({ deletedContacts: isLatest ? oldContacts.size : 0, newContacts }, 'synced contacts')
+                logger.debug({ deletedContacts: isLatest ? oldContacts.size : 0, newContacts }, 'synced contacts')
 
-        //     for (const msg of newMessages) {
-        //         const jid = msg.key.remoteJid!
-        //         const list = assertMessageList(jid)
-        //         list.upsert(msg, 'prepend')
-        //     }
+                for (const msg of newMessages) {
+                    const jid = msg.key.remoteJid!
+                    const list = assertMessageList(jid)
+                    list.upsert(msg, 'prepend')
+                }
 
-        //     logger.debug({ messages: newMessages.length }, 'synced messages')
-        // })
+                logger.debug({ messages: newMessages.length }, 'synced messages')
+            }
+        )
 
         // ev.on('contacts.upsert', contacts => {
         //     contactsUpsert(contacts)
