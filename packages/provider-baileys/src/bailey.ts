@@ -413,6 +413,16 @@ class BaileysProvider extends ProviderClass<WASocket> {
     ]
 
     /**
+     * @param {string} orderId
+     * @param {string} orderToken
+     * @example await getOrderDetails('order-id', 'order-token')
+     */
+    getOrderDetails = async (orderId: string, orderToken: string) => {
+        const orderDetails = await this.vendor.getOrderDetails(orderId, orderToken)
+        return orderDetails
+    }
+
+    /**
      * @param {string} number
      * @param {string} message
      * @example await sendMessage('+XXXXXXXXXXX', 'https://dominio.com/imagen.jpg' | 'img/imagen.jpg')
