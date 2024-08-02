@@ -272,7 +272,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 const textToBody =
                     messageCtx?.message?.extendedTextMessage?.text ??
                     messageCtx?.message?.conversation ??
-                    messageCtx?.message?.ephemeralMessage?.message?.conversation
+                    messageCtx?.message?.ephemeralMessage?.message?.extendedTextMessage?.text
 
                 // if (idWs) this.idsDuplicates.push(idWs)
 
