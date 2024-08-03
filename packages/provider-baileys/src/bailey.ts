@@ -269,10 +269,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     return
                 // if (messageCtx?.message?.protocolMessage?.type === 'EPHEMERAL_SETTING') return
 
-                const textToBody =
-                    messageCtx?.message?.extendedTextMessage?.text ??
-                    messageCtx?.message?.conversation ??
-                    messageCtx?.message?.ephemeralMessage?.message?.extendedTextMessage?.text
+              const textToBody = messageCtx?.message?.ephemeralMessage?.message?.extendedTextMessage?.text 
+                 ?? messageCtx?.message?.extendedTextMessage?.text
+                 ?? messageCtx?.message?.conversation;
 
                 // if (idWs) this.idsDuplicates.push(idWs)
 
