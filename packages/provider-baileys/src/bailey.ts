@@ -23,8 +23,6 @@ import {
     MessageUpsertType,
     isJidGroup,
     isJidBroadcast,
-} from './baileyWrapper'
-import {
     makeInMemoryStore,
     DisconnectReason,
     downloadMediaMessage,
