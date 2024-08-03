@@ -129,7 +129,7 @@ class PostgreSQLAdapter extends MemoryDB {
             console.error('🚫 Error creating the history table:', error)
             throw error
         }
-        
+
         await this.createSP()
     }
 

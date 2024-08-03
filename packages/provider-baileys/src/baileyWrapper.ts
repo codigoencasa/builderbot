@@ -13,6 +13,8 @@ import {
     downloadMediaMessage,
     WAMessage,
     MessageUpsertType,
+    isJidGroup,
+    isJidBroadcast,
 } from '@whiskeysockets/baileys'
 
 const makeWASocketOther = require('@whiskeysockets/baileys').default
@@ -33,4 +35,6 @@ export {
     downloadMediaMessage,
     WAMessage,
     MessageUpsertType,
+    isJidGroup,
+    isJidBroadcast,
 }
