@@ -100,6 +100,8 @@ describe('#BaileysProvider', () => {
             timeRelease: 0,
             phoneNumber: null,
             useBaileysStore: true,
+            groupsIgnore: false,
+            readStatus: false,
             port: 3000,
             writeMyself: 'none',
             experimentalStore: false,

@@ -275,7 +275,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
     protected busEvents = (): { event: keyof BaileysEventMap; func: (arg?: any, arg2?: any) => any }[] => [
         {
             event: 'messages.upsert',
-            func: async (argFromProvider) => {
+            func: (argFromProvider) => {
                 const list = new Set()
 
                 //TODO esto debo probarlo con laura
@@ -319,7 +319,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     // }
                     return
                 }
-                // if (messageCtx?.message?.protocolMessage?.type === 'EPHEMERAL_SETTING') return
+                // if (((messageCtx?.message?.protocolMessage?.type) as unknown as string) === 'EPHEMERAL_SETTING') return
 
                 const textToBody =
                     messageCtx?.message?.ephemeralMessage?.message?.extendedTextMessage?.text ??
