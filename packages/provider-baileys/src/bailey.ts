@@ -314,9 +314,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     messageCtx?.messageStubParameters?.length &&
                     messageCtx.messageStubParameters[0].includes('Invalid')
                 ) {
-                    if (this.globalVendorArgs.experimentalStore) {
-                        await pingMessageSync()
-                    }
+                    // if (this.globalVendorArgs.experimentalStore) {
+                    //     await pingMessageSync()
+                    // }
                     return
                 }
                 // if (messageCtx?.message?.protocolMessage?.type === 'EPHEMERAL_SETTING') return
