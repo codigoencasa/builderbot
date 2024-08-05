@@ -5,6 +5,7 @@ export interface BaileyGlobalVendorArgs extends GlobalVendorArgs {
     usePairingCode: boolean
     phoneNumber: string | null
     browser: string[]
+    experimentalSyncMessage?: string
     useBaileysStore: boolean
     timeRelease?: number
     experimentalStore?: boolean

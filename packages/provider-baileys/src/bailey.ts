@@ -55,11 +55,13 @@ class BaileysProvider extends ProviderClass<WASocket> {
         groupsIgnore: false,
         readStatus: false,
         experimentalStore: false,
+        experimentalSyncMessage: undefined,
     }
 
     store?: ReturnType<typeof makeInMemoryStore>
 
     private idsDuplicates = []
+    private mapSet = new Set()
 
     constructor(args: Partial<BaileyGlobalVendorArgs>) {
         super()
@@ -275,27 +277,24 @@ class BaileysProvider extends ProviderClass<WASocket> {
     protected busEvents = (): { event: keyof BaileysEventMap; func: (arg?: any, arg2?: any) => any }[] => [
         {
             event: 'messages.upsert',
-            func: (argFromProvider) => {
-                const list = new Set()
+            func: async (argFromProvider) => {
+                const { messages, type } = argFromProvider as { type: MessageUpsertType; messages: WAMessage[] }
+                if (type !== 'notify') return
 
-                //TODO esto debo probarlo con laura
-                const pingMessageSync = async () => {
-                    if (!list.has(payload.from)) {
+                const pingMessageSync = async (_messageCtx: proto.IWebMessageInfo) => {
+                    if (!this.mapSet.has(_messageCtx?.key?.remoteJid)) {
                         try {
-                            const response = await this.vendor.sendMessage(messageCtx?.key?.remoteJid, {
-                                text: '*...*',
-                            })
-                            list.add(payload.from)
-                            await this.vendor.sendMessage(messageCtx?.key?.remoteJid, { delete: response.key })
-                            list.delete(payload.from)
+                            this.mapSet.add(_messageCtx?.key?.remoteJid)
+                            const jid = _messageCtx?.key?.remoteJid
+
+                            await this.vendor.readMessages([_messageCtx?.key])
+                            await this.vendor.sendMessage(jid, { text: this.globalVendorArgs.experimentalSyncMessage })
                         } catch (e) {
                             logger.log(e)
                         }
                     }
                 }
 
-                const { messages, type } = argFromProvider as { type: MessageUpsertType; messages: WAMessage[] }
-                if (type !== 'notify') return
                 const [messageCtx] = messages
 
                 if (messageCtx?.messageStubParameters?.length && messageCtx.messageStubParameters[0].includes('absent'))
@@ -314,9 +313,12 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     messageCtx?.messageStubParameters?.length &&
                     messageCtx.messageStubParameters[0].includes('Invalid')
                 ) {
-                    // if (this.globalVendorArgs.experimentalStore) {
-                    //     await pingMessageSync()
-                    // }
+                    if (
+                        this.globalVendorArgs.experimentalSyncMessage &&
+                        this.globalVendorArgs.experimentalSyncMessage.length
+                    ) {
+                        await pingMessageSync(messageCtx)
+                    }
                     return
                 }
                 // if (((messageCtx?.message?.protocolMessage?.type) as unknown as string) === 'EPHEMERAL_SETTING') return
