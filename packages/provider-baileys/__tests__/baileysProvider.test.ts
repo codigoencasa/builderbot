@@ -852,20 +852,20 @@ describe('#BaileysProvider', () => {
     })
 
     describe('#busEvents - messages.upsert ', () => {
-        test('Should return undefine if the type is different from notify', () => {
+        test('Should return undefine if the type is different from notify', async () => {
             // Arrange
             const message = {
                 messages: [],
                 type: 'other',
             }
             // Act
-            const resul = provider['busEvents']()[0].func(message)
+            const resul = await provider['busEvents']()[0].func(message)
 
             // Assert
             expect(resul).toBeUndefined()
         })
 
-        test('Should return undefine if the type message is equal from EPHEMERAL_SETTING', () => {
+        test('Should return undefine if the type message is equal from EPHEMERAL_SETTING', async () => {
             // Arrange
             const message = {
                 messages: [
@@ -880,7 +880,7 @@ describe('#BaileysProvider', () => {
                 type: 'notify',
             }
             // Act
-            const resul = provider['busEvents']()[0].func(message)
+            const resul = await provider['busEvents']()[0].func(message)
 
             // Assert
             expect(resul).toBeUndefined()
