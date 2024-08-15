@@ -5,6 +5,7 @@ import ToggleTheme from '~/components/core/ToggleTheme'
 import ToggleMenu from '~/components/core/ToggleMenu'
 import { IconDiscord } from '../icons/IconDiscord'
 import { GlobalStore } from '~/contexts'
+import { TopBar } from './TopBar'
 // import { Algolia } from '~/integrations/react/docsearch'
 
 export default component$(() => {
@@ -16,11 +17,10 @@ export default component$(() => {
 
     return (
         <header
-            class={`sticky top-0 z-40 flex-none mx-auto w-full transition-all border border-b-slate-100 dark:border-b-slate-800 border-x-0 border-t-0 ${
-                storeScroll.isScrolling
+            class={`sticky top-0 z-40 flex-none mx-auto w-full transition-all border border-b-slate-100 dark:border-b-slate-800 border-x-0 border-t-0 ${storeScroll.isScrolling
                     ? ' md:bg-white/90 md:backdrop-blur-sm dark:md:bg-slate-900/90 bg-white dark:bg-slate-900'
                     : ''
-            }`}
+                }`}
             id="header"
             window:onScroll$={() => {
                 if (!storeScroll.isScrolling && window.scrollY >= 10) {
@@ -30,10 +30,12 @@ export default component$(() => {
                 }
             }}
         >
+            <TopBar />
+
             <div class="py-3 px-3 mx-auto w-full md:flex md:justify-between max-w-6xl md:px-4">
                 <div class="flex justify-between  gap-4">
                     <a class="flex items-center" href={'/'}>
-                        <Logo /> 
+                        <Logo />
                     </a>
                     <div class="flex items-center content-center">
                         {/* <Algolia /> */}
