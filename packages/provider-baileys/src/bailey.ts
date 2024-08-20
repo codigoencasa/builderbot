@@ -317,7 +317,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
                         this.globalVendorArgs.experimentalSyncMessage &&
                         this.globalVendorArgs.experimentalSyncMessage.length
                     ) {
-                        await pingMessageSync(messageCtx)
+                        if (baileyIsValidNumber(messageCtx?.key?.remoteJid)) {
+                            await pingMessageSync(messageCtx)
+                        }
                     }
                     return
                 }
@@ -393,10 +395,6 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     !['both', 'host'].includes(this.globalVendorArgs.writeMyself)
                 )
                     return
-
-                if (!baileyIsValidNumber(payload.from)) {
-                    return
-                }
 
                 if (!baileyIsValidNumber(payload.from)) {
                     return
