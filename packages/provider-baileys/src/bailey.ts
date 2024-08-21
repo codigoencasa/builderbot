@@ -87,11 +87,27 @@ class BaileysProvider extends ProviderClass<WASocket> {
     protected afterHttpServerInit(): void {}
 
     public indexHome: polka.Middleware = (req, res) => {
-        const botName = req[this.idBotName]
-        const qrPath = join(process.cwd(), `${botName}.qr.png`)
-        const fileStream = createReadStream(qrPath)
-        res.writeHead(200, { 'Content-Type': 'image/png' })
-        fileStream.pipe(res)
+        try {
+            const botName = req[this.idBotName]
+            const qrPath = join(process.cwd(), `${botName}.qr.png`)
+            const fileStream = createReadStream(qrPath)
+            res.writeHead(200, { 'Content-Type': 'image/png' })
+            fileStream.pipe(res)
+        } catch (e) {
+            res.writeHead(404, { 'Content-Type': 'text/html' })
+            res.end(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta http-equiv="refresh" content="5">
+                    <title>QR Not Ready</title>
+                </head>
+                <body>
+                    <p>QR code is not ready yet. The page will automatically refresh in 5 seconds.</p>
+                </body>
+                </html>
+            `)
+        }
     }
 
     protected getMessage = async (key: { remoteJid: string; id: string }) => {
