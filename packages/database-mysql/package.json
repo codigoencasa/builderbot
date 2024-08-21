@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/database-mysql",
-    "version": "1.2.2-alpha.3",
+    "version": "1.2.2-alpha.4",
     "description": "Esto es el conector a Mysql",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
