@@ -13,7 +13,7 @@ const historyMock: HistoryEntry = {
     keyword: 'exampleKeyword',
     answer: 'exampleAnswer',
     refSerialize: 'exampleRefSerialize',
-    phone: '123456789',
+    from: '123456789',
     options: {
         option1: 'value1',
         option2: 42,
@@ -83,7 +83,7 @@ test('getPrevByNumber - getPrevByNumber returns the previous history entry', asy
     }
 
     const result = await postgreSQLAdapter.getPrevByNumber(from)
-    assert.is(result?.phone, historyMock.phone)
+    assert.is(result?.from, historyMock.from)
     assert.is(result?.ref, historyMock.ref)
     assert.is(result?.refSerialize, undefined)
 })

@@ -3,7 +3,7 @@ export type HistoryEntry = {
     keyword?: string
     answer: string
     refSerialize: string
-    phone: string
+    from: string
     options?: Record<string, any>
 }
 
