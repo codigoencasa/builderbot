@@ -24,7 +24,7 @@ const fileTypeFromFile = async (response: IncomingMessage): Promise<{ type: stri
  * @param url - La URL del archivo a descargar
  * @returns La ruta al archivo descargado
  */
-const generalDownload = async (url: string, pathToSave?: string): Promise<string> => {
+const generalDownload = async (url: string, pathToSave?: string, headers?: Record<string, any>): Promise<string> => {
     const checkIsLocal = existsSync(url)
 
     const handleDownload = (): Promise<{ response: IncomingMessage; fullPath: string }> => {
@@ -53,7 +53,10 @@ const generalDownload = async (url: string, pathToSave?: string): Promise<string
                  * From URL
                  */
                 return new Promise((res, rej) => {
-                    handleHttp.get(url, function (response) {
+                    const options = {
+                        headers: headers ?? {},
+                    }
+                    handleHttp.get(url, options, function (response) {
                         response.pipe(file)
                         file.on('finish', async function () {
                             file.close()

@@ -187,8 +187,14 @@ class TwilioProvider extends ProviderClass<TwilioCoreVendor> implements TwilioIn
      */
     saveFile = async (ctx: Partial<TwilioRequestBody & BotContext>, options?: { path: string }): Promise<string> => {
         try {
+            const basicAuthToken = Buffer.from(
+                `${this.globalVendorArgs.accountSid}:${this.globalVendorArgs.authToken}`
+            ).toString('base64')
+            const twilioHeaders = {
+                Authorization: `Basic ${basicAuthToken}`,
+            }
             const pathFile = join(options?.path ?? tmpdir())
-            const localPath = await utils.generalDownload(`${ctx?.MediaUrl0}`, pathFile)
+            const localPath = await utils.generalDownload(`${ctx?.MediaUrl0}`, pathFile, twilioHeaders)
             return localPath
         } catch (err) {
             console.log(`[Error]:`, err)
