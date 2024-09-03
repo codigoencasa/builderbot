@@ -1,6 +1,13 @@
 import { addAnswer } from './addAnswer'
 import { toJson } from './toJson'
-import type { ActionPropertiesKeyword, CallbackFunction, TContext, TFlow } from '../../types'
+import type {
+    ActionPropertiesGeneric,
+    ActionPropertiesKeyword,
+    CallbackFunction,
+    DynamicCallback,
+    TContext,
+    TFlow,
+} from '../../types'
 import { generateRef } from '../../utils/hash'
 
 /**
@@ -49,6 +56,20 @@ const addKeyword = <P = any, B = any>(
                 return addAnswer(ctx)('__capture_only_intended__', cb, flagCb)
             }
             return addAnswer(ctx)('__call_action__', null, cb)
+        },
+        addDynamicAction: (
+            dynamicCallback: DynamicCallback,
+            cb: CallbackFunction<P, B> = () => null,
+            optionsProps: ActionPropertiesGeneric
+        ) => {
+            return addAnswer(ctx)(
+                '__dynamic_call_action__',
+                {
+                    ...optionsProps,
+                    dynamicCapture: dynamicCallback,
+                },
+                cb
+            )
         },
         toJson: toJson(ctx),
     }

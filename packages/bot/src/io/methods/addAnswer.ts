@@ -7,6 +7,9 @@ import type {
     CallbackFunction,
     Callbacks,
     ActionPropertiesKeyword,
+    TCTXExtendOptions,
+    DynamicCallback,
+    ActionPropertiesGeneric,
 } from '../../types'
 import flatObject from '../../utils/flattener'
 import { generateRef } from '../../utils/hash'
@@ -20,20 +23,22 @@ const _addAnswer =
     <P = any, B = any>(inCtx: TContext | TFlow<P, B>) =>
     (
         answer: string | string[],
-        options?: ActionPropertiesKeyword,
+        options?: ActionPropertiesKeyword & TCTXExtendOptions,
         cb?: CallbackFunction<P, B> | null,
         nested?: TFlow<P>[] | TFlow<P>
     ): TFlow<P> => {
         const lastCtx = ('ctx' in inCtx ? inCtx.ctx : inCtx) as TContext
-
         nested = nested ?? []
         answer = Array.isArray(answer) ? answer.join('\n') : answer
 
-        const getAnswerOptions = (): TCTOptions => ({
+        const getAnswerOptions = (): TCTOptions & TCTXExtendOptions => ({
             media: typeof options?.media === 'string' ? options.media : undefined,
             buttons: Array.isArray(options?.buttons) ? options.buttons : [],
             capture: typeof options?.capture === 'boolean' ? options.capture : false,
             delay: typeof options?.delay === 'number' ? options.delay : 0,
+            id: typeof options?.id === 'string' ? options.id : `id_${generateRef()}`,
+            skip_id: typeof options?.skip_id === 'string' ? options.skip_id : undefined,
+            dynamicCapture: typeof options?.dynamicCapture === 'function' ? options.dynamicCapture : undefined,
             idle: typeof options?.idle === 'number' ? options.idle : undefined,
             ref: typeof options?.ref === 'string' ? options.ref : undefined,
         })
@@ -125,6 +130,22 @@ const _addAnswer =
             ): TFlow<P, B> => {
                 if (typeof cb === 'object') return _addAnswer(ctx)('__capture_only_intended__', cb, flagCb, nested)
                 return _addAnswer(ctx)('__call_action__', null, cb as CallbackFunction<P, B>, nested)
+            },
+            addDynamicAction: (
+                dynamicCallback: DynamicCallback,
+                cb: CallbackFunction<P, B> = () => {},
+                optionsProps: ActionPropertiesGeneric,
+                nested?: TFlow<P>[] | TFlow<P>
+            ): TFlow<P, B> => {
+                return _addAnswer(ctx)(
+                    '__dynamic_call_action__',
+                    {
+                        ...optionsProps,
+                        dynamicCapture: dynamicCallback,
+                    },
+                    cb as CallbackFunction<P, B>,
+                    nested
+                )
             },
             toJson: toJson(ctx),
         }

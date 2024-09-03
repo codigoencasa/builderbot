@@ -61,6 +61,7 @@ const parseAnswers = (answers: any[]) => {
             !a.answer.includes('__call_action__') &&
             !a.answer.includes('__goto_flow__') &&
             !a.answer.includes('__end_flow__') &&
+            !a.answer.includes('__dynamic_call_action__') &&
             !a.answer.includes('__capture_only_intended__')
     )
 }

@@ -1,5 +1,6 @@
 import { toSerialize } from './methods/toSerialize'
-import type { TContext, TFlow } from '../types'
+import type { MessageContextIncoming, TContext, TFlow } from '../types'
+import { printer } from '../utils'
 import flatObject from '../utils/flattener'
 
 /**
@@ -20,13 +21,64 @@ class FlowClass {
         const mergeToJsonSerialize: Partial<TContext>[] = _flow.map((flowItem) => flowItem.toJson()).flat(2)
 
         this.flowSerialize = toSerialize(mergeToJsonSerialize)
+
+        const isSkipIdOption = this.flowSerialize.some((flow) => Boolean(flow.options.skip_id))
+        const hasDynamicCallback = this.flowSerialize.some((flow) => Boolean(flow.options.dynamicCapture !== undefined))
+
+        if (isSkipIdOption) {
+            printer(
+                'Asegurate de configurar la función `addDynamicAction` y validar `skip_id` option para controlar su efecto.',
+                '`skip_id` Option Activo, Esta opción puede interrumpir el flujo ordenado.'
+            )
+        }
+
+        if (hasDynamicCallback) {
+            if (isSkipIdOption) {
+                console.time('Configurando skips')
+
+                const idIndexMap = new Map(this.flowSerialize.map((f, idx) => [f.options?.id, idx]))
+
+                this.flowSerialize.forEach((f1, currentIndex) => {
+                    const skipId = f1.options?.skip_id
+                    if (skipId) {
+                        const pointIndex = idIndexMap.get(skipId)
+                        if (pointIndex && pointIndex > currentIndex) {
+                            for (let i = currentIndex + 1; i < pointIndex; i++) {
+                                const f = this.flowSerialize[i]
+
+                                if (f.answer !== '__capture_only_intended__' && f.options.id === skipId) {
+                                    break
+                                }
+
+                                if (!f.options?.dynamicCapture) {
+                                    f.options.dynamicCapture = async (ctx: any) => Boolean(ctx?.preDynamic)
+                                }
+                            }
+                        }
+                    }
+                })
+
+                console.timeEnd('Configurando skips')
+            }
+        }
     }
 
-    find(keyOrWord: string, symbol: boolean = false, overFlow: TContext[] | null = null): TContext[] {
+    async find(
+        keyOrWord: string | { keyOrWord: string; messageCtxInComing: MessageContextIncoming },
+        symbol: boolean = false,
+        overFlow: TContext[] | null = null
+    ): Promise<TContext[]> {
         let capture = false
-        const messages: any[] = []
+        let messages: TContext[] = []
         let refSymbol: TContext | null = null
         overFlow = overFlow ?? this.flowSerialize
+
+        let messageCtxInComing: MessageContextIncoming = undefined
+
+        if (typeof keyOrWord !== 'string') {
+            messageCtxInComing = keyOrWord.messageCtxInComing
+            keyOrWord = keyOrWord.keyOrWord
+        }
 
         const mapSensitive = (str: string | string[], mapOptions: { sensitive: boolean; regex: boolean }): RegExp => {
             if (mapOptions.regex) return new Function(`return ${str}`)()
@@ -40,8 +92,9 @@ class FlowClass {
             return new RegExp(pattern, regexSensitive)
         }
 
-        const findIn = (keyOrWord: string, symbol: boolean, flow: TContext[]): void => {
+        const findIn = async (keyOrWord: string, symbol: boolean, flow: TContext[]): Promise<void> => {
             capture = refSymbol?.options?.capture || false
+
             if (capture) return
 
             if (symbol) {
@@ -57,7 +110,32 @@ class FlowClass {
                 if (refSymbol?.ref) findIn(refSymbol.ref, true, flow)
             }
         }
-        findIn(keyOrWord, symbol, overFlow)
+        await findIn(keyOrWord, symbol, overFlow)
+
+        const hasDynamicMessages = messages.some((msg) => !!(typeof msg.options.dynamicCapture !== 'undefined'))
+
+        if (hasDynamicMessages) {
+            const filteredMessages = []
+
+            for (const msg of messages) {
+                if (msg?.options?.dynamicCapture) {
+                    const ispassed = await msg.options.dynamicCapture(messageCtxInComing)
+                    // @ts-expect-error "preDynamic is not present into legal interface"
+                    messageCtxInComing.preDynamic = ispassed
+
+                    if (ispassed) {
+                        filteredMessages.push(msg)
+                    }
+                } else {
+                    filteredMessages.push(msg)
+                }
+            }
+
+            messages = filteredMessages
+
+            return messages
+        }
+
         return messages
     }
 

@@ -64,7 +64,7 @@ export type ActionPropertiesKeyword = {
     delay?: number
     regex?: boolean
     sensitive?: boolean
-}
+} & TCTXExtendOptions
 
 /**
  * @typedef ActionPropertiesGeneric
@@ -197,6 +197,13 @@ export interface TCTXoptions extends ActionPropertiesKeyword {
     answer?: string
 }
 
+export interface TCTXExtendOptions {
+    dynamicCapture?: (ctx: MessageContextIncoming) => Promise<boolean>
+    id?: string
+    skip_id?: string
+}
+export type DynamicCallback = (ctx: MessageContextIncoming) => Promise<boolean>
+
 /**
  * @typedef Callbacks
  * @type {{ [key: string]: () => void }}
@@ -222,7 +229,7 @@ export interface TContext {
     answer?: string | string[]
     refSerialize?: string
     endFlow?: boolean
-    options: TCTXoptions
+    options: TCTXoptions & TCTXExtendOptions
     callbacks?: Callbacks
     json?: TContext[]
     ctx?: TContext
@@ -248,6 +255,12 @@ export interface TFlow<P = any, B = any> {
     addAction: (
         actionProps: ActionPropertiesGeneric | CallbackFunction<P, B>,
         cb?: CallbackFunction<P, B>,
+        nested?: TFlow<P, B> | TFlow<P, B>[] | null
+    ) => TFlow<P, B>
+    addDynamicAction: (
+        dynamicCallback: DynamicCallback,
+        cb: CallbackFunction<P, B>,
+        optionsProps: ActionPropertiesGeneric,
         nested?: TFlow<P, B> | TFlow<P, B>[] | null
     ) => TFlow<P, B>
     toJson: () => TContext[]

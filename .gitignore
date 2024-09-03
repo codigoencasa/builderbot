@@ -67,6 +67,9 @@ nonExistingFilePath
 !.gitignore
 /packages/provider-web-whatsapp/bot.qr.png
 /packages/bot/__mock__/*.opus
+/packages/bot/__mock__/experimental
 /packages/provider-baileys/*_sessions
 /packages/provider-baileys/*.png
 /packages/provider-web-whatsapp/.wwebjs_auth/*
+.qdrant*
+/**/mock*

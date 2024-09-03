@@ -320,9 +320,10 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             try {
                 const currentPrev = await this.database.getPrevByNumber(from)
                 if (!currentPrev?.keyword) return
-                let nextFlow = this.flowClass.find(refToContinue?.ref, true) || []
+                let nextFlow =
+                    (await this.flowClass.find({ keyOrWord: refToContinue?.ref, messageCtxInComing }, true)) || []
                 if (initRef && !initRef?.idleFallBack) {
-                    nextFlow = this.flowClass.find(initRef?.ref, true) || []
+                    nextFlow = (await this.flowClass.find({ keyOrWord: initRef?.ref, messageCtxInComing }, true)) || []
                 }
 
                 const getContinueIndex = nextFlow.findIndex((msg) => msg.refSerialize === currentPrev?.refSerialize)
@@ -337,7 +338,11 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                     const refToContinueChild = this.flowClass.getRefToContinueChild(currentPrev?.keyword)
                     const flowStandaloneChild = this.flowClass.getFlowsChild()
                     const nextChildMessages =
-                        this.flowClass.find(refToContinueChild?.ref, true, flowStandaloneChild) || []
+                        (await this.flowClass.find(
+                            { keyOrWord: refToContinueChild?.ref, messageCtxInComing },
+                            true,
+                            flowStandaloneChild
+                        )) || []
 
                     if (nextChildMessages.length) {
                         return exportFunctionsSend(() => sendFlow(nextChildMessages, from, { prev: undefined }))
@@ -397,7 +402,11 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
 
                 const flowParentId = flowTree[step]
 
-                const parseListMsg = this.flowClass.find(flowParentId?.ref, true, flowTree)
+                const parseListMsg = await this.flowClass.find(
+                    { keyOrWord: flowParentId?.ref, messageCtxInComing },
+                    true,
+                    flowTree
+                )
 
                 for (const msg of parseListMsg) {
                     const msgParse = this.flowClass.findSerializeByRef(msg?.ref)
@@ -610,7 +619,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                 ...nestedRef.find((r: { refSerialize: string }) => r.refSerialize === f.refSerialize),
             }))
 
-            msgToSend = this.flowClass.find(body, false, flowStandalone) || []
+            msgToSend = (await this.flowClass.find(body, false, flowStandalone)) || []
             return exportFunctionsSend(() => sendFlow(msgToSend, from))
         }
 
@@ -619,42 +628,36 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             const typeCapture = typeof prevMsg?.options?.capture
 
             if (typeCapture === 'boolean' && fallBackFlag) {
-                msgToSend = this.flowClass.find(refToContinue?.ref, true) || []
+                msgToSend =
+                    (await this.flowClass.find({ keyOrWord: refToContinue?.ref, messageCtxInComing }, true)) || []
                 return exportFunctionsSend(() => sendFlow(msgToSend, from, { forceQueue: true }))
             }
         }
 
-        msgToSend = this.flowClass.find(body) || []
+        msgToSend = (await this.flowClass.find({ keyOrWord: body, messageCtxInComing })) || []
 
         if (msgToSend.length) {
             return exportFunctionsSend(() => sendFlow(msgToSend, from))
         }
 
         if (!prevMsg?.options?.capture) {
-            msgToSend = this.flowClass.find(this.generalArgs.listEvents.WELCOME) || []
-
-            if (LIST_REGEX.REGEX_EVENT_LOCATION.test(body)) {
-                msgToSend = this.flowClass.find(this.generalArgs.listEvents.LOCATION) || []
+            msgToSend =
+                (await this.flowClass.find({ keyOrWord: this.generalArgs.listEvents.WELCOME, messageCtxInComing })) ||
+                []
+            const enumerableEvents = {
+                [this.generalArgs.listEvents.LOCATION]: LIST_REGEX.REGEX_EVENT_LOCATION,
+                [this.generalArgs.listEvents.MEDIA]: LIST_REGEX.REGEX_EVENT_MEDIA,
+                [this.generalArgs.listEvents.DOCUMENT]: LIST_REGEX.REGEX_EVENT_DOCUMENT,
+                [this.generalArgs.listEvents.VOICE_NOTE]: LIST_REGEX.REGEX_EVENT_VOICE_NOTE,
+                [this.generalArgs.listEvents.ORDER]: LIST_REGEX.REGEX_EVENT_ORDER,
+                [this.generalArgs.listEvents.TEMPLATE]: LIST_REGEX.REGEX_EVENT_TEMPLATE,
             }
 
-            if (LIST_REGEX.REGEX_EVENT_MEDIA.test(body)) {
-                msgToSend = this.flowClass.find(this.generalArgs.listEvents.MEDIA) || []
-            }
-
-            if (LIST_REGEX.REGEX_EVENT_DOCUMENT.test(body)) {
-                msgToSend = this.flowClass.find(this.generalArgs.listEvents.DOCUMENT) || []
-            }
-
-            if (LIST_REGEX.REGEX_EVENT_VOICE_NOTE.test(body)) {
-                msgToSend = this.flowClass.find(this.generalArgs.listEvents.VOICE_NOTE) || []
-            }
-
-            if (LIST_REGEX.REGEX_EVENT_ORDER.test(body)) {
-                msgToSend = this.flowClass.find(this.generalArgs.listEvents.ORDER) || []
-            }
-
-            if (LIST_REGEX.REGEX_EVENT_TEMPLATE.test(body)) {
-                msgToSend = this.flowClass.find(this.generalArgs.listEvents.TEMPLATE) || []
+            for (const [ev, regex] of Object.entries(enumerableEvents)) {
+                if (regex.test(body)) {
+                    msgToSend = (await this.flowClass.find({ keyOrWord: ev, messageCtxInComing })) || []
+                    break
+                }
             }
         }
 
@@ -673,11 +676,11 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             if (
                 answer &&
                 answer.length &&
-                answer !== '__call_action__' &&
-                answer !== '__goto_flow__' &&
-                answer !== '__end_flow__'
+                ['__call_action__', '__dynamic_call_action__', '__goto_flow__', '__end_flow__'].every(
+                    (ev) => ev !== answer
+                )
             ) {
-                if (answer !== '__capture_only_intended__') {
+                if ('__capture_only_intended__' !== answer) {
                     await this.provider.sendMessage(numberOrId, answer, ctxMessage)
                     this.emit('send_message', { ...ctxMessage, from: numberOrId, answer })
                 }

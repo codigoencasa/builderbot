@@ -10,19 +10,19 @@ test('[FlowClass] Probando instanciamiento de clase', () => {
     assert.instance(flowClass, FlowClass)
 })
 
-test('[FlowClass] Probando find', () => {
+test('[FlowClass] Probando find', async () => {
     const MOCK_FLOW = addKeyword('hola').addAnswer('Buenas!')
     const flowClass = new FlowClass([MOCK_FLOW])
-    const result = flowClass.find('hola')
+    const result = await flowClass.find('hola')
     assert.equal(result[0].answer, 'Buenas!')
 })
 
-test('[FlowClass] Probando findBySerialize', () => {
+test('[FlowClass] Probando findBySerialize', async () => {
     const MOCK_FLOW = addKeyword('hola').addAnswer('Buenas!')
     const flowClass = new FlowClass([MOCK_FLOW])
-    const result = flowClass.find('hola')
-    const resultSerialize = flowClass.findBySerialize(result[0].refSerialize)
-    assert.equal(resultSerialize.answer, 'Buenas!')
+    const result = await flowClass.find('hola')
+    const resultSerialize = flowClass.findBySerialize(result[0].refSerialize!)
+    assert.equal(resultSerialize?.answer, 'Buenas!')
 })
 
 test('[FlowClass] Probando findIndexByRef', () => {
@@ -38,7 +38,7 @@ test('[FlowClass] Probando findSerializeByRef', () => {
     const flowClass = new FlowClass([MOCK_FLOW])
     const ref = flowClass.flowSerialize[0].ref
     const context = flowClass.findSerializeByRef(ref)
-    assert.equal(context.keyword, 'hola')
+    assert.equal(context?.keyword, 'hola')
 })
 
 test('[FlowClass] Probando getRefToContinueChild', () => {
@@ -46,7 +46,7 @@ test('[FlowClass] Probando getRefToContinueChild', () => {
     const MOCK_FLOW = addKeyword('hola').addAnswer('Buenas!', { ref: '1000' }, null, [MOCK_FLOW_CHILD])
     const flowClass = new FlowClass([MOCK_FLOW])
     const context = flowClass.getRefToContinueChild('a243678f1e3e31a35c43b03c53503ef7')
-    assert.equal(context.keyword, 'ping')
+    assert.equal(context?.keyword, 'ping')
 })
 
 test('[FlowClass] Probando getFlowsChild', () => {
