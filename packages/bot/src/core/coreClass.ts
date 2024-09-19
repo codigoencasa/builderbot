@@ -530,6 +530,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             const argsCb = {
                 database,
                 provider,
+                flows: this.flowClass.flowRaw,
                 state,
                 globalState,
                 extensions,

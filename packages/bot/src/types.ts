@@ -153,6 +153,7 @@ export type BotMethods<P = {}, B = {}> = {
     fallBack: (message?: string) => void
     provider: P
     database: B
+    flows: TFlow<P, B>[]
     /** @deprecated */
     inRef: string
     /** @deprecated */
