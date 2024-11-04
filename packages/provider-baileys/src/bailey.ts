@@ -138,17 +138,32 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     : bindStore({ logger: loggerBaileys })
 
                 if (this.store?.readFromFile) this.store?.readFromFile(`${NAME_DIR_SESSION}/baileys_store.json`)
-
-                setInterval(() => {
+                
+                    /*
+                    Se crean dos intervalos para optimizar el uso del procesador y de la memoria RAM.
+                    El primer intervalo verifica cada 10 segundos si los contactos ya se han registrado; 
+                    si no, los guarda y luego se cierra. 
+                    El segundo intervalo guarda los contactos cada 30 minutos.
+                    */
                     const path = `${NAME_DIR_SESSION}/baileys_store.json`
-                    if (existsSync(NAME_DIR_SESSION)) {
-                        this.store?.writeToFile(path)
-                    }
-                }, 10_000)
+                    const intervalId = setInterval(() => {
+                        
+                        if (existsSync(NAME_DIR_SESSION)) {
+                            this.store?.writeToFile(path)
+                            if (this.store?.chats.all().length > 0) 
+                            {
+                                clearInterval(intervalId);
+                            }
+                        }
+                    }, 10_000)
+                    
+                    setInterval(() => {
+                        this.store.writeToFile(path);
+                    }, 1_800_000);
 
-                if (this.globalVendorArgs.timeRelease > 0) {
-                    await releaseTmp(NAME_DIR_SESSION, this.globalVendorArgs.timeRelease)
-                }
+                    if (this.globalVendorArgs.timeRelease > 0) {
+                        await releaseTmp(NAME_DIR_SESSION, this.globalVendorArgs.timeRelease)
+                    }
             }
         } catch (e) {
             logger.log(e)
