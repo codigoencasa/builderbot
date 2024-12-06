@@ -1,9 +1,9 @@
 {
-  "name": "@builderbot/provider-baileys",
+  "name": "@builderbot/provider-telegram",
   "version": "1.2.3-alpha.1",
-  "description": "Now I’m the model of a modern major general / The venerated Virginian veteran whose men are all / Lining up, to put me up on a pedestal / Writin’ letters to relatives / Embellishin’ my elegance and eloquence / But the elephant is in the room / The truth is in ya face when ya hear the British cannons go / BOOM",
+  "description": "Provider for Telegram",
   "keywords": [],
-  "author": "Leifer Mendez <leifer33@gmail.com>",
+  "author": "",
   "license": "ISC",
   "main": "dist/index.cjs",
   "types": "dist/index.d.ts",
@@ -33,7 +33,7 @@
     "@builderbot/bot": "workspace:^",
     "@hapi/boom": "^10.0.1",
     "@jest/globals": "^29.7.0",
-    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-commonjs": "^25.0.8",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@types/cors": "^2.8.17",
@@ -42,28 +42,10 @@
     "@types/node": "^20.12.3",
     "@types/qr-image": "^3.2.9",
     "@types/sinon": "^17.0.3",
-    "body-parser": "^1.20.2",
-    "cors": "^2.8.5",
-    "jest": "^29.7.0",
-    "mime-types": "^2.1.35",
-    "pino": "^7.11.0",
-    "polka": "^0.5.2",
-    "qr-image": "^3.2.0",
-    "rimraf": "^5.0.5",
-    "rollup-plugin-typescript2": "^0.36.0",
-    "sinon": "^17.0.1",
-    "ts-jest": "^29.1.2",
-    "ts-node": "^10.9.2",
-    "wa-sticker-formatter": "^4.4.4",
-    "wtfnode": "^0.9.2"
+    "rollup-plugin-typescript2": "^0.36.0"
   },
   "dependencies": {
-    "@adiwajshing/keyed-db": "^0.2.4",
-    "@ffmpeg-installer/ffmpeg": "^1.1.0",
-    "@types/polka": "^0.5.7",
-    "@whiskeysockets/baileys": "~6.7.9",
-    "fluent-ffmpeg": "^2.1.2",
-    "fs-extra": "^11.2.0"
+    "telegram": "^2.23.10"
   },
   "gitHead": "f21e49621dffad2a1226aecea535668016f07b14"
 }

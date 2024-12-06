@@ -128,13 +128,13 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             return 'ERROR'
         }
     }
-    saveBuffer = async (ctx: Partial<Message & BotContext>, options: SaveFileOptions = {}): Promise<string> => {
+    saveBuffer = async (ctx: Partial<Message & BotContext>, options: SaveFileOptions = {}): Promise<Buffer> => {
         try {
             const { buffer } = await downloadFile(ctx?.url, this.globalVendorArgs.jwtToken)
             return buffer
         } catch (err) {
             console.log(`[Error]:`, err.message)
-            return 'ERROR'
+            return Buffer.from('')
         }
     }
 
@@ -627,8 +627,8 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         return this.sendMessageMeta(body)
     }
 
-    requestLocation =async (to, bodyText) => {
-        to = parseMetaNumber(to);
+    requestLocation = async (to, bodyText) => {
+        to = parseMetaNumber(to)
         const body = {
             messaging_product: 'whatsapp',
             recipient_type: 'individual',
@@ -644,7 +644,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
                 },
             },
         }
-        return this.sendMessageMeta(body);
+        return this.sendMessageMeta(body)
     }
 
     sendLocation = async (to: string, localization: Localization) => {

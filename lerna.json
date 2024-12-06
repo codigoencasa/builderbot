@@ -14,6 +14,7 @@
     "packages/provider-twilio",
     "packages/provider-web-whatsapp",
     "packages/provider-wppconnect",
+    "packages/provider-telegram",
     "packages/provider-venom",
     "packages/contexts-dialogflow",
     "packages/contexts-dialogflow-cx"

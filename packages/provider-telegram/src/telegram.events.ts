@@ -1,4 +1,4 @@
-import { EventEmitterClass, utils } from '@builderbot/bot'
+import { EventEmitterClass } from '@builderbot/bot'
 import { ProviderEventTypes } from '@builderbot/bot/dist/types'
 import { Api } from 'telegram'
 import { NewMessageEvent } from 'telegram/events'
@@ -17,7 +17,8 @@ export class TelegramEvents extends EventEmitterClass<ProviderEventTypes> {
             body: payload.message.message,
             caption: payload.message.message,
             from: payload.chatId.toString(),
-            name: `${firstName} - @${username}`,
+            name: `${firstName}`,
+            username,
             hasFile,
             isVoice,
             mimeType,

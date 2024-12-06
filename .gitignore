@@ -68,5 +68,6 @@ nonExistingFilePath
 /packages/provider-web-whatsapp/bot.qr.png
 /packages/bot/__mock__/*.opus
 /packages/provider-baileys/*_sessions
+/packages/provider-telegram/*_sessions
 /packages/provider-baileys/*.png
 /packages/provider-web-whatsapp/.wwebjs_auth/*

@@ -1,47 +1,45 @@
-import 'dotenv/config'
 import { ProviderClass, utils } from '@builderbot/bot'
+
 import { BotContext, GlobalVendorArgs, SendOptions } from '@builderbot/bot/dist/types'
-import { exec } from 'child_process'
-import * as fs from 'fs'
-import util from 'node:util'
-import * as path from 'path'
-import readline from 'readline'
+import { TelegramEvents } from './telegram.events'
 import { TelegramClient, Api } from 'telegram'
+import { StringSession } from 'telegram/sessions/index.js'
+import { NewMessage, NewMessageEvent } from 'telegram/events/index.js'
+import fs from 'fs'
+import path, { join } from 'path'
+import { TotalList } from 'telegram/Helpers'
 import { IterDialogsParams } from 'telegram/client/dialogs'
 import { EntityLike } from 'telegram/define'
-import { NewMessage, NewMessageEvent } from 'telegram/events/index.js'
-import { TotalList } from 'telegram/Helpers'
-import { StringSession } from 'telegram/sessions/index.js'
-import * as tslib from 'tslib'
 
-import { TelegramEvents } from './telegram.events'
-
-const execSync = util.promisify(exec)
-
-type TelegramAccountArgs = GlobalVendorArgs & {
+export type TelegramProviderConfig = GlobalVendorArgs & {
     apiId: number
     apiHash: string
+    getCode: () => Promise<string>
+    apiNumber?: string
+    apiPassword?: string
+    apiCode?: string
     telegramJwt?: string
 }
 
-class TelegramAccountProvider extends ProviderClass<TelegramEvents> {
-    globalVendorArgs: TelegramAccountArgs = {
+class TelegramProvider extends ProviderClass<TelegramEvents> {
+    globalVendorArgs: TelegramProviderConfig = {
         name: 'telegram-bot',
         port: 3000,
         apiHash: undefined,
         apiId: undefined,
+        getCode: undefined,
         telegramJwt: undefined,
     }
     client: TelegramClient
-    sessionPath = 'tmp/telegram'
-    sessionFileName = 'sessionString.txt'
-    sessionFilePath = path.join(this.sessionPath, this.sessionFileName)
+    sessionPath = join(process.cwd(), `${this.globalVendorArgs.name}_sessions`)
+    sessionFileName = 'session.txt'
+    sessionFilePath = join(this.sessionPath, this.sessionFileName)
 
-    constructor(args?: TelegramAccountArgs) {
+    constructor(args?: TelegramProviderConfig) {
         super()
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
         if (!fs.existsSync(this.sessionPath)) {
-            throw new Error(`Session path "${this.sessionPath}" does not exist`)
+            fs.mkdirSync(this.sessionPath, { recursive: true })
         }
         if (!this.globalVendorArgs.apiId) {
             throw new Error('Must provide Telegram API ID. Visit: https://my.telegram.org/auth?to=apps')
@@ -51,7 +49,7 @@ class TelegramAccountProvider extends ProviderClass<TelegramEvents> {
         }
 
         const stringSession = this._getStringSession()
-        this.client = new TelegramClient(stringSession, args.apiId, args.apiHash, {
+        this.client = new TelegramClient(stringSession, +args.apiId, args.apiHash, {
             connectionRetries: 5,
         })
     }
@@ -65,12 +63,7 @@ class TelegramAccountProvider extends ProviderClass<TelegramEvents> {
         return new StringSession(stringSessionRaw)
     }
 
-    async sendMessage<K = any>(
-        userId: string,
-        message: string,
-        // args?: { buttons?: any; mediaURL?: string; schedule?: number }
-        args?: SendOptions
-    ): Promise<K> {
+    async sendMessage<K = any>(userId: string, message: string, args?: SendOptions): Promise<K> {
         console.info('[INFO]: Sending message to', userId)
         // if (userId != "1975336063") return;
         if (args?.buttons?.length) return await this.sendButtons(userId, message, args?.buttons)
@@ -133,7 +126,7 @@ class TelegramAccountProvider extends ProviderClass<TelegramEvents> {
         const buffer = await res.arrayBuffer()
         const mimeType = res.headers.get('content-type')
 
-        const tmpDir = `${process.cwd()}/tmp/media`
+        const tmpDir = join(process.cwd(), 'tmp', 'media')
         const fileExtension = mimeType.split('/')[1]
         const fileName: string = `${Date.now().toString()}-${chatId}.${fileExtension}`
         let filePath = path.join(tmpDir, fileName)
@@ -146,7 +139,9 @@ class TelegramAccountProvider extends ProviderClass<TelegramEvents> {
             videoNote = true
             const oldFilePath = filePath
             filePath = path.join(tmpDir, `new_${fileName}`)
-            await execSync(`ffmpeg -i ${oldFilePath} -filter:v "crop=384:384" ${filePath}`)
+            // await execSync(
+            //     `ffmpeg -i ${oldFilePath} -filter:v "crop=384:384" ${filePath}`
+            // );
             // if (stderr) console.error(stderr);
             fs.unlinkSync(oldFilePath)
         }
@@ -184,16 +179,18 @@ class TelegramAccountProvider extends ProviderClass<TelegramEvents> {
         const vendor = new TelegramEvents()
         this.vendor = vendor
 
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout,
-        })
+        console.log(`[phoneNumber] ${this.globalVendorArgs.apiNumber}`)
+        console.log(`[phoneCode] ${this.globalVendorArgs.apiPassword}`)
+        console.log(`[password] ${this.globalVendorArgs.apiPassword}`)
 
         await this.client.start({
-            phoneNumber: async () => new Promise((resolve) => rl.question('Please enter your number: ', resolve)),
-            password: async () => new Promise((resolve) => rl.question('Please enter your 2FA code: ', resolve)),
-            phoneCode: async () =>
-                new Promise((resolve) => rl.question('Please enter the code you received: ', resolve)),
+            phoneNumber: async () => this.globalVendorArgs.apiNumber,
+            phoneCode: async () => {
+                const code = await this.globalVendorArgs.getCode()
+                await utils.delay(10000)
+                return new Promise((resolve) => resolve(code))
+            },
+            password: async () => this.globalVendorArgs.apiPassword || '',
             onError: (err) => console.log(err),
         })
 
@@ -201,10 +198,8 @@ class TelegramAccountProvider extends ProviderClass<TelegramEvents> {
             const stringSessionRaw = String(this.client.session.save())
             fs.writeFileSync(this.sessionFilePath, stringSessionRaw)
         }
-        console.log('You should now be connected.')
 
-        // await this.client.sendMessage("me", { message: `Bot enabled!!!` });
-        this.emit('provider_ready')
+        this.emit('ready')
 
         this.client.addEventHandler(this.ctrlInMsg, new NewMessage({ incoming: true }))
 
@@ -224,7 +219,7 @@ class TelegramAccountProvider extends ProviderClass<TelegramEvents> {
             const fileExtension = mimeType.substring(mimeType.indexOf('/') + 1)
 
             const fileName: string = `${Date.now().toString()}-${ctx.from}.${fileExtension}`
-            const filePath = path.join(options.path, fileName)
+            const filePath = join(options.path, fileName)
             const buffer = await this.client.downloadMedia(message)
             fs.writeFileSync(filePath, buffer)
             return filePath
@@ -234,4 +229,4 @@ class TelegramAccountProvider extends ProviderClass<TelegramEvents> {
     }
 }
 
-export { TelegramAccountProvider }
+export { TelegramProvider }
