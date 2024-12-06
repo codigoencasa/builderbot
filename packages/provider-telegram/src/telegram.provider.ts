@@ -1,15 +1,15 @@
 import { ProviderClass, utils } from '@builderbot/bot'
-
 import { BotContext, GlobalVendorArgs, SendOptions } from '@builderbot/bot/dist/types'
-import { TelegramEvents } from './telegram.events'
-import { TelegramClient, Api } from 'telegram'
-import { StringSession } from 'telegram/sessions/index.js'
-import { NewMessage, NewMessageEvent } from 'telegram/events/index.js'
 import fs from 'fs'
 import path, { join } from 'path'
-import { TotalList } from 'telegram/Helpers'
+import { TelegramClient, Api } from 'telegram'
 import { IterDialogsParams } from 'telegram/client/dialogs'
 import { EntityLike } from 'telegram/define'
+import { NewMessage, NewMessageEvent } from 'telegram/events/index.js'
+import { TotalList } from 'telegram/Helpers'
+import { StringSession } from 'telegram/sessions/index.js'
+
+import { TelegramEvents } from './telegram.events'
 
 export type TelegramProviderConfig = GlobalVendorArgs & {
     apiId: number
