@@ -1,6 +1,6 @@
 import type KeyedDB from '@adiwajshing/keyed-db'
 import type { Comparable } from '@adiwajshing/keyed-db/lib/Types'
-import { DEFAULT_CONNECTION_CONFIG, jidNormalizedUser, proto, toNumber } from '@whiskeysockets/baileys'
+import { DEFAULT_CONNECTION_CONFIG, jidNormalizedUser, proto, toNumber } from '@builderbot/core-baileys'
 import type {
     BaileysEventEmitter,
     ConnectionState,
@@ -12,11 +12,11 @@ import type {
     Chat,
     WAMessage,
     makeWASocket,
-} from '@whiskeysockets/baileys'
-import { ObjectRepository } from '@whiskeysockets/baileys/lib/Store/object-repository'
-import type { Label } from '@whiskeysockets/baileys/lib/Types/Label'
-import type { LabelAssociation, MessageLabelAssociation } from '@whiskeysockets/baileys/lib/Types/LabelAssociation'
-import { LabelAssociationType } from '@whiskeysockets/baileys/lib/Types/LabelAssociation'
+} from '@builderbot/core-baileys'
+import { ObjectRepository } from '@builderbot/core-baileys/lib/Store/object-repository'
+import type { Label } from '@builderbot/core-baileys/lib/Types/Label'
+import type { LabelAssociation, MessageLabelAssociation } from '@builderbot/core-baileys/lib/Types/LabelAssociation'
+import { LabelAssociationType } from '@builderbot/core-baileys/lib/Types/LabelAssociation'
 import type { Logger } from 'pino'
 
 type WASocket = ReturnType<typeof makeWASocket>
