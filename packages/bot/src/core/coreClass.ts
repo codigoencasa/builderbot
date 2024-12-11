@@ -657,6 +657,10 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             if (LIST_REGEX.REGEX_EVENT_TEMPLATE.test(body)) {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.TEMPLATE) || []
             }
+
+            if (LIST_REGEX.REGEX_EVENT_CALL.test(body)) {
+                msgToSend = this.flowClass.find(this.generalArgs.listEvents.CALL) || []
+            }
         }
 
         return exportFunctionsSend(() => sendFlow(msgToSend, from, { forceQueue: true }))

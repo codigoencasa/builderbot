@@ -1,4 +1,5 @@
 import { eventAction } from './eventAction'
+import { eventCall, REGEX_EVENT_CALL } from './eventCall'
 import { REGEX_EVENT_CUSTOM } from './eventCustom'
 import { eventDocument, REGEX_EVENT_DOCUMENT } from './eventDocument'
 import { eventLocation, REGEX_EVENT_LOCATION } from './eventLocation'
@@ -21,6 +22,7 @@ const LIST_ALL = {
     ACTION: eventAction(),
     ORDER: eventOrder(),
     TEMPLATE: eventTemplate(),
+    CALL: eventCall(),
 }
 
 const LIST_REGEX: EventFunctionRegex = {
@@ -31,6 +33,7 @@ const LIST_REGEX: EventFunctionRegex = {
     REGEX_EVENT_ORDER,
     REGEX_EVENT_TEMPLATE,
     REGEX_EVENT_CUSTOM,
+    REGEX_EVENT_CALL,
 }
 
 export { LIST_ALL, LIST_REGEX }

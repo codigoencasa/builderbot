@@ -5,11 +5,11 @@ import { IStickerOptions } from 'wa-sticker-formatter'
 import fs from 'fs'
 import mime from 'mime-types'
 import { utils } from '@builderbot/bot'
-import { makeInMemoryStore, useMultiFileAuthState } from '@whiskeysockets/baileys'
+import { makeInMemoryStore, useMultiFileAuthState } from '@builderbot/core-baileys'
 
 const phoneNumber = '+123456789'
 
-jest.mock('@whiskeysockets/baileys', () => ({
+jest.mock('@builderbot/core-baileys', () => ({
     downloadMediaMessage: jest.fn(),
     proto: {
         Message: {
