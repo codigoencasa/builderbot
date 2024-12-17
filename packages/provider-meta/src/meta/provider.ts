@@ -165,7 +165,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         },
     ]
 
-    sendImage = async (to: string, mediaInput = null, caption: string) => {
+    sendImage = async (to: string, mediaInput = null, caption: string, context = null) => {
         to = parseMetaNumber(to)
         if (!mediaInput) throw new Error(`MEDIA_INPUT_NULL_: ${mediaInput}`)
 
@@ -198,12 +198,13 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
                 caption,
             },
         }
+        if (context) body.context = context
         return this.sendMessageMeta(body)
     }
 
-    sendImageUrl = async (to: string, url: string, caption = '') => {
+    sendImageUrl = async (to: string, url: string, caption = '', context = null) => {
         to = parseMetaNumber(to)
-        const body = {
+        const body: TextMessageBody = {
             messaging_product: 'whatsapp',
             recipient_type: 'individual',
             to,
@@ -213,10 +214,11 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
                 caption,
             },
         }
+        if (context) body.context = context
         return this.sendMessageMeta(body)
     }
 
-    sendVideo = async (to: string, pathVideo = null, caption: string) => {
+    sendVideo = async (to: string, pathVideo = null, caption: string, context = null) => {
         to = parseMetaNumber(to)
         if (!pathVideo) throw new Error(`MEDIA_INPUT_NULL_: ${pathVideo}`)
 
@@ -239,7 +241,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             }
         )
 
-        const body = {
+        const body: TextMessageBody = {
             messaging_product: 'whatsapp',
             to,
             type: 'video',
@@ -248,12 +250,13 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
                 caption,
             },
         }
+        if (context) body.context = context
         return this.sendMessageMeta(body)
     }
 
-    sendVideoUrl = async (to: string, url: string, caption = '') => {
+    sendVideoUrl = async (to: string, url: string, caption = '', context = null) => {
         to = parseMetaNumber(to)
-        const body = {
+        const body: TextMessageBody = {
             messaging_product: 'whatsapp',
             recipient_type: 'individual',
             to,
@@ -263,22 +266,23 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
                 caption,
             },
         }
+        if (context) body.context = context
         return this.sendMessageMeta(body)
     }
 
-    sendMedia = async (to: string, text = '', mediaInput: string) => {
+    sendMedia = async (to: string, text = '', mediaInput: string, context = null) => {
         to = parseMetaNumber(to)
         const fileDownloaded = await utils.generalDownload(mediaInput)
         const mimeType = mime.lookup(fileDownloaded)
         mediaInput = fileDownloaded
-        if (mimeType.includes('image')) return this.sendImage(to, mediaInput, text)
-        if (mimeType.includes('video')) return this.sendVideo(to, fileDownloaded, text)
+        if (mimeType.includes('image')) return this.sendImage(to, mediaInput, text, context)
+        if (mimeType.includes('video')) return this.sendVideo(to, fileDownloaded, text, context)
         if (mimeType.includes('audio')) {
             const fileOpus = await utils.convertAudio(mediaInput, 'mp3')
-            return this.sendAudio(to, fileOpus)
+            return this.sendAudio(to, fileOpus, context)
         }
 
-        return this.sendFile(to, mediaInput, text)
+        return this.sendFile(to, mediaInput, text, context)
     }
 
     sendList = async (to: string, list: MetaList) => {
@@ -522,15 +526,15 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         return this.sendMessageMeta(body)
     }
 
-    sendMessage = async (to: string, message: string, options?: SendOptions): Promise<any> => {
+    sendMessage = async (to: string, message: string, options?: SendOptions, context?: string): Promise<any> => {
         to = parseMetaNumber(to)
         options = { ...options, ...options['options'] }
         if (options?.buttons?.length) return this.sendButtons(to, options.buttons, message)
-        if (options?.media) return this.sendMedia(to, message, options.media)
-        this.sendText(to, message)
+        if (options?.media) return this.sendMedia(to, message, options.media, context)
+        return this.sendText(to, message, context)
     }
 
-    sendFile = async (to: string, mediaInput = null, caption: string) => {
+    sendFile = async (to: string, mediaInput = null, caption: string, context = null) => {
         to = parseMetaNumber(to)
         if (!mediaInput) throw new Error(`MEDIA_INPUT_NULL_: ${mediaInput}`)
 
@@ -556,7 +560,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             }
         )
 
-        const body = {
+        const body: TextMessageBody = {
             messaging_product: 'whatsapp',
             to: to,
             type: 'document',
@@ -566,10 +570,11 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
                 caption,
             },
         }
+        if (context) body.context = context
         return this.sendMessageMeta(body)
     }
 
-    sendAudio = async (to: string, pathVideo = null) => {
+    sendAudio = async (to: string, pathVideo = null, context = null) => {
         to = parseMetaNumber(to)
         if (!pathVideo) throw new Error(`MEDIA_INPUT_NULL_: ${pathVideo}`)
 
@@ -601,7 +606,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             }
         )
 
-        const body = {
+        const body: TextMessageBody = {
             messaging_product: 'whatsapp',
             to,
             type: 'audio',
@@ -609,6 +614,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
                 id: mediaId,
             },
         }
+        if (context) body.context = context
         return this.sendMessageMeta(body)
     }
 
@@ -684,7 +690,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         return this.sendMessageMeta(body)
     }
 
-    sendText = async (to: string, message: string) => {
+    sendText = async (to: string, message: string, context = null) => {
         to = parseMetaNumber(to)
         const body: TextMessageBody = {
             messaging_product: 'whatsapp',
@@ -696,11 +702,17 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
                 body: message,
             },
         }
+        if (context) body.context = context
         return this.sendMessageMeta(body)
     }
 
-    sendMessageMeta = (body: TextMessageBody): void => {
-        return this.queue.add(() => this.sendMessageToApi(body))
+    sendMessageMeta = (body: TextMessageBody): Promise<any> => {
+        return new Promise((resolve) =>
+            this.queue.add(async () => {
+                const resp = await this.sendMessageToApi(body)
+                resolve(resp)
+            })
+        )
     }
 
     sendMessageToApi = async (body: TextMessageBody): Promise<any> => {
@@ -713,6 +725,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
                     Authorization: `Bearer ${this.globalVendorArgs.jwtToken}`,
                 },
             })
+            response.data.payload = body
             return response.data
         } catch (error) {
             console.error(error.message)

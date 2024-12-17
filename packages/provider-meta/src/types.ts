@@ -12,6 +12,17 @@ interface Video {
     link?: string
 }
 
+export class File {
+    mime_type?: string
+    sha256?: string
+    id?: string
+    voice?: boolean
+    animated?: boolean
+    filename?: string
+    caption?: string
+    link?: string
+}
+
 interface TemplateMessage {
     name: string
     language: {
@@ -143,10 +154,13 @@ export interface TextMessageBody {
         preview_url: boolean
         body: string
     }
-    image?: Image
-    video?: Video
+    image?: File
+    video?: File
+    audio?: File
+    document?: File
     interactive?: any
     contacts?: any[]
+    context?: string
     template?: TemplateMessage
 }
 

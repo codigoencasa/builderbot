@@ -683,8 +683,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                 answer !== '__end_flow__'
             ) {
                 if (answer !== '__capture_only_intended__') {
-                    await this.provider.sendMessage(numberOrId, answer, ctxMessage)
-                    this.emit('send_message', { ...ctxMessage, from: numberOrId, answer })
+                    const respMessage = await this.provider.sendMessage(numberOrId, answer, ctxMessage)
+                    this.emit('send_message', { ...ctxMessage, from: numberOrId, answer, respMessage })
                 }
             }
             await this.database.save({ ...ctxMessage, from: numberOrId })
