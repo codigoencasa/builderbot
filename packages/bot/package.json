@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/bot",
-    "version": "1.2.4",
+    "version": "1.2.5-alpha.0",
     "description": "core typescript",
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
