@@ -18,6 +18,9 @@ const emptyDirSessions = async (pathBase: string) =>
  * @returns The cleaned number.
  */
 const baileyCleanNumber = (number: string, full: boolean = false): string => {
+    const regexGroup: RegExp = /\@g.us\b/gm
+    const exist = number.match(regexGroup)
+    if (exist) return number
     number = number.replace('@s.whatsapp.net', '').replace('+', '').replace(/\s/g, '')
     number = !full ? `${number}@s.whatsapp.net` : number
     return number

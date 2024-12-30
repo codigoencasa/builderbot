@@ -124,6 +124,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         let msgToSend = []
         let endFlowFlag = false
         const fallBackFlag = false
+
         if (this.dynamicBlacklist.checkIf(from)) return
         if (!body) return
 
