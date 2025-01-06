@@ -59,7 +59,7 @@
   },
   "dependencies": {
     "@adiwajshing/keyed-db": "^0.2.4",
-    "@builderbot/core-baileys": "~6.7.5",
+    "@whiskeysockets/baileys": "~6.7.9",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@types/polka": "^0.5.7",
     "fluent-ffmpeg": "^2.1.2",

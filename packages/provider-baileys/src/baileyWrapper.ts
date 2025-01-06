@@ -15,9 +15,9 @@ import {
     MessageUpsertType,
     isJidGroup,
     isJidBroadcast,
-} from '@builderbot/core-baileys'
+} from '@whiskeysockets/baileys'
 
-const makeWASocketOther = require('@builderbot/core-baileys').default
+const makeWASocketOther = require('@whiskeysockets/baileys').default
 
 export {
     makeWASocketOther,
