@@ -55,6 +55,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
         groupsIgnore: false,
         readStatus: false,
         experimentalStore: false,
+        autoRefresh: false,
         experimentalSyncMessage: undefined,
     }
 
@@ -140,6 +141,14 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 if (this.store?.readFromFile) this.store?.readFromFile(`${NAME_DIR_SESSION}/baileys_store.json`)
 
                 setInterval(() => {
+                    if (this.globalVendorArgs.autoRefresh) {
+                        if (this.globalVendorArgs.host?.phone) {
+                            this.vendor.fetchStatus(this.globalVendorArgs.host?.phone).then((status) => {
+                                console.log('status: ' + status)
+                            })
+                        }
+                    }
+
                     const path = `${NAME_DIR_SESSION}/baileys_store.json`
                     if (existsSync(NAME_DIR_SESSION)) {
                         this.store?.writeToFile(path)

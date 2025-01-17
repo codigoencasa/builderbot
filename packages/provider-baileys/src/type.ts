@@ -11,5 +11,6 @@ export interface BaileyGlobalVendorArgs extends GlobalVendorArgs {
     experimentalStore?: boolean
     groupsIgnore: boolean
     readStatus: boolean
+    autoRefresh?: boolean
     host?: any
 }
