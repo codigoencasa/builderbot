@@ -103,6 +103,7 @@ describe('#BaileysProvider', () => {
             groupsIgnore: false,
             readStatus: false,
             port: 3000,
+            autoRefresh: 0,
             writeMyself: 'none',
             experimentalStore: false,
         }
