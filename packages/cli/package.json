@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/cli",
-    "version": "1.2.5-alpha.3",
+    "version": "1.2.5-alpha.4",
     "description": "",
     "main": "dist/index.cjs",
     "types": "dist/index.d.ts",
