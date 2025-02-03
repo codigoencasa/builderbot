@@ -511,11 +511,10 @@ class BaileysProvider extends ProviderClass<WASocket> {
                         body: utils.generateRefProvider('_event_call_'),
                         call,
                     }
-                    console.log(`entro llamada`)
-                    this.emit('message', payload)
 
+                    this.emit('message', payload)
                     // Opcional: Rechazar automáticamente la llamada
-                    await this.vendor.rejectCall(call.id, call.from)
+                    // await this.vendor.rejectCall(call.id, call.from)
                 }
             },
         },
