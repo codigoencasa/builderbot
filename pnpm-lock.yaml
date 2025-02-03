@@ -566,8 +566,8 @@ importers:
                 specifier: ^0.5.7
                 version: 0.5.7
             '@whiskeysockets/baileys':
-                specifier: ~6.7.9
-                version: 6.7.9(bufferutil@4.0.8)(eslint@8.57.0)(qrcode-terminal@0.12.0)(sharp@0.33.3)(typescript@5.5.4)(utf-8-validate@5.0.10)
+                specifier: ~6.7.12
+                version: 6.7.12(bufferutil@4.0.8)(eslint@8.57.0)(qrcode-terminal@0.12.0)(typescript@5.5.4)(utf-8-validate@5.0.10)
             fluent-ffmpeg:
                 specifier: ^2.1.2
                 version: 2.1.3
@@ -643,7 +643,7 @@ importers:
                 version: 17.0.2
             ts-jest:
                 specifier: ^29.1.2
-                version: 29.2.4(@babel/core@7.25.2)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.25.2))(jest@29.7.0(@types/node@20.14.14)(ts-node@10.9.2(@types/node@20.14.14)(typescript@5.5.4)))(typescript@5.5.4)
+                version: 29.2.4(@babel/core@7.25.2)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.25.2))(jest@29.7.0(@types/node@20.14.14))(typescript@5.5.4)
             ts-node:
                 specifier: ^10.9.2
                 version: 10.9.2(@types/node@20.14.14)(typescript@5.5.4)
@@ -737,7 +737,7 @@ importers:
                 version: 6.3.4
             ts-jest:
                 specifier: ^29.1.2
-                version: 29.2.4(@babel/core@7.25.2)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.25.2))(jest@29.7.0(@types/node@20.14.14)(ts-node@10.9.2(@types/node@20.14.14)(typescript@5.5.4)))(typescript@5.5.4)
+                version: 29.2.4(@babel/core@7.25.2)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.25.2))(jest@29.7.0(@types/node@20.14.14))(typescript@5.5.4)
             tslib:
                 specifier: ^2.6.2
                 version: 2.6.3
@@ -4201,10 +4201,10 @@ packages:
                 integrity: sha512-skAN3NIrRzMkVouyfyq3gYT/op/K9iutMZr7kr5/9fnIaCnpYdrdbv69X8PZ6y3K2J5zy5KuGno5kzH8yGLOOg==,
             }
 
-    '@whiskeysockets/baileys@6.7.9':
+    '@whiskeysockets/baileys@6.7.12':
         resolution:
             {
-                integrity: sha512-+23DOlzgRYvDYPq5qTDRCho6EqyRMaSWL2OadvhY+nE4Ew8HCNTwpDASIaGoFPqGyQgzAJUNgwOFvBsdJlORpA==,
+                integrity: sha512-xyL+efF3FQwWA7GR1y0dzAIiam9ybyMGakKTthbVn6lgfCKN7pZxoRIR1XkDSRofJGDh2mu9hewn6peYxaAWNQ==,
             }
         peerDependencies:
             jimp: ^0.16.1
@@ -17283,7 +17283,7 @@ snapshots:
             '@wasm-audio-decoders/common': 9.0.5
             codec-parser: 2.4.3
 
-    '@whiskeysockets/baileys@6.7.9(bufferutil@4.0.8)(eslint@8.57.0)(qrcode-terminal@0.12.0)(sharp@0.33.3)(typescript@5.5.4)(utf-8-validate@5.0.10)':
+    '@whiskeysockets/baileys@6.7.12(bufferutil@4.0.8)(eslint@8.57.0)(qrcode-terminal@0.12.0)(typescript@5.5.4)(utf-8-validate@5.0.10)':
         dependencies:
             '@adiwajshing/keyed-db': 0.2.4
             '@hapi/boom': 9.1.4
@@ -17304,7 +17304,6 @@ snapshots:
             ws: 8.18.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
         optionalDependencies:
             qrcode-terminal: 0.12.0
-            sharp: 0.33.3
         transitivePeerDependencies:
             - bufferutil
             - debug
@@ -23886,7 +23885,7 @@ snapshots:
 
     ts-custom-error@3.3.1: {}
 
-    ts-jest@29.2.4(@babel/core@7.25.2)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.25.2))(jest@29.7.0(@types/node@20.14.14)(ts-node@10.9.2(@types/node@20.14.14)(typescript@5.5.4)))(typescript@5.5.4):
+    ts-jest@29.2.4(@babel/core@7.25.2)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.25.2))(jest@29.7.0(@types/node@20.14.14))(typescript@5.5.4):
         dependencies:
             bs-logger: 0.2.6
             ejs: 3.1.10
