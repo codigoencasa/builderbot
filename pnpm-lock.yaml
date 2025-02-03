@@ -566,8 +566,8 @@ importers:
                 specifier: ^0.5.7
                 version: 0.5.7
             '@whiskeysockets/baileys':
-                specifier: ~6.7.12
-                version: 6.7.12(bufferutil@4.0.8)(eslint@8.57.0)(qrcode-terminal@0.12.0)(typescript@5.5.4)(utf-8-validate@5.0.10)
+                specifier: ~6.7.9
+                version: 6.7.9(bufferutil@4.0.8)(eslint@8.57.0)(qrcode-terminal@0.12.0)(typescript@5.5.4)(utf-8-validate@5.0.10)
             fluent-ffmpeg:
                 specifier: ^2.1.2
                 version: 2.1.3
@@ -4201,10 +4201,10 @@ packages:
                 integrity: sha512-skAN3NIrRzMkVouyfyq3gYT/op/K9iutMZr7kr5/9fnIaCnpYdrdbv69X8PZ6y3K2J5zy5KuGno5kzH8yGLOOg==,
             }
 
-    '@whiskeysockets/baileys@6.7.12':
+    '@whiskeysockets/baileys@6.7.9':
         resolution:
             {
-                integrity: sha512-xyL+efF3FQwWA7GR1y0dzAIiam9ybyMGakKTthbVn6lgfCKN7pZxoRIR1XkDSRofJGDh2mu9hewn6peYxaAWNQ==,
+                integrity: sha512-+23DOlzgRYvDYPq5qTDRCho6EqyRMaSWL2OadvhY+nE4Ew8HCNTwpDASIaGoFPqGyQgzAJUNgwOFvBsdJlORpA==,
             }
         peerDependencies:
             jimp: ^0.16.1
@@ -17283,7 +17283,7 @@ snapshots:
             '@wasm-audio-decoders/common': 9.0.5
             codec-parser: 2.4.3
 
-    '@whiskeysockets/baileys@6.7.12(bufferutil@4.0.8)(eslint@8.57.0)(qrcode-terminal@0.12.0)(typescript@5.5.4)(utf-8-validate@5.0.10)':
+    '@whiskeysockets/baileys@6.7.9(bufferutil@4.0.8)(eslint@8.57.0)(qrcode-terminal@0.12.0)(typescript@5.5.4)(utf-8-validate@5.0.10)':
         dependencies:
             '@adiwajshing/keyed-db': 0.2.4
             '@hapi/boom': 9.1.4
