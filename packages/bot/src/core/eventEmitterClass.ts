@@ -3,7 +3,7 @@ import { EventEmitter } from 'node:events'
 import type { TContext } from '../types'
 
 export type HostEventTypes = {
-    send_message: [arg1: TContext & { from: string; answer: string | string[] }]
+    send_message: [arg1: TContext & { from: string; answer: string | string[]; respMessage: any }]
     notice: [arg1: { title: string; instructions: string[] }]
 }
 

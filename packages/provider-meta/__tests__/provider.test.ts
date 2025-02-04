@@ -161,7 +161,7 @@ describe('#MetaProvider', () => {
             // Arrange
             const fakeRecipient = '1234567890'
             const fakeMessage = 'Hello, World!'
-            metaProvider.sendMessageMeta = jest.fn()
+            metaProvider.sendMessageMeta = jest.fn() as never
 
             // Act
             await metaProvider.sendText(fakeRecipient, fakeMessage)
@@ -192,7 +192,7 @@ describe('#MetaProvider', () => {
                 long_number: '123.456',
                 lat_number: '78.90',
             }
-            metaProvider.sendMessageMeta = jest.fn()
+            metaProvider.sendMessageMeta = jest.fn() as never
 
             // Act
             await metaProvider.sendLocation(fakeRecipient, fakeLocalization)
@@ -217,7 +217,7 @@ describe('#MetaProvider', () => {
             // Arrange
             const fakeRecipient = '1234567890'
             const fakeText = 'Please share your location'
-            metaProvider.sendMessageMeta = jest.fn()
+            metaProvider.sendMessageMeta = jest.fn() as never
 
             // Act
             await metaProvider.sendLocationRequest(fakeRecipient, fakeText)
@@ -250,7 +250,7 @@ describe('#MetaProvider', () => {
                 emoji: '😄',
             }
 
-            metaProvider.sendMessageMeta = jest.fn()
+            metaProvider.sendMessageMeta = jest.fn() as never
 
             // Act
             await metaProvider.sendReaction(fakeRecipient, fakeReaction)
@@ -275,7 +275,7 @@ describe('#MetaProvider', () => {
             const fakeRecipient = '1234567890'
             const fakePathVideo: any = 'path/to/audio.mp3'
 
-            metaProvider.sendMessageMeta = jest.fn()
+            metaProvider.sendMessageMeta = jest.fn() as never
 
             // Act
             await metaProvider.sendAudio(fakeRecipient, fakePathVideo)
@@ -341,7 +341,7 @@ describe('#MetaProvider', () => {
             const fakeMimeType = 'application/pdf'
             const fakeNameOriginal = 'file.pdf'
 
-            metaProvider.sendMessageMeta = jest.fn()
+            metaProvider.sendMessageMeta = jest.fn() as never
 
             const formDataMock = {
                 append: jest.fn(),
@@ -380,14 +380,18 @@ describe('#MetaProvider', () => {
             const fakeRecipient = '1234567890'
             const fakeMessage = 'Hello, world!'
             const options = {}
+            const context = undefined
             jest.spyOn(metaProvider, 'sendText')
             jest.spyOn(metaProvider, 'sendButtons')
             jest.spyOn(metaProvider, 'sendMedia')
+
+            metaProvider.sendMessageMeta = jest.fn() as never
+
             // Act
-            await metaProvider.sendMessage(fakeRecipient, fakeMessage, options)
+            await metaProvider.sendMessage(fakeRecipient, fakeMessage, options, context)
 
             // Assert
-            expect(metaProvider.sendText).toHaveBeenCalledWith(fakeRecipient, fakeMessage)
+            expect(metaProvider.sendText).toHaveBeenCalledWith(fakeRecipient, fakeMessage, context)
             expect(metaProvider.sendButtons).not.toHaveBeenCalled()
             expect(metaProvider.sendMedia).not.toHaveBeenCalled()
         })
@@ -416,17 +420,26 @@ describe('#MetaProvider', () => {
             // Arrange
             const fakeRecipient = '1234567890'
             const fakeMessage = 'Here is a media file'
-            const fakeMedia = 'path/to/media.jpg'
+            const fakeMedia = 'https://example.com/video.mp4'
             const fakeOptions = { media: fakeMedia }
+            const context = undefined
+
+            const fileDownloaded = 'path/to/downloaded/audio.mp3'
+            ;(utils.generalDownload as jest.MockedFunction<typeof utils.generalDownload>).mockResolvedValue(
+                fileDownloaded
+            )
+            jest.spyOn(mime, 'lookup').mockReturnValue('video/mp4')
             jest.spyOn(metaProvider, 'sendButtons')
             jest.spyOn(metaProvider, 'sendText')
-            jest.spyOn(metaProvider, 'sendMedia').mockResolvedValue()
+            jest.spyOn(metaProvider, 'sendMedia') //.mockResolvedValue()
+
+            metaProvider.sendMessageMeta = jest.fn() as never
 
             // Act
-            await metaProvider.sendMessage(fakeRecipient, fakeMessage, fakeOptions)
+            await metaProvider.sendMessage(fakeRecipient, fakeMessage, fakeOptions, context)
 
             // Assert
-            expect(metaProvider.sendMedia).toHaveBeenCalledWith(fakeRecipient, fakeMessage, fakeMedia)
+            expect(metaProvider.sendMedia).toHaveBeenCalledWith(fakeRecipient, fakeMessage, fakeMedia, context)
             expect(metaProvider.sendText).not.toHaveBeenCalled()
             expect(metaProvider.sendButtons).not.toHaveBeenCalled()
         })
