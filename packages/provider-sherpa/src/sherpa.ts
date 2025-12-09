@@ -337,6 +337,28 @@ class SherpaProvider extends ProviderClass<WASocket> {
                         `[${new Date().toISOString()}] Connection closed. Status: ${statusCode}, Reason: ${reason}`
                     )
 
+                    // Check if device was removed
+                    const errorData = lastDisconnect?.error?.data
+                    const isDeviceRemoved = errorData?.content?.some(
+                        (item: any) => item?.attrs?.type === 'device_removed'
+                    )
+
+                    if (isDeviceRemoved) {
+                        console.log(
+                            `[${new Date().toISOString()}] ⚠️ Device removed - Session was deleted from WhatsApp`
+                        )
+                        this.logger.log(`[${new Date().toISOString()}] Device removed detected, clearing session...`)
+                        const PATH_BASE = join(process.cwd(), `${this.globalVendorArgs.name}_sessions`)
+                        await emptyDirSessions(PATH_BASE)
+                        this.reconnectAttempts = 0
+                        this.emit('auth_failure', [
+                            `Something unexpected has occurred, do not panic`,
+                            `Restart the BOT`,
+                            `You can also check a log that has been created sherpa.log`,
+                            `Need help: https://link.codigoencasa.com/DISCORD`,
+                        ])
+                    }
+
                     // Casos donde NO debemos reconectar
                     if (statusCode === DisconnectReason.loggedOut) {
                         this.logger.log(`[${new Date().toISOString()}] Logged out, clearing session and restarting...`)

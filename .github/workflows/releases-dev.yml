@@ -2,10 +2,9 @@ name: 🚀 (DEV) Liberando versiones
 
 on:
     workflow_dispatch:
-    pull_request_target:
+    pull_request:
         branches:
             - builderbot-dev
-        types: [opened, synchronize, reopened]
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,9 +21,6 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
-              with:
-                  ref: ${{ github.event.pull_request.head.sha || github.ref }}
-                  repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
 
             - uses: pnpm/action-setup@v4
 
@@ -54,9 +50,6 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
-              with:
-                  ref: ${{ github.event.pull_request.head.sha || github.ref }}
-                  repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
 
             - uses: pnpm/action-setup@v4
 
@@ -96,12 +89,11 @@ jobs:
             packages: write
             id-token: write
         steps:
-            - name: Checkout PR
+            - name: Checkout
               uses: actions/checkout@v4
               with:
                   fetch-depth: 0
-                  ref: ${{ github.event.pull_request.head.sha || github.ref }}
-                  repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+                  ref: ${{ github.head_ref || github.ref_name }}
 
             - uses: pnpm/action-setup@v4
 

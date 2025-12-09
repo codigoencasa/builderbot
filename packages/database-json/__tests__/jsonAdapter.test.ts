@@ -35,7 +35,7 @@ test.after(async () => {
 
 test('[JsonFileAdapter] - instantiation', () => {
     assert.instance(jsonFileAdapter, JsonFileDB)
-    assert.equal(jsonFileAdapter['options'], jsonFileAdapterOptions)
+    assert.equal(jsonFileAdapter['options'].filename, jsonFileAdapterOptions.filename)
 })
 
 test('#init - creates a file if it does not exist', async () => {
@@ -52,16 +52,22 @@ test('#init - creates a file if it does not exist', async () => {
     await fsPromises.unlink(testFilePath)
 })
 
-test('validateJson - returns parsed JSON for valid input', () => {
-    const validJsonString = '{"key": "value"}'
+test('validateJson - returns parsed array for valid input', () => {
+    const validJsonString = '[{"key": "value"}]'
     const result = jsonFileAdapter['validateJson'](validJsonString)
-    assert.equal(result, { key: 'value' })
+    assert.equal(result, [{ key: 'value' }])
 })
 
-test('validateJson - returns an empty object for invalid input', () => {
+test('validateJson - returns an empty array for invalid input', () => {
     const invalidJsonString = 'this is not valid JSON'
     const result = jsonFileAdapter['validateJson'](invalidJsonString)
-    assert.equal(result, {})
+    assert.equal(result, [])
+})
+
+test('validateJson - returns an empty array for non-array JSON', () => {
+    const objectJsonString = '{"key": "value"}'
+    const result = jsonFileAdapter['validateJson'](objectJsonString)
+    assert.equal(result, [])
 })
 
 test('readFileAndParse - returns parsed JSON for valid file content', async () => {

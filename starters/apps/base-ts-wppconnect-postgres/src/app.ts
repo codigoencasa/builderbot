@@ -115,6 +115,16 @@ const main = async () => {
         })
     )
 
+    adapterProvider.server.get(
+        '/v1/blacklist/list',
+        handleCtx(async (bot, req, res) => {
+            const blacklist = bot.blacklist.getList()
+            res.writeHead(200, { 'Content-Type': 'application/json' })
+            return res.end(JSON.stringify({ status: 'ok', blacklist }))
+        })
+    )
+    
+
     httpServer(+PORT)
 }
 
