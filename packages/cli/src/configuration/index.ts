@@ -29,6 +29,7 @@ export const PROVIDER_LIST: Provider[] = [
     { value: 'instagram', label: 'Instagram' },
     { value: 'gohighlevel', label: 'GoHighLevel' },
     { value: 'email', label: 'Email', hint: 'IMAP/SMTP' },
+    { value: 'gmail', label: 'Gmail', hint: 'OAuth2' },
 ]
 
 export const PROVIDER_DATA: ValueLabel[] = [

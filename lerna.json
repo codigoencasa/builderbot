@@ -23,6 +23,7 @@
     "packages/provider-venom",
     "packages/provider-gohighlevel",
     "packages/provider-email",
+    "packages/provider-gmail",
     "packages/contexts-dialogflow",
     "packages/contexts-dialogflow-cx"
   ],
