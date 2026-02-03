@@ -68,6 +68,8 @@ class SherpaProvider extends ProviderClass<WASocket> {
     private healthCheckInterval?: ReturnType<typeof setInterval>
     private presenceInterval?: ReturnType<typeof setTimeout>
     private periodicCleanupInterval?: ReturnType<typeof setInterval>
+    private reconnectTimer?: ReturnType<typeof setTimeout>
+    private releaseTmpTimer?: NodeJS.Timeout
     private badSessionCount = 0
 
     msgRetryCounterCache?: NodeCache
@@ -183,6 +185,14 @@ class SherpaProvider extends ProviderClass<WASocket> {
     private cleanup() {
         try {
             this.stopHealthCheck()
+            if (this.reconnectTimer) {
+                clearTimeout(this.reconnectTimer)
+                this.reconnectTimer = undefined
+            }
+            if (this.releaseTmpTimer) {
+                clearInterval(this.releaseTmpTimer)
+                this.releaseTmpTimer = undefined
+            }
             if (this.periodicCleanupInterval) {
                 clearInterval(this.periodicCleanupInterval)
                 this.periodicCleanupInterval = undefined
@@ -200,11 +210,12 @@ class SherpaProvider extends ProviderClass<WASocket> {
             this.mapSet.clear()
             this.idsDuplicates.length = 0
 
+            // Log before closing the stream
+            this.logger.log(`[${new Date().toISOString()}] Recursos limpiados correctamente`)
+
             if (this.logStream && typeof this.logStream.end === 'function') {
                 this.logStream.end()
             }
-
-            this.logger.log(`[${new Date().toISOString()}] Recursos limpiados correctamente`)
         } catch (error) {
             console.error('Error durante cleanup:', error)
         }
@@ -271,12 +282,16 @@ class SherpaProvider extends ProviderClass<WASocket> {
         try {
             if (this.globalVendorArgs.useBaileysStore) {
                 if (this.globalVendorArgs.timeRelease > 0) {
-                    await releaseTmp(NAME_DIR_SESSION, this.globalVendorArgs.timeRelease)
+                    // Clear previous releaseTmp interval to prevent accumulation on reconnects
+                    if (this.releaseTmpTimer) {
+                        clearInterval(this.releaseTmpTimer)
+                        this.releaseTmpTimer = undefined
+                    }
+                    this.releaseTmpTimer = await releaseTmp(NAME_DIR_SESSION, this.globalVendorArgs.timeRelease)
                 }
             }
         } catch (e) {
-            this.logger.log(e)
-            this.initVendor().then((v) => this.listenOnEvents(v))
+            this.logger.log(`[${new Date().toISOString()}] releaseTmp error, continuing without cleanup:`, e)
         }
 
         try {
@@ -1259,7 +1274,8 @@ class SherpaProvider extends ProviderClass<WASocket> {
             } in ${delay}ms`
         )
 
-        setTimeout(() => {
+        this.reconnectTimer = setTimeout(() => {
+            this.reconnectTimer = undefined
             this.initVendor()
                 .then((v) => this.listenOnEvents(v))
                 .catch((error) => {
