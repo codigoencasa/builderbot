@@ -3,8 +3,8 @@ import type { BotContext, Button, SendOptions } from '@builderbot/bot/dist/types
 import type { Boom } from '@hapi/boom'
 import { Console } from 'console'
 import type { PathOrFileDescriptor } from 'fs'
-import { createReadStream, createWriteStream, readFileSync } from 'fs'
-import { writeFile } from 'fs/promises'
+import { createReadStream, createWriteStream, readFileSync, existsSync, mkdirSync } from 'fs'
+import { writeFile, readFile, readdir } from 'fs/promises'
 import mime from 'mime-types'
 import NodeCache from 'node-cache'
 import { tmpdir } from 'os'
@@ -35,7 +35,7 @@ import {
     WABrowserDescription,
 } from './baileyWrapper'
 import { releaseTmp } from './releaseTmp'
-import type { BaileyGlobalVendorArgs } from './type'
+import type { BaileyGlobalVendorArgs, CallRecord, CallRecordFormat } from './type'
 import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber, emptyDirSessions } from './utils'
 
 class BaileysProvider extends ProviderClass<WASocket> {
@@ -70,6 +70,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
     private idsDuplicates = []
     private mapSet = new Set()
+    private activeCalls: Map<string, CallRecord> = new Map()
 
     constructor(args: Partial<BaileyGlobalVendorArgs>) {
         super()
@@ -117,6 +118,13 @@ class BaileysProvider extends ProviderClass<WASocket> {
         })
 
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
+
+        if (this.globalVendorArgs.callRecording?.enabled) {
+            const recordPath = this.getCallRecordPath()
+            if (!existsSync(recordPath)) {
+                mkdirSync(recordPath, { recursive: true })
+            }
+        }
 
         this.setupCleanupHandlers()
         this.setupPeriodicCleanup()
@@ -710,16 +718,58 @@ class BaileysProvider extends ProviderClass<WASocket> {
         {
             event: 'call',
             func: async ([call]) => {
+                const from = baileyCleanNumber(call.from, true)
+
                 if (call.status === 'offer') {
+                    const callRecord: CallRecord = {
+                        callId: call.id,
+                        from,
+                        status: 'offer',
+                        startedAt: Date.now(),
+                    }
+                    this.activeCalls.set(call.id, callRecord)
+
                     const payload = {
-                        from: baileyCleanNumber(call.from, true),
+                        from,
                         body: utils.generateRefProvider('_event_call_'),
                         call,
+                        callRecord,
                     }
 
                     this.emit('message', payload)
-                    // Opcional: Rechazar automáticamente la llamada
-                    // await this.vendor.rejectCall(call.id, call.from)
+
+                    if (this.globalVendorArgs.callRecording?.autoReject) {
+                        await this.vendor.rejectCall(call.id, call.from)
+                    }
+                }
+
+                if (call.status === 'reject' || call.status === 'timeout') {
+                    const record = this.activeCalls.get(call.id)
+                    if (record) {
+                        record.status = call.status as CallRecord['status']
+                        record.endedAt = Date.now()
+                        record.duration = Math.floor((record.endedAt - record.startedAt) / 1000)
+                        await this.saveCallRecord(record)
+                        this.activeCalls.delete(call.id)
+                    }
+                }
+
+                if (call.status === 'accept') {
+                    const record = this.activeCalls.get(call.id)
+                    if (record) {
+                        record.status = 'accept'
+                    }
+                }
+
+                if (call.status === 'terminate') {
+                    const record = this.activeCalls.get(call.id)
+                    if (record) {
+                        record.status = 'terminate'
+                        record.endedAt = Date.now()
+                        record.duration = Math.floor((record.endedAt - record.startedAt) / 1000)
+                        await this.saveCallRecord(record)
+                        this.activeCalls.delete(call.id)
+                    }
                 }
             },
         },
@@ -1076,6 +1126,102 @@ class BaileysProvider extends ProviderClass<WASocket> {
         const pathFile = join(options?.path ?? tmpdir(), fileName)
         await writeFile(pathFile, buffer)
         return resolve(pathFile)
+    }
+
+    /**
+     * Get the path for call recordings
+     */
+    private getCallRecordPath(): string {
+        return this.globalVendorArgs.callRecording?.path ?? join(process.cwd(), 'call_recordings')
+    }
+
+    /**
+     * Get the configured call record format
+     */
+    private getCallRecordFormat(): CallRecordFormat {
+        return this.globalVendorArgs.callRecording?.format ?? 'wav'
+    }
+
+    /**
+     * Save a call record metadata file (JSON) to the recordings directory.
+     * The filePath field indicates where an audio file would be stored if
+     * an external recording integration provides one.
+     */
+    private async saveCallRecord(record: CallRecord): Promise<void> {
+        if (!this.globalVendorArgs.callRecording?.enabled) return
+
+        const recordPath = this.getCallRecordPath()
+        if (!existsSync(recordPath)) {
+            mkdirSync(recordPath, { recursive: true })
+        }
+
+        const format = this.getCallRecordFormat()
+        const audioFileName = `call_${record.from}_${record.callId}_${record.startedAt}.${format}`
+        record.format = format
+        record.filePath = join(recordPath, audioFileName)
+
+        const metadataPath = join(recordPath, `call_${record.from}_${record.callId}_${record.startedAt}.json`)
+        await writeFile(metadataPath, JSON.stringify(record, null, 2))
+
+        this.logger.log(
+            `[${new Date().toISOString()}] Call record saved: ${metadataPath} | from=${record.from} duration=${record.duration ?? 0}s`
+        )
+    }
+
+    /**
+     * Reject an incoming call by its ID and caller JID
+     * @param callId - The call ID
+     * @param callFrom - The caller's JID
+     */
+    rejectCall = async (callId: string, callFrom: string): Promise<void> => {
+        await this.vendor.rejectCall(callId, callFrom)
+        const record = this.activeCalls.get(callId)
+        if (record) {
+            record.status = 'reject'
+            record.endedAt = Date.now()
+            record.duration = Math.floor((record.endedAt - record.startedAt) / 1000)
+            await this.saveCallRecord(record)
+            this.activeCalls.delete(callId)
+        }
+    }
+
+    /**
+     * Get all saved call record metadata from the recordings directory
+     * @returns Array of CallRecord objects
+     */
+    getCallHistory = async (): Promise<CallRecord[]> => {
+        const recordPath = this.getCallRecordPath()
+        if (!existsSync(recordPath)) return []
+
+        const files = await readdir(recordPath)
+        const jsonFiles = files.filter((f) => f.endsWith('.json'))
+
+        const records: CallRecord[] = []
+        for (const file of jsonFiles) {
+            try {
+                const content = await readFile(join(recordPath, file), 'utf-8')
+                records.push(JSON.parse(content))
+            } catch {
+                // skip malformed files
+            }
+        }
+
+        return records.sort((a, b) => b.startedAt - a.startedAt)
+    }
+
+    /**
+     * Get info about a currently active call
+     * @param callId - The call ID
+     */
+    getActiveCall = (callId: string): CallRecord | undefined => {
+        return this.activeCalls.get(callId)
+    }
+
+    /**
+     * Get all currently active calls
+     */
+    getActiveCalls = (): CallRecord[] => {
+        return Array.from(this.activeCalls.values())
     }
 
     private shouldReconnect(statusCode: number): boolean {
