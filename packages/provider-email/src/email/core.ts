@@ -18,6 +18,8 @@ export class EmailCoreVendor extends EventEmitter {
     private reconnectAttempts: number = 0
     private maxReconnectAttempts: number = 10
     private reconnectDelay: number = 5000
+    private isReconnecting: boolean = false
+    private reconnectTimer: ReturnType<typeof setTimeout> | null = null
 
     constructor(config: IEmailProviderArgs) {
         super()
@@ -39,7 +41,6 @@ export class EmailCoreVendor extends EventEmitter {
                     pass: this.config.smtp.auth.pass,
                 },
             })
-            console.log('[EmailProvider] SMTP transporter initialized')
         } catch (error) {
             console.error('[EmailProvider] Failed to initialize SMTP:', error)
             this.emit('auth_failure', error)
@@ -62,23 +63,33 @@ export class EmailCoreVendor extends EventEmitter {
                 logger: false,
             })
 
-            // Handle connection events
             this.imapClient.on('error', (err: Error) => {
                 console.error('[EmailProvider] IMAP error:', err)
                 this.emit('error', err)
-                this.handleDisconnect()
+                this.scheduleReconnect()
             })
 
             this.imapClient.on('close', () => {
                 console.log('[EmailProvider] IMAP connection closed')
                 this.isConnected = false
-                this.handleDisconnect()
+                this.scheduleReconnect()
             })
 
             await this.imapClient.connect()
             this.isConnected = true
             this.reconnectAttempts = 0
+            this.isReconnecting = false
             console.log('[EmailProvider] Connected to IMAP server')
+
+            // Verify SMTP connection
+            if (this.smtpTransporter) {
+                try {
+                    await this.smtpTransporter.verify()
+                    console.log('[EmailProvider] SMTP connection verified')
+                } catch (smtpErr) {
+                    console.warn('[EmailProvider] SMTP verification failed, sending may fail:', smtpErr)
+                }
+            }
 
             const host = {
                 email: this.config.imap.auth.user,
@@ -87,8 +98,7 @@ export class EmailCoreVendor extends EventEmitter {
             this.emit('host', host)
             this.emit('ready')
 
-            // Start listening for new emails (non-blocking)
-            this.startIdleListener()
+            this.runIdleLoop(this.config.mailbox || 'INBOX')
         } catch (error) {
             console.error('[EmailProvider] Failed to connect to IMAP:', error)
             this.emit('auth_failure', error)
@@ -97,71 +107,69 @@ export class EmailCoreVendor extends EventEmitter {
     }
 
     /**
-     * Handle disconnection and attempt reconnection
+     * Schedule a reconnection attempt, preventing duplicate timers.
      */
-    private async handleDisconnect(): Promise<void> {
-        if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-            console.error('[EmailProvider] Max reconnection attempts reached')
-            this.emit('auth_failure', new Error('Max reconnection attempts reached'))
+    private scheduleReconnect(): void {
+        if (this.isReconnecting || this.reconnectAttempts >= this.maxReconnectAttempts) {
+            if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+                console.error('[EmailProvider] Max reconnection attempts reached')
+                this.emit('auth_failure', new Error('Max reconnection attempts reached'))
+            }
             return
         }
 
+        this.isReconnecting = true
+        this.isConnected = false
         this.reconnectAttempts++
         const delay = this.reconnectDelay * this.reconnectAttempts
 
         console.log(
-            `[EmailProvider] Attempting reconnection ${this.reconnectAttempts}/${this.maxReconnectAttempts} in ${delay}ms`
+            `[EmailProvider] Reconnecting ${this.reconnectAttempts}/${this.maxReconnectAttempts} in ${delay}ms`
         )
 
-        setTimeout(async () => {
+        if (this.reconnectTimer) {
+            clearTimeout(this.reconnectTimer)
+        }
+
+        this.reconnectTimer = setTimeout(async () => {
+            this.reconnectTimer = null
             try {
                 await this.connect()
             } catch (error) {
                 console.error('[EmailProvider] Reconnection failed:', error)
+                this.isReconnecting = false
+                this.scheduleReconnect()
             }
         }, delay)
     }
 
     /**
-     * Start IMAP IDLE listener for real-time email notifications
-     * This runs in the background and doesn't block the initialization
-     */
-    private startIdleListener(): void {
-        if (!this.imapClient || !this.isConnected) return
-
-        const mailbox = this.config.mailbox || 'INBOX'
-
-        // Listen for new messages using EXISTS event
-        this.imapClient.on('exists', async (data: { path: string; count: number; prevCount: number }) => {
-            if (data.count > data.prevCount) {
-                console.log(`[EmailProvider] New email detected in ${data.path}`)
-                await this.fetchNewEmails(data.prevCount + 1, data.count)
-            }
-        })
-
-        // Start the IDLE loop in background
-        this.runIdleLoop(mailbox)
-    }
-
-    /**
-     * Run the IDLE loop in background without blocking
+     * Run the IDLE loop: acquire lock once, then cycle idle → fetch within the same lock.
+     * This avoids the deadlock caused by trying to acquire a second lock from an exists handler.
      */
     private async runIdleLoop(mailbox: string): Promise<void> {
+        if (!this.imapClient || !this.isConnected) return
+
         try {
-            const lock = await this.imapClient!.getMailboxLock(mailbox)
+            const lock = await this.imapClient.getMailboxLock(mailbox)
 
             try {
-                console.log(`[EmailProvider] Starting IDLE mode on ${mailbox}`)
+                console.log(`[EmailProvider] IDLE mode started on ${mailbox}`)
 
-                // Keep the connection alive with IDLE
                 while (this.isConnected && this.imapClient) {
                     try {
+                        // idle() resolves when the server sends new data (e.g. EXISTS)
                         await this.imapClient.idle()
                     } catch (idleError) {
                         if (this.isConnected) {
                             console.error('[EmailProvider] IDLE error:', idleError)
                         }
                         break
+                    }
+
+                    // After idle resolves, fetch unseen emails within the same lock
+                    if (this.isConnected && this.imapClient) {
+                        await this.fetchUnseenEmails()
                     }
                 }
             } finally {
@@ -174,57 +182,46 @@ export class EmailCoreVendor extends EventEmitter {
     }
 
     /**
-     * Fetch new emails from a sequence range
+     * Fetch unseen emails. Must be called while the mailbox lock is held.
      */
-    private async fetchNewEmails(startSeq: number, endSeq: number): Promise<void> {
+    private async fetchUnseenEmails(): Promise<void> {
         if (!this.imapClient || !this.isConnected) return
 
-        const mailbox = this.config.mailbox || 'INBOX'
         const processedEmails: { uid: number; context: EmailBotContext }[] = []
 
         try {
-            const lock = await this.imapClient.getMailboxLock(mailbox)
+            for await (const message of this.imapClient.fetch({ seen: false }, {
+                source: true,
+                uid: true,
+            })) {
+                try {
+                    const parsed = await simpleParser(message.source)
+                    const emailContext = this.parseEmailToContext(parsed, message.uid)
 
-            try {
-                for await (const message of this.imapClient.fetch(`${startSeq}:${endSeq}`, {
-                    source: true,
-                    uid: true,
-                })) {
-                    try {
-                        const parsed = await simpleParser(message.source)
-                        const emailContext = this.parseEmailToContext(parsed, message.uid)
-
-                        if (emailContext) {
-                            processedEmails.push({ uid: message.uid, context: emailContext })
-                        }
-                    } catch (parseError) {
-                        console.error('[EmailProvider] Failed to parse email:', parseError)
+                    if (emailContext) {
+                        processedEmails.push({ uid: message.uid, context: emailContext })
                     }
+                } catch (parseError) {
+                    console.error('[EmailProvider] Failed to parse email:', parseError)
                 }
-
-                // Mark emails as read after fetching (outside the fetch iterator)
-                if (this.config.markAsRead !== false && processedEmails.length > 0) {
-                    const uids = processedEmails.map((e) => e.uid)
-                    try {
-                        await this.imapClient.messageFlagsAdd(uids, ['\\Seen'])
-                    } catch (flagError) {
-                        console.error('[EmailProvider] Failed to mark emails as read:', flagError)
-                    }
-                }
-            } finally {
-                lock.release()
             }
 
-            // Emit events after releasing the lock to avoid blocking
-            for (const { context } of processedEmails) {
-                console.log('[EmailProvider] About to emit message event')
-                console.log('[EmailProvider] Listener count for "message":', this.listenerCount('message'))
-                console.log('[EmailProvider] Listeners:', this.listeners('message').length)
-                this.emit('message', context)
-                console.log('[EmailProvider] Message event emitted')
+            if (this.config.markAsRead !== false && processedEmails.length > 0) {
+                const uids = processedEmails.map((e) => e.uid)
+                try {
+                    await this.imapClient.messageFlagsAdd(uids, ['\\Seen'])
+                } catch (flagError) {
+                    console.error('[EmailProvider] Failed to mark emails as read:', flagError)
+                }
             }
         } catch (error) {
             console.error('[EmailProvider] Failed to fetch new emails:', error)
+            return
+        }
+
+        // Emit events after processing to avoid blocking IMAP operations
+        for (const { context } of processedEmails) {
+            this.emit('message', context)
         }
     }
 
@@ -235,6 +232,16 @@ export class EmailCoreVendor extends EventEmitter {
         const fromAddress = this.extractAddress(parsed.from)
         if (!fromAddress) {
             console.warn('[EmailProvider] Email has no from address, skipping')
+            return null
+        }
+
+        // Filter out self-sent emails when writeMyself is 'none'
+        const selfEmail = this.config.imap.auth.user.toLowerCase()
+        const writeMyself = (this.config as Record<string, unknown>).writeMyself as string | undefined
+        if (
+            writeMyself === 'none' &&
+            fromAddress.address.toLowerCase() === selfEmail
+        ) {
             return null
         }
 
@@ -257,15 +264,13 @@ export class EmailCoreVendor extends EventEmitter {
                 : parsed.references
             : parsed.inReplyTo || parsed.messageId
 
-        // Determine attachment types for event routing
+        // Determine attachment types for event routing (consistent with other providers)
         const hasMedia = attachments.some(
             (a) => a.contentType.startsWith('image/') || a.contentType.startsWith('video/')
         )
         const hasAudio = attachments.some((a) => a.contentType.startsWith('audio/'))
         const hasDocument = attachments.some((a) => {
-            // application/* are documents (pdf, msword, etc.)
             if (a.contentType.startsWith('application/')) return true
-            // text/csv, text/calendar, etc. are documents, but NOT text/plain or text/html
             if (
                 a.contentType.startsWith('text/') &&
                 !a.contentType.includes('plain') &&
@@ -292,16 +297,13 @@ export class EmailCoreVendor extends EventEmitter {
                 break
         }
 
-        // Build body - generate special events for attachments
-        // Priority: MEDIA > VOICE_NOTE > DOCUMENT > text
+        // Generate special events for attachments (priority: MEDIA > VOICE_NOTE > DOCUMENT)
+        // Consistent with Baileys, Meta, and Twilio providers: always emit event regardless of body text
         if (hasMedia) {
-            // Media attachments always trigger MEDIA event
             body = utils.generateRefProvider('_event_media_')
         } else if (hasAudio) {
-            // Audio attachments trigger VOICE_NOTE event
             body = utils.generateRefProvider('_event_voice_note_')
-        } else if (hasDocument && !body.trim()) {
-            // Documents only trigger event if no text body
+        } else if (hasDocument) {
             body = utils.generateRefProvider('_event_document_')
         }
 
@@ -481,6 +483,11 @@ export class EmailCoreVendor extends EventEmitter {
      */
     public async disconnect(): Promise<void> {
         this.isConnected = false
+
+        if (this.reconnectTimer) {
+            clearTimeout(this.reconnectTimer)
+            this.reconnectTimer = null
+        }
 
         if (this.imapClient) {
             try {

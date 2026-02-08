@@ -243,7 +243,7 @@ describe('EmailCoreVendor', () => {
             expect(result.body).toBe('REF:_event_voice_note_')
         })
 
-        test('DOCUMENT only triggers when no text body', () => {
+        test('DOCUMENT triggers even with text body (consistent with other providers)', () => {
             const parsed = createMockParsedMail({
                 text: 'Please see attached document',
                 attachments: [{ contentType: 'application/pdf', filename: 'report.pdf' }],
@@ -252,8 +252,8 @@ describe('EmailCoreVendor', () => {
             const result = (vendor as any).parseEmailToContext(parsed, 1) as EmailBotContext
 
             expect(result).not.toBeNull()
-            // Should keep text body since it's not empty
-            expect(result.body).toBe('Please see attached document')
+            // DOCUMENT always triggers regardless of text body
+            expect(result.body).toBe('REF:_event_document_')
         })
 
         test('MEDIA triggers even with text body', () => {
@@ -354,6 +354,55 @@ describe('EmailCoreVendor', () => {
 
             expect(result).not.toBeNull()
             expect(result.subject).toBe('(no subject)')
+        })
+    })
+
+    describe('parseEmailToContext - self-email filtering', () => {
+        test('should filter self-sent emails when writeMyself is "none"', () => {
+            const vendorNoSelf = new EmailCoreVendor({
+                ...mockConfig,
+                writeMyself: 'none',
+            } as IEmailProviderArgs)
+            const parsed = createMockParsedMail({
+                text: 'Hello from myself',
+                from: 'test@example.com', // same as config auth user
+            })
+
+            const result = (vendorNoSelf as any).parseEmailToContext(parsed, 1)
+
+            expect(result).toBeNull()
+        })
+
+        test('should NOT filter self-sent emails when writeMyself is not "none"', () => {
+            const vendorAllowSelf = new EmailCoreVendor({
+                ...mockConfig,
+                writeMyself: 'both',
+            } as IEmailProviderArgs)
+            const parsed = createMockParsedMail({
+                text: 'Hello from myself',
+                from: 'test@example.com',
+            })
+
+            const result = (vendorAllowSelf as any).parseEmailToContext(parsed, 1) as EmailBotContext
+
+            expect(result).not.toBeNull()
+            expect(result.body).toBe('Hello from myself')
+        })
+
+        test('should allow emails from other senders when writeMyself is "none"', () => {
+            const vendorNoSelf = new EmailCoreVendor({
+                ...mockConfig,
+                writeMyself: 'none',
+            } as IEmailProviderArgs)
+            const parsed = createMockParsedMail({
+                text: 'Hello from someone else',
+                from: 'other@example.com',
+            })
+
+            const result = (vendorNoSelf as any).parseEmailToContext(parsed, 1) as EmailBotContext
+
+            expect(result).not.toBeNull()
+            expect(result.body).toBe('Hello from someone else')
         })
     })
 

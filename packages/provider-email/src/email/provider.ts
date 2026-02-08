@@ -50,14 +50,11 @@ class EmailProvider extends ProviderClass<EmailCoreVendor> {
      * Initialize the email vendor (IMAP/SMTP connections)
      */
     protected async initVendor(): Promise<EmailCoreVendor> {
-        console.log('[EmailProvider] initVendor() called')
         const vendor = new EmailCoreVendor(this.globalVendorArgs)
         this.vendor = vendor
 
-        // Connect to IMAP server
         await vendor.connect()
 
-        console.log('[EmailProvider] initVendor() returning vendor')
         return vendor
     }
 
@@ -99,45 +96,36 @@ class EmailProvider extends ProviderClass<EmailCoreVendor> {
     /**
      * Map vendor events to provider events
      */
-    protected busEvents = () => {
-        console.log('[EmailProvider] busEvents() called - registering listeners')
-        return [
-            {
-                event: 'auth_failure',
-                func: (payload: any) => this.emit('auth_failure', payload),
+    protected busEvents = () => [
+        {
+            event: 'auth_failure',
+            func: (payload: any) => this.emit('auth_failure', payload),
+        },
+        {
+            event: 'notice',
+            func: ({ instructions, title }: { instructions: string; title: string }) =>
+                this.emit('notice', { instructions, title }),
+        },
+        {
+            event: 'ready',
+            func: () => this.emit('ready', true),
+        },
+        {
+            event: 'message',
+            func: (payload: EmailBotContext) => {
+                this.conversationContexts.set(payload.from, payload)
+                this.emit('message', payload)
             },
-            {
-                event: 'ready',
-                func: () => {
-                    console.log('[EmailProvider] busEvents ready handler called')
-                    this.emit('ready', true)
-                },
-            },
-            {
-                event: 'message',
-                func: (payload: EmailBotContext) => {
-                    console.log('[EmailProvider] busEvents message handler called!')
-                    console.log('[EmailProvider] Payload from:', payload.from, 'body:', payload.body?.substring(0, 50))
-                    // Store context to enable thread replies
-                    this.conversationContexts.set(payload.from, payload)
-                    this.emit('message', payload)
-                    console.log('[EmailProvider] Provider emitted message to bot')
-                },
-            },
-            {
-                event: 'host',
-                func: (payload: any) => {
-                    this.emit('host', payload)
-                },
-            },
-            {
-                event: 'error',
-                func: (payload: any) => {
-                    console.error('[EmailProvider] Error:', payload)
-                },
-            },
-        ]
-    }
+        },
+        {
+            event: 'host',
+            func: (payload: any) => this.emit('host', payload),
+        },
+        {
+            event: 'error',
+            func: (payload: any) => console.error('[EmailProvider] Error:', payload),
+        },
+    ]
 
     /**
      * Send an email message
