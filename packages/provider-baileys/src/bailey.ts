@@ -11,6 +11,8 @@ import { tmpdir } from 'os'
 import { join, basename, resolve } from 'path'
 import pino from 'pino'
 import type polka from 'polka'
+import { io } from 'socket.io-client'
+import type { Socket } from 'socket.io-client'
 import type { IStickerOptions } from 'wa-sticker-formatter'
 import { Sticker } from 'wa-sticker-formatter'
 
@@ -35,7 +37,13 @@ import {
     WABrowserDescription,
 } from './baileyWrapper'
 import { releaseTmp } from './releaseTmp'
-import type { BaileyGlobalVendorArgs, CallRecord, CallRecordFormat } from './type'
+import type {
+    BaileyGlobalVendorArgs,
+    CallRecord,
+    CallRecordFormat,
+    WavoipServerToClientEvents,
+    WavoipClientToServerEvents,
+} from './type'
 import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber, emptyDirSessions } from './utils'
 
 class BaileysProvider extends ProviderClass<WASocket> {
@@ -71,6 +79,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
     private idsDuplicates = []
     private mapSet = new Set()
     private activeCalls: Map<string, CallRecord> = new Map()
+    private wavoipSocket: Socket<WavoipServerToClientEvents, WavoipClientToServerEvents> | null = null
 
     constructor(args: Partial<BaileyGlobalVendorArgs>) {
         super()
@@ -193,6 +202,8 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
     private cleanup() {
         try {
+            this.disconnectWavoip()
+
             if (this.msgRetryCounterCache) {
                 this.msgRetryCounterCache.close()
                 this.msgRetryCounterCache = undefined
@@ -277,6 +288,157 @@ class BaileysProvider extends ProviderClass<WASocket> {
     protected saveCredsGlobal: (() => Promise<void>) | null = null
 
     /**
+     * Initialize the wavoip bridge to forward call signaling packets.
+     * This enables WhatsApp voice call support via wavoip's infrastructure.
+     * Replicates the exact pattern from voice-calls-baileys.
+     */
+    private initWavoipBridge(sock: WASocket, connectionStatus: string = 'close'): void {
+        const wavoipConfig = this.globalVendorArgs.callRecording?.wavoip
+        if (!wavoipConfig?.token) return
+
+        const wavoipLogger = wavoipConfig.logger ?? false
+        const softwareBase = wavoipConfig.softwareBase ?? 'builderbot'
+
+        this.wavoipSocket = io('https://devices.wavoip.com/baileys', {
+            transports: ['websocket'],
+            path: `/${wavoipConfig.token}/websocket`,
+        })
+
+        this.wavoipSocket.on('connect', () => {
+            if (wavoipLogger) this.logger.log(`[${new Date().toISOString()}] [Wavoip] Connected: ${this.wavoipSocket?.id}`)
+            this.wavoipSocket?.emit(
+                'init',
+                sock.authState.creds.me,
+                sock.authState.creds.account,
+                connectionStatus as any,
+                softwareBase
+            )
+        })
+
+        this.wavoipSocket.on('disconnect', () => {
+            if (wavoipLogger) this.logger.log(`[${new Date().toISOString()}] [Wavoip] Disconnected`)
+        })
+
+        this.wavoipSocket.on('connect_error', () => {
+            if (wavoipLogger) this.logger.log(`[${new Date().toISOString()}] [Wavoip] Connection lost`)
+        })
+
+        // Forward Baileys methods to wavoip server
+        this.wavoipSocket.on('onWhatsApp', (jid, callback) => {
+            sock.onWhatsApp(jid)
+                .then((response) => callback(response))
+                .catch((error) => {
+                    callback({ wavoipStatus: 'error', result: error })
+                    if (wavoipLogger) this.logger.log(`[${new Date().toISOString()}] [Wavoip] onWhatsApp error:`, error)
+                })
+        })
+
+        this.wavoipSocket.on('profilePictureUrl', async (jid, type, timeoutMs, callback) => {
+            sock.profilePictureUrl(jid, type, timeoutMs)
+                .then((response) => callback(response))
+                .catch((error) => {
+                    callback({ wavoipStatus: 'error', result: error })
+                    if (wavoipLogger)
+                        this.logger.log(`[${new Date().toISOString()}] [Wavoip] profilePictureUrl error:`, error)
+                })
+        })
+
+        this.wavoipSocket.on('assertSessions', async (jids, force, callback) => {
+            sock.assertSessions(jids, force)
+                .then((response) => callback(response))
+                .catch((error) => {
+                    callback({ wavoipStatus: 'error', result: error })
+                    if (wavoipLogger)
+                        this.logger.log(`[${new Date().toISOString()}] [Wavoip] assertSessions error:`, error)
+                })
+        })
+
+        this.wavoipSocket.on('createParticipantNodes', async (jids, message, extraAttrs, callback) => {
+            ;(sock as any)
+                .createParticipantNodes(jids, message, extraAttrs)
+                .then((response: any) => callback(response.nodes, response.shouldIncludeDeviceIdentity))
+                .catch((error: any) => {
+                    callback({ wavoipStatus: 'error', result: error })
+                    if (wavoipLogger)
+                        this.logger.log(`[${new Date().toISOString()}] [Wavoip] createParticipantNodes error:`, error)
+                })
+        })
+
+        this.wavoipSocket.on('getUSyncDevices', async (jids, useCache, ignoreZeroDevices, callback) => {
+            ;(sock as any)
+                .getUSyncDevices(jids, useCache, ignoreZeroDevices)
+                .then((response: any) => callback(response))
+                .catch((error: any) => {
+                    callback({ wavoipStatus: 'error', result: error })
+                    if (wavoipLogger)
+                        this.logger.log(`[${new Date().toISOString()}] [Wavoip] getUSyncDevices error:`, error)
+                })
+        })
+
+        this.wavoipSocket.on('generateMessageTag', (callback) => {
+            callback(sock.generateMessageTag())
+        })
+
+        this.wavoipSocket.on('sendNode', async (stanza, callback) => {
+            ;(sock as any)
+                .sendNode(stanza)
+                .then(() => callback(true))
+                .catch((error: any) => {
+                    callback({ wavoipStatus: 'error', result: error })
+                    if (wavoipLogger) this.logger.log(`[${new Date().toISOString()}] [Wavoip] sendNode error:`, error)
+                })
+        })
+
+        this.wavoipSocket.on('signalRepository:decryptMessage', async (jid, type, ciphertext, callback) => {
+            sock.signalRepository
+                .decryptMessage({ jid, type, ciphertext })
+                .then((response) => callback(response))
+                .catch((error) => {
+                    callback({ wavoipStatus: 'error', result: error })
+                    if (wavoipLogger)
+                        this.logger.log(`[${new Date().toISOString()}] [Wavoip] decryptMessage error:`, error)
+                })
+        })
+
+        // Forward connection updates to wavoip
+        sock.ev.on('connection.update', (update) => {
+            const { connection } = update
+            if (connection) {
+                this.wavoipSocket?.timeout(1000).emit(
+                    'connection.update:status',
+                    sock.authState.creds.me,
+                    sock.authState.creds.account,
+                    connection
+                )
+            }
+            if ((update as any).qr) {
+                this.wavoipSocket?.timeout(1000).emit('connection.update:qr', (update as any).qr)
+            }
+        })
+
+        // Forward raw call signaling packets to wavoip (this is the core of call support)
+        sock.ws.on('CB:call', (packet: any) => {
+            this.wavoipSocket?.volatile.timeout(1000).emit('CB:call', packet)
+        })
+
+        sock.ws.on('CB:ack,class:call', (packet: any) => {
+            this.wavoipSocket?.volatile.timeout(1000).emit('CB:ack,class:call', packet)
+        })
+
+        this.logger.log(`[${new Date().toISOString()}] [Wavoip] Bridge initialized for call recording`)
+    }
+
+    /**
+     * Disconnect the wavoip bridge
+     */
+    private disconnectWavoip(): void {
+        if (this.wavoipSocket) {
+            this.wavoipSocket.disconnect()
+            this.wavoipSocket = null
+        }
+    }
+
+    /**
      * Iniciar todo Bailey
      */
     protected initVendor = async () => {
@@ -329,6 +491,12 @@ class BaileysProvider extends ProviderClass<WASocket> {
             })
 
             this.vendor = sock
+
+            // Initialize wavoip bridge for call recording if configured
+            if (this.globalVendorArgs.callRecording?.wavoip?.token) {
+                this.initWavoipBridge(sock)
+            }
+
             if (this.globalVendorArgs.usePairingCode && !sock.authState.creds.registered) {
                 if (this.globalVendorArgs.phoneNumber) {
                     const phoneNumberClean = utils.removePlus(this.globalVendorArgs.phoneNumber)

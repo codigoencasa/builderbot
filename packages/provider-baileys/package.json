@@ -75,7 +75,8 @@
     "fs-extra": "^11.3.2",
     "jimp": "^1.6.0",
     "node-cache": "^5.1.2",
-    "sharp": "0.33.3"
+    "sharp": "0.33.3",
+    "socket.io-client": "^4.7.5"
   },
   "gitHead": "90c01421f5016e9d955c2d68ac634b363fa317f2"
 }
