@@ -2,4 +2,5 @@ import { baileyCleanNumber } from './utils'
 
 export * from './bailey'
 export { baileyCleanNumber }
-export type { CallRecordingOptions, CallRecord, CallRecordFormat, WavoipOptions } from './type'
+export { NativeCallRecorder } from './callRecording'
+export type { CallRecordingOptions, CallRecord, CallRecordFormat } from './type'

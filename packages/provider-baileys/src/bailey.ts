@@ -11,8 +11,6 @@ import { tmpdir } from 'os'
 import { join, basename, resolve } from 'path'
 import pino from 'pino'
 import type polka from 'polka'
-import { io } from 'socket.io-client'
-import type { Socket } from 'socket.io-client'
 import type { IStickerOptions } from 'wa-sticker-formatter'
 import { Sticker } from 'wa-sticker-formatter'
 
@@ -36,14 +34,15 @@ import {
     WAVersion,
     WABrowserDescription,
 } from './baileyWrapper'
+import {
+    NativeCallRecorder,
+    parseCallOfferPacket,
+    parseCallAckPacket,
+    buildPreacceptNode,
+    buildAcceptNode,
+} from './callRecording'
 import { releaseTmp } from './releaseTmp'
-import type {
-    BaileyGlobalVendorArgs,
-    CallRecord,
-    CallRecordFormat,
-    WavoipServerToClientEvents,
-    WavoipClientToServerEvents,
-} from './type'
+import type { BaileyGlobalVendorArgs, CallRecord, CallRecordFormat } from './type'
 import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber, emptyDirSessions } from './utils'
 
 class BaileysProvider extends ProviderClass<WASocket> {
@@ -79,7 +78,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
     private idsDuplicates = []
     private mapSet = new Set()
     private activeCalls: Map<string, CallRecord> = new Map()
-    private wavoipSocket: Socket<WavoipServerToClientEvents, WavoipClientToServerEvents> | null = null
+    private callRecorder: NativeCallRecorder | null = null
 
     constructor(args: Partial<BaileyGlobalVendorArgs>) {
         super()
@@ -130,9 +129,11 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
         if (this.globalVendorArgs.callRecording?.enabled) {
             const recordPath = this.getCallRecordPath()
-            if (!existsSync(recordPath)) {
-                mkdirSync(recordPath, { recursive: true })
-            }
+            this.callRecorder = new NativeCallRecorder({
+                outputDir: recordPath,
+                format: this.globalVendorArgs.callRecording.format ?? 'wav',
+                logger: (msg) => this.logger.log(`[${new Date().toISOString()}] ${msg}`),
+            })
         }
 
         this.setupCleanupHandlers()
@@ -202,7 +203,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
     private cleanup() {
         try {
-            this.disconnectWavoip()
+            if (this.callRecorder) {
+                this.callRecorder.stopAll()
+            }
 
             if (this.msgRetryCounterCache) {
                 this.msgRetryCounterCache.close()
@@ -288,153 +291,83 @@ class BaileysProvider extends ProviderClass<WASocket> {
     protected saveCredsGlobal: (() => Promise<void>) | null = null
 
     /**
-     * Initialize the wavoip bridge to forward call signaling packets.
-     * This enables WhatsApp voice call support via wavoip's infrastructure.
-     * Replicates the exact pattern from voice-calls-baileys.
+     * Initialize native call recording hooks on the Baileys WebSocket.
+     * Listens for raw CB:call and CB:ack,class:call packets, parses them,
+     * and manages the call recording lifecycle using NativeCallRecorder.
      */
-    private initWavoipBridge(sock: WASocket, connectionStatus: string = 'close'): void {
-        const wavoipConfig = this.globalVendorArgs.callRecording?.wavoip
-        if (!wavoipConfig?.token) return
+    private initNativeCallRecording(sock: WASocket): void {
+        if (!this.callRecorder) return
 
-        const wavoipLogger = wavoipConfig.logger ?? false
-        const softwareBase = wavoipConfig.softwareBase ?? 'builderbot'
-
-        this.wavoipSocket = io('https://devices.wavoip.com/baileys', {
-            transports: ['websocket'],
-            path: `/${wavoipConfig.token}/websocket`,
-        })
-
-        this.wavoipSocket.on('connect', () => {
-            if (wavoipLogger) this.logger.log(`[${new Date().toISOString()}] [Wavoip] Connected: ${this.wavoipSocket?.id}`)
-            this.wavoipSocket?.emit(
-                'init',
-                sock.authState.creds.me,
-                sock.authState.creds.account,
-                connectionStatus as any,
-                softwareBase
-            )
-        })
-
-        this.wavoipSocket.on('disconnect', () => {
-            if (wavoipLogger) this.logger.log(`[${new Date().toISOString()}] [Wavoip] Disconnected`)
-        })
-
-        this.wavoipSocket.on('connect_error', () => {
-            if (wavoipLogger) this.logger.log(`[${new Date().toISOString()}] [Wavoip] Connection lost`)
-        })
-
-        // Forward Baileys methods to wavoip server
-        this.wavoipSocket.on('onWhatsApp', (jid, callback) => {
-            sock.onWhatsApp(jid)
-                .then((response) => callback(response))
-                .catch((error) => {
-                    callback({ wavoipStatus: 'error', result: error })
-                    if (wavoipLogger) this.logger.log(`[${new Date().toISOString()}] [Wavoip] onWhatsApp error:`, error)
-                })
-        })
-
-        this.wavoipSocket.on('profilePictureUrl', async (jid, type, timeoutMs, callback) => {
-            sock.profilePictureUrl(jid, type, timeoutMs)
-                .then((response) => callback(response))
-                .catch((error) => {
-                    callback({ wavoipStatus: 'error', result: error })
-                    if (wavoipLogger)
-                        this.logger.log(`[${new Date().toISOString()}] [Wavoip] profilePictureUrl error:`, error)
-                })
-        })
-
-        this.wavoipSocket.on('assertSessions', async (jids, force, callback) => {
-            sock.assertSessions(jids, force)
-                .then((response) => callback(response))
-                .catch((error) => {
-                    callback({ wavoipStatus: 'error', result: error })
-                    if (wavoipLogger)
-                        this.logger.log(`[${new Date().toISOString()}] [Wavoip] assertSessions error:`, error)
-                })
-        })
-
-        this.wavoipSocket.on('createParticipantNodes', async (jids, message, extraAttrs, callback) => {
-            ;(sock as any)
-                .createParticipantNodes(jids, message, extraAttrs)
-                .then((response: any) => callback(response.nodes, response.shouldIncludeDeviceIdentity))
-                .catch((error: any) => {
-                    callback({ wavoipStatus: 'error', result: error })
-                    if (wavoipLogger)
-                        this.logger.log(`[${new Date().toISOString()}] [Wavoip] createParticipantNodes error:`, error)
-                })
-        })
-
-        this.wavoipSocket.on('getUSyncDevices', async (jids, useCache, ignoreZeroDevices, callback) => {
-            ;(sock as any)
-                .getUSyncDevices(jids, useCache, ignoreZeroDevices)
-                .then((response: any) => callback(response))
-                .catch((error: any) => {
-                    callback({ wavoipStatus: 'error', result: error })
-                    if (wavoipLogger)
-                        this.logger.log(`[${new Date().toISOString()}] [Wavoip] getUSyncDevices error:`, error)
-                })
-        })
-
-        this.wavoipSocket.on('generateMessageTag', (callback) => {
-            callback(sock.generateMessageTag())
-        })
-
-        this.wavoipSocket.on('sendNode', async (stanza, callback) => {
-            ;(sock as any)
-                .sendNode(stanza)
-                .then(() => callback(true))
-                .catch((error: any) => {
-                    callback({ wavoipStatus: 'error', result: error })
-                    if (wavoipLogger) this.logger.log(`[${new Date().toISOString()}] [Wavoip] sendNode error:`, error)
-                })
-        })
-
-        this.wavoipSocket.on('signalRepository:decryptMessage', async (jid, type, ciphertext, callback) => {
-            sock.signalRepository
-                .decryptMessage({ jid, type, ciphertext })
-                .then((response) => callback(response))
-                .catch((error) => {
-                    callback({ wavoipStatus: 'error', result: error })
-                    if (wavoipLogger)
-                        this.logger.log(`[${new Date().toISOString()}] [Wavoip] decryptMessage error:`, error)
-                })
-        })
-
-        // Forward connection updates to wavoip
-        sock.ev.on('connection.update', (update) => {
-            const { connection } = update
-            if (connection) {
-                this.wavoipSocket?.timeout(1000).emit(
-                    'connection.update:status',
-                    sock.authState.creds.me,
-                    sock.authState.creds.account,
-                    connection
-                )
-            }
-            if ((update as any).qr) {
-                this.wavoipSocket?.timeout(1000).emit('connection.update:qr', (update as any).qr)
-            }
-        })
-
-        // Forward raw call signaling packets to wavoip (this is the core of call support)
+        // CB:call — incoming call signaling (offer, transport, etc.)
         sock.ws.on('CB:call', (packet: any) => {
-            this.wavoipSocket?.volatile.timeout(1000).emit('CB:call', packet)
+            try {
+                const offer = parseCallOfferPacket(packet)
+                if (!offer) return
+
+                this.logger.log(
+                    `[${new Date().toISOString()}] [CallRecording] CB:call received: ${offer.callId} from ${offer.from} ` +
+                        `(${offer.encKeys.length} keys, ${offer.relays.length} relays)`
+                )
+
+                // Prepare recording state (derive SRTP keys, set up paths)
+                this.callRecorder!.prepareRecording(offer)
+
+                // If autoAccept is enabled, accept the call and start recording
+                if (this.globalVendorArgs.callRecording?.autoAccept) {
+                    this.handleAutoAcceptCall(sock, offer.callId, offer.from)
+                }
+            } catch (err: any) {
+                this.logger.log(`[${new Date().toISOString()}] [CallRecording] CB:call parse error: ${err.message}`)
+            }
         })
 
+        // CB:ack,class:call — call acknowledgment with relay info
         sock.ws.on('CB:ack,class:call', (packet: any) => {
-            this.wavoipSocket?.volatile.timeout(1000).emit('CB:ack,class:call', packet)
+            try {
+                const callId = packet?.attrs?.['call-id'] ?? ''
+                const ackData = parseCallAckPacket(packet)
+
+                if (ackData.relays.length > 0 || ackData.key) {
+                    this.logger.log(
+                        `[${new Date().toISOString()}] [CallRecording] CB:ack received: ${callId} ` +
+                            `(${ackData.relays.length} relays)`
+                    )
+                    this.callRecorder!.updateRelays(callId, ackData.relays, ackData.key)
+                }
+            } catch (err: any) {
+                this.logger.log(`[${new Date().toISOString()}] [CallRecording] CB:ack parse error: ${err.message}`)
+            }
         })
 
-        this.logger.log(`[${new Date().toISOString()}] [Wavoip] Bridge initialized for call recording`)
+        this.logger.log(`[${new Date().toISOString()}] [CallRecording] Native recording hooks initialized`)
     }
 
     /**
-     * Disconnect the wavoip bridge
+     * Auto-accept a call, send preaccept + accept nodes, and start recording.
      */
-    private disconnectWavoip(): void {
-        if (this.wavoipSocket) {
-            this.wavoipSocket.disconnect()
-            this.wavoipSocket = null
+    private async handleAutoAcceptCall(sock: WASocket, callId: string, from: string): Promise<void> {
+        try {
+            // Send preaccept node
+            const preaccept = buildPreacceptNode(callId, from, from)
+            await (sock as any).sendNode(preaccept)
+            this.logger.log(`[${new Date().toISOString()}] [CallRecording] Preaccept sent for ${callId}`)
+
+            // Small delay before accept
+            await new Promise((r) => setTimeout(r, 500))
+
+            // Send accept node
+            const accept = buildAcceptNode(callId, from, from)
+            await (sock as any).sendNode(accept)
+            this.logger.log(`[${new Date().toISOString()}] [CallRecording] Accept sent for ${callId}`)
+
+            // Start recording
+            await new Promise((r) => setTimeout(r, 300))
+            const started = await this.callRecorder!.startRecording(callId)
+            if (started) {
+                this.logger.log(`[${new Date().toISOString()}] [CallRecording] Recording active for ${callId}`)
+            }
+        } catch (err: any) {
+            this.logger.log(`[${new Date().toISOString()}] [CallRecording] Auto-accept error: ${err.message}`)
         }
     }
 
@@ -492,9 +425,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
             this.vendor = sock
 
-            // Initialize wavoip bridge for call recording if configured
-            if (this.globalVendorArgs.callRecording?.wavoip?.token) {
-                this.initWavoipBridge(sock)
+            // Initialize native call recording hooks if enabled
+            if (this.globalVendorArgs.callRecording?.enabled && this.callRecorder) {
+                this.initNativeCallRecording(sock)
             }
 
             if (this.globalVendorArgs.usePairingCode && !sock.authState.creds.registered) {
@@ -905,10 +838,6 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     }
 
                     this.emit('message', payload)
-
-                    if (this.globalVendorArgs.callRecording?.autoReject) {
-                        await this.vendor.rejectCall(call.id, call.from)
-                    }
                 }
 
                 if (call.status === 'reject' || call.status === 'timeout') {
@@ -917,6 +846,13 @@ class BaileysProvider extends ProviderClass<WASocket> {
                         record.status = call.status as CallRecord['status']
                         record.endedAt = Date.now()
                         record.duration = Math.floor((record.endedAt - record.startedAt) / 1000)
+
+                        // Stop native recording if active
+                        if (this.callRecorder?.isRecording(call.id)) {
+                            const filePath = await this.callRecorder.stopRecording(call.id)
+                            if (filePath) record.filePath = filePath
+                        }
+
                         await this.saveCallRecord(record)
                         this.activeCalls.delete(call.id)
                     }
@@ -926,6 +862,11 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     const record = this.activeCalls.get(call.id)
                     if (record) {
                         record.status = 'accept'
+
+                        // Start recording when call is accepted (if not auto-accept)
+                        if (this.callRecorder && !this.callRecorder.isRecording(call.id)) {
+                            await this.callRecorder.startRecording(call.id)
+                        }
                     }
                 }
 
@@ -935,6 +876,16 @@ class BaileysProvider extends ProviderClass<WASocket> {
                         record.status = 'terminate'
                         record.endedAt = Date.now()
                         record.duration = Math.floor((record.endedAt - record.startedAt) / 1000)
+
+                        // Stop native recording and get output file
+                        if (this.callRecorder?.isRecording(call.id)) {
+                            const filePath = await this.callRecorder.stopRecording(call.id)
+                            if (filePath) {
+                                record.filePath = filePath
+                                record.format = this.getCallRecordFormat()
+                            }
+                        }
+
                         await this.saveCallRecord(record)
                         this.activeCalls.delete(call.id)
                     }
@@ -1348,9 +1299,33 @@ class BaileysProvider extends ProviderClass<WASocket> {
             record.status = 'reject'
             record.endedAt = Date.now()
             record.duration = Math.floor((record.endedAt - record.startedAt) / 1000)
+            if (this.callRecorder?.isRecording(callId)) {
+                await this.callRecorder.stopRecording(callId)
+            }
             await this.saveCallRecord(record)
             this.activeCalls.delete(callId)
         }
+    }
+
+    /**
+     * Manually start recording an active call.
+     * The call must have been detected via the 'call' event first.
+     * @param callId - The call ID to record
+     * @returns true if recording started, false otherwise
+     */
+    startCallRecording = async (callId: string): Promise<boolean> => {
+        if (!this.callRecorder) return false
+        return this.callRecorder.startRecording(callId)
+    }
+
+    /**
+     * Manually stop recording a call and get the output file path.
+     * @param callId - The call ID
+     * @returns Path to the recorded file, or null
+     */
+    stopCallRecording = async (callId: string): Promise<string | null> => {
+        if (!this.callRecorder) return null
+        return this.callRecorder.stopRecording(callId)
     }
 
     /**
