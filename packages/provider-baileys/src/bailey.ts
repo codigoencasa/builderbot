@@ -38,11 +38,13 @@ import {
     NativeCallRecorder,
     parseCallOfferPacket,
     parseCallAckPacket,
-    buildPreacceptNode,
+    buildCustomAck,
     buildAcceptNode,
+    buildTerminateNode,
+    extractCallKeyFromDecryptedMessage,
 } from './callRecording'
 import { releaseTmp } from './releaseTmp'
-import type { BaileyGlobalVendorArgs, CallRecord, CallRecordFormat } from './type'
+import type { BaileyGlobalVendorArgs, CallRecord, CallRecordFormat, ParsedCallOffer } from './type'
 import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber, emptyDirSessions } from './utils'
 
 class BaileysProvider extends ProviderClass<WASocket> {
@@ -299,18 +301,32 @@ class BaileysProvider extends ProviderClass<WASocket> {
         if (!this.callRecorder) return
 
         // CB:call — incoming call signaling (offer, transport, etc.)
-        sock.ws.on('CB:call', (packet: any) => {
+        sock.ws.on('CB:call', async (packet: any) => {
             try {
                 const offer = parseCallOfferPacket(packet)
                 if (!offer) return
 
                 this.logger.log(
                     `[${new Date().toISOString()}] [CallRecording] CB:call received: ${offer.callId} from ${offer.from} ` +
-                        `(${offer.encKeys.length} keys, ${offer.relays.length} relays)`
+                        `(${offer.encKeys.length} enc nodes, ${offer.relays.length} relays)`
                 )
 
-                // Prepare recording state (derive SRTP keys, set up paths)
+                // Send custom ACK (required by WhatsApp protocol after receiving any call node)
+                const ack = buildCustomAck(packet)
+                try {
+                    await (sock as any).sendNode(ack)
+                    this.logger.log(`[${new Date().toISOString()}] [CallRecording] Custom ACK sent for ${offer.callId}`)
+                } catch (ackErr: any) {
+                    this.logger.log(`[${new Date().toISOString()}] [CallRecording] Custom ACK error: ${ackErr.message}`)
+                }
+
+                // Prepare recording state
                 this.callRecorder!.prepareRecording(offer)
+
+                // Attempt to decrypt enc nodes via Signal Protocol to extract callKey (32 bytes)
+                if (offer.encKeys.length > 0) {
+                    this.decryptCallKey(sock, offer)
+                }
 
                 // If autoAccept is enabled, accept the call and start recording
                 if (this.globalVendorArgs.callRecording?.autoAccept) {
@@ -327,12 +343,12 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 const callId = packet?.attrs?.['call-id'] ?? ''
                 const ackData = parseCallAckPacket(packet)
 
-                if (ackData.relays.length > 0 || ackData.key) {
+                if (ackData.relays.length > 0 || ackData.relayKey) {
                     this.logger.log(
                         `[${new Date().toISOString()}] [CallRecording] CB:ack received: ${callId} ` +
-                            `(${ackData.relays.length} relays)`
+                            `(${ackData.relays.length} relays, key: ${ackData.relayKey ? 'yes' : 'no'})`
                     )
-                    this.callRecorder!.updateRelays(callId, ackData.relays, ackData.key)
+                    this.callRecorder!.updateRelays(callId, ackData.relays, ackData.relayKey, ackData.tokens)
                 }
             } catch (err: any) {
                 this.logger.log(`[${new Date().toISOString()}] [CallRecording] CB:ack parse error: ${err.message}`)
@@ -343,25 +359,81 @@ class BaileysProvider extends ProviderClass<WASocket> {
     }
 
     /**
-     * Auto-accept a call, send preaccept + accept nodes, and start recording.
+     * Attempt to decrypt enc nodes from call offer using Signal Protocol.
+     * Extracts the 32-byte callKey (SRTP master secret) and sets it on the recorder.
+     *
+     * Flow (verified from WA-Calls helper.ts decodePkmsg):
+     *   enc node ciphertext → Signal Protocol decrypt → protobuf decode → callKey (32 bytes)
+     */
+    private async decryptCallKey(sock: WASocket, offer: ParsedCallOffer): Promise<void> {
+        try {
+            const signalRepo = (sock as any).signalRepository
+            if (!signalRepo) {
+                this.logger.log(`[${new Date().toISOString()}] [CallRecording] No signalRepository available for decryption`)
+                return
+            }
+
+            for (const encData of offer.encKeys) {
+                try {
+                    // Attempt Signal Protocol decryption (pkmsg or msg type)
+                    let decrypted: Uint8Array | null = null
+
+                    if (signalRepo.decryptMessage) {
+                        decrypted = await signalRepo.decryptMessage({
+                            jid: offer.from,
+                            type: 'pkmsg',
+                            ciphertext: encData,
+                        })
+                    }
+
+                    if (!decrypted && signalRepo.decryptSignalProto) {
+                        decrypted = await signalRepo.decryptSignalProto(offer.from, 'pkmsg', encData)
+                    }
+
+                    if (!decrypted) continue
+
+                    // Extract callKey from decrypted protobuf
+                    const callKey = extractCallKeyFromDecryptedMessage(decrypted)
+                    if (callKey) {
+                        this.callRecorder!.setMasterSecret(offer.callId, callKey)
+                        this.logger.log(
+                            `[${new Date().toISOString()}] [CallRecording] callKey extracted for ${offer.callId} (${callKey.length} bytes)`
+                        )
+                        return
+                    }
+                } catch (decErr: any) {
+                    this.logger.log(
+                        `[${new Date().toISOString()}] [CallRecording] enc node decrypt attempt failed: ${decErr.message}`
+                    )
+                }
+            }
+
+            this.logger.log(
+                `[${new Date().toISOString()}] [CallRecording] Could not extract callKey from ${offer.encKeys.length} enc nodes for ${offer.callId}`
+            )
+        } catch (err: any) {
+            this.logger.log(`[${new Date().toISOString()}] [CallRecording] decryptCallKey error: ${err.message}`)
+        }
+    }
+
+    /**
+     * Auto-accept a call, send accept node, and start recording.
+     * Verified accept structure from WPPConnect wa-js accept.ts.
      */
     private async handleAutoAcceptCall(sock: WASocket, callId: string, from: string): Promise<void> {
         try {
-            // Send preaccept node
-            const preaccept = buildPreacceptNode(callId, from, from)
-            await (sock as any).sendNode(preaccept)
-            this.logger.log(`[${new Date().toISOString()}] [CallRecording] Preaccept sent for ${callId}`)
-
-            // Small delay before accept
+            // Small delay to allow relay info to arrive via CB:ack
             await new Promise((r) => setTimeout(r, 500))
 
-            // Send accept node
+            // Send accept node (verified from WPPConnect accept.ts)
             const accept = buildAcceptNode(callId, from, from)
             await (sock as any).sendNode(accept)
             this.logger.log(`[${new Date().toISOString()}] [CallRecording] Accept sent for ${callId}`)
 
-            // Start recording
+            // Wait for media session to establish
             await new Promise((r) => setTimeout(r, 300))
+
+            // Start recording (connects UDP to relay, starts FFmpeg)
             const started = await this.callRecorder!.startRecording(callId)
             if (started) {
                 this.logger.log(`[${new Date().toISOString()}] [CallRecording] Recording active for ${callId}`)

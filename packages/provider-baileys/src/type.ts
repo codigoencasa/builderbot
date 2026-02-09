@@ -25,6 +25,8 @@ export interface RelayEndpoint {
     ip: string
     port: number
     token?: Uint8Array
+    relayId?: string
+    tokenId?: string
 }
 
 export interface ParsedCallOffer {
