@@ -309,9 +309,10 @@ export function buildCustomAck(packet: any): any {
  * }
  */
 export function buildAcceptNode(callId: string, to: string, callCreator: string): any {
+    const id = randomBytes(16).toString('hex').toUpperCase().slice(0, 20)
     return {
         tag: 'call',
-        attrs: { to },
+        attrs: { to, id },
         content: [
             {
                 tag: 'accept',
@@ -335,9 +336,10 @@ export function buildAcceptNode(callId: string, to: string, callCreator: string)
  * Verified from WPPConnect wa-js end.ts
  */
 export function buildTerminateNode(callId: string, to: string, callCreator: string): any {
+    const id = randomBytes(16).toString('hex').toUpperCase().slice(0, 20)
     return {
         tag: 'call',
-        attrs: { to },
+        attrs: { to, id },
         content: [
             {
                 tag: 'terminate',
@@ -576,16 +578,40 @@ export function extractCallKeyFromDecryptedMessage(decryptedBuffer: Uint8Array):
         // Import proto from baileys for protobuf decoding
         const { proto } = require('baileys')
 
-        // The decrypted buffer may have random padding (unpadRandomMax16)
-        // Try to find valid protobuf data
-        const msg = proto.Message.decode(decryptedBuffer)
-        if (msg?.call?.callKey && msg.call.callKey.length >= 32) {
-            return msg.call.callKey
+        // Signal Protocol adds random padding (unpadRandomMax16):
+        // Last byte indicates how many padding bytes to remove
+        const unpadded = unpadRandomMax16(decryptedBuffer)
+
+        // Try unpadded first, then raw buffer as fallback
+        for (const buf of [unpadded, decryptedBuffer]) {
+            try {
+                const msg = proto.Message.decode(buf)
+                if (msg?.call?.callKey && msg.call.callKey.length >= 32) {
+                    return msg.call.callKey
+                }
+            } catch {
+                // try next
+            }
         }
+
         return null
     } catch {
         return null
     }
+}
+
+/**
+ * Remove Signal Protocol random padding (unpadRandomMax16).
+ * The last byte N indicates N bytes of padding at the end.
+ * Verified from WA-Calls helper.ts decodePkmsg() flow.
+ */
+function unpadRandomMax16(data: Uint8Array): Uint8Array {
+    if (data.length === 0) return data
+    const paddingLen = data[data.length - 1]
+    if (paddingLen > 0 && paddingLen <= 16 && paddingLen < data.length) {
+        return data.slice(0, data.length - paddingLen)
+    }
+    return data
 }
 
 // ─── Native Call Recorder ───────────────────────────────────────────────────
