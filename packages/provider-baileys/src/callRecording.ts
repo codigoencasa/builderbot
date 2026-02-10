@@ -28,7 +28,7 @@ import type { ChildProcess } from 'child_process'
 import { EventEmitter } from 'events'
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg'
 
-import type { ParsedCallOffer, RelayEndpoint, SRTPSessionKeys, CallRecordFormat } from './type'
+import type { ParsedCallOffer, EncNodeData, RelayEndpoint, SRTPSessionKeys, CallRecordFormat } from './type'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -97,17 +97,26 @@ export function parseCallOfferPacket(packet: any): ParsedCallOffer | null {
         const callCreator = offerNode.attrs?.['call-creator'] ?? from
         const platformType = offerNode.attrs?.['platform-type'] ?? ''
 
-        const encKeys: Uint8Array[] = []
+        const encNodes: EncNodeData[] = []
         const relays: RelayEndpoint[] = []
 
         const children = Array.isArray(offerNode.content) ? offerNode.content : []
 
+        const extractEncNode = (node: any): void => {
+            if (node.tag === 'enc' && node.content instanceof Uint8Array) {
+                encNodes.push({
+                    ciphertext: node.content,
+                    type: node.attrs?.type ?? 'pkmsg',
+                    version: node.attrs?.v,
+                    count: node.attrs?.count,
+                })
+            }
+        }
+
         for (const child of children) {
             // Enc nodes: Signal Protocol encrypted, contain callKey (32 bytes) after decryption
             // Structure: { tag: 'enc', attrs: { v:'2', type:'pkmsg'|'msg', count:'0' }, content: ciphertext }
-            if (child.tag === 'enc' && child.content instanceof Uint8Array) {
-                encKeys.push(child.content)
-            }
+            extractEncNode(child)
 
             // Relay endpoints in te2 nodes: 6 bytes = IP(4) + Port(2 BE)
             // Verified from parseRelayResponse.ts
@@ -125,9 +134,7 @@ export function parseCallOfferPacket(packet: any): ParsedCallOffer | null {
                 for (const toNode of child.content) {
                     if (toNode.tag === 'to' && Array.isArray(toNode.content)) {
                         for (const encNode of toNode.content) {
-                            if (encNode.tag === 'enc' && encNode.content instanceof Uint8Array) {
-                                encKeys.push(encNode.content)
-                            }
+                            extractEncNode(encNode)
                         }
                     }
                 }
@@ -136,7 +143,7 @@ export function parseCallOfferPacket(packet: any): ParsedCallOffer | null {
 
         if (!callId && !from) return null
 
-        return { callId, from, encKeys, relays, platformType }
+        return { callId, from, encNodes, relays, platformType }
     } catch {
         return null
     }
@@ -268,22 +275,18 @@ export function parseCallAckPacket(packet: any): {
  * Verified from WA-Calls helper.ts sendCustomAck()
  */
 export function buildCustomAck(packet: any): any {
-    const stanza: any = {
-        tag: 'ack',
-        attrs: {
-            id: packet.attrs?.id ?? '',
-            to: packet.attrs?.from ?? '',
-            class: 'call',
-        },
-        content: undefined,
+    const attrs: Record<string, string> = {
+        id: packet.attrs?.id ?? '',
+        to: packet.attrs?.from ?? '',
+        class: 'call',
     }
 
     // Add type from the first content child (e.g., 'offer', 'transport')
     if (Array.isArray(packet.content) && packet.content.length > 0) {
-        stanza.attrs.type = packet.content[0].tag
+        attrs.type = packet.content[0].tag
     }
 
-    return stanza
+    return { tag: 'ack', attrs }
 }
 
 /**
@@ -317,10 +320,10 @@ export function buildAcceptNode(callId: string, to: string, callCreator: string)
                     'call-creator': callCreator,
                 },
                 content: [
-                    { tag: 'audio', attrs: { enc: 'opus', rate: '16000' }, content: null },
-                    { tag: 'audio', attrs: { enc: 'opus', rate: '8000' }, content: null },
-                    { tag: 'net', attrs: { medium: '3' }, content: null },
-                    { tag: 'encopt', attrs: { keygen: '2' }, content: null },
+                    { tag: 'audio', attrs: { enc: 'opus', rate: '16000' } },
+                    { tag: 'audio', attrs: { enc: 'opus', rate: '8000' } },
+                    { tag: 'net', attrs: { medium: '3' } },
+                    { tag: 'encopt', attrs: { keygen: '2' } },
                 ],
             },
         ],
@@ -342,7 +345,6 @@ export function buildTerminateNode(callId: string, to: string, callCreator: stri
                     'call-id': callId,
                     'call-creator': callCreator,
                 },
-                content: null,
             },
         ],
     }

@@ -29,10 +29,17 @@ export interface RelayEndpoint {
     tokenId?: string
 }
 
+export interface EncNodeData {
+    ciphertext: Uint8Array
+    type: 'pkmsg' | 'msg' | string
+    version?: string
+    count?: string
+}
+
 export interface ParsedCallOffer {
     callId: string
     from: string
-    encKeys: Uint8Array[]
+    encNodes: EncNodeData[]
     relays: RelayEndpoint[]
     platformType?: string
 }

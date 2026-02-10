@@ -38,9 +38,7 @@ import {
     NativeCallRecorder,
     parseCallOfferPacket,
     parseCallAckPacket,
-    buildCustomAck,
     buildAcceptNode,
-    buildTerminateNode,
     extractCallKeyFromDecryptedMessage,
 } from './callRecording'
 import { releaseTmp } from './releaseTmp'
@@ -80,6 +78,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
     private idsDuplicates = []
     private mapSet = new Set()
     private activeCalls: Map<string, CallRecord> = new Map()
+    private processedCallIds: Set<string> = new Set()
     private callRecorder: NativeCallRecorder | null = null
 
     constructor(args: Partial<BaileyGlobalVendorArgs>) {
@@ -304,33 +303,35 @@ class BaileysProvider extends ProviderClass<WASocket> {
         sock.ws.on('CB:call', async (packet: any) => {
             try {
                 const offer = parseCallOfferPacket(packet)
-                if (!offer) return
+                if (!offer || !offer.callId) return
+
+                // Skip duplicate CB:call events for the same callId
+                if (this.processedCallIds.has(offer.callId)) {
+                    return
+                }
+                // Only mark as processed when we have enc nodes (the primary offer)
+                if (offer.encNodes.length > 0) {
+                    this.processedCallIds.add(offer.callId)
+                    // Cleanup old callIds after 5 minutes
+                    setTimeout(() => this.processedCallIds.delete(offer.callId), 300000)
+                }
 
                 this.logger.log(
                     `[${new Date().toISOString()}] [CallRecording] CB:call received: ${offer.callId} from ${offer.from} ` +
-                        `(${offer.encKeys.length} enc nodes, ${offer.relays.length} relays)`
+                        `(${offer.encNodes.length} enc nodes, ${offer.relays.length} relays)`
                 )
-
-                // Send custom ACK (required by WhatsApp protocol after receiving any call node)
-                const ack = buildCustomAck(packet)
-                try {
-                    await (sock as any).sendNode(ack)
-                    this.logger.log(`[${new Date().toISOString()}] [CallRecording] Custom ACK sent for ${offer.callId}`)
-                } catch (ackErr: any) {
-                    this.logger.log(`[${new Date().toISOString()}] [CallRecording] Custom ACK error: ${ackErr.message}`)
-                }
 
                 // Prepare recording state
                 this.callRecorder!.prepareRecording(offer)
 
                 // Attempt to decrypt enc nodes via Signal Protocol to extract callKey (32 bytes)
-                if (offer.encKeys.length > 0) {
-                    this.decryptCallKey(sock, offer)
+                if (offer.encNodes.length > 0) {
+                    await this.decryptCallKey(sock, offer)
                 }
 
                 // If autoAccept is enabled, accept the call and start recording
                 if (this.globalVendorArgs.callRecording?.autoAccept) {
-                    this.handleAutoAcceptCall(sock, offer.callId, offer.from)
+                    await this.handleAutoAcceptCall(sock, offer.callId, offer.from)
                 }
             } catch (err: any) {
                 this.logger.log(`[${new Date().toISOString()}] [CallRecording] CB:call parse error: ${err.message}`)
@@ -373,24 +374,78 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 return
             }
 
-            for (const encData of offer.encKeys) {
+            // The from JID may be @lid format; try to resolve to @s.whatsapp.net for Signal sessions
+            let senderJid = offer.from
+            if (senderJid.includes('@lid')) {
                 try {
-                    // Attempt Signal Protocol decryption (pkmsg or msg type)
+                    const pn = await this.getPNForLID(senderJid)
+                    if (pn) {
+                        senderJid = pn
+                        this.logger.log(`[${new Date().toISOString()}] [CallRecording] Resolved LID → ${senderJid}`)
+                    }
+                } catch {
+                    // keep original JID
+                }
+            }
+
+            for (const encNode of offer.encNodes) {
+                const encType = encNode.type || 'pkmsg'
+                this.logger.log(
+                    `[${new Date().toISOString()}] [CallRecording] Attempting decrypt: type=${encType}, v=${encNode.version}, ` +
+                        `jid=${senderJid}, ciphertext=${encNode.ciphertext.length} bytes`
+                )
+
+                try {
                     let decrypted: Uint8Array | null = null
 
-                    if (signalRepo.decryptMessage) {
-                        decrypted = await signalRepo.decryptMessage({
-                            jid: offer.from,
-                            type: 'pkmsg',
-                            ciphertext: encData,
-                        })
+                    // Method 1: decryptMessage (Baileys v7+)
+                    if (!decrypted && signalRepo.decryptMessage) {
+                        try {
+                            decrypted = await signalRepo.decryptMessage({
+                                jid: senderJid,
+                                type: encType,
+                                ciphertext: encNode.ciphertext,
+                            })
+                        } catch (e: any) {
+                            this.logger.log(`[${new Date().toISOString()}] [CallRecording] decryptMessage failed: ${e.message}`)
+                        }
                     }
 
+                    // Method 2: decryptSignalProto (older API)
                     if (!decrypted && signalRepo.decryptSignalProto) {
-                        decrypted = await signalRepo.decryptSignalProto(offer.from, 'pkmsg', encData)
+                        try {
+                            decrypted = await signalRepo.decryptSignalProto(senderJid, encType, encNode.ciphertext)
+                        } catch (e: any) {
+                            this.logger.log(`[${new Date().toISOString()}] [CallRecording] decryptSignalProto failed: ${e.message}`)
+                        }
                     }
 
-                    if (!decrypted) continue
+                    // Method 3: Try with 'msg' type if 'pkmsg' failed
+                    if (!decrypted && encType === 'pkmsg') {
+                        if (signalRepo.decryptMessage) {
+                            try {
+                                decrypted = await signalRepo.decryptMessage({
+                                    jid: senderJid,
+                                    type: 'msg',
+                                    ciphertext: encNode.ciphertext,
+                                })
+                            } catch { /* ignore */ }
+                        }
+                        if (!decrypted && signalRepo.decryptSignalProto) {
+                            try {
+                                decrypted = await signalRepo.decryptSignalProto(senderJid, 'msg', encNode.ciphertext)
+                            } catch { /* ignore */ }
+                        }
+                    }
+
+                    if (!decrypted) {
+                        this.logger.log(`[${new Date().toISOString()}] [CallRecording] Could not decrypt enc node (type=${encType})`)
+                        continue
+                    }
+
+                    this.logger.log(
+                        `[${new Date().toISOString()}] [CallRecording] Decrypted ${decrypted.length} bytes, extracting callKey...`
+                    )
 
                     // Extract callKey from decrypted protobuf
                     const callKey = extractCallKeyFromDecryptedMessage(decrypted)
@@ -409,7 +464,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             }
 
             this.logger.log(
-                `[${new Date().toISOString()}] [CallRecording] Could not extract callKey from ${offer.encKeys.length} enc nodes for ${offer.callId}`
+                `[${new Date().toISOString()}] [CallRecording] Could not extract callKey from ${offer.encNodes.length} enc nodes for ${offer.callId}`
             )
         } catch (err: any) {
             this.logger.log(`[${new Date().toISOString()}] [CallRecording] decryptCallKey error: ${err.message}`)
