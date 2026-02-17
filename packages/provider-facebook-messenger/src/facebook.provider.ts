@@ -141,6 +141,31 @@ class FacebookMessengerProvider extends ProviderClass<MessengerEvents> {
                 throw new Error(`Unexpected response status: ${response.status}`)
             }
         } catch (err) {
+            const errorMessage = err?.response?.data?.error?.message || err?.message || ''
+            const isFacebookLoginError =
+                errorMessage.includes('inicio de sesión con Facebook no está disponible') ||
+                errorMessage.includes('Facebook login is not available') ||
+                errorMessage.includes('updating other details') ||
+                errorMessage.includes('actualizando otros detalles')
+
+            if (isFacebookLoginError) {
+                console.error('[FacebookMessenger] Facebook Login unavailable - app configuration incomplete')
+                this.emit('auth_failure', {
+                    title: '⚠️ FACEBOOK APP CONFIG ERROR ⚠️',
+                    instructions: [
+                        'Facebook Login is not available because the app configuration is incomplete.',
+                        'Go to developers.facebook.com and verify:',
+                        '1. Privacy Policy URL is set in App Settings > Basic',
+                        '2. App Icon and Category are configured',
+                        '3. Facebook Login for Business is properly set up with Valid OAuth Redirect URIs',
+                        '4. All required fields in App Settings > Basic are completed',
+                        '5. Switch the app from Development to Live mode if needed',
+                    ],
+                    payload: { qr: 'no_need_qr' },
+                })
+                return
+            }
+
             if (axios.isAxiosError(err)) {
                 console.error('[FacebookMessenger] Error checking status:', {
                     error: err.response?.data || err.message,

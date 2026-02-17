@@ -84,25 +84,50 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             this.vendor.emit('host', host)
             this.emit('ready')
         } catch (err) {
+            const errorMessage = err?.response?.data?.error?.message || err.message || ''
+            const errorCode = err?.response?.data?.error?.code
+            const errorSubcode = err?.response?.data?.error?.error_subcode
+
             const errorMap = {
                 'Invalid token': { title: '🔑 TOKEN ERROR', msg: 'Check META_ACCESS_TOKEN in .env' },
                 timeout: { title: '🌐 TIMEOUT', msg: 'Meta API not responding' },
                 '401': { title: '🔐 UNAUTHORIZED', msg: 'Invalid credentials' },
                 '403': { title: '🚫 FORBIDDEN', msg: 'Token lacks permissions' },
                 '500': { title: '🔧 SERVER ERROR', msg: 'Meta API issues' },
+                facebook_login: {
+                    title: '⚠️ FACEBOOK APP CONFIG ERROR',
+                    msg: [
+                        'Facebook Login is not available because the app configuration is incomplete.',
+                        'To fix this, go to Meta Developer Console (developers.facebook.com):',
+                        '1. Ensure the app has a Privacy Policy URL configured',
+                        '2. Add a valid App Icon and Category',
+                        '3. In "Facebook Login for Business", configure Valid OAuth Redirect URIs',
+                        '4. Complete all required fields under App Settings > Basic',
+                        '5. Switch the app from Development to Live mode if needed',
+                    ].join('\n'),
+                },
             }
 
-            const errorKey = err.message.includes('Invalid token')
-                ? 'Invalid token'
-                : err.message.includes('timeout')
-                  ? 'timeout'
-                  : err.response?.status === 401
-                    ? '401'
-                    : err.response?.status === 403
-                      ? '403'
-                      : err.response?.status >= 500
-                        ? '500'
-                        : 'default'
+            const isFacebookLoginError =
+                errorMessage.includes('inicio de sesión con Facebook no está disponible') ||
+                errorMessage.includes('Facebook login is not available') ||
+                errorMessage.includes('updating other details') ||
+                errorMessage.includes('actualizando otros detalles') ||
+                (errorCode === 100 && errorSubcode === 33)
+
+            const errorKey = isFacebookLoginError
+                ? 'facebook_login'
+                : errorMessage.includes('Invalid token') || errorMessage.includes('Invalid OAuth')
+                  ? 'Invalid token'
+                  : errorMessage.includes('timeout')
+                    ? 'timeout'
+                    : err.response?.status === 401
+                      ? '401'
+                      : err.response?.status === 403
+                        ? '403'
+                        : err.response?.status >= 500
+                          ? '500'
+                          : 'default'
 
             const error = errorMap[errorKey] || { title: '🟠 ERROR AUTH', msg: 'Check credentials' }
 
@@ -1094,6 +1119,24 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             response.data.payload = body
             return response.data
         } catch (error) {
+            const errorMessage = error?.response?.data?.error?.message || ''
+            const isFacebookLoginError =
+                errorMessage.includes('inicio de sesión con Facebook no está disponible') ||
+                errorMessage.includes('Facebook login is not available') ||
+                errorMessage.includes('updating other details') ||
+                errorMessage.includes('actualizando otros detalles')
+
+            if (isFacebookLoginError) {
+                this.emit('notice', {
+                    title: '⚠️ FACEBOOK APP CONFIG ERROR',
+                    instructions: [
+                        'Facebook Login is not available due to incomplete app configuration.',
+                        'Go to developers.facebook.com and complete all required app settings.',
+                        'https://builderbot.app/en/providers/meta',
+                    ],
+                })
+            }
+
             return error
         }
     }
