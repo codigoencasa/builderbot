@@ -269,6 +269,10 @@ export type DispatchFn = (
     }
 ) => any
 
+export type BotCtxMethods = {
+    endFlow: (from: string, message?: string) => Promise<void>
+}
+
 export type BotCtxMiddlewareOptions = {
     provider: any
     blacklist: DynamicBlacklist
@@ -276,6 +280,7 @@ export type BotCtxMiddlewareOptions = {
     state: (number: string) => BotStateStandAlone
     globalState: () => BotStateGlobal
     emit: (eventName: string, args: Record<string, any> & { from: string }) => void
+    ctxMethods: BotCtxMethods
 }
 
 export type BotCtxMiddleware<P = ProviderClass> = Partial<P & BotCtxMiddlewareOptions>

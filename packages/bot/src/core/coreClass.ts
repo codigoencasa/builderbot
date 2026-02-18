@@ -2,6 +2,7 @@ import { Console } from 'console'
 import { createWriteStream } from 'fs'
 
 import type {
+    BotCtxMethods,
     BotStateGlobal,
     BotStateStandAlone,
     DispatchFn,
@@ -129,7 +130,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         idleForCallback.stop(messageCtxInComing)
         const { body, from } = messageCtxInComing
         let msgToSend = []
-        let endFlowFlag = false
+        let endFlowFlag = this.stateHandler.get(from)('__end_flow__') || false
         const fallBackFlag = false
 
         if (this.dynamicBlacklist.checkIf(from)) return
@@ -676,6 +677,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             }
         }
 
+        await this.stateHandler.updateState({ from })({ __end_flow__: false })
         return exportFunctionsSend(() => sendFlow(msgToSend, from, { forceQueue: true }))
     }
 
@@ -768,8 +770,20 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                 update: this.globalStateHandler.updateState(),
                 clear: this.globalStateHandler.clear(),
             }),
+            ctxMethods: this.buildCtxMethods(),
         })
     }
+
+    /**
+     * Build context methods for HTTP handlers
+     * @returns {BotCtxMethods}
+     */
+    private buildCtxMethods = (): BotCtxMethods => ({
+        endFlow: async (from: string) => {
+            this.queuePrincipal.clearQueue(from)
+            this.stateHandler.updateState({ from })({ __end_flow__: true })
+        },
+    })
 
     /**
      *
@@ -785,6 +799,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                       dispatch: DispatchFn
                       state: (number: string) => BotStateStandAlone
                       globalState: () => BotStateGlobal
+                      ctxMethods: BotCtxMethods
                       emit: (eventName: string, args: Record<string, any> & { from: string }) => void
                   })
                 | undefined,

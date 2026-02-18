@@ -17,6 +17,7 @@ jest.mock('@builderbot/bot', () => {
 })
 
 import { expect, describe, test, jest } from '@jest/globals'
+
 import { EvolutionProvider } from '../src/evolution/provider'
 
 // Mock all external dependencies

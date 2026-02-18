@@ -1,5 +1,6 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
+
 import { checkNodeVersion, checkOs, checkGit } from '../src/check'
 
 test('checkNodeVersion', async () => {

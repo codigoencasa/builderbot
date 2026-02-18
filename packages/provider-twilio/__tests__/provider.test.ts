@@ -1,7 +1,8 @@
-import { describe, expect, test, jest, beforeEach } from '@jest/globals'
 import { utils } from '@builderbot/bot'
-import { TwilioProvider } from '../src/twilio/provider'
+import { describe, expect, test, jest, beforeEach } from '@jest/globals'
+
 import { TwilioCoreVendor } from '../src/twilio/core'
+import { TwilioProvider } from '../src/twilio/provider'
 
 jest.mock('twilio', () => ({
     __esModule: true,
@@ -266,9 +267,80 @@ describe('#TwilioProvider', () => {
             const mediaInput: any = null
 
             // Act & Assert
-            await expect(twilioProvider.sendMedia(number, message, mediaInput)).rejects.toThrowError(
-                'Media cannot be null'
-            )
+            await expect(twilioProvider.sendMedia(number, message, mediaInput)).rejects.toThrow('Media cannot be null')
+        })
+
+        test('should handle synchronous error when Twilio API throws', async () => {
+            // Arrange
+            const number = '123456789'
+            const message = 'Test message'
+            const mediaInput = 'https://example.com/media.jpg'
+            const mockError = new Error('Twilio API error')
+            const mockCreate = jest.fn<any>().mockImplementation(() => {
+                throw mockError
+            })
+            const mockTwilio = {
+                twilio: { messages: { create: mockCreate } },
+            }
+            twilioProvider.vendor = mockTwilio as any
+            const consoleLogSpy = jest.spyOn(console, 'log')
+
+            // Act
+            const result = await twilioProvider.sendMedia(number, message, mediaInput)
+
+            // Assert
+            expect(result).toBeUndefined()
+            expect(consoleLogSpy).toHaveBeenCalledWith('Error Twilio:', mockError)
+        })
+    })
+
+    describe('#send', () => {
+        test('should send a message directly via Twilio', async () => {
+            // Arrange
+            const number = '123456789'
+            const message = 'Direct message'
+            const mockResponse = { sid: 'SM123456' }
+            const mockCreate = jest.fn<any>().mockResolvedValue(mockResponse)
+            const mockTwilio = {
+                twilio: { messages: { create: mockCreate } },
+            }
+            twilioProvider.vendor = mockTwilio as any
+
+            // Act
+            const result = await twilioProvider.send(number, message)
+
+            // Assert
+            expect(result).toEqual(mockResponse)
+            expect(mockCreate).toHaveBeenCalledWith({
+                body: message,
+                from: expect.any(String),
+                to: expect.any(String),
+            })
+        })
+
+        test('should send a message with options via Twilio', async () => {
+            // Arrange
+            const number = '123456789'
+            const message = 'Message with options'
+            const options = { statusCallback: 'https://example.com/callback' }
+            const mockResponse = { sid: 'SM789012' }
+            const mockCreate = jest.fn<any>().mockResolvedValue(mockResponse)
+            const mockTwilio = {
+                twilio: { messages: { create: mockCreate } },
+            }
+            twilioProvider.vendor = mockTwilio as any
+
+            // Act
+            const result = await twilioProvider.send(number, message, options as any)
+
+            // Assert
+            expect(result).toEqual(mockResponse)
+            expect(mockCreate).toHaveBeenCalledWith({
+                ...options,
+                body: message,
+                from: expect.any(String),
+                to: expect.any(String),
+            })
         })
     })
 

@@ -1,8 +1,8 @@
+import { join } from 'path'
+import proxyquire from 'proxyquire'
+import sinon from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { join } from 'path'
-import sinon from 'sinon'
-import proxyquire from 'proxyquire'
 
 const rimrafStub = sinon.stub().callsArgWith(1, null)
 

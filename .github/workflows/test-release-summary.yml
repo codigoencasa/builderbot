@@ -1,0 +1,76 @@
+name: 🧪 Probar Generador de Resumen de Release
+
+on:
+    workflow_dispatch:
+        inputs:
+            version:
+                description: 'Versión a usar (opcional, por defecto usa la versión actual de lerna.json)'
+                required: false
+                type: string
+
+jobs:
+    test-release-summary:
+        name: Generar Resumen de Release
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - uses: pnpm/action-setup@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22.20.0
+                  cache: 'pnpm'
+
+            - run: corepack enable
+
+            - name: Install NPM Dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Get version
+              id: package-version
+              run: |
+                  if [ -n "${{ inputs.version }}" ]; then
+                      VERSION="${{ inputs.version }}"
+                  else
+                      VERSION=$(node -p "require('./lerna.json').version")
+                  fi
+                  echo "version=$VERSION" >> $GITHUB_OUTPUT
+                  echo "📦 Versión a usar: $VERSION"
+
+            - name: Generate AI Release Summary
+              run: |
+                  echo "🤖 Generando resumen de release con IA..."
+                  echo "📝 Versión: ${{ steps.package-version.outputs.version }}"
+                  node ./scripts/generate-release-summary.js --version="${{ steps.package-version.outputs.version}}" --api-key="${{ secrets.OPENAI_API_KEY }}"
+                  echo "✅ Resumen generado"
+              env:
+                  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+            - name: Display generated summary
+              run: |
+                  VERSION="${{ steps.package-version.outputs.version }}"
+                  FILE="docs/releases/${VERSION}.md"
+                  if [ -f "$FILE" ]; then
+                      echo "=========================================="
+                      echo "📄 Contenido del resumen generado:"
+                      echo "=========================================="
+                      cat "$FILE"
+                      echo "=========================================="
+                  else
+                      echo "⚠️ No se encontró el archivo: $FILE"
+                  fi
+
+            - name: Upload summary as artifact
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: release-summary-${{ steps.package-version.outputs.version }}
+                  path: docs/releases/${{ steps.package-version.outputs.version }}.md
+                  retention-days: 7

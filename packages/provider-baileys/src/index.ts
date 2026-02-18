@@ -1,4 +1,4 @@
-import { baileyCleanNumber, baileyCleanNumberWithLid } from './utils'
+import { baileyCleanNumber } from './utils'
 
 export * from './bailey'
-export { baileyCleanNumber, baileyCleanNumberWithLid }
+export { baileyCleanNumber }

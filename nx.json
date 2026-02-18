@@ -19,6 +19,9 @@
       "cache": true
     },
     "test": {
+      "dependsOn": [
+        "^build"
+      ],
       "inputs": [
         "default",
         "^prod"
@@ -31,6 +34,9 @@
       ]
     },
     "test:coverage": {
+      "dependsOn": [
+        "^build"
+      ],
       "outputs": [
         "{projectRoot}/coverage"
       ]

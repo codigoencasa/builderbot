@@ -102,6 +102,11 @@ class WPPConnectProvider extends ProviderClass {
                 payload.from = WppConnectCleanNumber(payload.from, false)
                 payload.name = `${payload?.author}`
 
+                // Ensure body is always set (required by BotContext)
+                if (!payload.body) {
+                    payload.body = ''
+                }
+
                 if (payload.hasOwnProperty('type') && ['image', 'video'].includes(payload.type)) {
                     payload = { ...payload, body: utils.generateRefProvider('_event_media_') }
                 }
@@ -119,7 +124,7 @@ class WPPConnectProvider extends ProviderClass {
                     }
                 }
                 // Emitir el evento "message" con el payload modificado
-                this.emit('message', payload)
+                this.emit('message', payload as BotContext)
             },
         },
         {

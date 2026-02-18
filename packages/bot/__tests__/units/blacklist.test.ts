@@ -1,5 +1,6 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
+
 import { BlackList } from '../../src/utils/blacklistClass'
 
 test('BlackList constructor initializes correctly', () => {

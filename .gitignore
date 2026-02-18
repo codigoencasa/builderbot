@@ -25,6 +25,7 @@ mediaSend/*
 packages/cli/config.json
 config.json
 .yarnrc.yml
+docs/releases/*.md
 coverage/
 *.lcov
 log

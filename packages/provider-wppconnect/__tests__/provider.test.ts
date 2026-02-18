@@ -1,9 +1,10 @@
-import { beforeEach, describe, expect, jest, test } from '@jest/globals'
-import path from 'path'
-import mime from 'mime-types'
-import { writeFile } from 'fs/promises'
 import { utils } from '@builderbot/bot'
+import { beforeEach, describe, expect, jest, test } from '@jest/globals'
 import wppconnect from '@wppconnect-team/wppconnect'
+import { writeFile } from 'fs/promises'
+import mime from 'mime-types'
+import path from 'path'
+
 import { WPPConnectProvider } from '../src'
 
 const phoneNumber = '1234567890'
@@ -440,9 +441,7 @@ describe('#WPPConnectProvider', () => {
             wPPConnectProvider.vendor = null as any
 
             // Act & Assert
-            expect(() => wPPConnectProvider['listenOnEvents'](null as any)).toThrowError(
-                'Vendor should not return empty'
-            )
+            expect(() => wPPConnectProvider['listenOnEvents'](null as any)).toThrow('Vendor should not return empty')
         })
 
         test('Set vendor when not defined', () => {

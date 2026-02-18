@@ -1,7 +1,8 @@
-import { describe, expect, test, jest, beforeEach, afterEach } from '@jest/globals'
 import { utils } from '@builderbot/bot'
+import { describe, expect, test, jest, beforeEach, afterEach } from '@jest/globals'
 import fs from 'fs'
 import mime from 'mime-types'
+
 import { TwilioCoreVendor } from '../src/twilio/core'
 import { ITwilioProviderARgs, TwilioPayload, TwilioRequestBody } from '../src/types'
 
@@ -270,7 +271,6 @@ describe('#TwilioCoreVendor', () => {
             const mockResponse = {
                 end: jest.fn(),
             }
-            utils.generateRefProvider as jest.MockedFunction<typeof utils.generateRefProvider>
             // Act
             twilioCoreVendor.incomingMsg(mockRequest as any, mockResponse as any, mockNext)
 

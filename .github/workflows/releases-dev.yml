@@ -1,62 +1,163 @@
 name: 🚀 (DEV) Liberando versiones
 
 on:
-    push:
+    workflow_dispatch:
+    pull_request:
         branches:
-            - release/next
+            - builderbot-dev
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    NODE_VERSION: 22.20.0
 
 jobs:
-    ############ RELEASE ############
-    build:
-        name: Build DEV
+    ############ TEST ############
+    test:
+        name: 🧪 Tests
         runs-on: ubuntu-latest
-        outputs:
-            commit: ${{ steps.vars.outputs.commit }}
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
-              with:
-                  fetch-depth: 0
-                  ref: ${{github.event.after}}
-                  persist-credentials: false
+              uses: actions/checkout@v4
 
-            - uses: pnpm/action-setup@v2.2.4
+            - uses: pnpm/action-setup@v4
+
+            - name: Cache pnpm store
+              uses: actions/cache@v4
+              with:
+                  path: ~/.pnpm-store
+                  key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+                  restore-keys: pnpm-${{ runner.os }}-
 
             - name: Setup Node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
-                  node-version: 18.x
+                  node-version: ${{ env.NODE_VERSION }}
                   cache: 'pnpm'
-                  registry-url: https://registry.npmjs.org/
 
-            - run: corepack enable
-
-            - name: Install NPM Dependencies
+            - name: Install Dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Build Package
-              run: pnpm build:full
+            - name: Run Tests
+              run: pnpm test
 
-            - name: Release @bot-whatsapp/bot
-              run: node ./scripts/release.js --name=bot --version=  --token="${{ secrets.NPM_TOKEN }}"
+    ############ BUILD ############
+    build:
+        name: 🔨 Build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-            - name: Release @bot-whatsapp/cli
-              run: node ./scripts/release.js --name=cli --version=  --token="${{ secrets.NPM_TOKEN }}"
+            - uses: pnpm/action-setup@v4
 
-            - name: Release @bot-whatsapp/create-bot-whatsapp
-              run: node ./scripts/release.js --name=create-bot-whatsapp --version=  --token="${{ secrets.NPM_TOKEN }}"
+            - name: Cache pnpm store
+              uses: actions/cache@v4
+              with:
+                  path: ~/.pnpm-store
+                  key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+                  restore-keys: pnpm-${{ runner.os }}-
 
-            - name: Release @bot-whatsapp/database
-              run: node ./scripts/release.js --name=database --version=  --token="${{ secrets.NPM_TOKEN }}"
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: 'pnpm'
 
-            - name: Release @bot-whatsapp/provider
-              run: node ./scripts/release.js --name=provider --version=  --token="${{ secrets.NPM_TOKEN }}"
+            - name: Install Dependencies
+              run: pnpm install --frozen-lockfile
 
-            - name: Release @bot-whatsapp/contexts
-              run: node ./scripts/release.js --name=contexts --version=  --token="${{ secrets.NPM_TOKEN }}"
+            - name: Build Packages
+              run: pnpm run clean.lib && pnpm run build
 
-            - name: Release @bot-whatsapp/portal
-              run: node ./scripts/release.js --name=portal --version=  --token="${{ secrets.NPM_TOKEN }}"
+            - name: Upload build artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: dist-packages
+                  path: packages/*/dist
+                  retention-days: 1
 
-            - name: Release eslint-plugin-bot-whatsapp
-              run: node ./scripts/release.js --name=eslint-plugin-bot-whatsapp --version=  --token="${{ secrets.NPM_TOKEN }}"
+    ############ RELEASE ############
+    release:
+        name: 📦 Release Alpha
+        runs-on: ubuntu-latest
+        needs: [test, build]
+        permissions:
+            contents: write
+            packages: write
+            id-token: write
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  ref: ${{ github.head_ref || github.ref_name }}
+
+            - uses: pnpm/action-setup@v4
+
+            - name: Cache pnpm store
+              uses: actions/cache@v4
+              with:
+                  path: ~/.pnpm-store
+                  key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+                  restore-keys: pnpm-${{ runner.os }}-
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: 'pnpm'
+                  registry-url: 'https://registry.npmjs.org'
+
+            - name: Install Dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Download build artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  name: dist-packages
+                  path: packages
+
+            - name: Verify npm authentication
+              run: npm whoami
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+            - name: Configure Git
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
+            - name: Release Alpha
+              run: |
+                  # Obtener versión base sin sufijo alpha
+                  BASE_VERSION=$(node -p "require('./lerna.json').version.replace(/-alpha.*/, '')")
+                  NEW_VERSION="${BASE_VERSION}-alpha.${{ github.run_number }}"
+                  echo "📦 Publicando versión: $NEW_VERSION"
+
+                  # Actualizar versión en todos los paquetes
+                  npx lerna version $NEW_VERSION --force-publish --yes --no-git-tag-version --no-push
+
+                  # Hacer commit temporal de los cambios de versión (necesario para lerna publish)
+                  git add -A
+                  git commit -m "chore: bump version to $NEW_VERSION [skip ci]" || true
+
+                  # Publicar al tag alpha
+                  npx lerna publish from-package --dist-tag alpha --yes
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+            - name: 📋 Log Deployed Version
+              run: |
+                  echo "=========================================="
+                  echo "🚀 VERSIÓN DESPLEGADA (ALPHA)"
+                  echo "=========================================="
+                  echo "📅 Fecha: $(date)"
+                  echo "🔗 Commit: ${{ github.sha }}"
+                  echo "👤 Actor: ${{ github.actor }}"
+                  echo "------------------------------------------"
+                  echo "📦 Paquetes publicados:"
+                  npx lerna ls --json | jq -r '.[] | "  - \(.name): \(.version)"'
+                  echo "=========================================="

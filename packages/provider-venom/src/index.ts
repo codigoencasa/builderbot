@@ -65,6 +65,7 @@ class VenomProvider extends ProviderClass {
                     disableWelcome: true,
                     logQR: false,
                     autoClose: 45000,
+                    headless: 'new',
                     ...this.globalVendorArgs,
                     folderNameToken: NAME_DIR_SESSION,
                 }

@@ -1,0 +1,10 @@
+{
+    "IMPORT": "import { InstagramProvider as Provider } from '@builderbot/provider-instagram'\n",
+    "IMPLEMENTATION": "const adapterProvider = createProvider(Provider, {\n        accessToken: 'accessToken',\n        igAccountId: 'igAccountId',\n        verifyToken: 'verifyToken',\n        version: 'v19.0'\n    })",
+    "DEPENDENCIES":{
+        "@builderbot/bot": "latest",
+        "@builderbot/provider-instagram": "latest"
+    },
+    "DEV_DEPENDENCIES":{}
+}
+

@@ -1,5 +1,5 @@
 {
-  "version": "1.3.5-alpha.9",
+  "version": "1.3.15-alpha.10",
   "packages": [
     "packages/bot",
     "packages/cli",
@@ -9,17 +9,32 @@
     "packages/database-json",
     "packages/database-postgres",
     "packages/eslint-plugin-builderbot",
+    "packages/manager",
     "packages/provider-meta",
     "packages/provider-evolution-api",
     "packages/provider-baileys",
+    "packages/provider-facebook-messenger",
+    "packages/provider-instagram",
+    "packages/provider-sherpa",
     "packages/provider-twilio",
     "packages/provider-web-whatsapp",
     "packages/provider-wppconnect",
     "packages/provider-telegram",
     "packages/provider-venom",
+    "packages/provider-gohighlevel",
+    "packages/provider-email",
     "packages/contexts-dialogflow",
     "packages/contexts-dialogflow-cx"
   ],
+  "command": {
+    "version": {
+      "allowBranch": "*",
+      "ignoreChanges": [
+        "**/*"
+      ],
+      "noVerifyAccess": true
+    }
+  },
   "npmClient": "pnpm",
   "$schema": "node_modules/lerna/schemas/lerna-schema.json"
 }

@@ -1,4 +1,5 @@
 import { describe, expect, test } from '@jest/globals'
+
 import { parseMetaNumber } from '../src/utils'
 
 describe('#parseMetaNumber ', () => {

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals'
 import Queue from 'queue-promise'
+
 import { MetaCoreVendor } from '../src/meta/core'
 import { Message } from '../src/types'
 
@@ -286,7 +287,7 @@ describe('#MetaCoreVendor ', () => {
             const promise = metaCoreVendor.processMessage(mockMessage)
 
             // Assert
-            await expect(promise).rejects.toThrowError('Test error')
+            await expect(promise).rejects.toThrow('Test error')
         })
     })
 

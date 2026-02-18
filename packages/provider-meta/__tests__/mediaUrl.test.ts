@@ -1,5 +1,6 @@
-import axios from 'axios'
 import { jest, describe, test, expect, afterEach } from '@jest/globals'
+import axios from 'axios'
+
 import { getMediaUrl } from '../src/utils'
 
 jest.mock('axios')

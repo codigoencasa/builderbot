@@ -1,0 +1,10 @@
+{
+    "IMPORT": "import { FacebookMessengerProvider as Provider } from '@builderbot/provider-facebook-messenger'\n",
+    "IMPLEMENTATION": "const adapterProvider = createProvider(Provider, {\n        accessToken: 'accessToken',\n        pageId: 'pageId',\n        verifyToken: 'verifyToken',\n        version: 'v19.0'\n    })",
+    "DEPENDENCIES":{
+        "@builderbot/bot": "latest",
+        "@builderbot/provider-facebook-messenger": "latest"
+    },
+    "DEV_DEPENDENCIES":{}
+}
+

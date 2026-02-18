@@ -12,7 +12,7 @@ export const processIncomingMessage = async ({
     jwtToken,
     version,
     numberId,
-    fileData
+    fileData,
 }: ParamsIncomingMessage): Promise<Message> => {
     let responseObj: Message
 
@@ -65,7 +65,7 @@ export const processIncomingMessage = async ({
             responseObj = {
                 type: message.type,
                 from: message.from,
-                url: imageUrl,
+                url: imageUrl ?? fileData?.url,
                 fileData,
                 caption: message?.image?.caption,
                 to,
@@ -80,7 +80,7 @@ export const processIncomingMessage = async ({
             responseObj = {
                 type: message.type,
                 from: message.from,
-                url: documentUrl,
+                url: documentUrl ?? fileData?.url,
                 fileData,
                 to,
                 body: utils.generateRefProvider('_event_document_'),
@@ -94,7 +94,7 @@ export const processIncomingMessage = async ({
             responseObj = {
                 type: message.type,
                 from: message.from,
-                url: videoUrl,
+                url: videoUrl ?? fileData?.url,
                 fileData,
                 caption: message?.video?.caption,
                 to,
@@ -122,7 +122,7 @@ export const processIncomingMessage = async ({
             responseObj = {
                 type: message.type,
                 from: message.from,
-                url: audioUrl,
+                url: audioUrl ?? fileData?.url,
                 fileData,
                 to,
                 body: utils.generateRefProvider('_event_voice_note_'),

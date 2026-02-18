@@ -1,0 +1,10 @@
+{
+    "IMPORT": "import { SherpaProvider as Provider } from '@builderbot/provider-sherpa'\n",
+    "IMPLEMENTATION": "\n    const adapterProvider = createProvider(Provider, \n\t\t{ version: [2, 3000, 1027934701] as any } \n\t)",
+    "DEPENDENCIES":{
+        "@builderbot/bot": "latest",
+        "@builderbot/provider-sherpa": "latest"
+    },
+    "DEV_DEPENDENCIES":{}
+}
+

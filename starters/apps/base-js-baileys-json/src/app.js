@@ -61,7 +61,9 @@ const fullSamplesFlow = addKeyword(['samples', utils.setEvent('SAMPLES')])
 const main = async () => {
     const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])
     
-    const adapterProvider = createProvider(Provider)
+    const adapterProvider = createProvider(Provider, 
+		{ version: [2, 3000, 1027934701] } 
+	)
     
     const adapterDB = new Database({ filename: 'db.json' })
 
@@ -107,6 +109,15 @@ const main = async () => {
 
             res.writeHead(200, { 'Content-Type': 'application/json' })
             return res.end(JSON.stringify({ status: 'ok', number, intent }))
+        })
+    )
+
+    adapterProvider.server.get(
+        '/v1/blacklist/list',
+        handleCtx(async (bot, req, res) => {
+            const blacklist = bot.blacklist.getList()
+            res.writeHead(200, { 'Content-Type': 'application/json' })
+            return res.end(JSON.stringify({ status: 'ok', blacklist }))
         })
     )
 

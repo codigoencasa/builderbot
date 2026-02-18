@@ -1,10 +1,11 @@
-import { baileyCleanNumber, baileyGenerateImage, baileyIsValidNumber, emptyDirSessions } from '../src/utils'
-import { expect, describe, test, jest } from '@jest/globals'
 import { utils } from '@builderbot/bot'
+import { expect, describe, test, jest } from '@jest/globals'
 import { createWriteStream } from 'fs'
-import * as qr from 'qr-image'
+import fsExtra from 'fs-extra'
 import { join } from 'path'
-import fsExtra, { NoParamCallback } from 'fs-extra'
+import * as qr from 'qr-image'
+
+import { baileyCleanNumber, baileyGenerateImage, baileyIsValidNumber, emptyDirSessions } from '../src/utils'
 
 jest.mock('qr-image', () => ({
     image: jest.fn(() => ({
@@ -13,7 +14,7 @@ jest.mock('qr-image', () => ({
 }))
 
 jest.mock('fs-extra', () => ({
-    emptyDir: jest.fn((_path: string, callback: NoParamCallback) => callback(null)),
+    emptyDir: jest.fn((_path: string, callback: (err?: Error | null) => void) => callback(null)),
 }))
 
 jest.mock('@builderbot/bot', () => ({
@@ -118,9 +119,9 @@ describe('#mockEmptyDir', () => {
     test('should empty the directory correctly', async () => {
         // Arrange
         const pathBase = '/path/to/directory'
-        const mockEmptyDir = jest.fn((_path: string, callback: NoParamCallback) => callback(null))
+        const mockEmptyDir = jest.fn((_path: string, callback: (err?: Error | null) => void) => callback(null))
 
-        jest.spyOn(fsExtra, 'emptyDir').mockImplementation(mockEmptyDir)
+        jest.spyOn(fsExtra, 'emptyDir').mockImplementation(mockEmptyDir as any)
 
         // Act
         await emptyDirSessions(pathBase)
@@ -133,9 +134,9 @@ describe('#mockEmptyDir', () => {
         // Arrange
         const pathBase = '/path/to/directory'
         const error = new Error('Failed to empty directory')
-        const mockEmptyDir = jest.fn((_path: string, callback: NoParamCallback) => callback(error))
+        const mockEmptyDir = jest.fn((_path: string, callback: (err?: Error | null) => void) => callback(error))
 
-        jest.spyOn(fsExtra, 'emptyDir').mockImplementation(mockEmptyDir)
+        jest.spyOn(fsExtra, 'emptyDir').mockImplementation(mockEmptyDir as any)
 
         // Act & Assert
         await expect(emptyDirSessions(pathBase)).rejects.toEqual(error)

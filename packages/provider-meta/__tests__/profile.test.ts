@@ -1,6 +1,7 @@
-import { getProfile } from '../src/utils'
-import axios from 'axios'
 import { describe, expect, jest, test } from '@jest/globals'
+import axios from 'axios'
+
+import { getProfile } from '../src/utils'
 
 jest.mock('axios')
 

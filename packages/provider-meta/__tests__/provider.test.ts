@@ -1,7 +1,8 @@
+import { utils } from '@builderbot/bot'
 import { beforeEach, describe, expect, jest, test } from '@jest/globals'
 import axios from 'axios'
 import mime from 'mime-types'
-import { utils } from '@builderbot/bot'
+
 import { MetaProvider } from '../src/meta/provider'
 import { Localization, MetaGlobalVendorArgs, MetaList, ParsedContact, WhatsAppProfile } from '../src/types'
 import { downloadFile } from '../src/utils'
@@ -208,7 +209,7 @@ describe('#MetaProvider', () => {
                     longitude: fakeLocalization.long_number,
                     latitude: fakeLocalization.lat_number,
                 },
-            })
+            } as any)
         })
     })
 
@@ -265,7 +266,7 @@ describe('#MetaProvider', () => {
                     message_id: fakeReaction.message_id,
                     emoji: fakeReaction.emoji,
                 },
-            })
+            } as any)
         })
     })
 
@@ -297,7 +298,7 @@ describe('#MetaProvider', () => {
             const fakePathVideo = null
 
             // Act & Assert
-            await expect(metaProvider.sendAudio(fakeRecipient, fakePathVideo)).rejects.toThrowError(
+            await expect(metaProvider.sendAudio(fakeRecipient, fakePathVideo)).rejects.toThrow(
                 'MEDIA_INPUT_NULL_: null'
             )
         })
@@ -328,7 +329,7 @@ describe('#MetaProvider', () => {
             const fakeCaption = 'This is a file'
 
             // Act & Assert
-            await expect(metaProvider.sendFile(fakeRecipient, fakeMediaInput, fakeCaption)).rejects.toThrowError(
+            await expect(metaProvider.sendFile(fakeRecipient, fakeMediaInput, fakeCaption)).rejects.toThrow(
                 'MEDIA_INPUT_NULL_: null'
             )
         })
@@ -902,7 +903,7 @@ describe('#MetaProvider', () => {
             const fakeRecipient = '1234567890'
 
             // Act & Assert
-            await expect(metaProvider.sendVideo(fakeRecipient, null, 'This is a video caption')).rejects.toThrowError(
+            await expect(metaProvider.sendVideo(fakeRecipient, null, 'This is a video caption')).rejects.toThrow(
                 'MEDIA_INPUT_NULL_: null'
             )
         })
@@ -964,7 +965,7 @@ describe('#MetaProvider', () => {
             const fakeRecipient = '1234567890'
 
             // Act & Assert
-            await expect(metaProvider.sendImage(fakeRecipient, null, 'This is a image caption')).rejects.toThrowError(
+            await expect(metaProvider.sendImage(fakeRecipient, null, 'This is a image caption')).rejects.toThrow(
                 'MEDIA_INPUT_NULL_: null'
             )
         })
@@ -1069,6 +1070,59 @@ describe('#MetaProvider', () => {
             // Assert
             expect(downloadFile).toHaveBeenCalledWith(ctx?.url, 'your_jwt_token')
             expect(result).toContain(extension)
+        })
+    })
+
+    describe('#sendPresenceUpdate', () => {
+        test('should send typing_on status by default', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            jest.spyOn(metaProvider, 'sendMessageToApi').mockResolvedValue({ success: true })
+
+            // Act
+            await metaProvider.sendPresenceUpdate(fakeRecipient)
+
+            // Assert
+            expect(metaProvider.sendMessageToApi).toHaveBeenCalledWith({
+                messaging_product: 'whatsapp',
+                recipient_type: 'individual',
+                to: fakeRecipient,
+                type: 'typing_on',
+            })
+        })
+
+        test('should send typing_on status when explicitly specified', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            jest.spyOn(metaProvider, 'sendMessageToApi').mockResolvedValue({ success: true })
+
+            // Act
+            await metaProvider.sendPresenceUpdate(fakeRecipient, 'typing_on')
+
+            // Assert
+            expect(metaProvider.sendMessageToApi).toHaveBeenCalledWith({
+                messaging_product: 'whatsapp',
+                recipient_type: 'individual',
+                to: fakeRecipient,
+                type: 'typing_on',
+            })
+        })
+
+        test('should send typing_off status when specified', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            jest.spyOn(metaProvider, 'sendMessageToApi').mockResolvedValue({ success: true })
+
+            // Act
+            await metaProvider.sendPresenceUpdate(fakeRecipient, 'typing_off')
+
+            // Assert
+            expect(metaProvider.sendMessageToApi).toHaveBeenCalledWith({
+                messaging_product: 'whatsapp',
+                recipient_type: 'individual',
+                to: fakeRecipient,
+                type: 'typing_off',
+            })
         })
     })
 })

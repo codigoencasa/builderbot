@@ -242,6 +242,33 @@ test('handleMsg - You should send the payload type media', async () => {
     assert.equal(sendFlowSimpleStub.args[0][0], expectedMessage)
 })
 
+test('handleMsg - should handle unknown message type with empty answer', async () => {
+    const messageCtxInComming = {
+        from: 'some_user_id',
+        body: 'some_message_body',
+    }
+
+    const dialogFlowContext = new DialogFlowContextCX(null, mockProvider, optionsDX)
+    dialogFlowContext['createSession'] = stub().resolves('session')
+    dialogFlowContext['detectIntent'] = stub().resolves({
+        queryResult: {
+            responseMessages: [
+                {
+                    message: 'unknown_type',
+                    someOtherField: { data: 'test' },
+                },
+            ],
+        },
+    })
+    const expectedMessage = [{ answer: '' }]
+
+    dialogFlowContext['sendFlowSimple'] = sendFlowSimpleStub
+
+    await dialogFlowContext.handleMsg(messageCtxInComming)
+    assert.equal(sendFlowSimpleStub.called, true)
+    assert.equal(sendFlowSimpleStub.args[0][0], expectedMessage)
+})
+
 test.after.each(() => {
     unlinkSync(pathFile)
 })

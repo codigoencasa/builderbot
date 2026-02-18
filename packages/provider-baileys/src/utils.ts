@@ -11,87 +11,19 @@ const emptyDirSessions = async (pathBase: string) =>
             resolve(true)
         })
     })
-
 /**
- * Cleans and extracts the appropriate identifier from MessageKey, supporting LID system.
- * Uses remoteJidAlt/participantAlt when available according to Baileys v7.0.0+ specs.
- * FOLLOWS OFFICIAL GUIDANCE: Prefers LIDs over PNs as per Baileys documentation.
- * Reference: https://baileys.wiki/docs/migration/to-v7.0.0
- * @param key The MessageKey object from Baileys with LID support
- * @returns The identifier (preferring LID over PN per official guidance)
- */
-function baileyCleanNumberWithLid(key: {
-    senderPn?: string
-    remoteJid?: string
-    remoteJidAlt?: string
-    participantAlt?: string
-    participant?: string
-}): string {
-    let rawIdentifier = ''
-    let isLID = false
-
-    // For groups: use participantAlt if available, fallback to participant
-    if (key.participant || key.participantAlt) {
-        rawIdentifier = key.participantAlt || key.participant || ''
-        isLID = rawIdentifier.includes('@lid')
-    }
-    // For DMs: use remoteJidAlt if available, fallback to remoteJid
-    else if (key.remoteJid || key.remoteJidAlt) {
-        rawIdentifier = key.remoteJidAlt || key.remoteJid || ''
-        isLID = rawIdentifier.includes('@lid')
-    }
-
-    if (!rawIdentifier) {
-        return ''
-    }
-
-    // OFFICIAL BAILEYS STRATEGY: Prefer LIDs over PNs
-    // "THE GOAL SHOULDN'T BE TO RESTORE THE PN JID ANYMORE, MIGRATE TO LIDs. PNs are WAY LESS RELIABLE."
-    if (isLID) {
-        console.log(
-            `[${new Date().toISOString()}] baileyCleanNumberWithLid: Using LID ${rawIdentifier} (Baileys v7.0.0+ best practice)`
-        )
-        return rawIdentifier
-    }
-
-    // If we only have PN, use it but log that we should migrate to LID
-    if (rawIdentifier.includes('@s.whatsapp.net')) {
-        console.log(
-            `[${new Date().toISOString()}] baileyCleanNumberWithLid: Using PN ${rawIdentifier} - should migrate to LID when available`
-        )
-    }
-
-    return rawIdentifier
-}
-
-/**
- * Cleans the WhatsApp number format, supporting both LIDs and PNs.
- * @param number The WhatsApp number/LID to be cleaned.
+ * Cleans the WhatsApp number format.
+ * @param number The WhatsApp number to be cleaned.
  * @param full Whether to return the full number format or not.
- * @returns The cleaned number or LID.
+ * @returns The cleaned number.
  */
 const baileyCleanNumber = (number: string, full: boolean = false): string => {
-    // Handle group chats - return as is
     const regexGroup: RegExp = /\@g.us\b/gm
-    const existGroup = number.match(regexGroup)
-    if (existGroup) return number
-
-    // Handle LIDs - return as is since they should be preserved
-    if (number.includes('@lid')) {
-        return number
-    }
-
-    // Handle PNs (Phone Numbers) - traditional format
-    if (number.includes('@s.whatsapp.net')) {
-        if (full) {
-            return number.replace('@s.whatsapp.net', '').replace('+', '').replace(/\s/g, '')
-        }
-        return number
-    }
-
-    // Clean and format as PN if it's a raw phone number
-    const cleanedNumber = number.replace('+', '').replace(/\s/g, '')
-    return full ? cleanedNumber : `${cleanedNumber}@s.whatsapp.net`
+    const exist = number.match(regexGroup)
+    if (exist) return number
+    number = number.replace('@s.whatsapp.net', '').replace('+', '').replace(/\s/g, '')
+    number = !full ? `${number}@s.whatsapp.net` : number
+    return number
 }
 
 /**
@@ -115,161 +47,15 @@ const baileyGenerateImage = async (base64: string, name: string = 'qr.png'): Pro
 }
 
 /**
- * Validates if the given identifier is a valid WhatsApp user identifier (PN or LID) and not a group ID.
- * Compatible with Baileys v7.0.0+ LID system.
- * @param rawIdentifier The identifier to validate (PN, LID, or other)
- * @returns True if it's a valid user identifier, false otherwise
+ * Validates if the given number is a valid WhatsApp number and not a group ID.
+ * @param rawNumber The number to validate.
+ * @returns True if it's a valid number, false otherwise.
  */
-const baileyIsValidNumber = (rawIdentifier: string): boolean => {
-    if (!rawIdentifier || typeof rawIdentifier !== 'string') {
-        return false
-    }
-
-    // Exclude group chats
+const baileyIsValidNumber = (rawNumber: string): boolean => {
+    if (!rawNumber || rawNumber.trim() === '') return false
     const regexGroup: RegExp = /\@g.us\b/gm
-    const isGroup = rawIdentifier.match(regexGroup)
-    if (isGroup) return false
-
-    // Exclude broadcast lists
-    if (rawIdentifier.includes('@broadcast')) return false
-
-    // Accept LIDs (Local Identifiers) - preferred format
-    if (rawIdentifier.includes('@lid')) return true
-
-    // Accept PNs (Phone Numbers) - legacy format but still valid
-    if (rawIdentifier.includes('@s.whatsapp.net')) return true
-
-    // For raw numbers, consider them valid if they look like phone numbers
-    const cleanNumber = rawIdentifier.replace(/\D/g, '') // Remove non-digits
-    return cleanNumber.length >= 10 && cleanNumber.length <= 15 // Reasonable phone number length
+    const exist = rawNumber.match(regexGroup)
+    return !exist
 }
 
-/**
- * Gets the LID (Local Identifier) for a given PN (Phone Number).
- * @param lidStore The LID mapping store from sock.signalRepository.lidMapping
- * @param phoneNumber The phone number to get LID for
- * @returns The LID if found, null otherwise
- */
-const baileyGetLIDFromPN = async (lidStore: any, phoneNumber: string): Promise<string | null> => {
-    try {
-        if (!lidStore || !lidStore.getLIDForPN) {
-            console.warn('LID store not available or getLIDForPN method missing')
-            return null
-        }
-        const lid = await lidStore.getLIDForPN(phoneNumber)
-        return lid || null
-    } catch (error) {
-        console.error('Error getting LID from PN:', error)
-        return null
-    }
-}
-
-/**
- * Gets the PN (Phone Number) for a given LID (Local Identifier).
- * @param lidStore The LID mapping store from sock.signalRepository.lidMapping
- * @param lid The LID to get phone number for
- * @returns The phone number if found, null otherwise
- */
-const baileyGetPNFromLID = async (lidStore: any, lid: string): Promise<string | null> => {
-    try {
-        if (!lidStore || !lidStore.getPNForLID) {
-            console.warn('LID store not available or getPNForLID method missing')
-            return null
-        }
-        const phoneNumber = await lidStore.getPNForLID(lid)
-        return phoneNumber || null
-    } catch (error) {
-        console.error('Error getting PN from LID:', error)
-        return null
-    }
-}
-
-/**
- * Gets multiple LIDs for given PNs (Phone Numbers).
- * @param lidStore The LID mapping store from sock.signalRepository.lidMapping
- * @param phoneNumbers Array of phone numbers to get LIDs for
- * @returns Object mapping phone numbers to their LIDs
- */
-const baileyGetLIDsFromPNs = async (lidStore: any, phoneNumbers: string[]): Promise<Record<string, string>> => {
-    try {
-        if (!lidStore || !lidStore.getLIDsForPNs) {
-            console.warn('LID store not available or getLIDsForPNs method missing')
-            return {}
-        }
-        const lids = await lidStore.getLIDsForPNs(phoneNumbers)
-        return lids || {}
-    } catch (error) {
-        console.error('Error getting LIDs from PNs:', error)
-        return {}
-    }
-}
-
-/**
- * Stores a single LID-PN mapping in the store.
- * @param lidStore The LID mapping store from sock.signalRepository.lidMapping
- * @param lid The Local Identifier
- * @param phoneNumber The Phone Number
- * @returns Promise<void>
- */
-const baileyStoreLIDPNMapping = async (lidStore: any, lid: string, phoneNumber: string): Promise<void> => {
-    try {
-        if (!lidStore || !lidStore.storeLIDPNMapping) {
-            console.warn('LID store not available or storeLIDPNMapping method missing')
-            return
-        }
-        await lidStore.storeLIDPNMapping(lid, phoneNumber)
-    } catch (error) {
-        console.error('Error storing LID-PN mapping:', error)
-    }
-}
-
-/**
- * Stores multiple LID-PN mappings in the store.
- * @param lidStore The LID mapping store from sock.signalRepository.lidMapping
- * @param mappings Object with LID-PN mappings
- * @returns Promise<void>
- */
-const baileyStoreLIDPNMappings = async (lidStore: any, mappings: Record<string, string>): Promise<void> => {
-    try {
-        if (!lidStore || !lidStore.storeLIDPNMappings) {
-            console.warn('LID store not available or storeLIDPNMappings method missing')
-            return
-        }
-        await lidStore.storeLIDPNMappings(mappings)
-    } catch (error) {
-        console.error('Error storing LID-PN mappings:', error)
-    }
-}
-
-/**
- * Determines if a JID is a LID (Local Identifier).
- * @param jid The JID to check
- * @returns True if it's a LID, false otherwise
- */
-const baileyIsLID = (jid: string): boolean => {
-    return jid.includes('@lid')
-}
-
-/**
- * Determines if a JID is a PN (Phone Number).
- * @param jid The JID to check
- * @returns True if it's a PN, false otherwise
- */
-const baileyIsPN = (jid: string): boolean => {
-    return jid.includes('@s.whatsapp.net')
-}
-
-export {
-    baileyCleanNumber,
-    baileyGenerateImage,
-    baileyIsValidNumber,
-    emptyDirSessions,
-    baileyCleanNumberWithLid,
-    baileyGetLIDFromPN,
-    baileyGetPNFromLID,
-    baileyGetLIDsFromPNs,
-    baileyStoreLIDPNMapping,
-    baileyStoreLIDPNMappings,
-    baileyIsLID,
-    baileyIsPN,
-}
+export { baileyCleanNumber, baileyGenerateImage, baileyIsValidNumber, emptyDirSessions }

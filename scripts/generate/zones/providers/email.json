@@ -1,0 +1,9 @@
+{
+    "IMPORT": "import { EmailProvider as Provider } from '@builderbot/provider-email'\n",
+    "IMPLEMENTATION": "const adapterProvider = createProvider(Provider, {\n    imap: {\n        host: 'imap.gmail.com',\n        port: 993,\n        secure: true,\n        auth: {\n            user: 'YOUR_EMAIL@gmail.com',\n            pass: 'YOUR_APP_PASSWORD'\n        }\n    },\n    smtp: {\n        host: 'smtp.gmail.com',\n        port: 465,\n        secure: true,\n        auth: {\n            user: 'YOUR_EMAIL@gmail.com',\n            pass: 'YOUR_APP_PASSWORD'\n        }\n    }\n})",
+    "DEPENDENCIES": {
+        "@builderbot/bot": "latest",
+        "@builderbot/provider-email": "latest"
+    },
+    "DEV_DEPENDENCIES": {}
+}

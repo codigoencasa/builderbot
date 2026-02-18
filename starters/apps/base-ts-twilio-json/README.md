@@ -1,7 +1,7 @@
 <p align="center">
-  <a href="https://builderbot.vercel.app/">
+  <a href="https://builderbot.app/">
     <picture>
-      <img src="https://builderbot.vercel.app/assets/thumbnail-vector.png" height="80">
+      <img src="https://builderbot.app/assets/thumbnail-vector.png" height="80">
     </picture>
     <h2 align="center">BuilderBot</h2>
   </a>
@@ -30,7 +30,7 @@ npm create builderbot@latest
 
 ## Documentation
 
-Visit [builderbot](https://builderbot.vercel.app/) to view the full documentation.
+Visit [builderbot](https://builderbot.app/) to view the full documentation.
 
 
 ## Official Course

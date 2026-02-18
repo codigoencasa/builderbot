@@ -35,6 +35,18 @@ test('[MongoAdapter] - init', async () => {
     assert.ok(mongoAdapter.db, 'Database connection should be established')
 })
 
+test('[MongoAdapter] - init with invalid URI should handle error', async () => {
+    const invalidAdapter = new MongoAdapter({
+        dbUri: 'mongodb://invalid:27017',
+        dbName: 'testDB',
+    })
+    // Wait a bit for the constructor's init to fail
+    await delay(100)
+    const result = await invalidAdapter.init()
+    // Should return undefined on error (falsy)
+    assert.not.ok(result, 'Init should return falsy on error')
+})
+
 test('[MongoAdapter] - save', async () => {
     const ctx = {
         from: '12345',
@@ -45,11 +57,54 @@ test('[MongoAdapter] - save', async () => {
     assert.equal(mongoAdapter.listHistory.length, 1)
 })
 
+test('[MongoAdapter] - save multiple documents', async () => {
+    const initialLength = mongoAdapter.listHistory.length
+    const ctx1 = {
+        from: '67890',
+        body: 'First message',
+        keyword: ['test'],
+    }
+    const ctx2 = {
+        from: '67890',
+        body: 'Second message',
+        keyword: ['test'],
+    }
+    await mongoAdapter.save(ctx1)
+    await mongoAdapter.save(ctx2)
+    assert.equal(mongoAdapter.listHistory.length, initialLength + 2)
+})
+
 test('[MongoAdapter] - getPrevByNumber', async () => {
     const from = '12345'
     const prevDocument = await mongoAdapter.getPrevByNumber(from)
     assert.ok(prevDocument)
     assert.equal(prevDocument.from, from)
+})
+
+test('[MongoAdapter] - getPrevByNumber returns latest document', async () => {
+    const from = '67890'
+    const prevDocument = await mongoAdapter.getPrevByNumber(from)
+    assert.ok(prevDocument)
+    assert.equal(prevDocument.from, from)
+    assert.equal(prevDocument.body, 'Second message')
+})
+
+test('[MongoAdapter] - getPrevByNumber returns undefined for non-existent number', async () => {
+    const from = 'nonexistent99999'
+    const prevDocument = await mongoAdapter.getPrevByNumber(from)
+    assert.not.ok(prevDocument, 'Should return undefined for non-existent number')
+})
+
+test('[MongoAdapter] - saved document should have date field', async () => {
+    const from = '12345'
+    const prevDocument = await mongoAdapter.getPrevByNumber(from)
+    assert.ok(prevDocument.date, 'Document should have date field')
+    assert.instance(prevDocument.date, Date)
+})
+
+test('[MongoAdapter] - credentials should be stored', () => {
+    assert.ok(mongoAdapter.credentials.dbUri, 'dbUri should be stored')
+    assert.equal(mongoAdapter.credentials.dbName, 'testDB', 'dbName should be stored')
 })
 
 test.after(async () => {

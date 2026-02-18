@@ -1,11 +1,12 @@
-import { beforeEach, describe, expect, jest, test } from '@jest/globals'
-import { WebWhatsappProvider } from '../src/index'
-import { Client } from 'whatsapp-web.js'
 import { utils } from '@builderbot/bot'
-import mime from 'mime-types'
+import { beforeEach, describe, expect, jest, test } from '@jest/globals'
 import fs from 'fs'
-import path from 'path'
 import { writeFile } from 'fs/promises'
+import mime from 'mime-types'
+import path from 'path'
+import { Client } from 'whatsapp-web.js'
+
+import { WebWhatsappProvider } from '../src/index'
 
 const phoneNumber = '1234567890@c.us'
 

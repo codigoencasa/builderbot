@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.8](https://github.com/leifermendez/bot-whatsapp/compare/v1.3.10...v1.3.8) (2025-11-26)
+
+### [1.3.7](https://github.com/leifermendez/bot-whatsapp/compare/v1.3.7-alpha.0...v1.3.7) (2025-11-25)
+
+
+### Bug Fixes
+
+* replace vercel URL with builderbot URL ([557f50e](https://github.com/leifermendez/bot-whatsapp/commit/557f50ec4ce348b14b5b992fa646bf31f773393a))
+
 ### [0.1.35](https://github.com/leifermendez/bot-whatsapp/compare/v1.1.2-alpha.0...v0.1.35) (2024-04-03)
 
 # [0.1.0-alpha.18](https://github.com/leifermendez/bot-whatsapp/compare/v0.1.0-alpha.0...v0.1.0-alpha.18) (2024-01-19)

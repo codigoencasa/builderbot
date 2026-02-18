@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://builderbot.vercel.app/">
+  <a href="https://builderbot.app/">
     <h2 align="center">@builderbot/database-json</h2>
   </a>
 </p>
@@ -7,7 +7,7 @@
 
 ## Documentation
 
-Visit [builderbot](https://builderbot.vercel.app/) to view the full documentation.
+Visit [builderbot](https://builderbot.app/) to view the full documentation.
 
 
 ## Official Course

@@ -1,6 +1,6 @@
 import { expect, describe, test, jest } from '@jest/globals'
-import * as path from 'path'
 import * as os from 'os'
+import * as path from 'path'
 
 // Mock implementations
 jest.mock('follow-redirects', () => ({

@@ -16,6 +16,7 @@ export class File {
     mime_type?: string
     sha256?: string
     id?: string
+    url?: string
     voice?: boolean
     animated?: boolean
     filename?: string

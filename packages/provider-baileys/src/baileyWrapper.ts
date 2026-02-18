@@ -1,4 +1,4 @@
-import {
+import makeWASocketOther, {
     useMultiFileAuthState,
     DisconnectReason,
     proto,
@@ -8,14 +8,14 @@ import {
     BaileysEventMap,
     AnyMediaMessageContent,
     AnyMessageContent,
-    PollMessageOptions,
     downloadMediaMessage,
     WAMessage,
     MessageUpsertType,
     isJidGroup,
     isJidBroadcast,
-    makeWASocket as makeWASocketOther,
-    isPnUser,
+    PollMessageOptions,
+    WAVersion,
+    WABrowserDescription,
 } from 'baileys'
 
 export {
@@ -29,11 +29,12 @@ export {
     BaileysEventMap,
     AnyMediaMessageContent,
     AnyMessageContent,
-    PollMessageOptions,
     downloadMediaMessage,
     WAMessage,
     MessageUpsertType,
     isJidGroup,
     isJidBroadcast,
-    isPnUser,
+    PollMessageOptions,
+    WAVersion,
+    WABrowserDescription,
 }

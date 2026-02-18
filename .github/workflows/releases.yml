@@ -3,27 +3,29 @@ name: 🚀⚡ Liberando versiones
 on:
     push:
         branches:
-            - release/production
+            - builderbot-prod
 jobs:
     ############ RELEASE ############
     release-prod:
         if: ${{ !github.event.act }}
         name: Release
         runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            packages: write
         steps:
             - name: Checkout
               uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+                  token: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Set output
-              id: vars
-              run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
-
-            - uses: pnpm/action-setup@v2.2.4
+            - uses: pnpm/action-setup@v4
 
             - name: Setup Node
               uses: actions/setup-node@v3
               with:
-                  node-version: 18.x
+                  node-version: 22.20.0
                   cache: 'pnpm'
                   registry-url: https://registry.npmjs.org/
 
@@ -35,39 +37,38 @@ jobs:
             - name: Install NPM Dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Set CHANGELOG
-              run: pnpm run release
+            - name: Build Package (before versioning)
+              run: |
+                  echo "🔨 Construyendo paquetes antes de versionar..."
+                  pnpm build:full
+                  echo "✅ Build exitoso"
 
-            - name: get-npm-version
+            - name: Bump version with lerna
+              run: |
+                  echo "📦 Actualizando versiones con lerna..."
+                  npx lerna version patch --force-publish --yes --no-push
+
+                  # Verificar versiones actualizadas
+                  echo "📋 Versiones actualizadas:"
+                  npx lerna ls --json | jq -r '.[] | "  - \(.name): \(.version)"'
+
+            - name: Get npm version
               id: package-version
-              uses: martinbeentjes/npm-get-version-action@main
+              run: |
+                  VERSION=$(node -p "require('./lerna.json').version")
+                  echo "version=$VERSION" >> $GITHUB_OUTPUT
+                  echo "📦 Versión detectada: $VERSION"
 
-            - name: Build Package
-              run: pnpm build:full
+            - name: Push changes and tags
+              run: |
+                  git push origin builderbot-prod --follow-tags --no-verify
+                  echo "✅ Cambios y tags subidos al repositorio"
 
-            - name: Release @bot-whatsapp/bot
-              run: node ./scripts/release.js --name=bot --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
-
-            - name: Release @bot-whatsapp/cli
-              run: node ./scripts/release.js --name=cli --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
-
-            - name: Release @bot-whatsapp/create-bot-whatsapp
-              run: node ./scripts/release.js --name=create-bot-whatsapp --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
-
-            - name: Release @bot-whatsapp/database
-              run: node ./scripts/release.js --name=database --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
-
-            - name: Release @bot-whatsapp/provider
-              run: node ./scripts/release.js --name=provider --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
-
-            - name: Release @bot-whatsapp/contexts
-              run: node ./scripts/release.js --name=contexts --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
-
-            - name: Release @bot-whatsapp/portal
-              run: node ./scripts/release.js --name=portal --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
-
-            - name: Release eslint-plugin-bot-whatsapp
-              run: node ./scripts/release.js --name=eslint-plugin-bot-whatsapp --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.NPM_TOKEN }}"
+            - name: Publish packages to npm
+              run: npx lerna publish from-package --yes
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
             - name: Release Github
-              run: node ./scripts/github.js --version="${{ steps.package-version.outputs.current-version}}" --token="${{ secrets.OCTO_TOKEN }}"
+              if: success()
+              run: node ./scripts/github.js --version="${{ steps.package-version.outputs.version}}" --token="${{ secrets.GITHUB_TOKEN }}"

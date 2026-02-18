@@ -29,6 +29,8 @@
     "**/*.test.ts",
     "**/*.spec.ts",
     "**e2e**",
-    "**mock**"
+    "**mock**",
+    "__tests__/**",
+    "jest.config.ts"
   ]
 }

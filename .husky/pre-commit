@@ -1,4 +1,19 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+# Obtener la lista de archivos staged antes de cualquier modificación
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
 
+if [ -z "$STAGED_FILES" ]; then
+    exit 0
+fi
+
+# Formatear archivos staged
 pnpm run fmt.staged
+
+# Ejecutar eslint solo en archivos staged (archivos TypeScript/JavaScript)
+TS_JS_FILES=$(echo "$STAGED_FILES" | grep -E '\.(ts|tsx|js|jsx)$' || true)
+if [ -n "$TS_JS_FILES" ]; then
+    echo "$TS_JS_FILES" | xargs npx eslint --fix
+fi
+
+# Agregar automáticamente los archivos modificados al staging area
+# para evitar el ciclo infinito de commits
+echo "$STAGED_FILES" | xargs git add

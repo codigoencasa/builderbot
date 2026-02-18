@@ -1,6 +1,7 @@
 import { describe, expect, jest, test } from '@jest/globals'
 import axios, { AxiosResponse } from 'axios'
 import mime from 'mime-types'
+
 import { downloadFile, fileTypeFromFile } from '../src/utils'
 
 jest.mock('axios')

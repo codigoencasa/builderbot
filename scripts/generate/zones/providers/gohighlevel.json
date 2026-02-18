@@ -1,0 +1,9 @@
+{
+    "IMPORT": "import { GoHighLevelProvider as Provider } from '@builderbot/provider-gohighlevel'\n",
+    "IMPLEMENTATION": "const adapterProvider = createProvider(Provider, {\n        clientId: 'YOUR_CLIENT_ID',\n        clientSecret: 'YOUR_CLIENT_SECRET',\n        locationId: 'YOUR_LOCATION_ID',\n        channelType: 'SMS'\n    })",
+    "DEPENDENCIES":{
+        "@builderbot/bot": "latest",
+        "@builderbot/provider-gohighlevel": "latest"
+    },
+    "DEV_DEPENDENCIES":{}
+}
