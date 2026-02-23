@@ -1,6 +1,7 @@
+import RedisMock from 'ioredis-mock'
+import * as sinon from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import * as sinon from 'sinon'
 
 import { CoreClass } from '../../src/core/coreClass'
 import FlowClass from '../../src/io/flowClass'
@@ -32,6 +33,12 @@ const createMockDeps = (flows = [addKeyword('hello').addAnswer('Hi there!')]) =>
         globalState: {},
         extensions: undefined,
         queue: { timeout: 20000, concurrencyLimit: 15 },
+        RedisOptions: {
+            connection: new RedisMock(),
+            options: {
+                prefix: 'test',
+            },
+        },
     }
 
     return { flowClass, database, provider, args }
@@ -267,10 +274,7 @@ test('[CoreClass] sendProviderAndSave should skip internal answers', async () =>
             from: 'user123',
             refSerialize: 'ser1',
         })
-        assert.not.ok(
-            provider.sendMessage.called,
-            `Provider sendMessage should NOT be called for "${answer}"`
-        )
+        assert.not.ok(provider.sendMessage.called, `Provider sendMessage should NOT be called for "${answer}"`)
     }
 })
 
@@ -458,6 +462,20 @@ test('[CoreClass] stateHandler should be isolated per user', async () => {
 
     const state1 = core.stateHandler.getMyState('user1')()
     const state2 = core.stateHandler.getMyState('user2')()
+
+    assert.equal(state1.name, 'Alice')
+    assert.equal(state2.name, 'Bob')
+})
+
+test('[CoreClass] stateRedisHandler should be isolated per user', async () => {
+    const { flowClass, database, provider, args } = createMockDeps()
+    const core = new CoreClass(flowClass, database as any, provider as any, args)
+
+    await core.stateRedisHandler.updateState({ from: 'user1' })({ name: 'Alice' })
+    await core.stateRedisHandler.updateState({ from: 'user2' })({ name: 'Bob' })
+
+    const state1 = await core.stateRedisHandler.getMyState('user1')()
+    const state2 = await core.stateRedisHandler.getMyState('user2')()
 
     assert.equal(state1.name, 'Alice')
     assert.equal(state2.name, 'Bob')

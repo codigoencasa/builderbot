@@ -2,6 +2,8 @@
  * @fileoverview Este archivo contiene las definiciones de tipos utilizadas en el proyecto.
  */
 
+import Redis from 'ioredis'
+
 import type { IdleState } from './context'
 import type { ProviderClass } from './provider/interface/provider'
 import type { Queue } from './utils'
@@ -17,7 +19,7 @@ export type GlobalVendorArgs<V = { [key: string]: any }> = {
 export type ProviderEventTypes = {
     message: [arg1: BotContext]
     require_action: [
-        arg1: { title: string; instructions: string[]; payload?: { qr?: string; code?: string; [key: string]: any } }
+        arg1: { title: string; instructions: string[]; payload?: { qr?: string; code?: string; [key: string]: any } },
     ]
     notice: [arg1: { title: string; instructions: string[] }]
     ready: any
@@ -37,6 +39,12 @@ export type GeneralArgs = {
         concurrencyLimit: number
     }
     host?: string
+    RedisOptions?: {
+        connection: Redis
+        options: {
+            prefix: string
+        }
+    }
 }
 
 export type FlagsRuntime = { endFlow: any; fallBack?: boolean; flowDynamic?: boolean; gotoFlow?: boolean }

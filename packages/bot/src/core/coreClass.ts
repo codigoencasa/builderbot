@@ -13,7 +13,7 @@ import type {
 } from './../types'
 import type { HostEventTypes } from './eventEmitterClass'
 import { EventEmitterClass } from './eventEmitterClass'
-import { GlobalState, IdleState, SingleState } from '../context'
+import { GlobalState, IdleState, SingleState, RedisState } from '../context'
 import type { MemoryDB } from '../db'
 import { LIST_REGEX } from '../io/events'
 import type FlowClass from '../io/flowClass'
@@ -39,6 +39,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     provider: P
     queuePrincipal: Queue<unknown>
     stateHandler = new SingleState()
+    stateRedisHandler: RedisState
     globalStateHandler = new GlobalState()
     dynamicBlacklist = new BlackList()
     generalArgs: GeneralArgs & { host?: string } = {
@@ -79,6 +80,11 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         this.globalStateHandler.updateState()(this.generalArgs.globalState)
 
         if (this.generalArgs.extensions) this.globalStateHandler.RAW = this.generalArgs.extensions
+        if (this.generalArgs.RedisOptions)
+            this.stateRedisHandler = new RedisState(
+                this.generalArgs.RedisOptions.connection,
+                this.generalArgs.RedisOptions.options
+            )
 
         for (const { event, func } of this.listenerBusEvents()) {
             this.provider.on(event, func)
@@ -157,6 +163,15 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             clear: this.stateHandler.clear(messageCtxInComing.from),
         }
 
+        const stateRedis = {
+            getMyState: this.stateRedisHandler
+                ? this.stateRedisHandler.getMyState(messageCtxInComing.from)
+                : () => null,
+            get: this.stateRedisHandler ? this.stateRedisHandler.get(messageCtxInComing.from) : () => null,
+            update: this.stateRedisHandler ? this.stateRedisHandler.updateState(messageCtxInComing) : () => null,
+            clear: this.stateRedisHandler ? this.stateRedisHandler.clear(messageCtxInComing.from) : () => null,
+        }
+
         // 📄 Mantener estado global
         const globalState = {
             get: this.globalStateHandler.get(),
@@ -180,7 +195,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             },
             index = 0
         ) => {
-            const body = typeof payload === 'string' ? payload : payload?.body ?? payload?.answer
+            const body = typeof payload === 'string' ? payload : (payload?.body ?? payload?.answer)
             const media = payload?.media ?? null
             const buttons = payload?.buttons ?? []
             const capture = payload?.capture ?? false
@@ -376,7 +391,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                 flag.fallBack = true
                 await this.sendProviderAndSave(from, {
                     ...prevMsg,
-                    answer: typeof message === 'string' ? message : message?.body ?? prevMsg.answer,
+                    answer: typeof message === 'string' ? message : (message?.body ?? prevMsg.answer),
                     options: {
                         ...prevMsg.options,
                         buttons: prevMsg.options?.buttons,
@@ -546,6 +561,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                 provider,
                 flows: this.flowClass.flowRaw,
                 state,
+                stateRedis,
                 globalState,
                 extensions,
                 blacklist: this.dynamicBlacklist,
