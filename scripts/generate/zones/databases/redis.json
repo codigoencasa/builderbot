@@ -1,0 +1,8 @@
+{
+    "IMPORT": "import Redis from 'ioredis'\nimport { RedisAdapter as Database } from '@builderbot/database-redis'\n",
+    "IMPLEMENTATION": "const redis_conn = new Redis(process.env.REDIS_URL)\n    const adapterDB = new Database(\n        redis_conn,\n        {\n            prefix: 'prefix'\n        }\n    )\n",
+    "DEPENDENCIES":{
+        "@builderbot/database-postgres":"latest"
+    },
+    "DEV_DEPENDENCIES":{}
+}

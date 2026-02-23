@@ -37,6 +37,7 @@ export const PROVIDER_DATA: ValueLabel[] = [
     { value: 'mongo', label: 'Mongo' },
     { value: 'mysql', label: 'MySQL' },
     { value: 'postgres', label: 'PostgreSQL' },
+    { value: 'redis', label: 'Redis' },
 ]
 
 export const AVAILABLE_LANGUAGES: ValueLabel[] = [
