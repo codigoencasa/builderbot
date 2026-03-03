@@ -38,8 +38,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     database: D
     provider: P
     queuePrincipal: Queue<unknown>
-    stateHandler = new SingleState()
-    stateRedisHandler: RedisState
+    stateHandler: SingleState | RedisState
     globalStateHandler = new GlobalState()
     dynamicBlacklist = new BlackList()
     generalArgs: GeneralArgs & { host?: string } = {
@@ -80,11 +79,9 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         this.globalStateHandler.updateState()(this.generalArgs.globalState)
 
         if (this.generalArgs.extensions) this.globalStateHandler.RAW = this.generalArgs.extensions
-        if (this.generalArgs.RedisOptions)
-            this.stateRedisHandler = new RedisState(
-                this.generalArgs.RedisOptions.connection,
-                this.generalArgs.RedisOptions.options
-            )
+        this.stateHandler = this.generalArgs.RedisOptions
+            ? new RedisState(this.generalArgs.RedisOptions.connection, this.generalArgs.RedisOptions.options)
+            : new SingleState()
 
         for (const { event, func } of this.listenerBusEvents()) {
             this.provider.on(event, func)
@@ -136,7 +133,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         idleForCallback.stop(messageCtxInComing)
         const { body, from } = messageCtxInComing
         let msgToSend = []
-        let endFlowFlag = this.stateHandler.get(from)('__end_flow__') || false
+        let endFlowFlag = (await this.stateHandler.get(from)('__end_flow__')) || false
         const fallBackFlag = false
 
         if (this.dynamicBlacklist.checkIf(from)) return
@@ -161,15 +158,6 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             get: this.stateHandler.get(messageCtxInComing.from),
             update: this.stateHandler.updateState(messageCtxInComing),
             clear: this.stateHandler.clear(messageCtxInComing.from),
-        }
-
-        const stateRedis = {
-            getMyState: this.stateRedisHandler
-                ? this.stateRedisHandler.getMyState(messageCtxInComing.from)
-                : () => null,
-            get: this.stateRedisHandler ? this.stateRedisHandler.get(messageCtxInComing.from) : () => null,
-            update: this.stateRedisHandler ? this.stateRedisHandler.updateState(messageCtxInComing) : () => null,
-            clear: this.stateRedisHandler ? this.stateRedisHandler.clear(messageCtxInComing.from) : () => null,
         }
 
         // 📄 Mantener estado global
@@ -561,7 +549,6 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                 provider,
                 flows: this.flowClass.flowRaw,
                 state,
-                stateRedis,
                 globalState,
                 extensions,
                 blacklist: this.dynamicBlacklist,
@@ -796,8 +783,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
      */
     private buildCtxMethods = (): BotCtxMethods => ({
         endFlow: async (from: string) => {
-            this.queuePrincipal.clearQueue(from)
-            this.stateHandler.updateState({ from })({ __end_flow__: true })
+            await this.queuePrincipal.clearQueue(from)
+            await this.stateHandler.updateState({ from })({ __end_flow__: true })
         },
     })
 

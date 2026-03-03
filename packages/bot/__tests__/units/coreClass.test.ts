@@ -460,22 +460,8 @@ test('[CoreClass] stateHandler should be isolated per user', async () => {
     await core.stateHandler.updateState({ from: 'user1' })({ name: 'Alice' })
     await core.stateHandler.updateState({ from: 'user2' })({ name: 'Bob' })
 
-    const state1 = core.stateHandler.getMyState('user1')()
-    const state2 = core.stateHandler.getMyState('user2')()
-
-    assert.equal(state1.name, 'Alice')
-    assert.equal(state2.name, 'Bob')
-})
-
-test('[CoreClass] stateRedisHandler should be isolated per user', async () => {
-    const { flowClass, database, provider, args } = createMockDeps()
-    const core = new CoreClass(flowClass, database as any, provider as any, args)
-
-    await core.stateRedisHandler.updateState({ from: 'user1' })({ name: 'Alice' })
-    await core.stateRedisHandler.updateState({ from: 'user2' })({ name: 'Bob' })
-
-    const state1 = await core.stateRedisHandler.getMyState('user1')()
-    const state2 = await core.stateRedisHandler.getMyState('user2')()
+    const state1 = await core.stateHandler.getMyState('user1')()
+    const state2 = await core.stateHandler.getMyState('user2')()
 
     assert.equal(state1.name, 'Alice')
     assert.equal(state2.name, 'Bob')

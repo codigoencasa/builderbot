@@ -33,8 +33,17 @@
     "ioredis": "^5.9.3"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^0.4.4",
     "@types/ioredis-mock": "^8.2.6",
+    "@types/node": "^24.10.2",
+    "@types/sinon": "^21.0.0",
     "ioredis-mock": "^8.13.1",
+    "kleur": "^4.1.5",
+    "rimraf": "^6.1.2",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "sinon": "^17.0.1",
     "uvu": "^0.5.6"
   }
 }
