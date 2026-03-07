@@ -148,6 +148,7 @@ jobs:
                   npx lerna publish from-package --dist-tag alpha --yes
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  NPM_CONFIG_PROVENANCE: "true"
 
             - name: 📋 Log Deployed Version
               run: |
