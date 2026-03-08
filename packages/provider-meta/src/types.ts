@@ -237,12 +237,17 @@ export interface Profile {
     name: string
 }
 
+export interface VoiceCall {
+    status: string
+}
+
 export interface MessageFromMeta {
     from: string
     id: string
     timestamp: string
     text: Text
     type: string
+    voice_call?: VoiceCall
 }
 
 export interface Text {
