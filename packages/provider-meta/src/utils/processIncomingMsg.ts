@@ -175,17 +175,6 @@ export const processIncomingMessage = async ({
             }
             break
         }
-        case 'voice_call': {
-            responseObj = {
-                type: message.type,
-                from: message.from,
-                to,
-                body: utils.generateRefProvider('_event_call_'),
-                pushName,
-                name: pushName,
-            }
-            break
-        }
         default:
             // Lógica para manejar tipos de mensajes no reconocidos
             break

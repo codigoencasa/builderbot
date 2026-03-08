@@ -4,7 +4,9 @@ import type Queue from 'queue-promise'
 
 import { processIncomingMessage } from '../utils/processIncomingMsg'
 
-import type { Message, MetaGlobalVendorArgs, IncomingMessage, ContactMeta } from '~/types'
+import { utils } from '@builderbot/bot'
+
+import type { Message, MetaGlobalVendorArgs, IncomingMessage, ContactMeta, CallFromMeta } from '~/types'
 
 /**
  * Class representing MetaCoreVendor, a vendor class for meta core functionality.
@@ -113,8 +115,33 @@ export class MetaCoreVendor extends EventEmitter {
             return res.end(JSON.stringify(someErrors))
         }
 
-        const messages = body?.entry?.[0]?.changes?.[0]?.value?.messages
         const contacts = body?.entry?.[0]?.changes?.[0]?.value?.contacts
+
+        const calls = body?.entry?.[0]?.changes?.[0]?.value?.calls
+        if (calls?.length) {
+            await Promise.all(
+                calls.map(async (call: CallFromMeta) => {
+                    if (call.event === 'connect') {
+                        const payload: Message = {
+                            type: 'voice_call',
+                            from: call.from,
+                            to: call.to,
+                            body: utils.generateRefProvider('_event_call_'),
+                            pushName: contacts?.[0]?.profile?.name ?? 'Unknown',
+                            name: contacts?.[0]?.profile?.name ?? 'Unknown',
+                            message_id: call.id,
+                            timestamp: call.timestamp,
+                        }
+                        await this.queue.enqueue(() => this.processMessage(payload))
+                    }
+                })
+            )
+            res.statusCode = 200
+            res.end('Call event processed')
+            return
+        }
+
+        const messages = body?.entry?.[0]?.changes?.[0]?.value?.messages
         const messageId = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0]?.id
         const messageTimestamp = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0]?.timestamp
         if (!messages?.length) {

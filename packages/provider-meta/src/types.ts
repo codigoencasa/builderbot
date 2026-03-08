@@ -219,6 +219,7 @@ export interface Value {
     metadata: Metadata
     contacts: ContactMeta[]
     messages: MessageFromMeta[]
+    calls?: CallFromMeta[]
 }
 
 export interface Metadata {
@@ -237,8 +238,19 @@ export interface Profile {
     name: string
 }
 
-export interface VoiceCall {
-    status: string
+export interface CallSession {
+    sdp?: string
+    sdp_type?: string
+}
+
+export interface CallFromMeta {
+    id: string
+    from: string
+    to: string
+    event: 'connect' | 'terminate' | string
+    timestamp: string
+    direction?: 'USER_INITIATED' | 'BUSINESS_INITIATED' | string
+    session?: CallSession
 }
 
 export interface MessageFromMeta {
@@ -247,7 +259,6 @@ export interface MessageFromMeta {
     timestamp: string
     text: Text
     type: string
-    voice_call?: VoiceCall
 }
 
 export interface Text {
