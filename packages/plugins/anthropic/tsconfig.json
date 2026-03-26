@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "declaration": true,
+        "declarationMap": true,
+        "moduleResolution": "bundler",
+        "importHelpers": true,
+        "target": "es2021",
+        "module": "ESNext",
+        "types": ["node"]
+    },
+    "include": ["src/**/*.js", "src/**/*.ts"],
+    "exclude": ["**/*.spec.ts", "**/*.test.ts", "node_modules"]
+}

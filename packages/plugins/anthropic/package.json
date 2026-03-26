@@ -1,0 +1,42 @@
+{
+    "name": "@builderbot/plugin-anthropic",
+    "version": "1.3.15-alpha.21",
+    "description": "Anthropic Claude AI plugin for BuilderBot",
+    "author": "BuilderBot",
+    "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
+    "license": "ISC",
+    "main": "dist/index.cjs",
+    "types": "dist/index.d.ts",
+    "type": "module",
+    "scripts": {
+        "build": "rimraf dist && rollup --config",
+        "test": "jest --forceExit",
+        "test:coverage": "jest --coverage"
+    },
+    "files": [
+        "./dist/"
+    ],
+    "directories": {
+        "src": "src",
+        "test": "__tests__"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/codigoencasa/bot-whatsapp.git"
+    },
+    "bugs": {
+        "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
+    },
+    "dependencies": {
+        "@anthropic-ai/sdk": "^0.39.0",
+        "@builderbot/bot": "^1.3.15-alpha.21"
+    },
+    "devDependencies": {
+        "@rollup/plugin-node-resolve": "^16.0.3",
+        "@rollup/plugin-typescript": "^12.3.0",
+        "@types/node": "^24.10.2",
+        "rimraf": "^6.1.2",
+        "tslib": "^2.8.1",
+        "typescript": "^5.9.3"
+    }
+}
