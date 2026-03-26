@@ -8,15 +8,21 @@ import type { ParamsAnthropic } from './types'
  * ```typescript
  * import { createBotAnthropic } from '@builderbot/plugin-anthropic'
  *
- * // Configuracion minima (usa ANTHROPIC_API_KEY del entorno)
+ * // Zero-config: usa el token de `claude setup-token` automaticamente
  * const anthropic = await createBotAnthropic({ database, provider })
+ *
+ * // Con API key explicita
+ * const anthropic = await createBotAnthropic({
+ *     database,
+ *     provider,
+ *     options: { apiKey: 'sk-ant-api03-...' }
+ * })
  *
  * // Configuracion completa
  * const anthropic = await createBotAnthropic({
  *     database,
  *     provider,
  *     options: {
- *         apiKey: 'sk-ant-...',
  *         model: 'claude-sonnet-4-20250514',
  *         maxHistoryLength: 20,
  *         maxTokens: 4096,

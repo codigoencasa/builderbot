@@ -1,5 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { CoreClass } from '@builderbot/bot'
+import { existsSync, readFileSync } from 'fs'
+import { join } from 'path'
+import { homedir } from 'os'
 
 import { ConversationHistory } from './history'
 import type { AnthropicContextOptions, ContentBlock, MessageContextIncoming, TextBlock, ImageBlock } from './types'
@@ -9,6 +12,67 @@ const DEFAULT_MODEL = 'claude-sonnet-4-20250514'
 const DEFAULT_MAX_HISTORY = 10
 const DEFAULT_MAX_TOKENS = 4096
 const DEFAULT_THINKING_BUDGET = 10000
+
+/**
+ * Lee el token OAuth de Claude setup desde ~/.claude/.credentials.json
+ * Este archivo es generado por `claude setup-token` (Claude Code CLI).
+ * Compatible con el patron de OpenClaw para autenticacion via setup-token.
+ */
+function readClaudeSetupToken(): string | null {
+    const credentialsPath = join(homedir(), '.claude', '.credentials.json')
+    try {
+        if (!existsSync(credentialsPath)) return null
+        const raw = readFileSync(credentialsPath, 'utf-8')
+        const credentials = JSON.parse(raw)
+
+        if (credentials.accessToken && typeof credentials.accessToken === 'string') {
+            // Verificar que no haya expirado
+            if (credentials.expiresAt) {
+                const expiresAt = new Date(credentials.expiresAt).getTime()
+                if (Date.now() >= expiresAt) {
+                    console.warn('[plugin-anthropic] El token de Claude setup ha expirado. Ejecuta `claude setup-token` para renovarlo.')
+                    return null
+                }
+            }
+            return credentials.accessToken
+        }
+    } catch {
+        // Silenciar errores de lectura/parse
+    }
+    return null
+}
+
+/**
+ * Resuelve la API key/token siguiendo el orden de precedencia:
+ * 1. apiKey proporcionada directamente en opciones
+ * 2. Variable de entorno ANTHROPIC_API_KEY
+ * 3. Variable de entorno ANTHROPIC_AUTH_TOKEN
+ * 4. Token OAuth de Claude setup (~/.claude/.credentials.json)
+ */
+function resolveApiKey(optionsApiKey?: string): { apiKey?: string; authToken?: string } {
+    // 1. API key directa
+    if (optionsApiKey) {
+        return { apiKey: optionsApiKey }
+    }
+
+    // 2. Env ANTHROPIC_API_KEY
+    if (process.env.ANTHROPIC_API_KEY) {
+        return { apiKey: process.env.ANTHROPIC_API_KEY }
+    }
+
+    // 3. Env ANTHROPIC_AUTH_TOKEN (Bearer token)
+    if (process.env.ANTHROPIC_AUTH_TOKEN) {
+        return { authToken: process.env.ANTHROPIC_AUTH_TOKEN }
+    }
+
+    // 4. Claude setup-token (~/.claude/.credentials.json)
+    const setupToken = readClaudeSetupToken()
+    if (setupToken) {
+        return { authToken: setupToken }
+    }
+
+    return {}
+}
 
 export class AnthropicContext extends CoreClass {
     private client: Anthropic
@@ -30,13 +94,26 @@ export class AnthropicContext extends CoreClass {
     }
 
     private init(): void {
-        const apiKey = this.options.apiKey || process.env.ANTHROPIC_API_KEY
-        if (!apiKey) {
+        const { apiKey, authToken } = resolveApiKey(this.options.apiKey)
+
+        if (!apiKey && !authToken) {
             throw new Error(
-                'Anthropic API key no encontrada. Proporciona apiKey en las opciones o define la variable de entorno ANTHROPIC_API_KEY.'
+                'Anthropic API key no encontrada. Opciones disponibles:\n' +
+                '  1. Proporciona apiKey en las opciones del plugin\n' +
+                '  2. Define la variable de entorno ANTHROPIC_API_KEY\n' +
+                '  3. Define la variable de entorno ANTHROPIC_AUTH_TOKEN\n' +
+                '  4. Ejecuta `claude setup-token` para generar un token OAuth en ~/.claude/.credentials.json'
             )
         }
-        this.client = new Anthropic({ apiKey })
+
+        if (authToken) {
+            // OAuth token (setup-token) - se envia como Bearer header via authToken
+            this.client = new Anthropic({ apiKey: authToken })
+        } else {
+            // API key directa - se envia como X-Api-Key header
+            this.client = new Anthropic({ apiKey })
+        }
+
         this.history = new ConversationHistory(this.options.maxHistoryLength)
     }
 

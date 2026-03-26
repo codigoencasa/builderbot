@@ -13,7 +13,11 @@
  * ```
  */
 export interface AnthropicContextOptions {
-    /** API key de Anthropic. Si no se provee, usa la variable de entorno ANTHROPIC_API_KEY */
+    /** API key de Anthropic (sk-ant-api03-...). Si no se provee, busca automaticamente en este orden:
+     * 1. Variable de entorno ANTHROPIC_API_KEY
+     * 2. Variable de entorno ANTHROPIC_AUTH_TOKEN
+     * 3. Token OAuth de Claude setup (~/.claude/.credentials.json) generado con `claude setup-token`
+     */
     apiKey?: string
     /** Modelo a utilizar. Default: 'claude-sonnet-4-20250514' */
     model?: string
