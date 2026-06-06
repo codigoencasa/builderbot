@@ -102,10 +102,19 @@ export class InstagramEvents extends EventEmitterClass<ProviderEventTypes> {
             },
             timestamp: messagingEvent.timestamp,
             messageId: messagingEvent.message?.mid || '',
+        } as {
+            body: string
+            from: string
+            name: string
+            host: { id: string; phone: string }
+            timestamp: number
+            messageId: string
+            data?: { media: { url: string } }
         }
 
         if (messagingEvent.message?.attachments && messagingEvent.message.attachments.length > 0) {
             const attachment = messagingEvent.message.attachments[0]
+            sendObj.data = { media: { url: attachment.payload.url } }
             switch (attachment.type) {
                 case 'image':
                     sendObj.body = utils.generateRefProvider('_event_media_')

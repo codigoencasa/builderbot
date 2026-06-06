@@ -21,11 +21,14 @@ export const processIncomingMessage = async ({
         case 'text': {
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from: message.from || message.from_user_id,
                 to,
                 body: message.text?.body,
                 name: pushName,
                 pushName,
+                source_id: message?.referral?.source_id,
+                source_type: message?.referral?.source_type,
+                ctwa_id: message?.referral?.ctwa_clid,
             }
             break
         }
@@ -51,7 +54,7 @@ export const processIncomingMessage = async ({
         case 'button': {
             responseObj = {
                 type: 'button',
-                from: message.from,
+                from: message.from || message.from_user_id,
                 to,
                 body: message.button?.text,
                 payload: message.button?.payload,
@@ -65,7 +68,7 @@ export const processIncomingMessage = async ({
             const imageUrl = await getMediaUrl(version, message.image?.id, numberId, jwtToken)
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from: message.from || message.from_user_id,
                 url: imageUrl ?? fileData?.url,
                 fileData,
                 caption: message?.image?.caption,
@@ -80,7 +83,7 @@ export const processIncomingMessage = async ({
             const documentUrl = await getMediaUrl(version, message.document?.id, numberId, jwtToken)
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from: message.from || message.from_user_id,
                 url: documentUrl ?? fileData?.url,
                 fileData,
                 to,
@@ -94,7 +97,7 @@ export const processIncomingMessage = async ({
             const videoUrl = await getMediaUrl(version, message.video?.id, numberId, jwtToken)
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from: message.from || message.from_user_id,
                 url: videoUrl ?? fileData?.url,
                 fileData,
                 caption: message?.video?.caption,
@@ -108,7 +111,7 @@ export const processIncomingMessage = async ({
         case 'location': {
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from: message.from || message.from_user_id,
                 to,
                 latitude: message.location.latitude,
                 longitude: message.location.longitude,
@@ -122,7 +125,7 @@ export const processIncomingMessage = async ({
             const audioUrl = await getMediaUrl(version, message.audio?.id, numberId, jwtToken)
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from: message.from || message.from_user_id,
                 url: audioUrl ?? fileData?.url,
                 fileData,
                 to,
@@ -136,7 +139,7 @@ export const processIncomingMessage = async ({
             const stickerUrl = await getMediaUrl(version, message.sticker?.id, numberId, jwtToken)
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from: message.from || message.from_user_id,
                 url: stickerUrl ?? fileData?.url,
                 fileData,
                 to,
@@ -150,7 +153,7 @@ export const processIncomingMessage = async ({
         case 'contacts': {
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from: message.from || message.from_user_id,
                 contacts: [
                     {
                         name: message.contacts[0].name,
@@ -167,7 +170,7 @@ export const processIncomingMessage = async ({
         case 'order': {
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from: message.from || message.from_user_id,
                 to,
                 order: {
                     catalog_id: message.order.catalog_id,

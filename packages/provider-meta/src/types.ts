@@ -113,6 +113,9 @@ export interface Message {
     id?: string
     caption?: string
     fromMe?: boolean
+    source_type?: string
+    source_id?: string
+    ctwa_id?: string
 }
 
 export interface ParamsIncomingMessage {

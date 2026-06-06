@@ -10,13 +10,26 @@ interface ToCtxParams {
     keyword?: string
     options?: Options
     index?: number
+    source_id?: string
+    source_type?: string
+    ctwa_id?: string
 }
 
 /**
  * @param params ToCtxParams
  * @returns Context
  */
-const toCtx = ({ body, from, prevRef, keyword, options = {}, index }: ToCtxParams): TContext => {
+const toCtx = ({
+    body,
+    from,
+    prevRef,
+    keyword,
+    options = {},
+    index,
+    source_id,
+    source_type,
+    ctwa_id,
+}: ToCtxParams): TContext => {
     return {
         ref: generateRef(),
         keyword: prevRef ?? keyword,
@@ -24,6 +37,9 @@ const toCtx = ({ body, from, prevRef, keyword, options = {}, index }: ToCtxParam
         options: options,
         from,
         refSerialize: generateRefSerialize({ index, answer: body }),
+        source_id,
+        source_type,
+        ctwa_id,
     }
 }
 

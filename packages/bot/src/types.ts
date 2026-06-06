@@ -96,6 +96,9 @@ export type MessageContextIncoming = {
     ref?: string
     body?: string
     host?: string
+    source_id?: string
+    source_type?: string
+    ctwa_id?: string
 }
 
 /**
@@ -224,6 +227,9 @@ export interface TContext {
     keyword: string | string[]
     from?: string
     answer?: string | string[]
+    source_id?: string
+    source_type?: string
+    ctwa_id?: string
     refSerialize?: string
     endFlow?: boolean
     options: TCTXoptions
