@@ -1,6 +1,6 @@
 {
-  "name": "@builderbot/root",
-  "version": "1.3.10",
+  "name": "@builderbot-japcon/root",
+  "version": "1.0.0",
   "description": "Bot de wahtsapp open source para MVP o pequeños negocios",
   "main": "app.js",
   "private": true,
