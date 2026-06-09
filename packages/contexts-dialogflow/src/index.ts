@@ -1,1 +1,0 @@
-export { createBotDialog } from './dialogflow'
