@@ -22,6 +22,8 @@ export type InstagramArgs = GlobalVendorArgs & {
     listenMode?: InstagramListenMode
 }
 
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000
+
 /**
  * A class representing an InstagramProvider for interacting with Instagram Messaging API.
  * @extends ProviderClass
@@ -36,6 +38,15 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
         verifyToken: undefined,
         listenMode: 'message',
     }
+
+    /**
+     * Tracks the most recent comment.id per userId so that the first outbound
+     * message after a comment event is routed via Private Replies
+     * (recipient: { comment_id }) instead of a regular DM (recipient: { id }).
+     * Only the last comment per user is kept; entries older than 7 days are
+     * purged automatically to avoid memory leaks.
+     */
+    private pendingComments = new Map<string, { commentId: string; timestamp: number }>()
 
     constructor(args?: InstagramArgs) {
         super()
@@ -57,6 +68,26 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
         vendor.setListenMode(this.globalVendorArgs.listenMode || 'message')
         this.vendor = vendor
         this.server = this.server.post('/webhook', this.ctrlInMsg).get('/webhook', this.ctrlVerify)
+
+        vendor.on('message', (payload: any) => {
+            if (payload?.comment?.id && payload?.from) {
+                this.pendingComments.set(payload.from, {
+                    commentId: payload.comment.id,
+                    timestamp: Date.now(),
+                })
+            }
+        })
+
+        const cleanupInterval = setInterval(
+            () => {
+                const cutoff = Date.now() - SEVEN_DAYS_MS
+                for (const [userId, entry] of this.pendingComments) {
+                    if (entry.timestamp < cutoff) this.pendingComments.delete(userId)
+                }
+            },
+            60 * 60 * 1000
+        )
+        cleanupInterval.unref()
 
         await this.checkStatus()
         return vendor
@@ -225,15 +256,28 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
             console.info('[Instagram] Message sent successfully')
             return response.data
         } catch (error) {
-            console.error('[Instagram] Error sending message:', {
-                error: error.response?.data || error.message,
-            })
+            const igError = error.response?.data?.error
+            if (igError?.error_subcode === 2534022 || igError?.code === 10) {
+                console.warn('[Instagram] 24h window closed, skipping message to:', userId)
+                this.emit('window_expired', { userId, message })
+                return null
+            }
+            console.error('[Instagram] Error sending message:', { error: igError || error.message })
             throw new Error('Failed to send message')
         }
     }
 
     sendMessage = async (userId: string, message: string, options?: SendOptions): Promise<any> => {
-        // Check if media is provided in options
+        if (options?.comment?.id) {
+            return this.sendPrivateReply(options.comment.id, message)
+        }
+
+        const pending = this.pendingComments.get(userId)
+        if (pending) {
+            this.pendingComments.delete(userId)
+            return this.sendPrivateReply(pending.commentId, message)
+        }
+
         if (options?.media) {
             return this.sendMedia(userId, message, options.media)
         }
@@ -296,7 +340,7 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
                 recipient: { id: userId },
                 message: {
                     attachment: {
-                        type: 'image', // Type is determined by the attachment itself
+                        type: 'image',
                         payload: {
                             attachment_id: attachmentId,
                         },
@@ -309,9 +353,13 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
             console.info('[Instagram] Attachment sent successfully')
             return response.data
         } catch (error) {
-            console.error('[Instagram] Error sending attachment:', {
-                error: error.response?.data || error.message,
-            })
+            const igError = error.response?.data?.error
+            if (igError?.error_subcode === 2534022 || igError?.code === 10) {
+                console.warn('[Instagram] 24h window closed, skipping attachment to:', userId)
+                this.emit('window_expired', { userId })
+                return null
+            }
+            console.error('[Instagram] Error sending attachment:', { error: igError || error.message })
             throw new Error('Failed to send attachment')
         }
     }
@@ -373,7 +421,13 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
             console.info('[Instagram] Image sent successfully')
             return response.data
         } catch (error) {
-            console.error('[Instagram] Error sending image:', { error: error.response?.data || error.message })
+            const igError = error.response?.data?.error
+            if (igError?.error_subcode === 2534022 || igError?.code === 10) {
+                console.warn('[Instagram] 24h window closed, skipping image to:', userId)
+                this.emit('window_expired', { userId })
+                return null
+            }
+            console.error('[Instagram] Error sending image:', { error: igError || error.message })
             throw new Error('Failed to send image')
         }
     }
@@ -402,7 +456,13 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
             console.info('[Instagram] Video sent successfully')
             return response.data
         } catch (error) {
-            console.error('[Instagram] Error sending video:', { error: error.response?.data || error.message })
+            const igError = error.response?.data?.error
+            if (igError?.error_subcode === 2534022 || igError?.code === 10) {
+                console.warn('[Instagram] 24h window closed, skipping video to:', userId)
+                this.emit('window_expired', { userId })
+                return null
+            }
+            console.error('[Instagram] Error sending video:', { error: igError || error.message })
             throw new Error('Failed to send video')
         }
     }
@@ -431,7 +491,13 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
             console.info('[Instagram] Audio sent successfully')
             return response.data
         } catch (error) {
-            console.error('[Instagram] Error sending audio:', { error: error.response?.data || error.message })
+            const igError = error.response?.data?.error
+            if (igError?.error_subcode === 2534022 || igError?.code === 10) {
+                console.warn('[Instagram] 24h window closed, skipping audio to:', userId)
+                this.emit('window_expired', { userId })
+                return null
+            }
+            console.error('[Instagram] Error sending audio:', { error: igError || error.message })
             throw new Error('Failed to send audio')
         }
     }
@@ -460,7 +526,13 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
             console.info('[Instagram] File sent successfully')
             return response.data
         } catch (error) {
-            console.error('[Instagram] Error sending file:', { error: error.response?.data || error.message })
+            const igError = error.response?.data?.error
+            if (igError?.error_subcode === 2534022 || igError?.code === 10) {
+                console.warn('[Instagram] 24h window closed, skipping file to:', userId)
+                this.emit('window_expired', { userId })
+                return null
+            }
+            console.error('[Instagram] Error sending file:', { error: igError || error.message })
             throw new Error('Failed to send file')
         }
     }
@@ -488,9 +560,13 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
             console.info('[Instagram] Quick replies sent successfully')
             return response.data
         } catch (error) {
-            console.error('[Instagram] Error sending quick replies:', {
-                error: error.response?.data || error.message,
-            })
+            const igError = error.response?.data?.error
+            if (igError?.error_subcode === 2534022 || igError?.code === 10) {
+                console.warn('[Instagram] 24h window closed, skipping quick replies to:', userId)
+                this.emit('window_expired', { userId, message: text })
+                return null
+            }
+            console.error('[Instagram] Error sending quick replies:', { error: igError || error.message })
             throw new Error('Failed to send quick replies')
         }
     }
@@ -540,8 +616,13 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
             console.info('[Instagram] Private reply sent successfully')
             return response.data
         } catch (error) {
+            const igError = error.response?.data?.error
+            if (igError?.error_subcode === 2534022 || igError?.code === 10) {
+                console.warn('[Instagram] Comment window expired, skipping private reply to comment:', commentId)
+                return null
+            }
             console.error('[Instagram] Error sending private reply:', {
-                error: error.response?.data || error.message,
+                error: igError || error.message,
             })
             throw new Error('Failed to send private reply')
         }

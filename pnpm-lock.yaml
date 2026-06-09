@@ -253,8 +253,8 @@ importers:
     packages/contexts-dialogflow:
         dependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             '@google-cloud/dialogflow':
                 specifier: ^7.4.0
                 version: 7.4.0
@@ -293,8 +293,8 @@ importers:
     packages/contexts-dialogflow-cx:
         dependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             '@google-cloud/dialogflow-cx':
                 specifier: ^5.5.0
                 version: 5.5.0
@@ -333,8 +333,8 @@ importers:
     packages/create-builderbot:
         dependencies:
             '@builderbot/cli':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../cli
         devDependencies:
             '@rollup/plugin-commonjs':
                 specifier: ^29.0.0
@@ -358,8 +358,8 @@ importers:
     packages/database-json:
         dependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
         devDependencies:
             '@rollup/plugin-commonjs':
                 specifier: ^29.0.0
@@ -392,8 +392,8 @@ importers:
     packages/database-mongo:
         dependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             mongodb:
                 specifier: ^7.0.0
                 version: 7.0.0(@aws-sdk/credential-providers@3.940.0)(gcp-metadata@8.1.2)(socks@2.8.7)
@@ -438,8 +438,8 @@ importers:
     packages/database-mysql:
         dependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             mysql2:
                 specifier: ^3.15.3
                 version: 3.15.3
@@ -481,8 +481,8 @@ importers:
     packages/database-postgres:
         dependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             pg:
                 specifier: ^8.11.5
                 version: 8.16.3
@@ -615,6 +615,34 @@ importers:
                 specifier: ^0.5.6
                 version: 0.5.6
 
+    packages/plugins/chatwoot:
+        dependencies:
+            '@builderbot/bot':
+                specifier: workspace:^
+                version: link:../../bot
+        devDependencies:
+            '@rollup/plugin-commonjs':
+                specifier: ^29.0.0
+                version: 29.0.0(rollup@4.53.3)
+            '@rollup/plugin-node-resolve':
+                specifier: ^16.0.3
+                version: 16.0.3(rollup@4.53.3)
+            '@types/node':
+                specifier: ^24.10.2
+                version: 24.10.2
+            rimraf:
+                specifier: ^6.1.2
+                version: 6.1.2
+            rollup-plugin-typescript2:
+                specifier: ^0.36.0
+                version: 0.36.0(rollup@4.53.3)(typescript@5.9.3)
+            tslib:
+                specifier: ^2.8.1
+                version: 2.8.1
+            tsm:
+                specifier: ^2.3.0
+                version: 2.3.0
+
     packages/provider-baileys:
         dependencies:
             '@adiwajshing/keyed-db':
@@ -649,8 +677,8 @@ importers:
                 version: 0.33.3
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             '@hapi/boom':
                 specifier: ^10.0.1
                 version: 10.0.1
@@ -746,8 +774,8 @@ importers:
                 version: 0.5.2
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             '@jest/globals':
                 specifier: ^30.2.0
                 version: 30.2.0
@@ -810,8 +838,8 @@ importers:
                 version: 2.2.1
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             '@jest/globals':
                 specifier: ^30.2.0
                 version: 30.2.0
@@ -895,8 +923,8 @@ importers:
                 version: 0.5.2
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             '@jest/globals':
                 specifier: ^30.2.0
                 version: 30.2.0
@@ -962,8 +990,8 @@ importers:
                 version: 2.2.1
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             '@jest/globals':
                 specifier: ^30.2.0
                 version: 30.2.0
@@ -1020,8 +1048,8 @@ importers:
                 version: 0.5.2
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             '@jest/globals':
                 specifier: ^30.0.0
                 version: 30.2.0
@@ -1078,8 +1106,8 @@ importers:
                 version: 0.5.2
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             '@jest/globals':
                 specifier: ^30.2.0
                 version: 30.2.0
@@ -1148,8 +1176,8 @@ importers:
                 version: 2.2.1
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             '@jest/globals':
                 specifier: ^30.2.0
                 version: 30.2.0
@@ -1257,8 +1285,8 @@ importers:
                 version: 6.3.8(@adiwajshing/keyed-db@0.2.4)(bufferutil@4.0.9)(jimp@1.6.0)(qrcode-terminal@0.12.0)(sharp@0.33.3)(utf-8-validate@5.0.10)
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             '@hapi/boom':
                 specifier: ^10.0.1
                 version: 10.0.1
@@ -1342,8 +1370,8 @@ importers:
                 version: 2.26.22
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             '@hapi/boom':
                 specifier: ^10.0.1
                 version: 10.0.1
@@ -1409,8 +1437,8 @@ importers:
                 version: 5.10.7
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             '@jest/globals':
                 specifier: ^30.2.0
                 version: 30.2.0
@@ -1482,8 +1510,8 @@ importers:
                 version: 5.3.0(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10)
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             '@jest/globals':
                 specifier: ^30.2.0
                 version: 30.2.0
@@ -1561,8 +1589,8 @@ importers:
                 version: 1.34.2(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             '@jest/globals':
                 specifier: ^30.2.0
                 version: 30.2.0
@@ -1637,8 +1665,8 @@ importers:
                 version: 0.33.5
         devDependencies:
             '@builderbot/bot':
-                specifier: ^1.3.15
-                version: 1.3.15
+                specifier: workspace:^
+                version: link:../bot
             '@rollup/plugin-commonjs':
                 specifier: ^29.0.0
                 version: 29.0.0(rollup@4.53.3)
@@ -2226,19 +2254,6 @@ packages:
             {
                 integrity: sha512-QhfcjDgm7p7PdH6jPCDuqwIruLxTcLShiPHMEpBB4p2CykxT5cPnQ0KuHK40ymmcLhSA1R56PlZlA7tez6mhyA==,
             }
-
-    '@builderbot/bot@1.3.15':
-        resolution:
-            {
-                integrity: sha512-g5ofmOTp0ixcQfOBi0wb90ePhGu0lpwZUtryY5/6D/5bYOcHyX6078IYwTm1T2Vn2gTj3c8sIF9r2gGasUSG3g==,
-            }
-
-    '@builderbot/cli@1.3.15':
-        resolution:
-            {
-                integrity: sha512-SrPV407uqOA0DKunvSDtgEwCs9GONYXxCuxG1sb6+q196rtAj/oAu3FtBEEqL4DHweY2i3o2zV6iyHt+2l1USw==,
-            }
-        hasBin: true
 
     '@cacheable/memory@2.0.6':
         resolution:
@@ -17735,24 +17750,6 @@ snapshots:
         transitivePeerDependencies:
             - debug
             - supports-color
-
-    '@builderbot/bot@1.3.15':
-        dependencies:
-            '@ffmpeg-installer/ffmpeg': 1.1.0
-            body-parser: 1.20.4
-            cors: 2.8.5
-            fluent-ffmpeg: 2.1.3
-            follow-redirects: 1.15.11(debug@4.4.3)
-            mime-types: 2.1.35
-            picocolors: 1.1.1
-            polka: 0.5.2
-        optionalDependencies:
-            sharp: 0.33.3
-        transitivePeerDependencies:
-            - debug
-            - supports-color
-
-    '@builderbot/cli@1.3.15': {}
 
     '@cacheable/memory@2.0.6':
         dependencies:

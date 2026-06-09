@@ -161,6 +161,49 @@ describe('InstagramProvider', () => {
 
             await expect(provider.sendText('user123', 'Hello')).rejects.toThrow('Failed to send message')
         })
+
+        it('should return null and emit window_expired when 24h window is closed (error code 10)', async () => {
+            const axios = require('axios')
+            axios.post.mockRejectedValue({
+                response: {
+                    data: {
+                        error: {
+                            message: 'This message is sent outside of allowed window.',
+                            type: 'IGApiException',
+                            code: 10,
+                            error_subcode: 2534022,
+                        },
+                    },
+                },
+            })
+
+            const result = await provider.sendText('user123', 'Hello')
+
+            expect(result).toBeNull()
+            expect(provider.emit).toHaveBeenCalledWith('window_expired', { userId: 'user123', message: 'Hello' })
+        })
+
+        it('should return null and emit window_expired when error_subcode is 2534022', async () => {
+            const axios = require('axios')
+            axios.post.mockRejectedValue({
+                response: {
+                    data: {
+                        error: {
+                            code: 10,
+                            error_subcode: 2534022,
+                        },
+                    },
+                },
+            })
+
+            const result = await provider.sendText('user456', 'Test message')
+
+            expect(result).toBeNull()
+            expect(provider.emit).toHaveBeenCalledWith('window_expired', {
+                userId: 'user456',
+                message: 'Test message',
+            })
+        })
     })
 
     describe('sendMessage', () => {
@@ -221,6 +264,67 @@ describe('InstagramProvider', () => {
             })
 
             await expect(provider.sendMessage('user123', 'Hello')).rejects.toThrow('Failed to send message')
+        })
+
+        it('should call sendPrivateReply when options.comment.id is provided', async () => {
+            const axios = require('axios')
+            axios.post.mockResolvedValue({
+                status: 200,
+                data: { message_id: 'msg_private' },
+            })
+
+            const result = await provider.sendMessage('user123', 'Hi from bot', { comment: { id: 'comment_abc' } })
+
+            expect(axios.post).toHaveBeenCalledWith(
+                `https://graph.instagram.com/${mockConfig.version}/me/messages`,
+                expect.objectContaining({
+                    recipient: { comment_id: 'comment_abc' },
+                    message: { text: 'Hi from bot' },
+                })
+            )
+            expect(result).toEqual({ message_id: 'msg_private' })
+        })
+
+        it('should auto-route to sendPrivateReply when pendingComments has an entry for the user', async () => {
+            const axios = require('axios')
+            axios.post.mockResolvedValue({
+                status: 200,
+                data: { message_id: 'msg_auto_private' },
+            })
+            ;(provider as any).pendingComments.set('user_commenter', {
+                commentId: 'comment_xyz',
+                timestamp: Date.now(),
+            })
+
+            const result = await provider.sendMessage('user_commenter', 'Thanks for commenting!')
+
+            expect(axios.post).toHaveBeenCalledWith(
+                `https://graph.instagram.com/${mockConfig.version}/me/messages`,
+                expect.objectContaining({
+                    recipient: { comment_id: 'comment_xyz' },
+                    message: { text: 'Thanks for commenting!' },
+                })
+            )
+            expect(result).toEqual({ message_id: 'msg_auto_private' })
+        })
+
+        it('should consume pending comment only once (second send uses sendText)', async () => {
+            const axios = require('axios')
+            axios.post.mockResolvedValue({
+                status: 200,
+                data: { message_id: 'msg_follow_up' },
+            })
+            ;(provider as any).pendingComments.set('user_once', {
+                commentId: 'comment_once',
+                timestamp: Date.now(),
+            })
+
+            await provider.sendMessage('user_once', 'First reply via Private Reply')
+            await provider.sendMessage('user_once', 'Second reply via DM')
+
+            const calls = axios.post.mock.calls
+            expect(calls[0][1]).toMatchObject({ recipient: { comment_id: 'comment_once' } })
+            expect(calls[1][1]).toMatchObject({ recipient: { id: 'user_once' } })
         })
     })
 

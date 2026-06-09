@@ -155,9 +155,10 @@ describe('#BaileysProvider - Reliability', () => {
 
             await provider['delayedReconnect']()
 
-            expect(emitSpy).toHaveBeenCalledWith('auth_failure', expect.arrayContaining([
-                expect.stringContaining('Maximum reconnection attempts reached'),
-            ]))
+            expect(emitSpy).toHaveBeenCalledWith(
+                'auth_failure',
+                expect.arrayContaining([expect.stringContaining('Maximum reconnection attempts reached')])
+            )
         })
 
         test('should not increment attempts when max is reached', async () => {
@@ -383,7 +384,7 @@ describe('#BaileysProvider - Reliability', () => {
                 },
             } as any
 
-            const result = await provider.getPNForLID('lid:abc')
+            const result = await provider.getPNForLID('123456789@lid')
             expect(result).toBe('1234567890@s.whatsapp.net')
         })
     })

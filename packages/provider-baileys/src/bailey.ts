@@ -35,6 +35,16 @@ import {
     WAVersion,
     WABrowserDescription,
 } from './baileyWrapper'
+import {
+    createLidCache,
+    extractAndCacheLidFromMessage,
+    resolveLidToPn,
+    asLidJid,
+    isMessageContext,
+    type LidCache,
+    type MessageContext,
+    type LidJid,
+} from './lidCache'
 import { releaseTmp } from './releaseTmp'
 import type { BaileyGlobalVendorArgs } from './type'
 import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber, emptyDirSessions } from './utils'
@@ -71,6 +81,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
     private idsDuplicates = []
     private mapSet = new Set()
+
+    /** LID → Phone Number cache for privacy-preserving identifier resolution */
+    private lidCache: LidCache
 
     constructor(args: Partial<BaileyGlobalVendorArgs>) {
         super()
@@ -118,6 +131,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
         })
 
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
+
+        // Initialize LID cache (hybrid file+memory or memory-only based on config)
+        this.lidCache = this.initializeLidCache()
 
         this.setupCleanupHandlers()
         this.setupPeriodicCleanup()
@@ -199,6 +215,13 @@ class BaileysProvider extends ProviderClass<WASocket> {
             if (this.messageCache) {
                 this.messageCache.close()
                 this.messageCache = undefined
+            }
+
+            // Cerrar LID cache (flush final a disco)
+            if (this.lidCache?.close) {
+                this.lidCache.close().catch((err) => {
+                    this.logger.error(`[${new Date().toISOString()}] Error closing LID cache:`, err)
+                })
             }
 
             this.mapSet.clear()
@@ -472,6 +495,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
                         this.messageCache?.set(`msg:${messageCtx.key.id}`, messageCtx.message)
                     }
 
+                    // Aprender mapeo LID→PN desde mensaje entrante (async, no bloqueante)
+                    this.cacheLidFromMessage(messageCtx).catch(() => {})
+
                     if (
                         messageCtx?.messageStubParameters?.length &&
                         messageCtx.messageStubParameters[0].includes('absent')
@@ -561,9 +587,10 @@ class BaileysProvider extends ProviderClass<WASocket> {
                         }
                     }
 
-                    // Preferir @s.whatsapp.net (remoteJidAlt) sobre @lid cuando esté disponible
-                    const { remoteJid, remoteJidAlt } = (messageCtx?.key ?? {}) as any
-                    const fromParse = remoteJid?.includes('@lid') ? remoteJidAlt || remoteJid : remoteJid
+                    // Buscar siempre el que tenga formato @s.whatsapp.net (puede estar en remoteJid o remoteJidAlt)
+                    const remoteJid = (messageCtx?.key as any)?.remoteJid
+                    const remoteJidAlt = (messageCtx?.key as any)?.remoteJidAlt
+                    const fromParse = remoteJid?.includes('@lid') ? remoteJidAlt || remoteJid?.split('@')[0] : remoteJid
 
                     let payload = {
                         ...messageCtx,
@@ -759,6 +786,37 @@ class BaileysProvider extends ProviderClass<WASocket> {
         return orderDetails
     }
 
+    // =============================================================================
+    // LID CACHE INTEGRATION
+    // =============================================================================
+
+    /**
+     * Inicializa el caché LID/PN usando el factory.
+     * @returns Instancia de LidCache configurada según globalVendorArgs
+     */
+    private initializeLidCache(): LidCache {
+        return createLidCache({
+            strategy: this.globalVendorArgs.lidCache,
+            sessionName: this.globalVendorArgs.name,
+            ttlSeconds: this.globalVendorArgs.lidCacheTtl,
+            logger: this.logger,
+        })
+    }
+
+    /**
+     * Delegates to the standalone utility for caching LID→PN from messages.
+     * This wrapper maintains the method signature for internal use while
+     * leveraging the exported function for reusability.
+     */
+    private async cacheLidFromMessage(messageCtx: MessageContext | unknown): Promise<void> {
+        // Type guard: ensure the message context has the expected structure
+        if (!isMessageContext(messageCtx)) {
+            this.logger.debug?.('Invalid message context for LID caching')
+            return
+        }
+        return extractAndCacheLidFromMessage(this.lidCache, messageCtx)
+    }
+
     /**
      * Accede al lidMapping del signalRepository de Baileys.
      */
@@ -780,16 +838,23 @@ class BaileysProvider extends ProviderClass<WASocket> {
     }
 
     /**
-     * Obtener número de teléfono (PN) para un LID (Local Identifier)
+     * Obtener número de teléfono (PN) para un LID (Local Identifier).
+     * Delegates to the standalone utility with Baileys lidMapping as fallback.
+     *
      * @param lid - JID con formato '16424005304394@lid'
+     * @returns Phone number en formato '1234567890@s.whatsapp.net', o null si no se resuelve
      */
-    getPNForLID = async (lid: string): Promise<string | null> => {
-        try {
-            return (await this.lidMapping?.getPNForLID?.(lid)) ?? null
-        } catch (e) {
-            this.logger.log(`[${new Date().toISOString()}] Error getting PN for LID:`, e)
-            return null
-        }
+    getPNForLID = async (lid: string | LidJid): Promise<string | null> => {
+        // Normalize to branded type if valid
+        const lidJid = typeof lid === 'string' ? asLidJid(lid) : lid
+        if (!lidJid) return null
+
+        return resolveLidToPn(
+            this.lidCache,
+            (id) => this.lidMapping?.getPNForLID?.(id) ?? Promise.resolve(null),
+            this.logger,
+            lidJid
+        )
     }
 
     /**
@@ -872,6 +937,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
         const payload: AnyMediaMessageContent = {
             audio: { url: audioUrl },
             ptt: true,
+            mimetype: 'audio/ogg; codecs=opus',
         }
         return this.vendor.sendMessage(number, payload)
     }

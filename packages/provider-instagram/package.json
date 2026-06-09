@@ -1,6 +1,6 @@
 {
-  "name": "@builderbot/provider-instagram",
-  "version": "1.4.1",
+  "name": "@japcon-bot/provider-instagram",
+  "version": "1.0.0",
   "description": "Provider for Instagram Messaging",
   "keywords": [
     "instagram",
@@ -33,7 +33,6 @@
   },
   "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
   "devDependencies": {
-    "@builderbot/bot": "^1.4.1",
     "@jest/globals": "^30.2.0",
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-json": "^6.1.0",
@@ -47,7 +46,8 @@
     "rimraf": "^6.1.2",
     "rollup-plugin-typescript2": "^0.36.0",
     "ts-jest": "^29.4.6",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "@japcon-bot/bot": "workspace:^"
   },
   "dependencies": {
     "axios": "^1.13.2",
@@ -55,5 +55,5 @@
     "mime-types": "^3.0.2",
     "polka": "^0.5.2"
   },
-  "gitHead": "b36178dfb87da8ce270e28b6daaff2c50374b6eb"
+  "gitHead": "be4c4287fe2fa5847968c98c3d9d32088edeaca3"
 }

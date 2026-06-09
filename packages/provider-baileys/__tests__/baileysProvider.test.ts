@@ -721,6 +721,7 @@ describe('#BaileysProvider', () => {
             expect(mockSendMessage).toHaveBeenCalledWith(number, {
                 audio: { url: audioUrl },
                 ptt: true,
+                mimetype: 'audio/ogg; codecs=opus',
             })
         })
     })
@@ -1000,6 +1001,57 @@ describe('#BaileysProvider', () => {
 
             // Assert
             expect(provider.emit).toHaveBeenCalled()
+        })
+
+        test('Detect orderMessage with standard JID', async () => {
+            // Arrange
+            jest.mocked(utils.generateRefProvider).mockReturnValue('_event_order___mock-uuid')
+
+            const mockMessage = {
+                message: {
+                    orderMessage: { orderId: 'order-123', token: 'token-abc' },
+                },
+                pushName: 'Buyer Name',
+                key: {
+                    remoteJid: '5491112223344@s.whatsapp.net',
+                    id: 'msg-order-001',
+                },
+            }
+
+            // Act
+            await provider['busEvents']()[0].func({ messages: [mockMessage], type: 'notify' })
+
+            // Assert
+            expect(provider.emit).toHaveBeenCalledWith(
+                'message',
+                expect.objectContaining({ body: '_event_order___mock-uuid' })
+            )
+        })
+
+        test('Detect orderMessage with @lid JID and no remoteJidAlt', async () => {
+            // Arrange — escenario del bug: @lid sin remoteJidAlt crasheaba baileyCleanNumber(undefined)
+            jest.mocked(utils.generateRefProvider).mockReturnValue('_event_order___mock-uuid')
+
+            const mockMessage = {
+                message: {
+                    orderMessage: { orderId: 'order-456', token: 'token-xyz' },
+                },
+                pushName: 'Buyer Name',
+                key: {
+                    remoteJid: '5491112223344@lid',
+                    remoteJidAlt: undefined,
+                    id: 'msg-order-002',
+                },
+            }
+
+            // Act
+            await provider['busEvents']()[0].func({ messages: [mockMessage], type: 'notify' })
+
+            // Assert
+            expect(provider.emit).toHaveBeenCalledWith(
+                'message',
+                expect.objectContaining({ body: '_event_order___mock-uuid' })
+            )
         })
 
         test('Detect broadcast in a message', async () => {

@@ -1,6 +1,6 @@
 {
-  "name": "@builderbot/provider-telegram",
-  "version": "1.4.1",
+  "name": "@japcon-bot/provider-telegram",
+  "version": "1.0.0",
   "description": "Provider for Telegram",
   "keywords": [],
   "author": "",
@@ -29,7 +29,6 @@
   },
   "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
   "devDependencies": {
-    "@builderbot/bot": "^1.4.1",
     "@hapi/boom": "^10.0.1",
     "@jest/globals": "^30.2.0",
     "@rollup/plugin-commonjs": "^29.0.0",
@@ -44,10 +43,11 @@
     "jest": "^30.2.0",
     "rimraf": "^6.1.2",
     "rollup-plugin-typescript2": "^0.36.0",
-    "ts-jest": "^29.4.6"
+    "ts-jest": "^29.4.6",
+    "@japcon-bot/bot": "workspace:^"
   },
   "dependencies": {
     "telegram": "^2.23.10"
   },
-  "gitHead": "b36178dfb87da8ce270e28b6daaff2c50374b6eb"
+  "gitHead": "be4c4287fe2fa5847968c98c3d9d32088edeaca3"
 }

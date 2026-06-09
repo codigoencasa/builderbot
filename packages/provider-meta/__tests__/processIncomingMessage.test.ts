@@ -326,6 +326,7 @@ describe('#processIncomingMessage ', () => {
 
     test('should process sticker message correctly', async () => {
         // Arrange
+        const stickerUrl = 'https://example.com/sticker.webp'
         const params = {
             messageId: '123',
             messageTimestamp: Date.now(),
@@ -341,6 +342,8 @@ describe('#processIncomingMessage ', () => {
             numberId: '987',
         }
 
+        ;(require('../src/utils/mediaUrl').getMediaUrl as jest.Mock).mockImplementation(() => stickerUrl)
+
         // Act
         const result = await processIncomingMessage(params)
 
@@ -350,6 +353,9 @@ describe('#processIncomingMessage ', () => {
             from: 'sender',
             to: 'receiver',
             id: 'stickerId',
+            url: stickerUrl,
+            fileData: undefined,
+            fromMe: undefined,
             body: expect.any(String),
             pushName: 'John Doe',
             name: 'John Doe',

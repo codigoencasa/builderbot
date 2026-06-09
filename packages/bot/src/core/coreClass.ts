@@ -64,17 +64,18 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
      * - Setup provider
      * - Setup generalArgs
      */
-    constructor(_flow: any, _database: D, _provider: P, _args: GeneralArgs) {
+    constructor(_flow: any, _database: D, _provider: P, _args: GeneralArgs | null | undefined) {
         super()
         this.flowClass = _flow
         this.database = _database
         this.provider = _provider
+        const args = _args ?? {}
         this.generalArgs = {
             ...this.generalArgs,
-            ..._args,
+            ...args,
             logs: {
                 ...this.generalArgs.logs,
-                ..._args.logs,
+                ...(args.logs ?? {}),
             },
         }
 
@@ -141,7 +142,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     handleMsg = async (messageCtxInComing: MessageContextIncoming) => {
         logger.log(`[handleMsg]: `, messageCtxInComing)
         idleForCallback.stop(messageCtxInComing)
-        const { body, from } = messageCtxInComing
+        const { body, from, source_id, source_type, ctwa_id } = messageCtxInComing
         let msgToSend = []
         let endFlowFlag = this.stateHandler.get(from)('__end_flow__') || false
         const fallBackFlag = false
@@ -158,6 +159,9 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                 body,
                 from,
                 prevRef: prevMsg.refSerialize,
+                source_id,
+                source_type,
+                ctwa_id,
             })
             await this.database.save(ctxByNumber)
         }
@@ -206,6 +210,9 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                 keyword,
                 index,
                 options: { media, buttons, capture, delay },
+                source_id,
+                source_type,
+                ctwa_id,
             })
         }
 

@@ -33,6 +33,7 @@ async function downloadFile(url: string, Token: string): Promise<{ buffer: Buffe
         }
     } catch (error) {
         console.error(error.message)
+        throw error
     }
 }
 

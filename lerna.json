@@ -1,5 +1,5 @@
 {
-  "version": "1.4.1",
+  "version": "1.4.2-alpha.11",
   "packages": [
     "packages/bot",
     "packages/cli",
@@ -25,7 +25,8 @@
     "packages/provider-gohighlevel",
     "packages/provider-email",
     "packages/contexts-dialogflow",
-    "packages/contexts-dialogflow-cx"
+    "packages/contexts-dialogflow-cx",
+    "packages/plugins/chatwoot"
   ],
   "command": {
     "version": {
@@ -34,7 +35,7 @@
         "**/*"
       ],
       "noVerifyAccess": true,
-      "syncWorkspaceLockfile": false
+      "workspaceProtocol": "noop"
     }
   },
   "npmClient": "pnpm",

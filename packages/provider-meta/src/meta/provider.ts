@@ -381,8 +381,8 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         if (mimeType.includes('image')) return this.sendImage(to, mediaInput, text, context)
         if (mimeType.includes('video')) return this.sendVideo(to, fileDownloaded, text, context)
         if (mimeType.includes('audio')) {
-            const fileOpus = await utils.convertAudio(mediaInput, 'mp3')
-            return this.sendAudio(to, fileOpus, context)
+            // sendAudio handles conversion to OGG/Opus automatically
+            return this.sendAudio(to, mediaInput, context)
         }
 
         return this.sendFile(to, mediaInput, text, context)
@@ -823,7 +823,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
     /**
      * Send an audio message by uploading a local file
      * @param to - Recipient phone number
-     * @param pathVideo - Local path to the audio file (supports mp3, m4a, aac, amr, ogg with opus codec)
+     * @param pathVideo - Local path to the audio file (supports mp3, m4a, aac, amr, ogg - auto-converts to ogg/opus)
      * @param context - Optional message ID to reply to
      * @returns Promise with the API response
      * @throws Error if pathVideo is null
@@ -834,21 +834,20 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         to = parseMetaNumber(to)
         if (!pathVideo) throw new Error(`MEDIA_INPUT_NULL_: ${pathVideo}`)
 
-        const formData = new FormData()
+        let audioPath = pathVideo
         const mimeType = mime.lookup(pathVideo)
 
-        if (['audio/ogg'].includes(mimeType)) {
-            console.log(
-                [
-                    `Format (${mimeType}) not supported, you should use`,
-                    `https://developers.facebook.com/docs/whatsapp/cloud-api/reference/media#supported-media-types`,
-                ].join('\n')
-            )
+        // Auto-convert to OGG/Opus if not already in that format (required for voice notes)
+        if (!mimeType?.includes('ogg') && !mimeType?.includes('opus')) {
+            audioPath = await utils.convertAudio(pathVideo, 'opus')
         }
-        formData.append('file', createReadStream(pathVideo), {
-            contentType: mimeType,
+
+        const formData = new FormData()
+        formData.append('file', createReadStream(audioPath), {
+            contentType: 'audio/ogg',
         })
         formData.append('messaging_product', 'whatsapp')
+
         const {
             data: { id: mediaId },
         } = await axios.post(
@@ -868,6 +867,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             type: 'audio',
             audio: {
                 id: mediaId,
+                voice: true, // Sends as voice note (PTT) instead of audio file
             },
         }
         if (context) body.context = { message_id: context }

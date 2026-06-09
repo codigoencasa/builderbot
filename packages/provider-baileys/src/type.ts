@@ -1,5 +1,8 @@
 import type { GlobalVendorArgs } from '@builderbot/bot/dist/types'
 import { proto, WABrowserDescription, WAVersion } from 'baileys'
+
+import type { LidCache } from './lidCache'
+
 export interface BaileyGlobalVendorArgs extends GlobalVendorArgs {
     gifPlayback: boolean
     usePairingCode: boolean
@@ -15,4 +18,18 @@ export interface BaileyGlobalVendorArgs extends GlobalVendorArgs {
     version?: WAVersion //
     autoRefresh?: number
     host?: any
+
+    /**
+     * Estrategia de caché para resolución LID→PN.
+     * - 'file' (default): HybridLidCache (memory + file persistence)
+     * - 'memory': MemoryLidCache (solo memoria, no persiste)
+     * - LidCache: Implementación custom (e.g., Redis)
+     */
+    lidCache?: 'file' | 'memory' | LidCache
+
+    /**
+     * TTL (time-to-live) en segundos para entradas del LID cache.
+     * Default: 604800 (7 días)
+     */
+    lidCacheTtl?: number
 }

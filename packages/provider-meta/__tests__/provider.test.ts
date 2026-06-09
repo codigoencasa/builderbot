@@ -24,6 +24,7 @@ jest.mock('@builderbot/bot')
 describe('#MetaProvider', () => {
     let metaProvider: MetaProvider
     beforeEach(() => {
+        jest.clearAllMocks()
         metaProvider = new MetaProvider({
             name: 'bot',
             jwtToken: 'your_jwt_token',
@@ -271,23 +272,53 @@ describe('#MetaProvider', () => {
     })
 
     describe('#sendAudio', () => {
-        test('should send audio message to the provided recipient', async () => {
+        test('should send audio message to the provided recipient (auto-converts to OGG)', async () => {
             // Arrange
             const fakeRecipient = '1234567890'
             const fakePathVideo: any = 'path/to/audio.mp3'
+            const convertedPath: any = 'path/to/audio.opus'
 
             metaProvider.sendMessageMeta = jest.fn() as never
+            ;(utils.convertAudio as jest.MockedFunction<typeof utils.convertAudio>).mockResolvedValue(convertedPath)
+            jest.spyOn(mime, 'lookup').mockReturnValue('audio/mpeg')
 
             // Act
             await metaProvider.sendAudio(fakeRecipient, fakePathVideo)
 
             // Assert
+            expect(utils.convertAudio).toHaveBeenCalledWith(fakePathVideo, 'opus')
             expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith({
                 messaging_product: 'whatsapp',
                 to: fakeRecipient,
                 type: 'audio',
                 audio: {
                     id: undefined,
+                    voice: true,
+                },
+            })
+        })
+
+        test('should send OGG audio directly without conversion', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakePathVideo: any = 'path/to/audio.ogg'
+
+            metaProvider.sendMessageMeta = jest.fn() as never
+            ;(utils.convertAudio as jest.MockedFunction<typeof utils.convertAudio>).mockResolvedValue(fakePathVideo)
+            jest.spyOn(mime, 'lookup').mockReturnValue('audio/ogg')
+
+            // Act
+            await metaProvider.sendAudio(fakeRecipient, fakePathVideo)
+
+            // Assert
+            expect(utils.convertAudio).not.toHaveBeenCalled()
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith({
+                messaging_product: 'whatsapp',
+                to: fakeRecipient,
+                type: 'audio',
+                audio: {
+                    id: undefined,
+                    voice: true,
                 },
             })
         })
@@ -301,23 +332,6 @@ describe('#MetaProvider', () => {
             await expect(metaProvider.sendAudio(fakeRecipient, fakePathVideo)).rejects.toThrow(
                 'MEDIA_INPUT_NULL_: null'
             )
-        })
-
-        test('should log a message for unsupported media types', async () => {
-            // Arrange
-            const fakeRecipient = '1234567890'
-            const fakePathVideo: any = 'path/to/audio.ogg'
-            const consoleSpy = jest.spyOn(console, 'log')
-
-            // Act
-            await metaProvider.sendAudio(fakeRecipient, fakePathVideo)
-
-            // Assert
-            expect(consoleSpy).toHaveBeenCalledWith(
-                `Format (audio/ogg) not supported, you should use\nhttps://developers.facebook.com/docs/whatsapp/cloud-api/reference/media#supported-media-types`
-            )
-
-            consoleSpy.mockRestore()
         })
     })
 
