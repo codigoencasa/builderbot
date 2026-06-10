@@ -69,7 +69,7 @@
         "@adiwajshing/keyed-db": "^0.2.4",
         "@ffmpeg-installer/ffmpeg": "^1.1.0",
         "@types/polka": "^0.5.7",
-        "baileys": "7.0.0-rc.9",
+        "baileys": "7.0.0-rc12",
         "cheerio": "^1.1.2",
         "fluent-ffmpeg": "^2.1.2",
         "fs-extra": "^11.3.2",
