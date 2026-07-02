@@ -1,0 +1,3569 @@
+[
+  {
+    "ref": "ans_24a6befa-1a1b-4f52-9699-9d11a00e05b9",
+    "keyword": "key_580b1727-f13d-4eb6-ac81-6d450469683d",
+    "answer": "🙌 Hello welcome to this *Chatbot*",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 0,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "ec808bfc8957ff3e5d473f8a2f5ebcd9",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_e7957aaf-5460-4c5d-8cfa-9fcbd6c47e33",
+    "keyword": "ans_24a6befa-1a1b-4f52-9699-9d11a00e05b9",
+    "answer": "I share with you the following links of interest about the project\n👉 *doc* to view the documentation",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 800,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "6966ab6a4e6c7cc2766b1ad180b71246",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_9c3df2d8-4286-4bdc-8c58-86496700b2a3",
+    "keyword": "ans_e7957aaf-5460-4c5d-8cfa-9fcbd6c47e33",
+    "answer": "__capture_only_intended__",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_c4b250f6-8120-43ce-bcfd-3edbcf2eb47e",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_813beb24-bebc-4a9e-a448-60ebc7251574",
+          "keyword": "key_c4b250f6-8120-43ce-bcfd-3edbcf2eb47e",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "dc83a5495ee608a21a8a775195fd14cd"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "ebe3f131a23e6091323c4c2e0aa4265c",
+    "from": "tester"
+  },
+  {
+    "ref": "e6257cd1-5583-453c-a8f6-82f906e68f71",
+    "keyword": "ebe3f131a23e6091323c4c2e0aa4265c",
+    "answer": "Hola.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "fb04a10dbf79fcf1f2c56391ca5dcd8a"
+  },
+  {
+    "ref": "58500a3c-195d-4b3f-8ab5-0ebfc91b485c",
+    "keyword": "fb04a10dbf79fcf1f2c56391ca5dcd8a",
+    "answer": "Hola.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "fb04a10dbf79fcf1f2c56391ca5dcd8a"
+  },
+  {
+    "ref": "ans_9c3df2d8-4286-4bdc-8c58-86496700b2a3",
+    "keyword": "ans_e7957aaf-5460-4c5d-8cfa-9fcbd6c47e33",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_c4b250f6-8120-43ce-bcfd-3edbcf2eb47e",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_813beb24-bebc-4a9e-a448-60ebc7251574",
+          "keyword": "key_c4b250f6-8120-43ce-bcfd-3edbcf2eb47e",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "dc83a5495ee608a21a8a775195fd14cd"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "ebe3f131a23e6091323c4c2e0aa4265c",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_24a6befa-1a1b-4f52-9699-9d11a00e05b9",
+    "keyword": "key_580b1727-f13d-4eb6-ac81-6d450469683d",
+    "answer": "🙌 Hello welcome to this *Chatbot*",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 0,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "ec808bfc8957ff3e5d473f8a2f5ebcd9",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_e7957aaf-5460-4c5d-8cfa-9fcbd6c47e33",
+    "keyword": "ans_24a6befa-1a1b-4f52-9699-9d11a00e05b9",
+    "answer": "I share with you the following links of interest about the project\n👉 *doc* to view the documentation",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 800,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "6966ab6a4e6c7cc2766b1ad180b71246",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_9c3df2d8-4286-4bdc-8c58-86496700b2a3",
+    "keyword": "ans_e7957aaf-5460-4c5d-8cfa-9fcbd6c47e33",
+    "answer": "__capture_only_intended__",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_c4b250f6-8120-43ce-bcfd-3edbcf2eb47e",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_813beb24-bebc-4a9e-a448-60ebc7251574",
+          "keyword": "key_c4b250f6-8120-43ce-bcfd-3edbcf2eb47e",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "dc83a5495ee608a21a8a775195fd14cd"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "ebe3f131a23e6091323c4c2e0aa4265c",
+    "from": "tester"
+  },
+  {
+    "ref": "3c0e6f6f-e3da-48f4-bd24-bee9e016608b",
+    "keyword": "ebe3f131a23e6091323c4c2e0aa4265c",
+    "answer": "I don't see it, I f***ing put all of that in there.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "788dfdba449887dec676595db9217b0d"
+  },
+  {
+    "ref": "1822fae4-6887-4879-8366-8cad81240243",
+    "keyword": "788dfdba449887dec676595db9217b0d",
+    "answer": "you",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "2565fdf4df982f5952d9efd945b8e1c1"
+  },
+  {
+    "ref": "fb291a26-82e0-435f-8680-b33f648bc67f",
+    "keyword": "2565fdf4df982f5952d9efd945b8e1c1",
+    "answer": "Hola.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "fb04a10dbf79fcf1f2c56391ca5dcd8a"
+  },
+  {
+    "ref": "bfda2db1-7884-4928-be83-66df8fcc25cc",
+    "keyword": "fb04a10dbf79fcf1f2c56391ca5dcd8a",
+    "answer": "Hola.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "fb04a10dbf79fcf1f2c56391ca5dcd8a"
+  },
+  {
+    "ref": "ans_6b43d031-d34b-465e-ab9e-a749c8e6bc79",
+    "keyword": "key_f847fd95-5817-4a74-ba4a-db938af5ef1a",
+    "answer": "🙌 Hello welcome to this *Chatbot*",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 0,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "09e67cef29488f2993496a23d0548703",
+    "from": "tester"
+  },
+  {
+    "ref": "686b4c5e-be4c-4754-800a-bf3d7d1810d3",
+    "keyword": "09e67cef29488f2993496a23d0548703",
+    "answer": "Hola, hola.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "2e955312d36aa5737e10dc4d2f85a769"
+  },
+  {
+    "ref": "8103aec6-8b97-46c6-b945-47e07c7d7ed4",
+    "keyword": "2e955312d36aa5737e10dc4d2f85a769",
+    "answer": "Hola, hola.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "2e955312d36aa5737e10dc4d2f85a769"
+  },
+  {
+    "ref": "ans_6b43d031-d34b-465e-ab9e-a749c8e6bc79",
+    "keyword": "key_f847fd95-5817-4a74-ba4a-db938af5ef1a",
+    "answer": "🙌 Hello welcome to this *Chatbot*",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 0,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "09e67cef29488f2993496a23d0548703",
+    "from": "tester"
+  },
+  {
+    "ref": "e97e1f39-335c-408b-964e-d28ea97a8413",
+    "keyword": "09e67cef29488f2993496a23d0548703",
+    "answer": "Hola, hola, hola. Ah. Muy importante. Tengo los de Rental que quieren patrocinar. Ayer hablé con ellos. Es un stand. Ellos quieren ir como colaborador premium.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "5194feacb2d1717a58412dd328f4d303"
+  },
+  {
+    "ref": "806d1a4b-d16c-4a5b-9af1-55ee7b2c069e",
+    "keyword": "5194feacb2d1717a58412dd328f4d303",
+    "answer": "But then I gave her your contact, her name is Cristina.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "e8f1067fc3d1d8be005a414f0f232713"
+  },
+  {
+    "ref": "ans_a3dfd9f2-1a19-4195-97df-eb17946ea697",
+    "keyword": "key_7559f058-a796-4605-8e7a-a503a2aca816",
+    "answer": "🙌 Hello welcome to this *Chatbot*",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 0,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "860f7f78c3ab935d878f571427457b60",
+    "from": "tester"
+  },
+  {
+    "ref": "1ca4c46a-a78b-4168-9441-e5f1a1581216",
+    "keyword": "860f7f78c3ab935d878f571427457b60",
+    "answer": "No, no, no, it's a new one. It's a little cut.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "6aafc157af8fabfcacf6fd8774ec5ee2"
+  },
+  {
+    "ref": "ans_c01d8165-8994-4904-a225-bb21917ae5e5",
+    "keyword": "ans_a3dfd9f2-1a19-4195-97df-eb17946ea697",
+    "answer": "I share with you the following links of interest about the project\n👉 *doc* to view the documentation",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 800,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "0a306d8f9f485d0ce9641b68bb663a32",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_fd76b946-3c0c-4a6d-bc66-2e777f3754e9",
+    "keyword": "ans_c01d8165-8994-4904-a225-bb21917ae5e5",
+    "answer": "__capture_only_intended__",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_18f9fba0-93fa-422b-b079-945ec83c7dee",
+          "keyword": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "deda1c4678de2c659187a4576f59d08b"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "7b00a5bdeaeb199487e827477a4fb935",
+    "from": "tester"
+  },
+  {
+    "ref": "771a8314-90ac-4c30-a391-168a3d50a228",
+    "keyword": "7b00a5bdeaeb199487e827477a4fb935",
+    "answer": "But even if it's a bit bold, it's like...",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "9848a1e104045bc388f22f69d8d559bd"
+  },
+  {
+    "ref": "ans_fd76b946-3c0c-4a6d-bc66-2e777f3754e9",
+    "keyword": "ans_c01d8165-8994-4904-a225-bb21917ae5e5",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_18f9fba0-93fa-422b-b079-945ec83c7dee",
+          "keyword": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "deda1c4678de2c659187a4576f59d08b"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "7b00a5bdeaeb199487e827477a4fb935",
+    "from": "tester"
+  },
+  {
+    "ref": "e8fb4a79-4f51-46a0-a794-4f4431dcb16e",
+    "keyword": "7b00a5bdeaeb199487e827477a4fb935",
+    "answer": "She called me, her name is Cristina, her name is Cristina, she asked me if...",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "539178046ef0d9d1b79f4d32727a999a"
+  },
+  {
+    "ref": "ans_fd76b946-3c0c-4a6d-bc66-2e777f3754e9",
+    "keyword": "ans_c01d8165-8994-4904-a225-bb21917ae5e5",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_18f9fba0-93fa-422b-b079-945ec83c7dee",
+          "keyword": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "deda1c4678de2c659187a4576f59d08b"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "7b00a5bdeaeb199487e827477a4fb935",
+    "from": "tester"
+  },
+  {
+    "ref": "b184f7a1-553e-446f-be9b-59ee90dbe359",
+    "keyword": "7b00a5bdeaeb199487e827477a4fb935",
+    "answer": "Mariana has been talking to Cristina, they are looking at the topic of the speaker and they told us to prepare a stand.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "463a79f2c944ea003aa537ee9d4ebc66"
+  },
+  {
+    "ref": "7c1da2ab-43db-4495-a49d-7c952986c616",
+    "keyword": "463a79f2c944ea003aa537ee9d4ebc66",
+    "answer": "Mariana has been talking to Cristina, they are looking at the topic of the speaker and they told us to prepare a stand.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "463a79f2c944ea003aa537ee9d4ebc66"
+  },
+  {
+    "ref": "ans_fd76b946-3c0c-4a6d-bc66-2e777f3754e9",
+    "keyword": "ans_c01d8165-8994-4904-a225-bb21917ae5e5",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_18f9fba0-93fa-422b-b079-945ec83c7dee",
+          "keyword": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "deda1c4678de2c659187a4576f59d08b"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "7b00a5bdeaeb199487e827477a4fb935",
+    "from": "tester"
+  },
+  {
+    "ref": "e48deb26-f847-43be-bfa1-84638247c564",
+    "keyword": "7b00a5bdeaeb199487e827477a4fb935",
+    "answer": "Mm-hmm.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "d11f48d1aabfda9183033903fccf6c42"
+  },
+  {
+    "ref": "97725c9e-ae4c-4ca7-a91e-0647e2265b99",
+    "keyword": "d11f48d1aabfda9183033903fccf6c42",
+    "answer": "Mm-hmm.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "d11f48d1aabfda9183033903fccf6c42"
+  },
+  {
+    "ref": "ans_fd76b946-3c0c-4a6d-bc66-2e777f3754e9",
+    "keyword": "ans_c01d8165-8994-4904-a225-bb21917ae5e5",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_18f9fba0-93fa-422b-b079-945ec83c7dee",
+          "keyword": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "deda1c4678de2c659187a4576f59d08b"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "7b00a5bdeaeb199487e827477a4fb935",
+    "from": "tester"
+  },
+  {
+    "ref": "31479b6e-f74b-4644-a062-d9e4cfbdf334",
+    "keyword": "7b00a5bdeaeb199487e827477a4fb935",
+    "answer": "Mm-hmm.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "d11f48d1aabfda9183033903fccf6c42"
+  },
+  {
+    "ref": "8fa06aaa-3640-40e0-b106-6f682a05b946",
+    "keyword": "d11f48d1aabfda9183033903fccf6c42",
+    "answer": "Mm-hmm.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "d11f48d1aabfda9183033903fccf6c42"
+  },
+  {
+    "ref": "63f0eddc-efb4-4038-a361-2f9632ba3514",
+    "keyword": "d11f48d1aabfda9183033903fccf6c42",
+    "answer": "Yeah.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "a32bc6d73ee9d2db0ebfbdc4d18b46d6"
+  },
+  {
+    "ref": "c865b07f-846d-4ae8-8626-9e0bae4a303f",
+    "keyword": "a32bc6d73ee9d2db0ebfbdc4d18b46d6",
+    "answer": "Yeah.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "a32bc6d73ee9d2db0ebfbdc4d18b46d6"
+  },
+  {
+    "ref": "ans_fd76b946-3c0c-4a6d-bc66-2e777f3754e9",
+    "keyword": "ans_c01d8165-8994-4904-a225-bb21917ae5e5",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_18f9fba0-93fa-422b-b079-945ec83c7dee",
+          "keyword": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "deda1c4678de2c659187a4576f59d08b"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "7b00a5bdeaeb199487e827477a4fb935",
+    "from": "tester"
+  },
+  {
+    "ref": "fc63fc55-c1d7-4511-bbc1-a2ea814bd487",
+    "keyword": "7b00a5bdeaeb199487e827477a4fb935",
+    "answer": "¿Dónde lo has puesto?",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "82ce9a3c9ad9373d4262e12034ae0639"
+  },
+  {
+    "ref": "7cab7c73-13c2-4a40-ae9b-3b689057af0f",
+    "keyword": "82ce9a3c9ad9373d4262e12034ae0639",
+    "answer": "¿Dónde lo has puesto?",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "82ce9a3c9ad9373d4262e12034ae0639"
+  },
+  {
+    "ref": "ans_fd76b946-3c0c-4a6d-bc66-2e777f3754e9",
+    "keyword": "ans_c01d8165-8994-4904-a225-bb21917ae5e5",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_18f9fba0-93fa-422b-b079-945ec83c7dee",
+          "keyword": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "deda1c4678de2c659187a4576f59d08b"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "7b00a5bdeaeb199487e827477a4fb935",
+    "from": "tester"
+  },
+  {
+    "ref": "22992ed7-4ed1-4525-b5f8-37f12791c599",
+    "keyword": "7b00a5bdeaeb199487e827477a4fb935",
+    "answer": "I know, they're looking a lot like everyone.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "067f91477575bef827d27fd9d6de8915"
+  },
+  {
+    "ref": "2f6407af-a26a-44b8-8fc3-18d585bdf637",
+    "keyword": "067f91477575bef827d27fd9d6de8915",
+    "answer": "I know, they're looking a lot like everyone.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "067f91477575bef827d27fd9d6de8915"
+  },
+  {
+    "ref": "ans_fd76b946-3c0c-4a6d-bc66-2e777f3754e9",
+    "keyword": "ans_c01d8165-8994-4904-a225-bb21917ae5e5",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_18f9fba0-93fa-422b-b079-945ec83c7dee",
+          "keyword": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "deda1c4678de2c659187a4576f59d08b"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "7b00a5bdeaeb199487e827477a4fb935",
+    "from": "tester"
+  },
+  {
+    "ref": "70a2f889-c84c-4104-b0e1-4ea3322bf06f",
+    "keyword": "7b00a5bdeaeb199487e827477a4fb935",
+    "answer": "No, it's alright. Don't worry about it.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "e1121d5a7f616f497deb03e1c4b44a1b"
+  },
+  {
+    "ref": "635c22cf-ae4c-4b8b-b08e-412f936a24dd",
+    "keyword": "e1121d5a7f616f497deb03e1c4b44a1b",
+    "answer": "No, it's alright. Don't worry about it.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "e1121d5a7f616f497deb03e1c4b44a1b"
+  },
+  {
+    "ref": "ans_fd76b946-3c0c-4a6d-bc66-2e777f3754e9",
+    "keyword": "ans_c01d8165-8994-4904-a225-bb21917ae5e5",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_18f9fba0-93fa-422b-b079-945ec83c7dee",
+          "keyword": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "deda1c4678de2c659187a4576f59d08b"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "7b00a5bdeaeb199487e827477a4fb935",
+    "from": "tester"
+  },
+  {
+    "ref": "7ac9d8bc-c392-4ba3-af46-ccd9bc36ea64",
+    "keyword": "7b00a5bdeaeb199487e827477a4fb935",
+    "answer": "We are trying to fix this. Business to know. But I say, busy.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "96285e674cb90d570eadf2f9ef1889fe"
+  },
+  {
+    "ref": "ans_fd76b946-3c0c-4a6d-bc66-2e777f3754e9",
+    "keyword": "ans_c01d8165-8994-4904-a225-bb21917ae5e5",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_18f9fba0-93fa-422b-b079-945ec83c7dee",
+          "keyword": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "deda1c4678de2c659187a4576f59d08b"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "7b00a5bdeaeb199487e827477a4fb935",
+    "from": "tester"
+  },
+  {
+    "ref": "9c07a90b-e988-432d-8d62-c6181bfc1a36",
+    "keyword": "7b00a5bdeaeb199487e827477a4fb935",
+    "answer": "The end.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "d0dc2052efa39cd0b7818adfde095759"
+  },
+  {
+    "ref": "ans_fd76b946-3c0c-4a6d-bc66-2e777f3754e9",
+    "keyword": "ans_c01d8165-8994-4904-a225-bb21917ae5e5",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_18f9fba0-93fa-422b-b079-945ec83c7dee",
+          "keyword": "key_ed0c159e-3345-4cc5-ba49-d34ea5e2d868",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "deda1c4678de2c659187a4576f59d08b"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "7b00a5bdeaeb199487e827477a4fb935",
+    "from": "tester"
+  },
+  {
+    "ref": "f5df74f9-ba22-4851-abc5-e88ef53de7a6",
+    "keyword": "7b00a5bdeaeb199487e827477a4fb935",
+    "answer": "All right, listen.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "b62d73a1c40e3ab21328e7512e38a24c"
+  },
+  {
+    "ref": "e9589fe3-e8f6-46f3-8b2f-f56cb2c65dc2",
+    "keyword": "b62d73a1c40e3ab21328e7512e38a24c",
+    "answer": "No, es de la F, que es otra tusa.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "b715595cb59da01117c3052b8a85381a"
+  },
+  {
+    "ref": "6976b06f-a09d-4c59-ad5b-151da0a8647a",
+    "keyword": "b715595cb59da01117c3052b8a85381a",
+    "answer": "Elena.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "6c25085360c10cae7c529c630a3d6e82"
+  },
+  {
+    "ref": "8aca6a0d-da96-43f4-b38e-228deaeeb829",
+    "keyword": "6c25085360c10cae7c529c630a3d6e82",
+    "answer": "Mhm, mhm.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "a47b1060b7009dc9ea04503ec9978638"
+  },
+  {
+    "ref": "db88742a-c25c-44f4-bfdb-0f698a42b4b8",
+    "keyword": "a47b1060b7009dc9ea04503ec9978638",
+    "answer": "Mira, te lo dejo por aquí.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "b1ab4c9d385d9c983af9f3bd6f93cc8a"
+  },
+  {
+    "ref": "f7b1e32a-ab2e-4181-acb6-9d7b40170965",
+    "keyword": "b1ab4c9d385d9c983af9f3bd6f93cc8a",
+    "answer": "Vale, ahora ya tengo otro tema contigo, que es el de el BigNagaFest.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "ac35273f3f8f66c91bf01b6a44e18b69"
+  },
+  {
+    "ref": "aad55db5-986a-4b71-9ddd-4a29238aed4a",
+    "keyword": "ac35273f3f8f66c91bf01b6a44e18b69",
+    "answer": "Ya no han hablado con Carlos, pero por qué?",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "79606d6653738f8de804e0a8b8b86db0"
+  },
+  {
+    "ref": "22dc792e-ef03-4ba6-9c2a-56544677d1ed",
+    "keyword": "79606d6653738f8de804e0a8b8b86db0",
+    "answer": "Jonathan no había entendido bien como el concepto del Biznaga y tal, y le dijo a Carlos que eran puros, como puros perfiles técnicos. pero hablando con los del Biznaga, pues, yo lo que le decía a Jonathan es, yo no lo veo como un enfoque de perfil técnico. Yo lo que veo es el network de las personas.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "a04e734520522b41cdc1c1f16a500246"
+  },
+  {
+    "ref": "0ba7480d-63f3-4306-b3ab-92acb8968c67",
+    "keyword": "a04e734520522b41cdc1c1f16a500246",
+    "answer": "Hay mucha gente que a nosotros nos conviene tener en el radar.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "5cb75af9e7bb3c6adeafc8d48c046649"
+  },
+  {
+    "ref": "a079b24d-77e0-488f-86fa-50ab7d34afc1",
+    "keyword": "5cb75af9e7bb3c6adeafc8d48c046649",
+    "answer": "Qué pasa, que Jonathan no se supo explicar bien a Carlos y Carlos dijo que bueno, que si eran puros informáticos, pues quizás no nos compraba.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "e849fef1166b0079ad5687b4cf43b50f"
+  },
+  {
+    "ref": "26721655-642f-4941-b1bc-79babe8c51ab",
+    "keyword": "e849fef1166b0079ad5687b4cf43b50f",
+    "answer": "Podemos invitar a Carlos, pero si quieres lo pongo opcional, porque sé que ha estado desconectado.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "cae4d4069f7dc9ccbe3a4114e3d974eb"
+  },
+  {
+    "ref": "7ba7bbef-3237-4496-b35e-2055e3ee287c",
+    "keyword": "cae4d4069f7dc9ccbe3a4114e3d974eb",
+    "answer": "Mira, vamos a mirar el calendario de Jonathan.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "5cddccdc94afd8340f2c7e36f7fc7b75"
+  },
+  {
+    "ref": "6868f791-eecc-4b47-9e19-b72d9c121742",
+    "keyword": "5cddccdc94afd8340f2c7e36f7fc7b75",
+    "answer": "Jonathan tiene el lunes.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "e16498b50e91f04b313b3f7e79c98f54"
+  },
+  {
+    "ref": "eee6e082-3cc1-497c-8431-0065eb66bb42",
+    "keyword": "e16498b50e91f04b313b3f7e79c98f54",
+    "answer": "A las cuatro y a las cinco tiene libre.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "ddc457d9fb84671ac16827e5d469bf95"
+  },
+  {
+    "ref": "de7e438a-8070-4d25-9b41-4cb9040d25a5",
+    "keyword": "ddc457d9fb84671ac16827e5d469bf95",
+    "answer": "vuelves a las 4 y a las 5.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "02ba01180c7a8ce23ba7f574e4a9510a"
+  },
+  {
+    "ref": "601973b4-631c-4368-854f-6d54398d4f10",
+    "keyword": "02ba01180c7a8ce23ba7f574e4a9510a",
+    "answer": "A mí me da igual también.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "c7ef85ac04740f35696c56b3af5111aa"
+  },
+  {
+    "ref": "8e6e45ce-da84-4d48-bc9a-02732eacefdd",
+    "keyword": "c7ef85ac04740f35696c56b3af5111aa",
+    "answer": "Gracias, le pregunto.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "d7e389b0605f6082e9f43081145a651e"
+  },
+  {
+    "ref": "828484b5-161d-4681-a42d-383c638c2a03",
+    "keyword": "d7e389b0605f6082e9f43081145a651e",
+    "answer": "Sí, pero esa gente ya está cerrando todo el mundo. O sea, ya ellos el 14, el 24 o 14 de julio ya cierran todo el tema.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "a6960573f45f02ac99b8a6d319735bf8"
+  },
+  {
+    "ref": "c5a6e7d5-701a-43ca-80d4-245f351409f9",
+    "keyword": "a6960573f45f02ac99b8a6d319735bf8",
+    "answer": "Hola, hola.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "2e955312d36aa5737e10dc4d2f85a769"
+  },
+  {
+    "ref": "ac106a08-035b-4c48-bd8f-b01e2cdb3c22",
+    "keyword": "2e955312d36aa5737e10dc4d2f85a769",
+    "answer": "Hola, hola.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "2e955312d36aa5737e10dc4d2f85a769"
+  },
+  {
+    "ref": "ans_c2b72675-0bb1-457a-a04a-571c1c67d9bb",
+    "keyword": "key_488f364e-be61-47c9-bbe8-30f41776abae",
+    "answer": "🙌 Hello welcome to this *Chatbot*",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 0,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "dc90823cb0e126416ba3e505ecbef75b",
+    "from": "tester"
+  },
+  {
+    "ref": "35445dcc-210b-4865-97cc-105d244dc24a",
+    "keyword": "dc90823cb0e126416ba3e505ecbef75b",
+    "answer": "pero vuelve el 25.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "d91e618a93ff6156be8889d5ac270985"
+  },
+  {
+    "ref": "a100fff5-faeb-45c8-bee8-c33415ea7a3d",
+    "keyword": "d91e618a93ff6156be8889d5ac270985",
+    "answer": "pero fue el 25.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "267ecd23335e72e4674e193e185d60da"
+  },
+  {
+    "ref": "ans_c2b72675-0bb1-457a-a04a-571c1c67d9bb",
+    "keyword": "key_488f364e-be61-47c9-bbe8-30f41776abae",
+    "answer": "🙌 Hello welcome to this *Chatbot*",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 0,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "dc90823cb0e126416ba3e505ecbef75b",
+    "from": "tester"
+  },
+  {
+    "ref": "79cdf4e1-9427-4c5e-9672-e042a559e242",
+    "keyword": "dc90823cb0e126416ba3e505ecbef75b",
+    "answer": "Hola, hola, hola, hola.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "2e7255a38c24e372acf0c64100b29a4b"
+  },
+  {
+    "ref": "3f3fdf03-fa0c-4f04-919d-c68c41cafb19",
+    "keyword": "2e7255a38c24e372acf0c64100b29a4b",
+    "answer": "Hola, hola, hola.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "6e9cc36e67ffdbdf5bea9ce3526bad9a"
+  },
+  {
+    "ref": "ans_c3154671-2a24-4096-93ab-19591942bd69",
+    "keyword": "ans_c2b72675-0bb1-457a-a04a-571c1c67d9bb",
+    "answer": "I share with you the following links of interest about the project\n👉 *doc* to view the documentation",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 800,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "99204238b2f86ab8a44d2525f4d33db2",
+    "from": "tester"
+  },
+  {
+    "ref": "208333ab-df8d-4538-b698-af79a29bdb27",
+    "keyword": "99204238b2f86ab8a44d2525f4d33db2",
+    "answer": "Evet.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "132557a0c970faf84dea0140d6ba92a1"
+  },
+  {
+    "ref": "ab3a2a6c-cc25-4c5a-adae-e08de655dcf4",
+    "keyword": "132557a0c970faf84dea0140d6ba92a1",
+    "answer": "É.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "6acb692fe17511b30acffe9b3e24b2d4"
+  },
+  {
+    "ref": "ans_c2b72675-0bb1-457a-a04a-571c1c67d9bb",
+    "keyword": "key_488f364e-be61-47c9-bbe8-30f41776abae",
+    "answer": "🙌 Hello welcome to this *Chatbot*",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 0,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "dc90823cb0e126416ba3e505ecbef75b",
+    "from": "tester"
+  },
+  {
+    "ref": "ff090d67-23b6-471c-b607-b3ac3c008fae",
+    "keyword": "dc90823cb0e126416ba3e505ecbef75b",
+    "answer": "Y cómo una de las cinco.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "e460dc174b462c33b24e64e017ca3124"
+  },
+  {
+    "ref": "b5fe26fd-2f40-48db-94a9-a914d3a5d536",
+    "keyword": "e460dc174b462c33b24e64e017ca3124",
+    "answer": "Y dos una de las cinco.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "5a71177005dafd7c5047b5bf9788c95a"
+  },
+  {
+    "ref": "ans_c3154671-2a24-4096-93ab-19591942bd69",
+    "keyword": "ans_c2b72675-0bb1-457a-a04a-571c1c67d9bb",
+    "answer": "I share with you the following links of interest about the project\n👉 *doc* to view the documentation",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 800,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "99204238b2f86ab8a44d2525f4d33db2",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_d81217a0-d82c-4f12-84ef-5fd76ee55839",
+    "keyword": "ans_c3154671-2a24-4096-93ab-19591942bd69",
+    "answer": "__capture_only_intended__",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_f12696d3-55b7-4282-b020-fa9a10ae8500",
+          "keyword": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "68e7a8c68548d6ab69704603c9446acf"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "1bb1e232879b96b9f21b3fd89228e865",
+    "from": "tester"
+  },
+  {
+    "ref": "502550b5-2402-4446-9f41-4a03e330e04d",
+    "keyword": "1bb1e232879b96b9f21b3fd89228e865",
+    "answer": "Hola.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "fb04a10dbf79fcf1f2c56391ca5dcd8a"
+  },
+  {
+    "ref": "ans_c3154671-2a24-4096-93ab-19591942bd69",
+    "keyword": "ans_c2b72675-0bb1-457a-a04a-571c1c67d9bb",
+    "answer": "I share with you the following links of interest about the project\n👉 *doc* to view the documentation",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 800,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "99204238b2f86ab8a44d2525f4d33db2",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_d81217a0-d82c-4f12-84ef-5fd76ee55839",
+    "keyword": "ans_c3154671-2a24-4096-93ab-19591942bd69",
+    "answer": "__capture_only_intended__",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_f12696d3-55b7-4282-b020-fa9a10ae8500",
+          "keyword": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "68e7a8c68548d6ab69704603c9446acf"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "1bb1e232879b96b9f21b3fd89228e865",
+    "from": "tester"
+  },
+  {
+    "ref": "f0503bb8-ebd2-484a-aa3b-1916259a977d",
+    "keyword": "1bb1e232879b96b9f21b3fd89228e865",
+    "answer": "Hola.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "fb04a10dbf79fcf1f2c56391ca5dcd8a"
+  },
+  {
+    "ref": "ans_d81217a0-d82c-4f12-84ef-5fd76ee55839",
+    "keyword": "ans_c3154671-2a24-4096-93ab-19591942bd69",
+    "answer": "__capture_only_intended__",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_f12696d3-55b7-4282-b020-fa9a10ae8500",
+          "keyword": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "68e7a8c68548d6ab69704603c9446acf"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "1bb1e232879b96b9f21b3fd89228e865",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_d81217a0-d82c-4f12-84ef-5fd76ee55839",
+    "keyword": "ans_c3154671-2a24-4096-93ab-19591942bd69",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_f12696d3-55b7-4282-b020-fa9a10ae8500",
+          "keyword": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "68e7a8c68548d6ab69704603c9446acf"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "1bb1e232879b96b9f21b3fd89228e865",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_d81217a0-d82c-4f12-84ef-5fd76ee55839",
+    "keyword": "ans_c3154671-2a24-4096-93ab-19591942bd69",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_f12696d3-55b7-4282-b020-fa9a10ae8500",
+          "keyword": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "68e7a8c68548d6ab69704603c9446acf"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "1bb1e232879b96b9f21b3fd89228e865",
+    "from": "tester"
+  },
+  {
+    "ref": "d867d3d3-07bf-4f4a-8a74-2d37421f6e9f",
+    "keyword": "1bb1e232879b96b9f21b3fd89228e865",
+    "answer": "OK, Jonathan tiene jueves a las 6 ocupado.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "36b07e8513f9ddecfa20be4dce7f99c5"
+  },
+  {
+    "ref": "07e9fcd8-e5db-4942-9c15-cd1f41f376d8",
+    "keyword": "36b07e8513f9ddecfa20be4dce7f99c5",
+    "answer": "OK, Jonathan tiene jueves a las seis ocupado.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "2f888e351897e041846b37a5b1d4b0bf"
+  },
+  {
+    "ref": "ans_d81217a0-d82c-4f12-84ef-5fd76ee55839",
+    "keyword": "ans_c3154671-2a24-4096-93ab-19591942bd69",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_f12696d3-55b7-4282-b020-fa9a10ae8500",
+          "keyword": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "68e7a8c68548d6ab69704603c9446acf"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "1bb1e232879b96b9f21b3fd89228e865",
+    "from": "tester"
+  },
+  {
+    "ref": "b2ff9f35-b887-4f35-8e12-4671276cef40",
+    "keyword": "1bb1e232879b96b9f21b3fd89228e865",
+    "answer": "pero no sé si esto son...",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "3cb9f4739a980e519a97f61b6b6f2afb"
+  },
+  {
+    "ref": "a1f8a8b0-9420-43a0-a9da-ba428cad0efd",
+    "keyword": "3cb9f4739a980e519a97f61b6b6f2afb",
+    "answer": "pero no sé si todos son.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "7bf9c59cc5fa6c524588afd09c4336d6"
+  },
+  {
+    "ref": "ans_d81217a0-d82c-4f12-84ef-5fd76ee55839",
+    "keyword": "ans_c3154671-2a24-4096-93ab-19591942bd69",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_f12696d3-55b7-4282-b020-fa9a10ae8500",
+          "keyword": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "68e7a8c68548d6ab69704603c9446acf"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "1bb1e232879b96b9f21b3fd89228e865",
+    "from": "tester"
+  },
+  {
+    "ref": "e8773598-12f9-4995-8330-c8c83e6824af",
+    "keyword": "1bb1e232879b96b9f21b3fd89228e865",
+    "answer": "Sí, pero no sé si estos jueves...",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "69755be90d69421e4250b69392872c92"
+  },
+  {
+    "ref": "a158de62-440b-4e77-ac5c-9ef5c52d85f6",
+    "keyword": "69755be90d69421e4250b69392872c92",
+    "answer": "Sí, pero no sé si estos jueves...",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "69755be90d69421e4250b69392872c92"
+  },
+  {
+    "ref": "ans_d81217a0-d82c-4f12-84ef-5fd76ee55839",
+    "keyword": "ans_c3154671-2a24-4096-93ab-19591942bd69",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_f12696d3-55b7-4282-b020-fa9a10ae8500",
+          "keyword": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "68e7a8c68548d6ab69704603c9446acf"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "1bb1e232879b96b9f21b3fd89228e865",
+    "from": "tester"
+  },
+  {
+    "ref": "82adc156-4ca1-4138-9e8b-a2068dd6feb2",
+    "keyword": "1bb1e232879b96b9f21b3fd89228e865",
+    "answer": "No sé si esto jueves a las 6 de Jonathan sean.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "7416aa348903a01d85114772e3af221c"
+  },
+  {
+    "ref": "8aecd615-66be-4f2a-a3f0-3282154a811c",
+    "keyword": "7416aa348903a01d85114772e3af221c",
+    "answer": "No sé si esto jueves a las 6 de Jonathan sean.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "7416aa348903a01d85114772e3af221c"
+  },
+  {
+    "ref": "ans_d81217a0-d82c-4f12-84ef-5fd76ee55839",
+    "keyword": "ans_c3154671-2a24-4096-93ab-19591942bd69",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_f12696d3-55b7-4282-b020-fa9a10ae8500",
+          "keyword": "key_0bdd67e0-dde4-4f22-a45c-e963bd17bf30",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "68e7a8c68548d6ab69704603c9446acf"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "1bb1e232879b96b9f21b3fd89228e865",
+    "from": "tester"
+  },
+  {
+    "ref": "761036a7-70f5-425e-b7ec-8c78563ea9d8",
+    "keyword": "1bb1e232879b96b9f21b3fd89228e865",
+    "answer": "Se lo miro en su calendario.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "cf3be1aa616304b59744e2f3b53b7335"
+  },
+  {
+    "ref": "e333f6fe-246b-47c2-9c86-dfe19322874c",
+    "keyword": "cf3be1aa616304b59744e2f3b53b7335",
+    "answer": "Hola, hola.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "2e955312d36aa5737e10dc4d2f85a769"
+  },
+  {
+    "ref": "06e294cc-981a-494c-a3cf-cc59f710216b",
+    "keyword": "2e955312d36aa5737e10dc4d2f85a769",
+    "answer": "Hola, hola.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "2e955312d36aa5737e10dc4d2f85a769"
+  },
+  {
+    "ref": "ans_9f6af100-a6f5-47f2-aaef-4f078a9a94c7",
+    "keyword": "key_3cc6df2c-4759-4e9b-92a5-2da085059db0",
+    "answer": "🙌 Hello welcome to this *Chatbot*",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 0,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "adf9c40419170bf17b2a10829c904cb3",
+    "from": "tester"
+  },
+  {
+    "ref": "2bf921f2-98c6-46cb-9ac7-730f99c5b6bb",
+    "keyword": "adf9c40419170bf17b2a10829c904cb3",
+    "answer": "Hola, hola, hello.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "77d118576dd7af52904541d571bc3914"
+  },
+  {
+    "ref": "e9d1a326-7313-4947-a03d-fc0fcc343b0b",
+    "keyword": "77d118576dd7af52904541d571bc3914",
+    "answer": "Hola, hola, hello.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "77d118576dd7af52904541d571bc3914"
+  },
+  {
+    "ref": "ans_9f6af100-a6f5-47f2-aaef-4f078a9a94c7",
+    "keyword": "key_3cc6df2c-4759-4e9b-92a5-2da085059db0",
+    "answer": "🙌 Hello welcome to this *Chatbot*",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 0,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "adf9c40419170bf17b2a10829c904cb3",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_30def6bf-4f2b-4967-9771-381bd9ac10a0",
+    "keyword": "ans_03fd981a-ed95-44b5-9be4-bcab3599a955",
+    "answer": "__capture_only_intended__",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_56931e0c-3d3b-4483-b20e-4df4a309ce8d",
+          "keyword": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "ebb64a89844b628a4c96c02019f03082"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "from": "tester"
+  },
+  {
+    "ref": "b62df37c-689c-4f38-a202-6a9cb6e5b4a6",
+    "keyword": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "answer": "네.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "8774ec7317406e59cb1601c1aed73aeb"
+  },
+  {
+    "ref": "126bfa61-097e-484b-8e65-990f71fb0d31",
+    "keyword": "8774ec7317406e59cb1601c1aed73aeb",
+    "answer": "네.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "8774ec7317406e59cb1601c1aed73aeb"
+  },
+  {
+    "ref": "ans_30def6bf-4f2b-4967-9771-381bd9ac10a0",
+    "keyword": "ans_03fd981a-ed95-44b5-9be4-bcab3599a955",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_56931e0c-3d3b-4483-b20e-4df4a309ce8d",
+          "keyword": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "ebb64a89844b628a4c96c02019f03082"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_9f6af100-a6f5-47f2-aaef-4f078a9a94c7",
+    "keyword": "key_3cc6df2c-4759-4e9b-92a5-2da085059db0",
+    "answer": "🙌 Hello welcome to this *Chatbot*",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 0,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "adf9c40419170bf17b2a10829c904cb3",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_03fd981a-ed95-44b5-9be4-bcab3599a955",
+    "keyword": "ans_9f6af100-a6f5-47f2-aaef-4f078a9a94c7",
+    "answer": "I share with you the following links of interest about the project\n👉 *doc* to view the documentation",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 800,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "e293bb7e14b1dd32df05294a50862f6e",
+    "from": "tester"
+  },
+  {
+    "ref": "37f8019c-5e88-4277-868b-58509c238652",
+    "keyword": "e293bb7e14b1dd32df05294a50862f6e",
+    "answer": "Yeah, I got so whatever.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "a18eb34e892b37f51dd66f523f2f5104"
+  },
+  {
+    "ref": "ans_03fd981a-ed95-44b5-9be4-bcab3599a955",
+    "keyword": "ans_9f6af100-a6f5-47f2-aaef-4f078a9a94c7",
+    "answer": "I share with you the following links of interest about the project\n👉 *doc* to view the documentation",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 800,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "e293bb7e14b1dd32df05294a50862f6e",
+    "from": "tester"
+  },
+  {
+    "ref": "4b9e7990-b28a-440f-bf51-f51b955c088f",
+    "keyword": "e293bb7e14b1dd32df05294a50862f6e",
+    "answer": "I have problems for this.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "d34008038cf8251623c46ee5e38ac34c"
+  },
+  {
+    "ref": "ans_9f6af100-a6f5-47f2-aaef-4f078a9a94c7",
+    "keyword": "key_3cc6df2c-4759-4e9b-92a5-2da085059db0",
+    "answer": "🙌 Hello welcome to this *Chatbot*",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 0,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "adf9c40419170bf17b2a10829c904cb3",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_03fd981a-ed95-44b5-9be4-bcab3599a955",
+    "keyword": "ans_9f6af100-a6f5-47f2-aaef-4f078a9a94c7",
+    "answer": "I share with you the following links of interest about the project\n👉 *doc* to view the documentation",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 800,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "e293bb7e14b1dd32df05294a50862f6e",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_30def6bf-4f2b-4967-9771-381bd9ac10a0",
+    "keyword": "ans_03fd981a-ed95-44b5-9be4-bcab3599a955",
+    "answer": "__capture_only_intended__",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_56931e0c-3d3b-4483-b20e-4df4a309ce8d",
+          "keyword": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "ebb64a89844b628a4c96c02019f03082"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_30def6bf-4f2b-4967-9771-381bd9ac10a0",
+    "keyword": "ans_03fd981a-ed95-44b5-9be4-bcab3599a955",
+    "answer": "__capture_only_intended__",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_56931e0c-3d3b-4483-b20e-4df4a309ce8d",
+          "keyword": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "ebb64a89844b628a4c96c02019f03082"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_30def6bf-4f2b-4967-9771-381bd9ac10a0",
+    "keyword": "ans_03fd981a-ed95-44b5-9be4-bcab3599a955",
+    "answer": "__capture_only_intended__",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_56931e0c-3d3b-4483-b20e-4df4a309ce8d",
+          "keyword": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "ebb64a89844b628a4c96c02019f03082"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_30def6bf-4f2b-4967-9771-381bd9ac10a0",
+    "keyword": "ans_03fd981a-ed95-44b5-9be4-bcab3599a955",
+    "answer": "__capture_only_intended__",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_56931e0c-3d3b-4483-b20e-4df4a309ce8d",
+          "keyword": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "ebb64a89844b628a4c96c02019f03082"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "from": "tester"
+  },
+  {
+    "ref": "7b7b251e-3a7c-491d-a768-ba8f7af9936c",
+    "keyword": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "answer": "Lamentablemente por la tarde. Ah, bueno.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "d6ac019793195708f8649f7b89384e4f"
+  },
+  {
+    "ref": "190e9f86-d782-49ce-92ad-4a95716b43a9",
+    "keyword": "d6ac019793195708f8649f7b89384e4f",
+    "answer": "nuevamente por la tarde.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "2437a0a71d47a7c7ff2e1c52e4517962"
+  },
+  {
+    "ref": "ans_30def6bf-4f2b-4967-9771-381bd9ac10a0",
+    "keyword": "ans_03fd981a-ed95-44b5-9be4-bcab3599a955",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_56931e0c-3d3b-4483-b20e-4df4a309ce8d",
+          "keyword": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "ebb64a89844b628a4c96c02019f03082"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "from": "tester"
+  },
+  {
+    "ref": "0c0b39e0-9098-4665-abe5-7ffae155b8e5",
+    "keyword": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "answer": "Дана.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "e6e64e038829c2e0fe8d639d478ff753"
+  },
+  {
+    "ref": "ans_30def6bf-4f2b-4967-9771-381bd9ac10a0",
+    "keyword": "ans_03fd981a-ed95-44b5-9be4-bcab3599a955",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_56931e0c-3d3b-4483-b20e-4df4a309ce8d",
+          "keyword": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "ebb64a89844b628a4c96c02019f03082"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "from": "tester"
+  },
+  {
+    "ref": "5013c1de-f19b-4b96-816a-75d8ad769208",
+    "keyword": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "answer": "I don't know.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "43c4f9697e9e83cdd83b6b8283232d98"
+  },
+  {
+    "ref": "ans_30def6bf-4f2b-4967-9771-381bd9ac10a0",
+    "keyword": "ans_03fd981a-ed95-44b5-9be4-bcab3599a955",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_56931e0c-3d3b-4483-b20e-4df4a309ce8d",
+          "keyword": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "ebb64a89844b628a4c96c02019f03082"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_03fd981a-ed95-44b5-9be4-bcab3599a955",
+    "keyword": "ans_9f6af100-a6f5-47f2-aaef-4f078a9a94c7",
+    "answer": "I share with you the following links of interest about the project\n👉 *doc* to view the documentation",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 800,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "e293bb7e14b1dd32df05294a50862f6e",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_30def6bf-4f2b-4967-9771-381bd9ac10a0",
+    "keyword": "ans_03fd981a-ed95-44b5-9be4-bcab3599a955",
+    "answer": "__capture_only_intended__",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_56931e0c-3d3b-4483-b20e-4df4a309ce8d",
+          "keyword": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "ebb64a89844b628a4c96c02019f03082"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "from": "tester"
+  },
+  {
+    "ref": "ff2f6612-95b4-4e0b-9f82-7be4ed388d45",
+    "keyword": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "answer": "Eso es lo que yo tengo por ahí a mano. um Para que estés al tanto también, por ahí me había puesto Carlos una tarea, porque entiendo que tus tareas ahora se relacionan bastante con las mías. Eso era lo que yo le decía a Chomy.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "ef45fb9af9d3aaed9335107763e07b6e"
+  },
+  {
+    "ref": "79449804-1fbe-4ee4-b2eb-bd1bdd4652d3",
+    "keyword": "ef45fb9af9d3aaed9335107763e07b6e",
+    "answer": "Eso es lo que yo tengo por ahí a mano. um Para que estés al tanto también por ahí me había puesto Carlos una tarea, porque entiendo que tus tareas ahora se relacionan bastante con las mías. Eso era lo que yo le decía a Chomi.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "2508c927ddcfc83c6c857513bc5e8d1e"
+  },
+  {
+    "ref": "ans_30def6bf-4f2b-4967-9771-381bd9ac10a0",
+    "keyword": "ans_03fd981a-ed95-44b5-9be4-bcab3599a955",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_56931e0c-3d3b-4483-b20e-4df4a309ce8d",
+          "keyword": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "ebb64a89844b628a4c96c02019f03082"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "from": "tester"
+  },
+  {
+    "ref": "5078cae1-9071-4b0b-893a-6d3816009e05",
+    "keyword": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "answer": "Carlos me había dicho de contactar con la prensa para los temas de hacer publicidad a Reaction University y a su vez lo estuve mirando con Víctor. Pero Víctor a mí me confirmó que tiene sentido contactar con la prensa ahora de eso ruido porque la gente va a tener aún más.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "b5f765f8dc35539b57514ee53c58d88a"
+  },
+  {
+    "ref": "335ea491-a14a-4e62-8682-61511075a861",
+    "keyword": "b5f765f8dc35539b57514ee53c58d88a",
+    "answer": "Carlos me había dicho de contactar con la prensa para los temas de hacer publicidad a REX University y a su vez lo estuve mirando con Víctor. Pero Víctor Amandi se tiró un fin de sentido contactar con la prensa ahora que eso ha salido porque la gente va a tener aún menos.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "6a07783494076a73b15fd17fd3c685f3"
+  },
+  {
+    "ref": "ans_30def6bf-4f2b-4967-9771-381bd9ac10a0",
+    "keyword": "ans_03fd981a-ed95-44b5-9be4-bcab3599a955",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_56931e0c-3d3b-4483-b20e-4df4a309ce8d",
+          "keyword": "key_a0918ce6-3534-4191-bf4f-74beabf7500f",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "ebb64a89844b628a4c96c02019f03082"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "from": "tester"
+  },
+  {
+    "ref": "a55ec9c1-4ace-4d0b-beba-8ca658c39ffd",
+    "keyword": "5b3c19c4bb36c55e279ff1e8fda4f0a1",
+    "answer": "Hola, hello, hola, hello.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "77f443d9ee24408a2260407fa819790e"
+  },
+  {
+    "ref": "58e48f46-87fe-4ca6-ad46-8a29bddd5e6d",
+    "keyword": "77f443d9ee24408a2260407fa819790e",
+    "answer": "Sí, sí, solo para que la persona lo sepa.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "9873be6a25fc024bb763ab3e0f4b92f7"
+  },
+  {
+    "ref": "e673fbd0-1408-440a-be26-d1b704de1cb2",
+    "keyword": "9873be6a25fc024bb763ab3e0f4b92f7",
+    "answer": "Sí, sí.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "e65151b5a1c834cf629d6a97620c1b5f"
+  },
+  {
+    "ref": "aa363749-aa09-40f0-9983-ab7c27420f65",
+    "keyword": "e65151b5a1c834cf629d6a97620c1b5f",
+    "answer": "Sí, sí, sí. Le pedí a Chomin porque es muy complicado. He intentado mirar, pero casi todas no tienen el correo, sino un correo de contacto general. y Chomin me dijo que lo había hablado con Carlos y que Carlos le había dicho que probase una herramienta para encontrar correos de la gente.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "932880a629769a951179252cb6132db5"
+  },
+  {
+    "ref": "86e60991-9cbf-4afc-8074-3fed154bf74d",
+    "keyword": "932880a629769a951179252cb6132db5",
+    "answer": "porque yo he mirado por LinkedIn para tratar de escribirles. Hablé con Carlos Aparicio, que tiene un colegio en Cataluña. Carlos Aparicio me dijo que sí, incluso me dijo que para que Jaime diese una charla y tal, pero me dice que en septiembre, porque ahora ya ellos están cerrando el curso.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "d0f14143f7a002b7195fb25ad3ff8400"
+  },
+  {
+    "ref": "02d26e86-783e-41a7-b4b0-0ccf008c7c21",
+    "keyword": "d0f14143f7a002b7195fb25ad3ff8400",
+    "answer": "Y aló.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "ef6e6b094c48b9ac1ebe94d348306fd9"
+  },
+  {
+    "ref": "899dc3c2-cca8-4593-9367-835781c7d55a",
+    "keyword": "ef6e6b094c48b9ac1ebe94d348306fd9",
+    "answer": "sí.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "548cac4ca3cf98d12320d91862d5ddf4"
+  },
+  {
+    "ref": "3e82b452-7517-47ae-b504-c6cc4d9809d2",
+    "keyword": "548cac4ca3cf98d12320d91862d5ddf4",
+    "answer": "Sí.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "a73731b617b224ded75163c0ffcb7827"
+  },
+  {
+    "ref": "1a99c52b-b4c0-4fe4-8060-d1792e7e07c3",
+    "keyword": "a73731b617b224ded75163c0ffcb7827",
+    "answer": "Sí, y estaría bien que le contases eso también a Álvaro, porque Álvaro está manejando con un chaval que se llama Adrián López, que le contacté, que es de la academia, pero él tiene una academia de física, química y matemática.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "6899570578b83faf1ba43fa3a2afc0b3"
+  },
+  {
+    "ref": "d3696fb8-bf90-4841-9c45-2f37b604296f",
+    "keyword": "6899570578b83faf1ba43fa3a2afc0b3",
+    "answer": "y tuvimos un contacto con Corea.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "7bf05b82ea22be3751acc341140ccddf"
+  },
+  {
+    "ref": "f8496e85-6747-49ce-99e2-2a50f31f546a",
+    "keyword": "7bf05b82ea22be3751acc341140ccddf",
+    "answer": "你死了。",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "070a38f834279903222002561b2d1175"
+  },
+  {
+    "ref": "ac8b2b7a-f3d9-4b72-b7ae-4be726670b67",
+    "keyword": "070a38f834279903222002561b2d1175",
+    "answer": "Sí, le puedes decir eso. es Adrián López. Igual, yo estoy mirando lo de los mails, cómo conseguir mails, pero sí sé que es para un hackathon y sí sé que la oferta es que tenga una beca con, sea becario en alguno de los clientes de consultoría, ¿correcto?",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "e71de4334bde3be1dee0f61078604a6a"
+  },
+  {
+    "ref": "dd82cf7c-ce4b-440e-9538-302e14ec362f",
+    "keyword": "e71de4334bde3be1dee0f61078604a6a",
+    "answer": "Mm.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "bc791e374c3e14b3becaeae2aa67f79b"
+  },
+  {
+    "ref": "d538f27e-d064-49a5-a126-8682141db1e7",
+    "keyword": "bc791e374c3e14b3becaeae2aa67f79b",
+    "answer": "Vale, sí, que es eso.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "d1eccfc8a47729e15502d27b95203017"
+  },
+  {
+    "ref": "c6265634-c521-4c9b-afdd-5cbdb71bf5f9",
+    "keyword": "d1eccfc8a47729e15502d27b95203017",
+    "answer": "Sí, sí, sí, yo estoy con eso. Ayer estuve buscando LinkedIn, pero lo que yo le explicaba a Charmin, no es tan sencillo porque en LinkedIn te aparece el contacto. Yo le doy enviar, a veces no me deja ponerle el mensaje, porque yo tengo LinkedIn normal, no LinkedIn de pago. y ahí fue donde Charmin me dijo lo de la herramienta.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "e3c86b8032fbd3126d178fa3e1c1e275"
+  },
+  {
+    "ref": "2b6c6e64-25b0-434e-8a1b-142f5f7a310e",
+    "keyword": "e3c86b8032fbd3126d178fa3e1c1e275",
+    "answer": "mañana me va a ver el correo con Víctor y con Elena.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "7faf124fe962ca424579c41bba4857d0"
+  },
+  {
+    "ref": "d19cdbdb-c1bc-45f8-885a-64ece3dd7f55",
+    "keyword": "7faf124fe962ca424579c41bba4857d0",
+    "answer": "al comisario. Vale, mañana se lo pregunto.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "6d100b743ec3b96b970fc9f9f8b6d0f3"
+  },
+  {
+    "ref": "c4800c7f-f747-4b39-b4ea-50655dcb56d8",
+    "keyword": "6d100b743ec3b96b970fc9f9f8b6d0f3",
+    "answer": "Mañana tenemos bravo porque es que la e va fatal, fatal, fatal, fatal.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "6f9594901dbc6a7b8712364707623a71"
+  },
+  {
+    "ref": "ebca8bab-d427-4aa5-8bec-da2e5a81eec8",
+    "keyword": "6f9594901dbc6a7b8712364707623a71",
+    "answer": "El Aeva malísimo.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "fc28ccdd47d7cae15473f89ed3d3cf68"
+  },
+  {
+    "ref": "b82e10f7-6fec-4967-8f11-798c0a0f9a61",
+    "keyword": "fc28ccdd47d7cae15473f89ed3d3cf68",
+    "answer": "Sí, muchas gracias.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "38400f2e7aec86732ff1fc65e7d56294"
+  },
+  {
+    "ref": "fea5ff4b-5af1-4f0c-b3d6-bb7279211a3b",
+    "keyword": "38400f2e7aec86732ff1fc65e7d56294",
+    "answer": "Hm, bilo.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "ea85be0d5c438d124e520cf068d45208"
+  },
+  {
+    "ref": "08235eea-b7a2-4a21-a414-88df3d2ffd1e",
+    "keyword": "ea85be0d5c438d124e520cf068d45208",
+    "answer": "Mira, me dice Tony que lo que querías, espera, espera, me dice Tony que lo que querías saber era el acceso, el día y lo que se puede llevar y lo que no. pero hasta donde me dijo Yacir, lo único que dejaban era poner un burro en la zona misma o en alguna zona concurrida.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "481ed5e2b20537e6324712a759d19bae"
+  },
+  {
+    "ref": "a71ba469-a1f5-4711-9607-8d4cffe9060f",
+    "keyword": "481ed5e2b20537e6324712a759d19bae",
+    "answer": "Mira, dice, en el grupo nos puso, un burro sí lo podemos poner en la visa o alguna zona.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "1ed7c3ffa9ce0ce8f9ad9a161863af9d"
+  },
+  {
+    "ref": "df92d0e7-866f-4141-8281-fc4d38737bf5",
+    "keyword": "1ed7c3ffa9ce0ce8f9ad9a161863af9d",
+    "answer": "Hola, hello, how are you?",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "3d393d7fc78582adb410c6259a84d914"
+  },
+  {
+    "ref": "9d5244d3-aa31-4f18-ba7a-05808629316c",
+    "keyword": "3d393d7fc78582adb410c6259a84d914",
+    "answer": "Hola, hello, how are you?",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "3d393d7fc78582adb410c6259a84d914"
+  },
+  {
+    "ref": "ans_f9255a70-b084-42cf-8e50-7aa064d96e36",
+    "keyword": "key_5689414c-147f-4b38-ba7c-2ba2d7c556df",
+    "answer": "🙌 Hello welcome to this *Chatbot*",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 0,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "e6b9323144cdf1db66efc11eb4bd99a8",
+    "from": "tester"
+  },
+  {
+    "ref": "d2682493-7e78-454b-b39e-65e88ccefb47",
+    "keyword": "e6b9323144cdf1db66efc11eb4bd99a8",
+    "answer": "how to prepare",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "a453298c0a5d2d7cf81d5025a562d803"
+  },
+  {
+    "ref": "c3504723-fdf1-4f45-af88-ce6385687b84",
+    "keyword": "a453298c0a5d2d7cf81d5025a562d803",
+    "answer": "What can I do to help?",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "8d4a3a944f3511387e7426f894d9f02d"
+  },
+  {
+    "ref": "ans_f9255a70-b084-42cf-8e50-7aa064d96e36",
+    "keyword": "key_5689414c-147f-4b38-ba7c-2ba2d7c556df",
+    "answer": "🙌 Hello welcome to this *Chatbot*",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 0,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "e6b9323144cdf1db66efc11eb4bd99a8",
+    "from": "tester"
+  },
+  {
+    "ref": "cef97155-99b5-4acd-945c-7a1aabb53670",
+    "keyword": "e6b9323144cdf1db66efc11eb4bd99a8",
+    "answer": "Y como no eres un charlo.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "5a4d7d52e5b5becda91849f01ae3a8a9"
+  },
+  {
+    "ref": "3e289c87-172f-4ca1-9774-47ca9705169a",
+    "keyword": "5a4d7d52e5b5becda91849f01ae3a8a9",
+    "answer": "Y como no debemos echar.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "d8eb89f870c4058ba5d5a6e89ecc59c9"
+  },
+  {
+    "ref": "ans_1946a70e-25dc-449b-b40b-95bc689e1c7b",
+    "keyword": "ans_f9255a70-b084-42cf-8e50-7aa064d96e36",
+    "answer": "I share with you the following links of interest about the project\n👉 *doc* to view the documentation",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 800,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "687b119d8e4b16e6416c30115d2fdca4",
+    "from": "tester"
+  },
+  {
+    "ref": "38e5eb6e-ac05-44a1-81e1-768616e821cb",
+    "keyword": "687b119d8e4b16e6416c30115d2fdca4",
+    "answer": "Hola.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "fb04a10dbf79fcf1f2c56391ca5dcd8a"
+  },
+  {
+    "ref": "10eee694-520f-4133-a2ff-4c57b9a239ea",
+    "keyword": "fb04a10dbf79fcf1f2c56391ca5dcd8a",
+    "answer": "Buğra.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "76b47a9ee08cbbb32e4818acc5ed0606"
+  },
+  {
+    "ref": "ans_1946a70e-25dc-449b-b40b-95bc689e1c7b",
+    "keyword": "ans_f9255a70-b084-42cf-8e50-7aa064d96e36",
+    "answer": "I share with you the following links of interest about the project\n👉 *doc* to view the documentation",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 800,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "687b119d8e4b16e6416c30115d2fdca4",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_75adb520-764f-43e9-b9bf-c481b9fa5132",
+    "keyword": "ans_1946a70e-25dc-449b-b40b-95bc689e1c7b",
+    "answer": "__capture_only_intended__",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_a811d6be-f9b3-4a6f-8108-4bb9041390dc",
+          "keyword": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "c3d608aed369fa7052cac48c49e3481e"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "88d48612eda15218909e0ff560dc1313",
+    "from": "tester"
+  },
+  {
+    "ref": "6d42cef5-6cf1-4c2a-a571-d4287563d17a",
+    "keyword": "88d48612eda15218909e0ff560dc1313",
+    "answer": "Viven en la zona VIC.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "79447c8178db00ff6d8f8a896e663e4a"
+  },
+  {
+    "ref": "e7786515-fc92-4c2f-a32a-996defaa74a4",
+    "keyword": "79447c8178db00ff6d8f8a896e663e4a",
+    "answer": "Yo debender en la zona VIC.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "f1db9916f85d949f77004d69770269f1"
+  },
+  {
+    "ref": "ans_f9255a70-b084-42cf-8e50-7aa064d96e36",
+    "keyword": "key_5689414c-147f-4b38-ba7c-2ba2d7c556df",
+    "answer": "🙌 Hello welcome to this *Chatbot*",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 0,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "e6b9323144cdf1db66efc11eb4bd99a8",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_75adb520-764f-43e9-b9bf-c481b9fa5132",
+    "keyword": "ans_1946a70e-25dc-449b-b40b-95bc689e1c7b",
+    "answer": "__capture_only_intended__",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_a811d6be-f9b3-4a6f-8108-4bb9041390dc",
+          "keyword": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "c3d608aed369fa7052cac48c49e3481e"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "88d48612eda15218909e0ff560dc1313",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_75adb520-764f-43e9-b9bf-c481b9fa5132",
+    "keyword": "ans_1946a70e-25dc-449b-b40b-95bc689e1c7b",
+    "answer": "__capture_only_intended__",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_a811d6be-f9b3-4a6f-8108-4bb9041390dc",
+          "keyword": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "c3d608aed369fa7052cac48c49e3481e"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "88d48612eda15218909e0ff560dc1313",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_75adb520-764f-43e9-b9bf-c481b9fa5132",
+    "keyword": "ans_1946a70e-25dc-449b-b40b-95bc689e1c7b",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_a811d6be-f9b3-4a6f-8108-4bb9041390dc",
+          "keyword": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "c3d608aed369fa7052cac48c49e3481e"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "88d48612eda15218909e0ff560dc1313",
+    "from": "tester"
+  },
+  {
+    "ref": "00ae6011-d40e-4625-a547-9b35f1198ea4",
+    "keyword": "88d48612eda15218909e0ff560dc1313",
+    "answer": "Sí, Pablo.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "5d397195bf7ff723c6dfa90598e64d28"
+  },
+  {
+    "ref": "203b3107-2fca-486a-91b9-753e3633fb31",
+    "keyword": "5d397195bf7ff723c6dfa90598e64d28",
+    "answer": "Sí, Pablo.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "5d397195bf7ff723c6dfa90598e64d28"
+  },
+  {
+    "ref": "ans_75adb520-764f-43e9-b9bf-c481b9fa5132",
+    "keyword": "ans_1946a70e-25dc-449b-b40b-95bc689e1c7b",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_a811d6be-f9b3-4a6f-8108-4bb9041390dc",
+          "keyword": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "c3d608aed369fa7052cac48c49e3481e"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "88d48612eda15218909e0ff560dc1313",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_1946a70e-25dc-449b-b40b-95bc689e1c7b",
+    "keyword": "ans_f9255a70-b084-42cf-8e50-7aa064d96e36",
+    "answer": "I share with you the following links of interest about the project\n👉 *doc* to view the documentation",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 800,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "687b119d8e4b16e6416c30115d2fdca4",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_75adb520-764f-43e9-b9bf-c481b9fa5132",
+    "keyword": "ans_1946a70e-25dc-449b-b40b-95bc689e1c7b",
+    "answer": "__capture_only_intended__",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_a811d6be-f9b3-4a6f-8108-4bb9041390dc",
+          "keyword": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "c3d608aed369fa7052cac48c49e3481e"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "88d48612eda15218909e0ff560dc1313",
+    "from": "tester"
+  },
+  {
+    "ref": "ed1821a9-bab4-479e-808b-3dc6a7e38afe",
+    "keyword": "88d48612eda15218909e0ff560dc1313",
+    "answer": "Mira, esto es el día. Yo creo que como la palabra...",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "4c84b11e8ed21c048440ac5661bacb79"
+  },
+  {
+    "ref": "4a431acb-1eca-4e87-8aec-9483c5b4a8fe",
+    "keyword": "4c84b11e8ed21c048440ac5661bacb79",
+    "answer": "Mira, esto es el día del loco como la palabra.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "e206181392b094274610911f718ab191"
+  },
+  {
+    "ref": "ans_75adb520-764f-43e9-b9bf-c481b9fa5132",
+    "keyword": "ans_1946a70e-25dc-449b-b40b-95bc689e1c7b",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_a811d6be-f9b3-4a6f-8108-4bb9041390dc",
+          "keyword": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "c3d608aed369fa7052cac48c49e3481e"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "88d48612eda15218909e0ff560dc1313",
+    "from": "tester"
+  },
+  {
+    "ref": "260d454b-9366-431e-8c82-8a0d684deb2b",
+    "keyword": "88d48612eda15218909e0ff560dc1313",
+    "answer": "¿Te parece rápida?",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "a3d228146b1baacd1eb4bc9f7eacad5e"
+  },
+  {
+    "ref": "5925615c-7da2-420e-8d3a-e79a69b77e48",
+    "keyword": "a3d228146b1baacd1eb4bc9f7eacad5e",
+    "answer": "Bueno, ¿te parece rápido?",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "313968a75ad15f1c7ddd3e18e36cc4e9"
+  },
+  {
+    "ref": "ans_75adb520-764f-43e9-b9bf-c481b9fa5132",
+    "keyword": "ans_1946a70e-25dc-449b-b40b-95bc689e1c7b",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_a811d6be-f9b3-4a6f-8108-4bb9041390dc",
+          "keyword": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "c3d608aed369fa7052cac48c49e3481e"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "88d48612eda15218909e0ff560dc1313",
+    "from": "tester"
+  },
+  {
+    "ref": "111dd7fd-f2a7-4122-8d0b-298e0ac13bb2",
+    "keyword": "88d48612eda15218909e0ff560dc1313",
+    "answer": "de nueve.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "11e57bd5e8c4fcf7fe4baec7fb2cb38c"
+  },
+  {
+    "ref": "a522e20b-b5e0-4ae1-82a3-528c68c6d61d",
+    "keyword": "11e57bd5e8c4fcf7fe4baec7fb2cb38c",
+    "answer": "de nueve.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "11e57bd5e8c4fcf7fe4baec7fb2cb38c"
+  },
+  {
+    "ref": "ans_75adb520-764f-43e9-b9bf-c481b9fa5132",
+    "keyword": "ans_1946a70e-25dc-449b-b40b-95bc689e1c7b",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_a811d6be-f9b3-4a6f-8108-4bb9041390dc",
+          "keyword": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "c3d608aed369fa7052cac48c49e3481e"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "88d48612eda15218909e0ff560dc1313",
+    "from": "tester"
+  },
+  {
+    "ref": "139c9543-de89-4d45-8ce4-dc8dad5ad826",
+    "keyword": "88d48612eda15218909e0ff560dc1313",
+    "answer": "Mhm.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "a825800c66b6f5aefc0ee7057b987194"
+  },
+  {
+    "ref": "5211c0ff-ad04-4ed6-ae5e-8451d2370623",
+    "keyword": "a825800c66b6f5aefc0ee7057b987194",
+    "answer": "mhm.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "fdffda79110ac64be68049afb832ffbe"
+  },
+  {
+    "ref": "ans_75adb520-764f-43e9-b9bf-c481b9fa5132",
+    "keyword": "ans_1946a70e-25dc-449b-b40b-95bc689e1c7b",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_a811d6be-f9b3-4a6f-8108-4bb9041390dc",
+          "keyword": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "c3d608aed369fa7052cac48c49e3481e"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "88d48612eda15218909e0ff560dc1313",
+    "from": "tester"
+  },
+  {
+    "ref": "243ee94b-752f-444f-b091-2d904fc391d8",
+    "keyword": "88d48612eda15218909e0ff560dc1313",
+    "answer": "Ese es el video que le vas a pasar ahora, Pedro.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "570de547d1ad9e4629601ca9ae1086ac"
+  },
+  {
+    "ref": "efdbced0-61bc-48ab-9a22-f3f8d85c3688",
+    "keyword": "570de547d1ad9e4629601ca9ae1086ac",
+    "answer": "Ese es el video que le vas a pasar ahora, Pedro.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "570de547d1ad9e4629601ca9ae1086ac"
+  },
+  {
+    "ref": "ans_75adb520-764f-43e9-b9bf-c481b9fa5132",
+    "keyword": "ans_1946a70e-25dc-449b-b40b-95bc689e1c7b",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_a811d6be-f9b3-4a6f-8108-4bb9041390dc",
+          "keyword": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "c3d608aed369fa7052cac48c49e3481e"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "88d48612eda15218909e0ff560dc1313",
+    "from": "tester"
+  },
+  {
+    "ref": "4a44c480-e3cb-4ed7-9dae-c3cc9b0b38be",
+    "keyword": "88d48612eda15218909e0ff560dc1313",
+    "answer": "pero en el torneo más grande.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "199da0423b63434242b9ce431f2026c4"
+  },
+  {
+    "ref": "150cf3a1-4843-457d-a553-ead5a758568f",
+    "keyword": "199da0423b63434242b9ce431f2026c4",
+    "answer": "Pero el estón más grande.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "e6beefe55afe75e7d270df97c5a0ef93"
+  },
+  {
+    "ref": "ans_75adb520-764f-43e9-b9bf-c481b9fa5132",
+    "keyword": "ans_1946a70e-25dc-449b-b40b-95bc689e1c7b",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_a811d6be-f9b3-4a6f-8108-4bb9041390dc",
+          "keyword": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "c3d608aed369fa7052cac48c49e3481e"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "88d48612eda15218909e0ff560dc1313",
+    "from": "tester"
+  },
+  {
+    "ref": "582210f5-d698-4d5e-84e3-6b71d0d2c752",
+    "keyword": "88d48612eda15218909e0ff560dc1313",
+    "answer": "Yo no les he querido preguntar más nada, Marco, porque como no les estamos cumpliendo, pues ya casi que digo, mira, eso es el problema, ¿ves? Que no quiero que quedemos mal con ellos y tampoco quiero que se vea que solo queremos pedirles.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "095fcd2b249043d675d51aa498c81299"
+  },
+  {
+    "ref": "03569a6f-18f2-428a-ba09-914ff57ed74b",
+    "keyword": "095fcd2b249043d675d51aa498c81299",
+    "answer": "Bueno, les he querido preguntar más nada, Marco, que como no les estamos cumpliendo, pues ya casi que digo, mira, ese es el problema, ¿ves? Que no quiero que quedemos mal con ellos y tampoco quiero que se vea que solo queremos pedirles.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "96772f2ed05bc92653babb51f710e7f0"
+  },
+  {
+    "ref": "ans_75adb520-764f-43e9-b9bf-c481b9fa5132",
+    "keyword": "ans_1946a70e-25dc-449b-b40b-95bc689e1c7b",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_a811d6be-f9b3-4a6f-8108-4bb9041390dc",
+          "keyword": "key_122efaac-0e46-45ce-9f78-0cb13d8ca291",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "c3d608aed369fa7052cac48c49e3481e"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "88d48612eda15218909e0ff560dc1313",
+    "from": "tester"
+  },
+  {
+    "ref": "0887d49a-6813-4e68-8f7c-8b3bd96e19fa",
+    "keyword": "88d48612eda15218909e0ff560dc1313",
+    "answer": "Hello, hola, hello.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "5b46e5b41e85431b3176063fae4c99b4"
+  },
+  {
+    "ref": "2c4341d7-9758-4eff-8258-ec46036a64eb",
+    "keyword": "5b46e5b41e85431b3176063fae4c99b4",
+    "answer": "Habría que ver si Terche está.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "6e259fa60d8abe32be0e09e2f22f5959"
+  },
+  {
+    "ref": "9fa1182f-5e4f-4378-a30b-a9fc3757051b",
+    "keyword": "6e259fa60d8abe32be0e09e2f22f5959",
+    "answer": "Hombre, si les vamos a cumplir con esto y tú no vas y yo, no pasa nada.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "a65b3bf1e846b3e7c1ad9f48b7c34cce"
+  },
+  {
+    "ref": "a9f4a0fd-2a97-4546-a7f5-730e601e40c9",
+    "keyword": "a65b3bf1e846b3e7c1ad9f48b7c34cce",
+    "answer": "Si le cumplimos con el post-evento, pero tengo que saber si...",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "7ee26f6721d36cd7200038986c35af06"
+  },
+  {
+    "ref": "f88cd94b-f2df-47e1-bb37-00a188884265",
+    "keyword": "7ee26f6721d36cd7200038986c35af06",
+    "answer": "Hello, hola, hola.",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "fb63676ecd1dc39d003bf82fdae9520f"
+  },
+  {
+    "ref": "ans_7b5c71b2-b5ec-4f0e-a834-f91f514a9fc7",
+    "keyword": "key_46802625-679a-4379-a874-3ec2089c1af9",
+    "answer": "🙌 Hello welcome to this *Chatbot*",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 0,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "7fa7258f2a654ad2626156168c671e60",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_b5057631-939f-4e02-8e0b-74961df6553b",
+    "keyword": "ans_7b5c71b2-b5ec-4f0e-a834-f91f514a9fc7",
+    "answer": "I share with you the following links of interest about the project\n👉 *doc* to view the documentation",
+    "options": {
+      "buttons": [],
+      "capture": false,
+      "delay": 800,
+      "nested": [],
+      "keyword": {},
+      "callback": false
+    },
+    "refSerialize": "ea42f8ba79bf669bd1b377e018e0a099",
+    "from": "tester"
+  },
+  {
+    "ref": "ans_bc2c36b5-f843-47f0-b673-86790f464edf",
+    "keyword": "ans_b5057631-939f-4e02-8e0b-74961df6553b",
+    "answer": "__capture_only_intended__",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_e25c2710-b2af-4ae4-b977-2d06c87de4a9",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_6b355c5d-15a0-4e89-b849-0b507342ebde",
+          "keyword": "key_e25c2710-b2af-4ae4-b977-2d06c87de4a9",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "e6d45fdab0ae68dcc07a17e0e9448af7"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "2a83ddd1c1a2e67ae7d115f8cc1c7f9c",
+    "from": "tester"
+  },
+  {
+    "ref": "142231ad-edef-41b8-92c4-3c58e1a4a7c5",
+    "keyword": "2a83ddd1c1a2e67ae7d115f8cc1c7f9c",
+    "answer": "বাংলা",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "27d7e7a7632398cfde16ebaaa71e9fe6"
+  },
+  {
+    "ref": "1ab16d39-92ea-4e18-bc69-ac5c7fd50916",
+    "keyword": "27d7e7a7632398cfde16ebaaa71e9fe6",
+    "answer": "完。",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "251d52de141da464576bd3214ec5af34"
+  },
+  {
+    "ref": "ans_bc2c36b5-f843-47f0-b673-86790f464edf",
+    "keyword": "ans_b5057631-939f-4e02-8e0b-74961df6553b",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_e25c2710-b2af-4ae4-b977-2d06c87de4a9",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_6b355c5d-15a0-4e89-b849-0b507342ebde",
+          "keyword": "key_e25c2710-b2af-4ae4-b977-2d06c87de4a9",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "e6d45fdab0ae68dcc07a17e0e9448af7"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "2a83ddd1c1a2e67ae7d115f8cc1c7f9c",
+    "from": "tester"
+  },
+  {
+    "ref": "65f2b0f1-0f8f-4a46-afab-44261c680a30",
+    "keyword": "2a83ddd1c1a2e67ae7d115f8cc1c7f9c",
+    "answer": "¿Cuántas personas quieren?",
+    "options": {},
+    "from": "tester",
+    "refSerialize": "51e9e8128844939b4d5b94d1f6f6a1dc"
+  },
+  {
+    "ref": "ans_bc2c36b5-f843-47f0-b673-86790f464edf",
+    "keyword": "ans_b5057631-939f-4e02-8e0b-74961df6553b",
+    "answer": "You should type *doc*",
+    "options": {
+      "buttons": [],
+      "capture": true,
+      "delay": 800,
+      "nested": [
+        {
+          "ref": "key_e25c2710-b2af-4ae4-b977-2d06c87de4a9",
+          "keyword": "doc",
+          "options": {
+            "sensitive": false,
+            "regex": false
+          },
+          "refSerialize": "5a8225144cb89933cbe2a9a3d251d9a2"
+        },
+        {
+          "ref": "ans_6b355c5d-15a0-4e89-b849-0b507342ebde",
+          "keyword": "key_e25c2710-b2af-4ae4-b977-2d06c87de4a9",
+          "answer": "You can see the documentation here\n📄 https://builderbot.app/docs \n\nDo you want to continue? *yes*",
+          "options": {
+            "buttons": [],
+            "capture": true,
+            "delay": 0,
+            "nested": [],
+            "keyword": {},
+            "callback": true
+          },
+          "refSerialize": "e6d45fdab0ae68dcc07a17e0e9448af7"
+        }
+      ],
+      "keyword": {},
+      "callback": true
+    },
+    "refSerialize": "2a83ddd1c1a2e67ae7d115f8cc1c7f9c",
+    "from": "tester"
+  }
+]

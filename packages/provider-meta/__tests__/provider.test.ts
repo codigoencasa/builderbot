@@ -268,6 +268,108 @@ describe('#MetaProvider', () => {
                 })
             )
         })
+
+        test('should auto-enable preview_url for URL with query parameters', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Search: https://example.com/search?q=test&lang=en'
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendText(fakeRecipient, fakeMessage)
+
+            // Assert
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    text: expect.objectContaining({ preview_url: true }),
+                })
+            )
+        })
+
+        test('should auto-enable preview_url for URL with fragment/anchor', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Docs: https://example.com/docs#section-2'
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendText(fakeRecipient, fakeMessage)
+
+            // Assert
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    text: expect.objectContaining({ preview_url: true }),
+                })
+            )
+        })
+
+        test('should auto-enable preview_url for URL in parentheses', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Visit (https://example.com) for details'
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendText(fakeRecipient, fakeMessage)
+
+            // Assert
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    text: expect.objectContaining({ preview_url: true }),
+                })
+            )
+        })
+
+        test('should auto-enable preview_url for URL ending with punctuation', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Check https://example.com.'
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendText(fakeRecipient, fakeMessage)
+
+            // Assert
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    text: expect.objectContaining({ preview_url: true }),
+                })
+            )
+        })
+
+        test('should auto-enable preview_url for message with multiple URLs', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'See https://foo.com and https://bar.com'
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendText(fakeRecipient, fakeMessage)
+
+            // Assert
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    text: expect.objectContaining({ preview_url: true }),
+                })
+            )
+        })
+
+        test('should not enable preview_url for text without URL', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Visit our website at example dot com'
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendText(fakeRecipient, fakeMessage)
+
+            // Assert
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    text: expect.objectContaining({ preview_url: false }),
+                })
+            )
+        })
     })
 
     describe('#sendLocation', () => {

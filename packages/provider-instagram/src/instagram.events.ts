@@ -1,6 +1,8 @@
 import { EventEmitterClass, utils } from '@builderbot/bot'
 import type { BotContext, ProviderEventTypes } from '@builderbot/bot/dist/types'
 
+import { instagramEvents } from './instagram.events.constants'
+
 export type InstagramListenMode = 'message' | 'comment' | 'both'
 
 export type InstagramCommentValue = {
@@ -188,7 +190,7 @@ export class InstagramEvents extends EventEmitterClass<ProviderEventTypes> {
         const timestamp = new Date(commentValue.timestamp).getTime() || Date.now()
 
         const sendObj = {
-            body: commentValue.text,
+            body: instagramEvents.IG_COMMENT,
             from: commentValue.from.id,
             name: commentValue.from.username || '',
             username: commentValue.from.username || '',
@@ -203,6 +205,7 @@ export class InstagramEvents extends EventEmitterClass<ProviderEventTypes> {
                 parentId: commentValue.parent_id || null,
                 mediaId: commentValue.media.id,
                 username: commentValue.from.username || '',
+                text: commentValue.text,
             },
         }
 

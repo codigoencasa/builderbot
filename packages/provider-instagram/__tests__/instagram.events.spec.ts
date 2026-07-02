@@ -2,6 +2,7 @@ import { utils } from '@builderbot/bot'
 import { beforeEach, describe, expect, jest, it } from '@jest/globals'
 
 import { InstagramEvents, InstagramMessage, InstagramListenMode } from '../src/instagram.events'
+import { instagramEvents as igEventsConst } from '../src/instagram.events.constants'
 
 jest.mock('@builderbot/bot', () => ({
     EventEmitterClass: class {
@@ -9,6 +10,7 @@ jest.mock('@builderbot/bot', () => ({
     },
     utils: {
         generateRefProvider: jest.fn().mockImplementation((type) => `REF:${type}`),
+        setEvent: jest.fn().mockReturnValue('_mock_ig_comment_event_'),
     },
 }))
 
@@ -408,7 +410,7 @@ describe('InstagramEvents', () => {
             instagramEvents.eventInMsg(payload)
 
             expect(instagramEvents.emit).toHaveBeenCalledWith('message', {
-                body: 'Nice post!',
+                body: igEventsConst.IG_COMMENT,
                 from: 'commenter_id',
                 name: 'testuser',
                 username: 'testuser',
@@ -423,6 +425,7 @@ describe('InstagramEvents', () => {
                     parentId: null,
                     mediaId: 'media_123',
                     username: 'testuser',
+                    text: 'Nice post!',
                 },
             })
         })
@@ -463,9 +466,10 @@ describe('InstagramEvents', () => {
             expect(instagramEvents.emit).toHaveBeenCalledWith(
                 'message',
                 expect.objectContaining({
-                    body: 'I agree!',
+                    body: igEventsConst.IG_COMMENT,
                     comment: expect.objectContaining({
                         parentId: 'comment_456',
+                        text: 'I agree!',
                     }),
                 })
             )
@@ -516,7 +520,13 @@ describe('InstagramEvents', () => {
 
             expect(instagramEvents.emit).toHaveBeenCalledTimes(2)
             expect(instagramEvents.emit).toHaveBeenCalledWith('message', expect.objectContaining({ body: 'Hello DM' }))
-            expect(instagramEvents.emit).toHaveBeenCalledWith('message', expect.objectContaining({ body: 'Nice!' }))
+            expect(instagramEvents.emit).toHaveBeenCalledWith(
+                'message',
+                expect.objectContaining({
+                    body: igEventsConst.IG_COMMENT,
+                    comment: expect.objectContaining({ text: 'Nice!' }),
+                })
+            )
         })
 
         it('should ignore comments when listenMode is message', () => {

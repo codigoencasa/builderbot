@@ -1,0 +1,9 @@
+{
+    "IMPORT": "import { WhatsAppVoiceProvider as Provider } from '@builderbot/provider-voice-whatsapp'\n",
+    "IMPLEMENTATION": "const adapterProvider = createProvider(Provider, {\n    jwtToken: process.env.META_JWT_TOKEN ?? 'YOUR_META_JWT_TOKEN',\n    numberId: process.env.META_NUMBER_ID ?? 'YOUR_META_NUMBER_ID',\n    verifyToken: process.env.META_VERIFY_TOKEN ?? 'YOUR_META_VERIFY_TOKEN',\n    version: 'v20.0',\n    openaiApiKey: process.env.OPENAI_API_KEY ?? 'YOUR_OPENAI_API_KEY',\n})",
+    "DEPENDENCIES": {
+        "@builderbot/bot": "latest",
+        "@builderbot/provider-voice-whatsapp": "latest"
+    },
+    "DEV_DEPENDENCIES": {}
+}

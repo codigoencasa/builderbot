@@ -260,6 +260,8 @@ export interface TFlow<P = any, B = any> {
 export interface SendOptions {
     buttons?: Button[]
     media?: string
+    /** Whether to show a link preview when the message contains a URL. Auto-detected if omitted. */
+    preview_url?: boolean
     [key: string]: any
 }
 

@@ -782,7 +782,8 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
      * Send a message with automatic type detection (text, buttons, or media)
      * @param to - Recipient phone number
      * @param message - Message text content
-     * @param options - Optional send options (buttons, media)
+     * @param options - Optional send options (buttons, media, preview_url)
+     * @param options.preview_url - Whether to show URL previews. Auto-detected when omitted (true if message contains a URL).
      * @param context - Optional message ID to reply to
      * @returns Promise with the API response
      * @example
@@ -794,6 +795,12 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
      *
      * // Send with media
      * await provider.sendMessage('1234567890', 'Check this:', { media: 'https://example.com/image.jpg' })
+     *
+     * // Send with link preview enabled
+     * await provider.sendMessage('1234567890', 'Visit https://example.com', { preview_url: true })
+     *
+     * // Send with link preview disabled
+     * await provider.sendMessage('1234567890', 'Visit https://example.com', { preview_url: false })
      */
     sendMessage = async (to: string, message: string, options?: SendOptions, context?: string): Promise<any> => {
         to = parseMetaNumber(to)
@@ -1022,13 +1029,19 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
      * @param to - Recipient phone number
      * @param message - Text message content
      * @param context - Optional message ID to reply to
-     * @param preview_url - Whether to show URL previews in the message
+     * @param preview_url - Whether to show URL previews. Auto-detected when omitted (true if message contains a URL).
      * @returns Promise with the API response
      * @example
      * await provider.sendText('1234567890', 'Hello, how can I help you?')
      *
-     * // With URL preview
+     * // Auto-detection: preview_url will be true because message has a URL
+     * await provider.sendText('1234567890', 'Check https://example.com')
+     *
+     * // Explicitly enable preview
      * await provider.sendText('1234567890', 'Check https://example.com', null, true)
+     *
+     * // Explicitly disable preview even with URL
+     * await provider.sendText('1234567890', 'See https://example.com', null, false)
      */
     sendText = async (to: string, message: string, context = null, preview_url?: boolean) => {
         to = parseMetaNumber(to)

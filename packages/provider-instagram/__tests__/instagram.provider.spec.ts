@@ -14,6 +14,7 @@ jest.mock('@builderbot/bot', () => ({
     },
     utils: {
         generalDownload: jest.fn<(url: string) => Promise<string>>().mockResolvedValue('/tmp/downloaded-file.jpg'),
+        setEvent: jest.fn().mockReturnValue('_mock_ig_comment_event_'),
     },
 }))
 

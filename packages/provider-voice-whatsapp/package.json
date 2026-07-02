@@ -1,0 +1,56 @@
+{
+    "name": "@builderbot/provider-voice-whatsapp",
+    "version": "1.4.3-y.4",
+    "description": "WhatsApp Business voice call provider for BuilderBot via Meta Graph API WebRTC + OpenAI (Whisper STT / TTS)",
+    "author": "Leifer Mendez <leifer33@gmail.com>",
+    "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
+    "license": "ISC",
+    "main": "dist/index.cjs",
+    "types": "dist/index.d.ts",
+    "type": "module",
+    "engines": {
+        "node": ">=18"
+    },
+    "files": [
+        "./dist/"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/codigoencasa/bot-whatsapp.git"
+    },
+    "scripts": {
+        "build": "rimraf dist && rollup --config",
+        "test": "jest",
+        "test:coverage": "jest --coverage",
+        "test:watch": "jest --watchAll --coverage"
+    },
+    "directories": {
+        "lib": "dist",
+        "test": "__tests__"
+    },
+    "bugs": {
+        "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
+    },
+    "devDependencies": {
+        "@builderbot/bot": "workspace:*",
+        "@jest/globals": "^30.2.0",
+        "@rollup/plugin-commonjs": "^29.0.0",
+        "@rollup/plugin-json": "^6.1.0",
+        "@rollup/plugin-node-resolve": "^16.0.3",
+        "@types/cors": "^2.8.17",
+        "@types/node": "^24.10.2",
+        "@types/polka": "^0.5.7",
+        "cors": "^2.8.5",
+        "rimraf": "^6.1.2",
+        "rollup-plugin-typescript2": "^0.36.0"
+    },
+    "dependencies": {
+        "@builderbot/provider-voice": "workspace:*",
+        "@livekit/rtc-node": "^0.13.29",
+        "@roamhq/wrtc": "^0.10.0",
+        "axios": "^1.7.9",
+        "livekit-server-sdk": "^2.15.5",
+        "openai": "^6.10.0",
+        "polka": "^0.5.2"
+    }
+}

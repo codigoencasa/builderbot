@@ -1573,6 +1573,168 @@ importers:
                 specifier: ^17.0.1
                 version: 17.0.2
 
+    packages/provider-voice:
+        dependencies:
+            '@livekit/rtc-node':
+                specifier: ^0.13.29
+                version: 0.13.29
+            '@roamhq/wrtc':
+                specifier: ^0.10.0
+                version: 0.10.0
+            livekit-server-sdk:
+                specifier: ^2.15.5
+                version: 2.16.0
+            openai:
+                specifier: ^6.10.0
+                version: 6.10.0(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@4.1.13)
+            polka:
+                specifier: ^0.5.2
+                version: 0.5.2
+        devDependencies:
+            '@builderbot/bot':
+                specifier: workspace:*
+                version: link:../bot
+            '@jest/globals':
+                specifier: ^30.2.0
+                version: 30.2.0
+            '@rollup/plugin-commonjs':
+                specifier: ^29.0.0
+                version: 29.0.0(rollup@4.53.3)
+            '@rollup/plugin-json':
+                specifier: ^6.1.0
+                version: 6.1.0(rollup@4.53.3)
+            '@rollup/plugin-node-resolve':
+                specifier: ^16.0.3
+                version: 16.0.3(rollup@4.53.3)
+            '@types/cors':
+                specifier: ^2.8.17
+                version: 2.8.19
+            '@types/node':
+                specifier: ^24.10.2
+                version: 24.10.2
+            '@types/polka':
+                specifier: ^0.5.7
+                version: 0.5.8
+            cors:
+                specifier: ^2.8.5
+                version: 2.8.5
+            rimraf:
+                specifier: ^6.1.2
+                version: 6.1.2
+            rollup-plugin-typescript2:
+                specifier: ^0.36.0
+                version: 0.36.0(rollup@4.53.3)(typescript@5.9.3)
+
+    packages/provider-voice-sip:
+        dependencies:
+            '@livekit/rtc-node':
+                specifier: ^0.13.29
+                version: 0.13.29
+            '@roamhq/wrtc':
+                specifier: ^0.10.0
+                version: 0.10.0
+            livekit-server-sdk:
+                specifier: ^2.15.5
+                version: 2.16.0
+            openai:
+                specifier: ^6.10.0
+                version: 6.10.0(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@4.1.13)
+            polka:
+                specifier: ^0.5.2
+                version: 0.5.2
+        devDependencies:
+            '@builderbot/bot':
+                specifier: workspace:*
+                version: link:../bot
+            '@jest/globals':
+                specifier: ^30.2.0
+                version: 30.2.0
+            '@rollup/plugin-commonjs':
+                specifier: ^29.0.0
+                version: 29.0.0(rollup@4.53.3)
+            '@rollup/plugin-json':
+                specifier: ^6.1.0
+                version: 6.1.0(rollup@4.53.3)
+            '@rollup/plugin-node-resolve':
+                specifier: ^16.0.3
+                version: 16.0.3(rollup@4.53.3)
+            '@types/cors':
+                specifier: ^2.8.17
+                version: 2.8.19
+            '@types/node':
+                specifier: ^24.10.2
+                version: 24.10.2
+            '@types/polka':
+                specifier: ^0.5.7
+                version: 0.5.8
+            cors:
+                specifier: ^2.8.5
+                version: 2.8.5
+            rimraf:
+                specifier: ^6.1.2
+                version: 6.1.2
+            rollup-plugin-typescript2:
+                specifier: ^0.36.0
+                version: 0.36.0(rollup@4.53.3)(typescript@5.9.3)
+
+    packages/provider-voice-whatsapp:
+        dependencies:
+            '@builderbot/provider-voice':
+                specifier: workspace:*
+                version: link:../provider-voice
+            '@livekit/rtc-node':
+                specifier: ^0.13.29
+                version: 0.13.29
+            '@roamhq/wrtc':
+                specifier: ^0.10.0
+                version: 0.10.0
+            axios:
+                specifier: ^1.7.9
+                version: 1.13.2
+            livekit-server-sdk:
+                specifier: ^2.15.5
+                version: 2.16.0
+            openai:
+                specifier: ^6.10.0
+                version: 6.10.0(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@4.1.13)
+            polka:
+                specifier: ^0.5.2
+                version: 0.5.2
+        devDependencies:
+            '@builderbot/bot':
+                specifier: workspace:*
+                version: link:../bot
+            '@jest/globals':
+                specifier: ^30.2.0
+                version: 30.2.0
+            '@rollup/plugin-commonjs':
+                specifier: ^29.0.0
+                version: 29.0.0(rollup@4.53.3)
+            '@rollup/plugin-json':
+                specifier: ^6.1.0
+                version: 6.1.0(rollup@4.53.3)
+            '@rollup/plugin-node-resolve':
+                specifier: ^16.0.3
+                version: 16.0.3(rollup@4.53.3)
+            '@types/cors':
+                specifier: ^2.8.17
+                version: 2.8.19
+            '@types/node':
+                specifier: ^24.10.2
+                version: 24.10.2
+            '@types/polka':
+                specifier: ^0.5.7
+                version: 0.5.8
+            cors:
+                specifier: ^2.8.5
+                version: 2.8.5
+            rimraf:
+                specifier: ^6.1.2
+                version: 6.1.2
+            rollup-plugin-typescript2:
+                specifier: ^0.36.0
+                version: 0.36.0(rollup@4.53.3)(typescript@5.9.3)
+
     packages/provider-web-whatsapp:
         dependencies:
             body-parser:
@@ -2249,6 +2411,12 @@ packages:
                 integrity: sha512-DDaRehssg1aNrH4+2hnj1B7vnUGEjU6OIlyRdkMd0aUdIUvKXrJfXsy8LVtXAy7DRvYVluWbMspsRhz2lcW0mQ==,
             }
 
+    '@bufbuild/protobuf@1.10.1':
+        resolution:
+            {
+                integrity: sha512-wJ8ReQbHxsAfXhrf9ixl0aYbZorRuOWpBNzm8pL8ftmSxQx/wnJD5Eg861NwJU/czy2VXFIebCeZnZrI9rktIQ==,
+            }
+
     '@builderbot/bot@1.3.14':
         resolution:
             {
@@ -2437,6 +2605,12 @@ packages:
         resolution:
             {
                 integrity: sha512-R4MSXTVnuMzGD7bzHdW2ZhhdPC/igELENcq5IjEverBvq5hn1SXCWcsi6eSsdWP0/Ur+SItRRjAktmdoX/8R/Q==,
+            }
+
+    '@datastructures-js/deque@1.0.8':
+        resolution:
+            {
+                integrity: sha512-PSBhJ2/SmeRPRHuBv7i/fHWIdSC3JTyq56qb+Rq0wjOagi0/fdV5/B/3Md5zFZus/W6OkSPMaxMKKMNMrSmubg==,
             }
 
     '@emnapi/core@1.7.1':
@@ -4099,6 +4273,83 @@ packages:
             }
         engines: { node: ^20.19.0 || ^22.12.0 || >=24.0.0 }
 
+    '@livekit/mutex@1.1.1':
+        resolution:
+            {
+                integrity: sha512-EsshAucklmpuUAfkABPxJNhzj9v2sG7JuzFDL4ML1oJQSV14sqrpTYnsaOudMAw9yOaW53NU3QQTlUQoRs4czw==,
+            }
+
+    '@livekit/protocol@1.48.2':
+        resolution:
+            {
+                integrity: sha512-xFcZdiVa4LpykarDZwdXbnS17qq+qbNKIT9v5/peNFNTjnMalmJkyo+XIIYfix6T9pG4LumjNzNBvxPEkIOrBg==,
+            }
+
+    '@livekit/rtc-ffi-bindings-darwin-arm64@0.12.60':
+        resolution:
+            {
+                integrity: sha512-YHXqybkYfaTc3txJXXWoVogiSP3yKJdkaZlIlZ6IDMGnN9elUoHDYU+ZSn/rbdGu0pp4HUOzffXkbkItN735Bw==,
+            }
+        engines: { node: '>= 18' }
+        cpu: [arm64]
+        os: [darwin]
+
+    '@livekit/rtc-ffi-bindings-darwin-x64@0.12.60':
+        resolution:
+            {
+                integrity: sha512-SkPPWE2/nb2BAXrCWP6+vaR2I4EeyG3Vv+csUaa1EvDVMbFqBHWqNVTQcx/ChgecbYB9dIFZHVYpfjbFkVd84g==,
+            }
+        engines: { node: '>= 18' }
+        cpu: [x64]
+        os: [darwin]
+
+    '@livekit/rtc-ffi-bindings-linux-arm64-gnu@0.12.60':
+        resolution:
+            {
+                integrity: sha512-8umeMn9p/VZ41EGty1qX9zPV5mfGxCioYKeUnALpf8AKqT/yXDjnog1VkS5f8gFX/zY7HDaeE+s60nZXaOZJbw==,
+            }
+        engines: { node: '>= 18' }
+        cpu: [arm64]
+        os: [linux]
+
+    '@livekit/rtc-ffi-bindings-linux-x64-gnu@0.12.60':
+        resolution:
+            {
+                integrity: sha512-ttWrR/e8Ghaa9I+LaStxK8lh+aA9QBz6Dge6eXyKwTrAMHwHEtL2Rnf1rHQTiwadeH7AoytpfWf5FZl/OelLaQ==,
+            }
+        engines: { node: '>= 18' }
+        cpu: [x64]
+        os: [linux]
+
+    '@livekit/rtc-ffi-bindings-win32-x64-msvc@0.12.60':
+        resolution:
+            {
+                integrity: sha512-HfOBEf3rmpsG7hU3/BM9x2jnkVwKFve2v3cyjxlk41d6OkCthYb+g/ULEPFBKPafYyepDwcd2c8MDo5fMM+4Zw==,
+            }
+        engines: { node: '>= 18' }
+        cpu: [x64]
+        os: [win32]
+
+    '@livekit/rtc-ffi-bindings@0.12.60':
+        resolution:
+            {
+                integrity: sha512-ZJD2DNoHfR8PzKeyDMH6i1zKpk7S4LlrQDIZvisxj6HPaJnKofzSssNMF8fpGFvVCZ844kbcOFogRPgHFno82w==,
+            }
+        engines: { node: '>= 18' }
+
+    '@livekit/rtc-node@0.13.29':
+        resolution:
+            {
+                integrity: sha512-3/mhTVW3zEa8u0l2UzLe74CyDxaz/1Fqrss+monBJARYHyMGMiDlnKAwDT2LiFkRy0xBjl2QY8Yldr0icfPUkw==,
+            }
+        engines: { node: '>= 18' }
+
+    '@livekit/typed-emitter@3.0.0':
+        resolution:
+            {
+                integrity: sha512-9bl0k4MgBPZu3Qu3R3xy12rmbW17e3bE9yf4YY85gJIQ3ezLEj/uzpKHWBsLaDoL5Mozz8QCgggwIBudYQWeQg==,
+            }
+
     '@microsoft/api-extractor-model@7.32.2':
         resolution:
             {
@@ -4800,6 +5051,52 @@ packages:
             }
         engines: { node: '>=18' }
         hasBin: true
+
+    '@roamhq/wrtc-darwin-arm64@0.10.0':
+        resolution:
+            {
+                integrity: sha512-vFdi79jWuPHcnUcnuOjTvyKtmY/RI2xRQo9Y6RsIjIlYePN/7LTy00c+Ivrz4prYAPbp0oHscl7PDV64VUqGTQ==,
+            }
+        cpu: [arm64]
+        os: [darwin]
+
+    '@roamhq/wrtc-darwin-x64@0.10.0':
+        resolution:
+            {
+                integrity: sha512-H6852g2xYCuaR+/TrthpdMafs4bMfAUEpvRDhsIguzrK7Dz+MKpNI8MkwdqJN8W65J+7w7k+YqXIkTHe7Fz/cg==,
+            }
+        cpu: [x64]
+        os: [darwin]
+
+    '@roamhq/wrtc-linux-arm64@0.10.0':
+        resolution:
+            {
+                integrity: sha512-fEuJbNjprxQG6QlFd2iqBW9x028RDSho6izVg7gyt8irdPiXWOxzOxNnYMs/B2fohBTd1wD4Qxfivl07/dCR8A==,
+            }
+        cpu: [arm64]
+        os: [linux]
+
+    '@roamhq/wrtc-linux-x64@0.10.0':
+        resolution:
+            {
+                integrity: sha512-H32lK2eFg3sVb/9nkHIX5HIisxFoS82Gpesuea+zqAyRpRzSd5NpFXx28bVy9wQyRrNtj8k0bTUgEzWRzSbYCA==,
+            }
+        cpu: [x64]
+        os: [linux]
+
+    '@roamhq/wrtc-win32-x64@0.10.0':
+        resolution:
+            {
+                integrity: sha512-wEVXMvLrBizdLyrd+Zc7zb7zpwUuHUBXwrdIvI69e3i/AA8YsVYI2xo/sxk6GoQ+o8a14ONc4SStDS35TCjg+w==,
+            }
+        cpu: [x64]
+        os: [win32]
+
+    '@roamhq/wrtc@0.10.0':
+        resolution:
+            {
+                integrity: sha512-yFqQQ0EV1ZUHaphh3tmjoxPi2wzhW2vjmzoAVNRRLUjXYd2e1nvwi9TKfE2w4WNvNws/hBkouvOt23Xo9FkXkQ==,
+            }
 
     '@rollup/plugin-commonjs@25.0.8':
         resolution:
@@ -7319,6 +7616,13 @@ packages:
             }
         engines: { node: '>=8' }
 
+    camelcase-keys@9.1.3:
+        resolution:
+            {
+                integrity: sha512-Rircqi9ch8AnZscQcsA1C47NFdaO3wukpmIRzYcDOrmvgt78hM/sj5pZhZNec2NM12uk5vTwRHZ4anGcrC4ZTg==,
+            }
+        engines: { node: '>=16' }
+
     camelcase@5.3.1:
         resolution:
             {
@@ -7339,6 +7643,13 @@ packages:
                 integrity: sha512-xlx1yCK2Oc1APsPXDL2LdlNP6+uu8OCDdhOBSVT279M/S+y75O30C2VuD8T2ogdePBBl7PfPF4504tnLgX3zfw==,
             }
         engines: { node: '>=14.16' }
+
+    camelcase@8.0.0:
+        resolution:
+            {
+                integrity: sha512-8WB3Jcas3swSvjIeA2yvCJ+Miyz5l1ZmB6HFb9R1317dt9LCQoswg/BGrmAmkWVEszSrrg4RwmO46qIm2OEnSA==,
+            }
+        engines: { node: '>=16' }
 
     caniuse-lite@1.0.30001760:
         resolution:
@@ -7720,6 +8031,12 @@ packages:
                 integrity: sha512-ezmVcLR3xAVp8kYOm4GS45ZLLgIE6SPAFoduLr6hTDajwb3KZ2F46gulK3XpcwRFb5KKGCSezCBAY4Dw4HsyXA==,
             }
         engines: { node: '>=18' }
+
+    colorette@2.0.20:
+        resolution:
+            {
+                integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==,
+            }
 
     columnify@1.6.0:
         resolution:
@@ -8219,6 +8536,12 @@ packages:
                 integrity: sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==,
             }
 
+    dateformat@4.6.3:
+        resolution:
+            {
+                integrity: sha512-2P0p0pFGzHS5EMnhdxQi7aJN+iMheud0UhG4dlE1DLAlvL8JHjJJTX/CSm4JXwV0Ka5nGk3zC5mcb5bUQUxxMA==,
+            }
+
     dayjs@1.11.19:
         resolution:
             {
@@ -8557,6 +8880,14 @@ packages:
             {
                 integrity: sha512-OLETBj6w0OsagBwdXnPdN0cnMfF9opN69co+7ZrbfPGrdpPVNBUj02spi6B1N7wChLQiPn4CSH/zJvXw56gmHw==,
             }
+
+    domexception@4.0.0:
+        resolution:
+            {
+                integrity: sha512-A2is4PLG+eeSfoTMA95/s4pvAoSo2mKtiM5jlHkAVewmiO8ISFTFKZjH7UAM1Atli/OT/7JHOrJRJiMKUZKYBw==,
+            }
+        engines: { node: '>=12' }
+        deprecated: Use your platform's native DOMException instead
 
     domhandler@4.3.1:
         resolution:
@@ -9364,6 +9695,12 @@ packages:
         resolution:
             {
                 integrity: sha512-ZvLdcY8P+N8mGQJahJV5G4U88CSvT1rP8ApL6uETe88MBXrBHAkZlSEySdUlyztF7ccb+Znos3TFqaepHxdhBg==,
+            }
+
+    fast-copy@4.0.3:
+        resolution:
+            {
+                integrity: sha512-58apWr0GUiDFM8+3afrO6eYwJBn9ZAhDOzG3L+/9llab/haCARS2UIfffmOurYLwbgDRs8n0rfr6qAAPEAuAQw==,
             }
 
     fast-deep-equal@3.1.3:
@@ -10264,6 +10601,12 @@ packages:
                 integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==,
             }
         hasBin: true
+
+    help-me@5.0.0:
+        resolution:
+            {
+                integrity: sha512-7xgomUX6ADmcYzFik0HzAxh/73YlKR9bmFzf51CZwR+b6YtzU2m0u49hQCqV6SvlqIqsaxovfwdvbnsw3b/zpg==,
+            }
 
     hookified@1.13.0:
         resolution:
@@ -11386,6 +11729,19 @@ packages:
                 integrity: sha512-8wb9Yw966OSxApiCt0K3yNJL8pnNeIv+OEq2YMidz4FKP6nonSRoOXc80iXY4JaN2FC11B9qsNmDsm+ZOfMROA==,
             }
 
+    jose@5.10.0:
+        resolution:
+            {
+                integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==,
+            }
+
+    joycon@3.1.1:
+        resolution:
+            {
+                integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==,
+            }
+        engines: { node: '>=10' }
+
     jpeg-js@0.4.4:
         resolution:
             {
@@ -11832,6 +12188,13 @@ packages:
                 integrity: sha512-3mk/Zag0+IJxeDrxSgaDPy4zZ3w05PRZeJNnlWhzFz5OkX49J4krc+A8X2d2M69vGMBEX0uyl8M+W+8gH+kBqQ==,
             }
 
+    livekit-server-sdk@2.16.0:
+        resolution:
+            {
+                integrity: sha512-Myr90TWbqUujvPpo0N8JS+gtY6jVKgbIRx688cVSL3mp18IVAwhDWyRzNloQBcimHg24zz1JjERTiwOw0wuFIg==,
+            }
+        engines: { node: '>=18' }
+
     load-json-file@4.0.0:
         resolution:
             {
@@ -12209,6 +12572,13 @@ packages:
                 integrity: sha512-hdN1wVrZbb29eBGiGjJbeP8JbKjq1urkHJ/LIP/NY48MZ1QVXUsQBV1G1zvYFHn1XE06cwjBsOI2K3Ulnj1YXQ==,
             }
         engines: { node: '>=8' }
+
+    map-obj@5.0.0:
+        resolution:
+            {
+                integrity: sha512-2L3MIgJynYrZ3TYMriLDLWocz15okFakV6J12HXvMXDHui2x/zgChzg1u9mFFGbbGWE+GsLpQByt4POb9Or+uA==,
+            }
+        engines: { node: ^12.20.0 || ^14.13.1 || >=16.0.0 }
 
     markdown-it-anchor@8.6.7:
         resolution:
@@ -13962,6 +14332,13 @@ packages:
                 integrity: sha512-wlfUczU+n7Hy/Ha5j9a/gZNy7We5+cXp8YL+X+PG8S0KXxw7n/JXA3c46Y0zQznIJ83URJiwy7Lh56WLokNuxg==,
             }
 
+    pino-pretty@13.1.3:
+        resolution:
+            {
+                integrity: sha512-ttXRkkOz6WWC95KeY9+xxWL6AtImwbyMHrL1mSwqwW9u+vLp/WIElvHvCSDg0xO/Dzrggz1zv3rN5ovTRVowKg==,
+            }
+        hasBin: true
+
     pino-std-serializers@4.0.0:
         resolution:
             {
@@ -14596,6 +14973,13 @@ packages:
             }
         engines: { node: '>=10' }
 
+    quick-lru@6.1.2:
+        resolution:
+            {
+                integrity: sha512-AAFUA5O1d83pIHEhJwWCq/RQcRukCkn/NSm2QsTEMle5f2hP0ChI2+3Xb051PZCkLryI/Ir1MVKviT2FIloaTQ==,
+            }
+        engines: { node: '>=12' }
+
     randombytes@2.1.0:
         resolution:
             {
@@ -15074,6 +15458,12 @@ packages:
         resolution:
             {
                 integrity: sha512-o/mRQGk9Rcer/jEEw/yw4mwo3EU/NvYvp577/Btqrym9Qy5/MdWGBqipbALgd2lrdWTJ5/gqDusxfnQBxOxT2Q==,
+            }
+
+    secure-json-parse@4.1.0:
+        resolution:
+            {
+                integrity: sha512-l4KnYfEyqYJxDwlNVyRfO2E4NTHfMKAWdUuA8J0yve2Dz/E/PdBepY03RvyJpssIpRFwJoCD55wA+mEDs6ByWA==,
             }
 
     selderee@0.11.0:
@@ -18000,6 +18390,8 @@ snapshots:
 
     '@borewit/text-codec@0.2.2': {}
 
+    '@bufbuild/protobuf@1.10.1': {}
+
     '@builderbot/bot@1.3.14':
         dependencies:
             '@ffmpeg-installer/ffmpeg': 1.1.0
@@ -18171,6 +18563,8 @@ snapshots:
             '@so-ric/colorspace': 1.1.6
             enabled: 2.0.0
             kuler: 2.0.0
+
+    '@datastructures-js/deque@1.0.8': {}
 
     '@emnapi/core@1.7.1':
         dependencies:
@@ -19477,6 +19871,48 @@ snapshots:
             - supports-color
             - typescript
 
+    '@livekit/mutex@1.1.1': {}
+
+    '@livekit/protocol@1.48.2':
+        dependencies:
+            '@bufbuild/protobuf': 1.10.1
+
+    '@livekit/rtc-ffi-bindings-darwin-arm64@0.12.60':
+        optional: true
+
+    '@livekit/rtc-ffi-bindings-darwin-x64@0.12.60':
+        optional: true
+
+    '@livekit/rtc-ffi-bindings-linux-arm64-gnu@0.12.60':
+        optional: true
+
+    '@livekit/rtc-ffi-bindings-linux-x64-gnu@0.12.60':
+        optional: true
+
+    '@livekit/rtc-ffi-bindings-win32-x64-msvc@0.12.60':
+        optional: true
+
+    '@livekit/rtc-ffi-bindings@0.12.60':
+        dependencies:
+            '@bufbuild/protobuf': 1.10.1
+        optionalDependencies:
+            '@livekit/rtc-ffi-bindings-darwin-arm64': 0.12.60
+            '@livekit/rtc-ffi-bindings-darwin-x64': 0.12.60
+            '@livekit/rtc-ffi-bindings-linux-arm64-gnu': 0.12.60
+            '@livekit/rtc-ffi-bindings-linux-x64-gnu': 0.12.60
+            '@livekit/rtc-ffi-bindings-win32-x64-msvc': 0.12.60
+
+    '@livekit/rtc-node@0.13.29':
+        dependencies:
+            '@datastructures-js/deque': 1.0.8
+            '@livekit/mutex': 1.1.1
+            '@livekit/rtc-ffi-bindings': 0.12.60
+            '@livekit/typed-emitter': 3.0.0
+            pino: 9.14.0
+            pino-pretty: 13.1.3
+
+    '@livekit/typed-emitter@3.0.0': {}
+
     '@microsoft/api-extractor-model@7.32.2(@types/node@24.10.2)':
         dependencies:
             '@microsoft/tsdoc': 0.16.0
@@ -20021,6 +20457,30 @@ snapshots:
             - bare-buffer
             - react-native-b4a
             - supports-color
+
+    '@roamhq/wrtc-darwin-arm64@0.10.0':
+        optional: true
+
+    '@roamhq/wrtc-darwin-x64@0.10.0':
+        optional: true
+
+    '@roamhq/wrtc-linux-arm64@0.10.0':
+        optional: true
+
+    '@roamhq/wrtc-linux-x64@0.10.0':
+        optional: true
+
+    '@roamhq/wrtc-win32-x64@0.10.0':
+        optional: true
+
+    '@roamhq/wrtc@0.10.0':
+        optionalDependencies:
+            '@roamhq/wrtc-darwin-arm64': 0.10.0
+            '@roamhq/wrtc-darwin-x64': 0.10.0
+            '@roamhq/wrtc-linux-arm64': 0.10.0
+            '@roamhq/wrtc-linux-x64': 0.10.0
+            '@roamhq/wrtc-win32-x64': 0.10.0
+            domexception: 4.0.0
 
     '@rollup/plugin-commonjs@25.0.8(rollup@4.53.3)':
         dependencies:
@@ -21833,11 +22293,20 @@ snapshots:
             map-obj: 4.3.0
             quick-lru: 4.0.1
 
+    camelcase-keys@9.1.3:
+        dependencies:
+            camelcase: 8.0.0
+            map-obj: 5.0.0
+            quick-lru: 6.1.2
+            type-fest: 4.41.0
+
     camelcase@5.3.1: {}
 
     camelcase@6.3.0: {}
 
     camelcase@7.0.1: {}
+
+    camelcase@8.0.0: {}
 
     caniuse-lite@1.0.30001760: {}
 
@@ -22060,6 +22529,8 @@ snapshots:
         dependencies:
             color-convert: 3.1.3
             color-string: 2.1.4
+
+    colorette@2.0.20: {}
 
     columnify@1.6.0:
         dependencies:
@@ -22417,6 +22888,8 @@ snapshots:
 
     dateformat@3.0.3: {}
 
+    dateformat@4.6.3: {}
+
     dayjs@1.11.19: {}
 
     debug@2.6.9:
@@ -22554,6 +23027,11 @@ snapshots:
             entities: 4.5.0
 
     domelementtype@2.3.0: {}
+
+    domexception@4.0.0:
+        dependencies:
+            webidl-conversions: 7.0.0
+        optional: true
 
     domhandler@4.3.1:
         dependencies:
@@ -23100,6 +23578,8 @@ snapshots:
             - supports-color
 
     fast-content-type-parse@3.0.0: {}
+
+    fast-copy@4.0.3: {}
 
     fast-deep-equal@3.1.3: {}
 
@@ -23711,6 +24191,8 @@ snapshots:
             function-bind: 1.1.2
 
     he@1.2.0: {}
+
+    help-me@5.0.0: {}
 
     hookified@1.13.0: {}
 
@@ -24677,6 +25159,10 @@ snapshots:
 
     jju@1.4.0: {}
 
+    jose@5.10.0: {}
+
+    joycon@3.1.1: {}
+
     jpeg-js@0.4.4: {}
 
     js-tokens@4.0.0: {}
@@ -25015,6 +25501,13 @@ snapshots:
     listenercount@1.0.1:
         optional: true
 
+    livekit-server-sdk@2.16.0:
+        dependencies:
+            '@bufbuild/protobuf': 1.10.1
+            '@livekit/protocol': 1.48.2
+            camelcase-keys: 9.1.3
+            jose: 5.10.0
+
     load-json-file@4.0.0:
         dependencies:
             graceful-fs: 4.2.11
@@ -25269,6 +25762,8 @@ snapshots:
     map-obj@1.0.1: {}
 
     map-obj@4.3.0: {}
+
+    map-obj@5.0.0: {}
 
     markdown-it-anchor@8.6.7(@types/markdown-it@14.1.2)(markdown-it@14.1.0):
         dependencies:
@@ -25573,7 +26068,7 @@ snapshots:
             array-differ: 3.0.0
             array-union: 2.1.0
             arrify: 2.0.1
-            minimatch: 3.0.5
+            minimatch: 3.1.2
 
     music-metadata@11.13.0:
         dependencies:
@@ -26451,6 +26946,22 @@ snapshots:
         dependencies:
             split2: 4.2.0
 
+    pino-pretty@13.1.3:
+        dependencies:
+            colorette: 2.0.20
+            dateformat: 4.6.3
+            fast-copy: 4.0.3
+            fast-safe-stringify: 2.1.1
+            help-me: 5.0.0
+            joycon: 3.1.1
+            minimist: 1.2.8
+            on-exit-leak-free: 2.1.2
+            pino-abstract-transport: 3.0.0
+            pump: 3.0.3
+            secure-json-parse: 4.1.0
+            sonic-boom: 4.2.0
+            strip-json-comments: 5.0.3
+
     pino-std-serializers@4.0.0: {}
 
     pino-std-serializers@7.0.0: {}
@@ -27017,6 +27528,8 @@ snapshots:
 
     quick-lru@5.1.1: {}
 
+    quick-lru@6.1.2: {}
+
     randombytes@2.1.0:
         dependencies:
             safe-buffer: 5.2.1
@@ -27345,6 +27858,8 @@ snapshots:
     sax@1.4.3: {}
 
     scmp@2.1.0: {}
+
+    secure-json-parse@4.1.0: {}
 
     selderee@0.11.0:
         dependencies:

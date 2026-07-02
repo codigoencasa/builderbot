@@ -1,0 +1,9 @@
+{
+    "IMPORT": "import { SIPProvider as Provider } from '@builderbot/provider-voice-sip'\n",
+    "IMPLEMENTATION": "const adapterProvider = createProvider(Provider, {\n    apiKey: process.env.LIVEKIT_API_KEY ?? 'YOUR_LIVEKIT_API_KEY',\n    apiSecret: process.env.LIVEKIT_API_SECRET ?? 'YOUR_LIVEKIT_API_SECRET',\n    wsUrl: process.env.LIVEKIT_WS_URL ?? 'wss://your-project.livekit.cloud',\n    inboundNumbers: [(process.env.SIP_PHONE_NUMBER ?? '+10000000000')],\n    allowedAddresses: (process.env.SIP_ALLOWED_IPS ?? '').split(',').filter(Boolean),\n    openaiApiKey: process.env.OPENAI_API_KEY ?? 'YOUR_OPENAI_API_KEY',\n    language: 'en',\n})",
+    "DEPENDENCIES": {
+        "@builderbot/bot": "latest",
+        "@builderbot/provider-voice-sip": "latest"
+    },
+    "DEV_DEPENDENCIES": {}
+}
