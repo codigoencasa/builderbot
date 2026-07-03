@@ -3,179 +3,19 @@ import type { ISttAdapter, ITtsAdapter } from '@builderbot/provider-voice'
 
 export type { ISttAdapter, ITtsAdapter }
 
-// ── Enums ────────────────────────────────────────────────────────────────────
+// ── Call enums / payload types — re-exported from the shared @builderbot/provider-voice core ──
 
-/**
- * Events emitted by the WhatsApp Calling webhook.
- *
- * @example
- * if (event.event === CallEvent.Connect) { ... }
- */
-export enum CallEvent {
-    /** Inbound call is arriving — SDP offer is present in the payload. */
-    Connect = 'connect',
-    /** Call has ended by the remote party or timed out. */
-    Terminate = 'terminate',
-}
+export { CallEvent, CallAction, CallDirection, CallState } from '@builderbot/provider-voice'
 
-/**
- * Actions that can be sent to the Meta Graph API `/calls` endpoint.
- *
- * @example
- * await client.preAccept(callId, sdpAnswer) // action: CallAction.PreAccept
- */
-export enum CallAction {
-    /** Pre-accept the call and exchange SDP — must precede Accept. */
-    PreAccept = 'pre_accept',
-    /** Fully accept the call after pre_accept has been acknowledged. */
-    Accept = 'accept',
-    /** Reject the incoming call. */
-    Reject = 'reject',
-    /** End an active call. */
-    End = 'end',
-    /** Initiate an outbound call (reserved for future use in v1). */
-    Call = 'call',
-}
-
-/**
- * Direction of the WhatsApp voice call.
- */
-export enum CallDirection {
-    /** Call was initiated by the end user (inbound from the bot's perspective). */
-    UserInitiated = 'USER_INITIATED',
-    /** Call was initiated by the business (outbound from the bot's perspective). */
-    BusinessInitiated = 'BUSINESS_INITIATED',
-}
-
-/**
- * Internal state machine states for a single call session.
- *
- * Transitions:
- * Idle → Connecting → PreAccepted → Accepted → Active → Terminated
- */
-export enum CallState {
-    /** No active call for this call_id. */
-    Idle = 'idle',
-    /** SDP offer received; PC being built and answer prepared. */
-    Connecting = 'connecting',
-    /** pre_accept has been acknowledged by Meta. */
-    PreAccepted = 'pre_accepted',
-    /** accept has been acknowledged by Meta. */
-    Accepted = 'accepted',
-    /** ICE negotiation complete; RTP audio is flowing. */
-    Active = 'active',
-    /** Call has ended and resources have been released. */
-    Terminated = 'terminated',
-}
-
-// ── Webhook payload interfaces ────────────────────────────────────────────────
-
-/**
- * SDP session descriptor exchanged during WhatsApp call signalling.
- */
-export interface WhatsAppCallSession {
-    /** SDP string (offer or answer). */
-    sdp: string
-    /** SDP type — always 'offer' for inbound webhooks. */
-    sdp_type: 'offer' | 'answer'
-}
-
-/**
- * A single call event entry within a WhatsApp webhook change.
- */
-export interface WhatsAppCallEntryEvent {
-    /** Unique call identifier used for all subsequent API calls. */
-    id: string
-    /** Caller's WhatsApp phone number (E.164). */
-    from: string
-    /** Callee's WhatsApp phone number (E.164). */
-    to: string
-    /** Type of event — connect or terminate. */
-    event: CallEvent
-    /** ISO-8601 timestamp of the event. */
-    timestamp: string
-    /** Who initiated the call. */
-    direction: CallDirection
-    /** SDP session descriptor — present only on connect events. */
-    session?: WhatsAppCallSession
-}
-
-/**
- * The value object inside a WhatsApp calls webhook change entry.
- */
-export interface WhatsAppCallValue {
-    /** Always 'whatsapp'. */
-    messaging_product: 'whatsapp'
-    /** Metadata about the receiving phone number. */
-    metadata: {
-        /** Human-readable display phone number. */
-        display_phone_number: string
-        /** WhatsApp Business API phone number ID. */
-        phone_number_id: string
-    }
-    /** Array of call events in this batch. */
-    calls: WhatsAppCallEntryEvent[]
-}
-
-/**
- * A single entry in a WhatsApp webhook payload.
- */
-export interface WhatsAppCallEntry {
-    /** WhatsApp Business Account ID. */
-    id: string
-    /** List of field changes in this entry. */
-    changes: {
-        value: WhatsAppCallValue
-        /** Field name — 'calls' for voice call events. */
-        field: 'calls'
-    }[]
-}
-
-/**
- * Top-level structure of a WhatsApp Business webhook payload.
- */
-export interface WhatsAppCallWebhookPayload {
-    /** Always 'whatsapp_business_account'. */
-    object: 'whatsapp_business_account'
-    /** List of business account entries. */
-    entry: WhatsAppCallEntry[]
-}
-
-/**
- * Body sent to the Meta Graph API `/calls` endpoint for call control.
- */
-export interface CallActionBody {
-    /** Always 'whatsapp'. */
-    messaging_product: 'whatsapp'
-    /** The action to perform on the call. */
-    action: CallAction
-    /** The call identifier returned in the webhook. */
-    call_id: string
-    /** SDP answer — required for both `pre_accept` and `accept` actions. */
-    session?: {
-        /** SDP answer string. */
-        sdp: string
-        /** Always 'answer' when sending to Meta. */
-        sdp_type: 'answer'
-    }
-}
-
-/**
- * Payload emitted on the 'message' event for each transcribed caller utterance.
- * Conforms to BuilderBot's BotContext shape.
- */
-export interface WhatsAppVoicePayload {
-    /** Transcribed text from the caller. */
-    body: string
-    /** Caller's WhatsApp phone number (E.164). */
-    from: string
-    /** Display name — same as `from` for voice calls. */
-    name: string
-    /** Raw PCM (16-bit LE mono) of the captured utterance. */
-    audio?: Buffer
-    /** Sample rate of the captured audio in Hz. */
-    sampleRate?: number
-}
+export type {
+    WhatsAppCallSession,
+    WhatsAppCallEntryEvent,
+    WhatsAppCallValue,
+    WhatsAppCallEntry,
+    WhatsAppCallWebhookPayload,
+    CallActionBody,
+    WhatsAppVoicePayload,
+} from '@builderbot/provider-voice'
 
 // ── Provider configuration union ─────────────────────────────────────────────
 

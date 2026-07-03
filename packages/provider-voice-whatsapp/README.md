@@ -1,5 +1,11 @@
 # @builderbot/provider-voice-whatsapp
 
+> **⚠️ Deprecation notice:** This package is on a path to deprecation. `@builderbot/provider-meta` now supports the
+> same WhatsApp Business voice call functionality as an opt-in feature — set `enableVoiceCalls: true` (plus
+> `openaiApiKey` or custom `sttAdapter`/`ttsAdapter`) on your existing Meta provider configuration instead of using a
+> separate provider. New projects should prefer `@builderbot/provider-meta` with voice calls enabled. This package
+> will keep working, but new features will land in `provider-meta` going forward.
+
 WhatsApp Business voice call provider for BuilderBot. Accepts inbound calls via the Meta Graph API, negotiates WebRTC/SDP, transcribes speech with STT, and synthesizes replies with TTS — all through the standard BuilderBot flow interface.
 
 ## How it works

@@ -8,7 +8,7 @@ const axiosMock = require('axios') as {
     post: jest.MockedFunction<(...args: unknown[]) => Promise<unknown>>
 }
 
-import { MetaCallClient } from '../src/meta-call-client'
+import { MetaCallClient } from '../src/calls/meta-call-client'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

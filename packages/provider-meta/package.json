@@ -29,6 +29,7 @@
         "url": "https://github.com/vicente1992/bot-whatsapp/issues"
     },
     "dependencies": {
+        "@builderbot/provider-voice": "workspace:*",
         "axios": "^1.13.2",
         "body-parser": "^2.2.1",
         "file-type": "^19.0.0",

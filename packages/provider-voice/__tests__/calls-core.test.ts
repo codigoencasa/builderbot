@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, jest, test } from '@jest/globals'
 
 // ── Mocks — must be before any imports that trigger the module graph ──────────
 
-jest.mock('../src/webrtc', () => ({
+jest.mock('../src/calls/webrtc', () => ({
     createPeerConnection: jest.fn(() => ({
         setRemoteDescription: jest.fn().mockImplementation(() => Promise.resolve()),
         createAnswer: jest.fn().mockImplementation(() =>
@@ -22,9 +22,10 @@ jest.mock('../src/webrtc', () => ({
         createTrack: jest.fn(() => ({ kind: 'audio' })),
         onData: jest.fn(),
     })),
+    waitForIceGathering: jest.fn(() => Promise.resolve()),
 }))
 
-jest.mock('../src/meta-call-client', () => ({
+jest.mock('../src/calls/meta-call-client', () => ({
     MetaCallClient: jest.fn(() => ({
         preAccept: jest.fn().mockImplementation(() => Promise.resolve()),
         accept: jest.fn().mockImplementation(() => Promise.resolve()),
@@ -46,9 +47,9 @@ jest.mock('../src/audio', () => ({
 
 // ── Imports after mocks ───────────────────────────────────────────────────────
 
-import { CallState, CallDirection, CallEvent } from '../src/types'
-import type { ISttAdapter, ITtsAdapter, WhatsAppCallEntryEvent } from '../src/types'
-import { WhatsAppCallCoreVendor } from '../src/whatsapp-voice/core'
+import { MetaCallCoreVendor } from '../src/calls/core'
+import { CallState, CallDirection, CallEvent } from '../src/calls/types'
+import type { ISttAdapter, ITtsAdapter, WhatsAppCallEntryEvent } from '../src/calls/types'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -58,7 +59,6 @@ const CALLER_PHONE = '15551234567'
 const BASE_CONFIG = {
     jwtToken: 'jwt',
     numberId: '999',
-    verifyToken: 'verify',
     version: 'v20.0',
 }
 
@@ -100,7 +100,7 @@ type SessionMap = Map<
 
 /** Inject a fake active session directly into the core's private sessions map. */
 const injectSession = (
-    core: WhatsAppCallCoreVendor,
+    core: MetaCallCoreVendor,
     callId: string,
     callerPhone: string,
     overrides: {
@@ -130,15 +130,15 @@ type UtteranceFn = (pcm: Buffer, sampleRate: number, callId: string) => Promise<
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('WhatsAppCallCoreVendor', () => {
-    let core: WhatsAppCallCoreVendor
+describe('MetaCallCoreVendor', () => {
+    let core: MetaCallCoreVendor
 
     beforeEach(() => {
         jest.clearAllMocks()
-        core = new WhatsAppCallCoreVendor({
+        core = new MetaCallCoreVendor({
             sttAdapter: makeSttAdapter(),
             ttsAdapter: makeTtsAdapter(),
-            config: BASE_CONFIG as never,
+            config: BASE_CONFIG,
         })
     })
 
@@ -191,6 +191,32 @@ describe('WhatsAppCallCoreVendor', () => {
         })
     })
 
+    // ── hasActiveCall / getActiveCallId ──────────────────────────────────────
+
+    describe('hasActiveCall / getActiveCallId', () => {
+        test('hasActiveCall returns false when there is no session for the id or phone', () => {
+            expect(core.hasActiveCall(CALL_ID)).toBe(false)
+            expect(core.hasActiveCall(CALLER_PHONE)).toBe(false)
+        })
+
+        test('hasActiveCall returns true for both the callId and the caller phone', () => {
+            injectSession(core, CALL_ID, CALLER_PHONE)
+
+            expect(core.hasActiveCall(CALL_ID)).toBe(true)
+            expect(core.hasActiveCall(CALLER_PHONE)).toBe(true)
+        })
+
+        test('getActiveCallId resolves the callId from the caller phone', () => {
+            injectSession(core, CALL_ID, CALLER_PHONE)
+
+            expect(core.getActiveCallId(CALLER_PHONE)).toBe(CALL_ID)
+        })
+
+        test('getActiveCallId returns undefined when the phone has no active call', () => {
+            expect(core.getActiveCallId(CALLER_PHONE)).toBeUndefined()
+        })
+    })
+
     // ── publishAudio ─────────────────────────────────────────────────────────
 
     describe('publishAudio', () => {
@@ -215,7 +241,7 @@ describe('WhatsAppCallCoreVendor', () => {
             expect(notices).toHaveLength(1)
         })
 
-        test('resolves callerPhone to callId and does not emit notice', async () => {
+        test('resolves callerPhone to callId and does not emit an error notice', async () => {
             injectSession(core, CALL_ID, CALLER_PHONE)
             ;(core as unknown as { ttsAdapter: ITtsAdapter }).ttsAdapter = makeTtsAdapter()
 
@@ -224,7 +250,8 @@ describe('WhatsAppCallCoreVendor', () => {
 
             await core.publishAudio(CALLER_PHONE, 'Hello')
 
-            expect(notices).toHaveLength(0)
+            // Only the informational "[TTS ] Publishing audio" notice is expected — no error notices.
+            expect(notices.every((n) => (n as { title: string }).title.startsWith('[TTS '))).toBe(true)
         })
     })
 
@@ -324,8 +351,8 @@ describe('WhatsAppCallCoreVendor', () => {
 
     describe('onConnect happy path', () => {
         test('calls preAccept and accept with identical SDP on a valid connect event', async () => {
-            const { MetaCallClient } = require('../src/meta-call-client') as {
-                MetaCallClient: jest.MockedClass<typeof import('../src/meta-call-client').MetaCallClient>
+            const { MetaCallClient } = require('../src/calls/meta-call-client') as {
+                MetaCallClient: jest.MockedClass<typeof import('../src/calls/meta-call-client').MetaCallClient>
             }
             await core.onConnect(connectEvent())
 
@@ -345,8 +372,8 @@ describe('WhatsAppCallCoreVendor', () => {
         })
 
         test('emits accept failed notice and calls end on Meta when accept rejects', async () => {
-            const { MetaCallClient } = require('../src/meta-call-client') as {
-                MetaCallClient: jest.MockedClass<typeof import('../src/meta-call-client').MetaCallClient>
+            const { MetaCallClient } = require('../src/calls/meta-call-client') as {
+                MetaCallClient: jest.MockedClass<typeof import('../src/calls/meta-call-client').MetaCallClient>
             }
 
             const clientInstance = MetaCallClient.mock.results[0].value as {
@@ -361,8 +388,8 @@ describe('WhatsAppCallCoreVendor', () => {
             await core.onConnect(connectEvent())
 
             expect(clientInstance.end).toHaveBeenCalledTimes(1)
-            expect(notices).toHaveLength(1)
-            expect((notices[0] as { title: string }).title).toContain('accept failed')
+            const failureNotices = notices.filter((n) => (n as { title: string }).title.includes('accept failed'))
+            expect(failureNotices).toHaveLength(1)
         })
     })
 

@@ -2,7 +2,7 @@
  * Thin wrapper around `@roamhq/wrtc` that exposes typed helpers for WebRTC
  * peer connection management and audio I/O.
  *
- * All WebRTC interactions in the provider go through this module so the
+ * All WebRTC interactions for Meta call handling go through this module so the
  * underlying native binding can be swapped in tests without touching core logic.
  */
 

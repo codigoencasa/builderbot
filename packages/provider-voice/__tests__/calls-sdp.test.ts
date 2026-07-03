@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals'
 
-import { assertOpus, transformAnswer } from '../src/sdp'
+import { assertOpus, transformAnswer } from '../src/calls/sdp'
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────
 

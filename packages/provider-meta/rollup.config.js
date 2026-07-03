@@ -16,7 +16,8 @@ export default {
         json(),
         commonjs(),
         nodeResolve({
-            resolveOnly: (module) => !/axios|@builderbot\/bot/i.test(module),
+            resolveOnly: (module) =>
+                !/axios|@builderbot\/bot|@builderbot\/provider-voice|@roamhq\/wrtc|openai/i.test(module),
         }),
         typescript(),
     ],

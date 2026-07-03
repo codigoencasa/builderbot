@@ -18,3 +18,23 @@ export type { ISttAdapter, ITtsAdapter } from './adapters/index'
 // Audio utilities (shared with provider-voice-whatsapp and other consumers)
 export { SilenceSegmenter, chunkPcm, bufferToInt16, int16ToBuffer, pcmToWav, frameRms, resamplePcm } from './audio'
 export type { SilenceSegmenterOptions } from './audio'
+
+// ── Meta (WhatsApp Business) call core — shared by provider-voice-whatsapp and provider-meta ──
+export { MetaCallCoreVendor } from './calls/core'
+export type { MetaCallCoreVendorArgs } from './calls/core'
+export { MetaCallClient } from './calls/meta-call-client'
+export type { MetaCallClientArgs } from './calls/meta-call-client'
+export { transformAnswer, assertOpus } from './calls/sdp'
+export { createPeerConnection, createAudioSink, createAudioSource, waitForIceGathering } from './calls/webrtc'
+export type { AudioSinkData, RTCAudioSinkInstance, RTCAudioSourceInstance } from './calls/webrtc'
+export { CallEvent, CallAction, CallDirection, CallState } from './calls/types'
+export type {
+    IMetaCallCoreConfig,
+    WhatsAppCallSession,
+    WhatsAppCallEntryEvent,
+    WhatsAppCallValue,
+    WhatsAppCallEntry,
+    WhatsAppCallWebhookPayload,
+    CallActionBody,
+    WhatsAppVoicePayload,
+} from './calls/types'
