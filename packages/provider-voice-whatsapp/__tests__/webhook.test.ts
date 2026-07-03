@@ -1,9 +1,9 @@
+import { MetaCallCoreVendor } from '@builderbot/provider-voice'
 import { beforeEach, describe, expect, jest, test } from '@jest/globals'
 
 // ── Mocks — must be before any imports that trigger the module graph ──────────
 
 jest.mock('@builderbot/bot', () => {
-     
     const { EventEmitter } = require('events')
     class ProviderClass extends EventEmitter {
         server = {
@@ -31,25 +31,31 @@ jest.mock('@builderbot/provider-voice', () => ({
     bufferToInt16: jest.fn(() => new Int16Array(0)),
     chunkPcm: jest.fn(() => []),
     pcmToWav: jest.fn(() => Buffer.alloc(0)),
-}))
-
-jest.mock('../src/whatsapp-voice/core', () => ({
-    WhatsAppCallCoreVendor: jest.fn(),
+    MetaCallCoreVendor: jest.fn(),
+    CallEvent: { Connect: 'connect', Terminate: 'terminate' },
+    CallAction: { PreAccept: 'pre_accept', Accept: 'accept', Reject: 'reject', End: 'end', Call: 'call' },
+    CallDirection: { UserInitiated: 'USER_INITIATED', BusinessInitiated: 'BUSINESS_INITIATED' },
+    CallState: {
+        Idle: 'idle',
+        Connecting: 'connecting',
+        PreAccepted: 'pre_accepted',
+        Accepted: 'accepted',
+        Active: 'active',
+        Terminated: 'terminated',
+    },
 }))
 
 // ── Imports after mocks ───────────────────────────────────────────────────────
 
 import type { WhatsAppCallWebhookPayload } from '../src/types'
 import { CallDirection, CallEvent } from '../src/types'
-import { WhatsAppCallCoreVendor } from '../src/whatsapp-voice/core'
 import { WhatsAppVoiceProvider } from '../src/whatsapp-voice/provider'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type VendorMock = {
-     
     onConnect: jest.Mock<any>
-     
+
     onTerminate: jest.Mock<any>
 }
 
@@ -157,9 +163,9 @@ describe('WhatsAppVoiceProvider webhook handler', () => {
             onConnect: jest.fn().mockImplementation(() => Promise.resolve()),
             onTerminate: jest.fn(),
         }
-        ;(
-            WhatsAppCallCoreVendor as unknown as { mockImplementation: (fn: () => VendorMock) => void }
-        ).mockImplementation(() => mockVendor)
+        ;(MetaCallCoreVendor as unknown as { mockImplementation: (fn: () => VendorMock) => void }).mockImplementation(
+            () => mockVendor
+        )
 
         provider = new WhatsAppVoiceProvider(CONFIG as never)
         ;(provider as unknown as { vendor: VendorMock }).vendor = mockVendor

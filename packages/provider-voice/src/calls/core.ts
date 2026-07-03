@@ -1,28 +1,30 @@
 /**
- * Core vendor for the WhatsApp voice provider.
+ * Core vendor for handling Meta (WhatsApp Business) voice calls.
  *
  * Manages the per-call state machine, WebRTC peer connections, SDP negotiation,
  * Meta Graph API call control, and the inbound STT / outbound TTS audio pipeline.
  *
  * One instance of this class is created per provider and handles multiple
- * concurrent calls via a `Map<callId, CallSession>`.
+ * concurrent calls via a `Map<callId, CallSession>`. Shared between
+ * `@builderbot/provider-voice-whatsapp` and `@builderbot/provider-meta` (when
+ * voice calls are enabled).
  */
 
 import { EventEmitter } from 'node:events'
 
 import { bufferToInt16, chunkPcm, SilenceSegmenter } from '../audio'
-import { MetaCallClient } from '../meta-call-client'
-import { assertOpus, transformAnswer } from '../sdp'
-import { CallState } from '../types'
+import { MetaCallClient } from './meta-call-client'
+import { assertOpus, transformAnswer } from './sdp'
+import { CallState } from './types'
 import type {
+    IMetaCallCoreConfig,
     ISttAdapter,
     ITtsAdapter,
-    IWhatsAppVoiceProviderArgs,
     WhatsAppCallEntryEvent,
     WhatsAppVoicePayload,
-} from '../types'
-import { createAudioSink, createAudioSource, createPeerConnection, waitForIceGathering } from '../webrtc'
-import type { RTCAudioSinkInstance, RTCAudioSourceInstance } from '../webrtc'
+} from './types'
+import { createAudioSink, createAudioSource, createPeerConnection, waitForIceGathering } from './webrtc'
+import type { RTCAudioSinkInstance, RTCAudioSourceInstance } from './webrtc'
 
 /** Duration of each TTS publish frame in milliseconds. */
 const PUBLISH_FRAME_MS = 10
@@ -54,19 +56,19 @@ interface CallSession {
 }
 
 /**
- * Constructor options for `WhatsAppCallCoreVendor`.
+ * Constructor options for `MetaCallCoreVendor`.
  */
-export interface WhatsAppCallCoreVendorArgs {
+export interface MetaCallCoreVendorArgs {
     /** Resolved STT adapter (custom or default OpenAI Whisper). */
     sttAdapter: ISttAdapter
     /** Resolved TTS adapter (custom or OpenAI TTS). */
     ttsAdapter: ITtsAdapter
-    /** Provider configuration (for Meta client and silence tuning). */
-    config: IWhatsAppVoiceProviderArgs
+    /** Call configuration (Meta client credentials and silence tuning). */
+    config: IMetaCallCoreConfig
 }
 
 /**
- * Core event-emitting vendor for WhatsApp voice calls.
+ * Core event-emitting vendor for Meta (WhatsApp Business) voice calls.
  *
  * Emitted events:
  * - `'message'` — `WhatsAppVoicePayload` when a caller utterance is transcribed.
@@ -76,19 +78,19 @@ export interface WhatsAppCallCoreVendorArgs {
  * - `'notice'` — `{ title: string; instructions: string[] }` for non-fatal warnings.
  *
  * @example
- * const core = new WhatsAppCallCoreVendor({ sttAdapter, ttsAdapter, config })
+ * const core = new MetaCallCoreVendor({ sttAdapter, ttsAdapter, config })
  * core.on('message', (payload) => console.log(payload.body))
  */
-export class WhatsAppCallCoreVendor extends EventEmitter {
+export class MetaCallCoreVendor extends EventEmitter {
     private readonly sessions = new Map<string, CallSession>()
     /** Reverse lookup: callerPhone → callId (for sendMessage routing). */
     private readonly phoneToCallId = new Map<string, string>()
     private readonly metaClient: MetaCallClient
     private readonly sttAdapter: ISttAdapter
     private readonly ttsAdapter: ITtsAdapter
-    private readonly config: IWhatsAppVoiceProviderArgs
+    private readonly config: IMetaCallCoreConfig
 
-    constructor(args: WhatsAppCallCoreVendorArgs) {
+    constructor(args: MetaCallCoreVendorArgs) {
         super()
         this.sttAdapter = args.sttAdapter
         this.ttsAdapter = args.ttsAdapter
@@ -399,13 +401,41 @@ export class WhatsAppCallCoreVendor extends EventEmitter {
         })
     }
 
+    // ── Session lookup ────────────────────────────────────────────────────────
+
+    /**
+     * Check whether `callIdOrPhone` (a call_id or the caller's E.164 phone
+     * number) has an active call session right now.
+     *
+     * Useful for callers (e.g. `provider-meta`'s `sendMessage`) that need to
+     * decide whether to route a reply to `publishAudio` (voice) or to a
+     * regular WhatsApp message.
+     *
+     * @param callIdOrPhone A call_id or the caller's phone number.
+     * @returns `true` when a session exists for the given identifier.
+     */
+    public hasActiveCall(callIdOrPhone: string): boolean {
+        return this.sessions.has(callIdOrPhone) || this.phoneToCallId.has(callIdOrPhone)
+    }
+
+    /**
+     * Resolve the active call_id for a given caller phone number.
+     *
+     * @param phone The caller's E.164 phone number.
+     * @returns The active call_id, or `undefined` when no call is active for that phone.
+     */
+    public getActiveCallId(phone: string): string | undefined {
+        if (this.sessions.has(phone)) return phone
+        return this.phoneToCallId.get(phone)
+    }
+
     // ── Outbound TTS ──────────────────────────────────────────────────────────
 
     /**
      * Synthesize `text` to speech and transmit it to the caller over the active
      * WebRTC peer connection.
      *
-     * @param callId The active call identifier.
+     * @param callIdOrPhone The active call identifier, or the caller's phone number.
      * @param text   The text to synthesize and send.
      * @returns Resolves when all audio frames have been pushed to the peer connection.
      * @throws {Error} Emits `notice` (does not throw) when there is no active call for `callId`.
@@ -571,7 +601,7 @@ export class WhatsAppCallCoreVendor extends EventEmitter {
 
         if (session.state !== from) {
             const msg =
-                `[WhatsAppCallCoreVendor] Invalid state transition for call_id "${callId}": ` +
+                `[MetaCallCoreVendor] Invalid state transition for call_id "${callId}": ` +
                 `expected ${from}, got ${session.state}. Attempted transition to ${to}.`
             this.emit('notice', {
                 title: 'WhatsApp Voice: invalid state transition',

@@ -1,6 +1,8 @@
 import { ProviderClass, utils } from '@builderbot/bot'
 import type { Vendor } from '@builderbot/bot/dist/provider/interface/provider'
 import type { BotContext, Button, SendOptions } from '@builderbot/bot/dist/types'
+import { MetaCallCoreVendor, OpenAISTTAdapter, OpenAITTSAdapter, pcmToWav } from '@builderbot/provider-voice'
+import type { ISttAdapter, ITtsAdapter } from '@builderbot/provider-voice'
 import axios from 'axios'
 import FormData from 'form-data'
 import { createReadStream } from 'fs'
@@ -34,6 +36,8 @@ const URL_REGEX = /https?:\/\/[^\s]+/
 class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface {
     public vendor: Vendor<any>
     public queue: Queue = new Queue()
+    /** Core vendor for WhatsApp Business voice calls — only set when `enableVoiceCalls` is true. */
+    public callVendor?: MetaCallCoreVendor
 
     public globalVendorArgs: MetaGlobalVendorArgs = {
         name: 'bot',
@@ -118,7 +122,15 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
     }
 
     protected initVendor(): Promise<any> {
-        const vendor = new MetaCoreVendor(this.queue)
+        if (this.globalVendorArgs.enableVoiceCalls) {
+            this.callVendor = this.buildCallVendor()
+            this.callVendor.on('message', (payload: BotContext) => this.emit('message', payload))
+            this.callVendor.on('notice', (payload: { title: string; instructions: string[] }) =>
+                this.emit('notice', payload)
+            )
+        }
+
+        const vendor = new MetaCoreVendor(this.queue, this.callVendor)
         this.server = this.server
             .use((req, _, next) => {
                 req['globalVendorArgs'] = this.globalVendorArgs
@@ -129,6 +141,38 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
 
         this.vendor = vendor
         return Promise.resolve(this.vendor)
+    }
+
+    /**
+     * Build the shared call core vendor for WhatsApp Business voice calls.
+     *
+     * Resolves STT/TTS adapters (custom or default OpenAI) and validates that
+     * `openaiApiKey` is present unless both adapters are provided.
+     *
+     * @returns The initialized `MetaCallCoreVendor`.
+     * @throws {Error} When `openaiApiKey` is missing and both adapters are not provided.
+     */
+    private buildCallVendor(): MetaCallCoreVendor {
+        const config = this.globalVendorArgs
+        const hasOpenAI = Boolean(config.openaiApiKey)
+        const hasStt = Boolean(config.sttAdapter)
+        const hasTts = Boolean(config.ttsAdapter)
+
+        if (!hasOpenAI && !(hasStt && hasTts)) {
+            throw new Error(
+                '[MetaProvider] "openaiApiKey" is required when "enableVoiceCalls" is true and custom STT/TTS ' +
+                    'adapters are not both provided. Either set openaiApiKey, or provide both sttAdapter and ttsAdapter.'
+            )
+        }
+
+        const sttAdapter: ISttAdapter = config.sttAdapter ?? new OpenAISTTAdapter({ apiKey: config.openaiApiKey })
+        const ttsAdapter: ITtsAdapter = config.ttsAdapter ?? new OpenAITTSAdapter({ apiKey: config.openaiApiKey })
+
+        return new MetaCallCoreVendor({
+            sttAdapter,
+            ttsAdapter,
+            config,
+        })
     }
 
     /**
@@ -156,6 +200,13 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
      */
     saveFile = async (ctx: Partial<Message & BotContext>, options: SaveFileOptions = {}): Promise<string> => {
         try {
+            if (ctx.audio) {
+                const wav = pcmToWav(ctx.audio, ctx.sampleRate ?? 16000)
+                const fileName = `voice-call-${ctx.from ?? 'unknown'}-${Date.now()}.wav`
+                const pathFile = join(options?.path ?? tmpdir(), fileName)
+                await writeFile(pathFile, wav)
+                return resolve(pathFile)
+            }
             const url = ctx?.url ?? ctx?.fileData?.url
             const { buffer, extension } = await downloadFile(url, this.globalVendorArgs.jwtToken)
             const fileName = `file-${Date.now()}.${extension}`
@@ -804,6 +855,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
      */
     sendMessage = async (to: string, message: string, options?: SendOptions, context?: string): Promise<any> => {
         to = parseMetaNumber(to)
+        if (this.callVendor?.hasActiveCall(to)) return this.callVendor.publishAudio(to, message)
         options = { ...options, ...options['options'] }
         if (options?.buttons?.length) return this.sendButtons(to, options.buttons, message)
         if (options?.media) return this.sendMedia(to, message, options.media, context)

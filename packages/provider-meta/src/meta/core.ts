@@ -1,8 +1,12 @@
+import { CallEvent } from '@builderbot/provider-voice'
+import type { MetaCallCoreVendor } from '@builderbot/provider-voice'
+import type { WhatsAppCallEntryEvent } from '@builderbot/provider-voice'
 import EventEmitter from 'node:events'
 import type polka from 'polka'
 import type Queue from 'queue-promise'
 
 import { processIncomingMessage } from '../utils/processIncomingMsg'
+import { extractMetaSignature, verifyMetaSignature } from '../utils/webhookSignature'
 
 import type { Message, MetaGlobalVendorArgs, IncomingMessage, ContactMeta } from '~/types'
 
@@ -12,14 +16,18 @@ import type { Message, MetaGlobalVendorArgs, IncomingMessage, ContactMeta } from
  */
 export class MetaCoreVendor extends EventEmitter {
     queue: Queue
+    /** Core vendor for WhatsApp Business voice calls — undefined when `enableVoiceCalls` is not set. */
+    callVendor?: MetaCallCoreVendor
 
     /**
      * Create a MetaCoreVendor.
      * @param {Queue} _queue - The queue instance.
+     * @param {MetaCallCoreVendor} [_callVendor] - Optional shared voice call core vendor.
      */
-    constructor(_queue: Queue) {
+    constructor(_queue: Queue, _callVendor?: MetaCallCoreVendor) {
         super()
         this.queue = _queue
+        this.callVendor = _callVendor
     }
 
     /**
@@ -104,6 +112,44 @@ export class MetaCoreVendor extends EventEmitter {
     public incomingMsg: polka.Middleware = async (req: any, res: any) => {
         const globalVendorArgs: MetaGlobalVendorArgs = req['globalVendorArgs'] ?? null
         const body = req?.body as IncomingMessage
+
+        // Optional: validate Meta's `X-Hub-Signature-256` HMAC when `appSecret` is configured.
+        // Applies to every webhook payload (messages and calls) before any other processing.
+        if (globalVendorArgs?.appSecret) {
+            const signature = extractMetaSignature(req.headers)
+            const rawBody: string = req.rawBody || JSON.stringify(body)
+
+            if (!signature || !verifyMetaSignature(rawBody, signature, globalVendorArgs.appSecret)) {
+                this.emit('notice', {
+                    title: '🔒 META WEBHOOK WARNING',
+                    instructions: ['Invalid or missing X-Hub-Signature-256 — request rejected'],
+                })
+                res.statusCode = 401
+                res.end(JSON.stringify({ error: 'Invalid webhook signature' }))
+                return
+            }
+        }
+
+        // WhatsApp Business voice call events arrive as field: 'calls' — dispatch to the call
+        // core vendor (when enabled via `enableVoiceCalls`) and always respond 200.
+        const callsChange = body?.entry?.[0]?.changes?.find((change: { field: string }) => change.field === 'calls')
+        if (callsChange) {
+            const calls: WhatsAppCallEntryEvent[] =
+                (callsChange as { value?: { calls?: WhatsAppCallEntryEvent[] } }).value?.calls ?? []
+            if (this.callVendor) {
+                for (const callEvent of calls) {
+                    if (callEvent.event === CallEvent.Connect) {
+                        void this.callVendor.onConnect(callEvent)
+                    } else if (callEvent.event === CallEvent.Terminate) {
+                        this.callVendor.onTerminate(callEvent.id)
+                    }
+                }
+            }
+            res.statusCode = 200
+            res.end('OK')
+            return
+        }
+
         const { jwtToken, numberId, version } = globalVendorArgs
 
         const someErrors = this.extractStatus(body)

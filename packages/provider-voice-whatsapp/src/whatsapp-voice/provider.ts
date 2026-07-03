@@ -10,13 +10,11 @@
 
 import { ProviderClass } from '@builderbot/bot'
 import type { BotContext, SendOptions } from '@builderbot/bot/dist/types'
-import { OpenAISTTAdapter } from '@builderbot/provider-voice'
-import { OpenAITTSAdapter } from '@builderbot/provider-voice'
+import { MetaCallCoreVendor, OpenAISTTAdapter, OpenAITTSAdapter, pcmToWav } from '@builderbot/provider-voice'
 import { writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 
-import { pcmToWav } from '../audio'
 import type { WhatsAppVoiceInterface } from '../interface/whatsapp-voice'
 import type {
     IWhatsAppVoiceProviderArgs,
@@ -26,7 +24,6 @@ import type {
     WhatsAppVoicePayload,
 } from '../types'
 import { CallEvent } from '../types'
-import { WhatsAppCallCoreVendor } from './core'
 
 /** Meta Graph API docs URL — included in validation error messages. */
 const META_DOCS_URL = 'https://developers.facebook.com/docs/whatsapp/cloud-api/calling/'
@@ -50,7 +47,7 @@ const META_DOCS_URL = 'https://developers.facebook.com/docs/whatsapp/cloud-api/c
  *   openaiApiKey: process.env.OPENAI_API_KEY,
  * })
  */
-class WhatsAppVoiceProvider extends ProviderClass<WhatsAppCallCoreVendor> implements WhatsAppVoiceInterface {
+class WhatsAppVoiceProvider extends ProviderClass<MetaCallCoreVendor> implements WhatsAppVoiceInterface {
     /** Resolved configuration merged with defaults. */
     public globalVendorArgs: IWhatsAppVoiceProviderArgs
 
@@ -117,12 +114,12 @@ class WhatsAppVoiceProvider extends ProviderClass<WhatsAppCallCoreVendor> implem
      * stored as `this.vendor`. Actual call processing begins once the HTTP server
      * is running and webhook events start arriving.
      *
-     * @returns The initialized `WhatsAppCallCoreVendor`.
+     * @returns The initialized `MetaCallCoreVendor`.
      */
-    protected async initVendor(): Promise<WhatsAppCallCoreVendor> {
+    protected async initVendor(): Promise<MetaCallCoreVendor> {
         const { sttAdapter, ttsAdapter } = this.resolveAdapters()
 
-        const vendor = new WhatsAppCallCoreVendor({
+        const vendor = new MetaCallCoreVendor({
             sttAdapter,
             ttsAdapter,
             config: this.globalVendorArgs,

@@ -49,6 +49,40 @@ await provider.sendText('+1234567890', 'See https://example.com', null, false)
 ```
 
 
+## Voice Calls (opt-in)
+
+`provider-meta` can handle inbound WhatsApp Business voice calls (WebRTC/SDP negotiation + speech-to-text/text-to-speech) via the shared `@builderbot/provider-voice` module. This is disabled by default.
+
+```ts
+const adapterProvider = createProvider(Provider, {
+    jwtToken: process.env.META_JWT_TOKEN,
+    numberId: process.env.META_NUMBER_ID,
+    verifyToken: process.env.META_VERIFY_TOKEN,
+    version: 'v20.0',
+    // ── Voice calls ──
+    enableVoiceCalls: true,
+    openaiApiKey: process.env.OPENAI_API_KEY, // used by the default Whisper/TTS adapters
+    // Optional overrides:
+    // sttAdapter, ttsAdapter, language, silenceMs, silenceThreshold, iceServers, iceGatheringTimeoutMs
+})
+```
+
+When a WhatsApp voice call connects, transcribed caller utterances arrive through the normal `message` event/flow with `ctx.audio` (PCM buffer) and `ctx.sampleRate` set; replying with `flowDynamic`/`sendMessage` while the call is active streams synthesized audio back to the caller instead of sending a text message.
+
+This supersedes the standalone `@builderbot/provider-voice-whatsapp` package, which is now deprecated in favor of this opt-in flag.
+
+### Webhook signature validation (optional)
+
+Set `appSecret` (your Meta App Secret) to validate the `X-Hub-Signature-256` header on every incoming webhook request. Requests with a missing or invalid signature are rejected with `401`:
+
+```ts
+const adapterProvider = createProvider(Provider, {
+    // ...
+    appSecret: process.env.META_APP_SECRET,
+})
+```
+
+
 ## Official Course
 
 If you want to discover all the functions and features offered by the library you can take the course.

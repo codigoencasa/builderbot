@@ -1,4 +1,5 @@
 import type { GlobalVendorArgs } from '@builderbot/bot/dist/types'
+import type { ISttAdapter, ITtsAdapter } from '@builderbot/provider-voice'
 
 interface Image {
     id?: string
@@ -77,6 +78,37 @@ export interface MetaGlobalVendorArgs extends GlobalVendorArgs {
     numberId: string
     verifyToken: string
     version: string
+    // ── WhatsApp Business voice calls (opt-in) ──────────────────────────────
+    /** Enable inbound WhatsApp Business voice call handling (WebRTC/SDP + STT/TTS). Default: false. */
+    enableVoiceCalls?: boolean
+    /** OpenAI API key used for the default STT (Whisper) and TTS adapters when voice calls are enabled. */
+    openaiApiKey?: string
+    /** Custom STT adapter. When provided, overrides the built-in OpenAI Whisper transcription. */
+    sttAdapter?: ISttAdapter
+    /** Custom TTS adapter. When provided, overrides the built-in OpenAI TTS synthesis. */
+    ttsAdapter?: ITtsAdapter
+    /** Language hint (ISO-639-1) for STT transcription, e.g. 'es'. */
+    language?: string
+    /** Milliseconds of trailing silence that close an utterance. Default 800. */
+    silenceMs?: number
+    /** RMS amplitude (0..1) below which a frame is considered silence. Default 0.015. */
+    silenceThreshold?: number
+    /** ICE server configuration for the WebRTC peer connection used in voice calls. */
+    iceServers?: RTCIceServer[]
+    /**
+     * Maximum time in milliseconds to wait for ICE gathering to complete before
+     * sending the SDP to Meta via `pre_accept`. WhatsApp Calling uses non-trickle
+     * ICE, so all candidates must be embedded in the SDP. Default: 2000.
+     */
+    iceGatheringTimeoutMs?: number
+    // ── Webhook security (optional) ─────────────────────────────────────────
+    /**
+     * Meta App Secret used to validate the `X-Hub-Signature-256` header on
+     * incoming webhook `POST` requests (HMAC-SHA256 over the raw body).
+     * When set, requests with a missing or invalid signature are rejected
+     * with `401`. Applies to both `messages` and `calls` webhook events.
+     */
+    appSecret?: string
 }
 
 export interface ProductItem {
@@ -146,6 +178,10 @@ export interface Message {
     id?: string
     caption?: string
     fromMe?: boolean
+    /** Raw PCM (16-bit LE mono) of a transcribed voice call utterance. Present only for voice call messages. */
+    audio?: Buffer
+    /** Sample rate (Hz) of `audio`, when present. */
+    sampleRate?: number
 }
 
 export interface ParamsIncomingMessage {

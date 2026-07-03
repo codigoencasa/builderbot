@@ -1,5 +1,5 @@
 /**
- * Pure SDP manipulation utilities for the WhatsApp voice provider.
+ * Pure SDP manipulation utilities for WhatsApp Business voice calls.
  *
  * These functions are stateless and have no external dependencies so they can
  * be unit-tested in full isolation.
@@ -25,7 +25,7 @@
 export const transformAnswer = (sdp: string): string => {
     if (!sdp.includes('a=setup:')) {
         throw new Error(
-            '[provider-voice-whatsapp] SDP answer does not contain an `a=setup:` line. ' +
+            '[provider-voice/calls] SDP answer does not contain an `a=setup:` line. ' +
                 'Cannot set DTLS role to active. Verify that @roamhq/wrtc is producing a valid answer SDP.'
         )
     }
@@ -49,7 +49,7 @@ export const assertOpus = (sdp: string): void => {
     // Opus appears as either "opus" (lowercase, per RFC) or "OPUS" in some implementations.
     if (!/opus/i.test(sdp)) {
         throw new Error(
-            '[provider-voice-whatsapp] SDP answer does not advertise the Opus codec. ' +
+            '[provider-voice/calls] SDP answer does not advertise the Opus codec. ' +
                 'WhatsApp Business calling requires Opus. ' +
                 'Ensure the WebRTC peer connection is configured to include Opus in its codec list.'
         )

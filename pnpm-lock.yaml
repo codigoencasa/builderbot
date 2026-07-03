@@ -1153,6 +1153,9 @@ importers:
 
     packages/provider-meta:
         dependencies:
+            '@builderbot/provider-voice':
+                specifier: workspace:*
+                version: link:../provider-voice
             axios:
                 specifier: ^1.13.2
                 version: 1.13.2
@@ -1581,6 +1584,9 @@ importers:
             '@roamhq/wrtc':
                 specifier: ^0.10.0
                 version: 0.10.0
+            axios:
+                specifier: ^1.7.9
+                version: 1.13.2
             livekit-server-sdk:
                 specifier: ^2.15.5
                 version: 2.16.0
@@ -1682,18 +1688,12 @@ importers:
             '@builderbot/provider-voice':
                 specifier: workspace:*
                 version: link:../provider-voice
-            '@livekit/rtc-node':
-                specifier: ^0.13.29
-                version: 0.13.29
             '@roamhq/wrtc':
                 specifier: ^0.10.0
                 version: 0.10.0
             axios:
                 specifier: ^1.7.9
                 version: 1.13.2
-            livekit-server-sdk:
-                specifier: ^2.15.5
-                version: 2.16.0
             openai:
                 specifier: ^6.10.0
                 version: 6.10.0(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@4.1.13)

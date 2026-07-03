@@ -325,6 +325,86 @@ describe('#MetaCoreVendor ', () => {
         })
     })
 
+    describe('#incomingMsg — webhook signature (appSecret)', () => {
+        test('does not validate signature when appSecret is not configured (default, backward-compatible)', async () => {
+            // Arrange
+            const mockReq = {
+                body: { entry: [{ changes: [{ value: { messages: [] } }] }] },
+                headers: {},
+                globalVendorArgs: {},
+            }
+            const mockRes = { statusCode: 0, end: jest.fn() }
+
+            // Act
+            await metaCoreVendor.incomingMsg(mockReq as any, mockRes as any, mockNext)
+
+            // Assert
+            expect(mockRes.statusCode).toBe(200)
+            expect(mockRes.end).toHaveBeenCalledWith('empty endpoint')
+        })
+
+        test('rejects with 401 when appSecret is configured and the signature header is missing', async () => {
+            // Arrange
+            const mockReq = {
+                body: { entry: [{ changes: [{ value: { messages: [] } }] }] },
+                headers: {},
+                globalVendorArgs: { appSecret: 'test-app-secret' },
+            }
+            const mockRes = { statusCode: 0, end: jest.fn() }
+            const mockEmit = jest.fn()
+            metaCoreVendor.emit = mockEmit as any
+
+            // Act
+            await metaCoreVendor.incomingMsg(mockReq as any, mockRes as any, mockNext)
+
+            // Assert
+            expect(mockRes.statusCode).toBe(401)
+            expect(mockRes.end).toHaveBeenCalledWith(JSON.stringify({ error: 'Invalid webhook signature' }))
+            expect(mockEmit).toHaveBeenCalledWith(
+                'notice',
+                expect.objectContaining({ title: expect.stringContaining('WEBHOOK') })
+            )
+        })
+
+        test('rejects with 401 when appSecret is configured and the signature is invalid', async () => {
+            // Arrange
+            const mockReq = {
+                body: { entry: [{ changes: [{ value: { messages: [] } }] }] },
+                headers: { 'x-hub-signature-256': 'sha256=deadbeef' },
+                globalVendorArgs: { appSecret: 'test-app-secret' },
+            }
+            const mockRes = { statusCode: 0, end: jest.fn() }
+
+            // Act
+            await metaCoreVendor.incomingMsg(mockReq as any, mockRes as any, mockNext)
+
+            // Assert
+            expect(mockRes.statusCode).toBe(401)
+        })
+
+        test('accepts the request and processes it normally when the signature is valid', async () => {
+            // Arrange
+            const { createHmac } = require('node:crypto')
+            const body = { entry: [{ changes: [{ value: { messages: [] } }] }] }
+            const rawBody = JSON.stringify(body)
+            const signature = `sha256=${createHmac('sha256', 'test-app-secret').update(rawBody).digest('hex')}`
+            const mockReq = {
+                body,
+                rawBody,
+                headers: { 'x-hub-signature-256': signature },
+                globalVendorArgs: { appSecret: 'test-app-secret' },
+            }
+            const mockRes = { statusCode: 0, end: jest.fn() }
+
+            // Act
+            await metaCoreVendor.incomingMsg(mockReq as any, mockRes as any, mockNext)
+
+            // Assert
+            expect(mockRes.statusCode).toBe(200)
+            expect(mockRes.end).toHaveBeenCalledWith('empty endpoint')
+        })
+    })
+
     describe('#incomingMsg', () => {
         test('should handle failed status and respond with errors', async () => {
             // Arrange
@@ -440,6 +520,112 @@ describe('#MetaCoreVendor ', () => {
 
             // Assert
             expect(processSpy).toHaveBeenCalledWith(expect.objectContaining({ userId: 'US.13491208655302741918' }))
+        })
+
+        test('does not call callVendor when it is not set (default flows unaffected)', async () => {
+            // Arrange — no callVendor passed to the constructor
+            const mockReq = {
+                body: {
+                    entry: [
+                        {
+                            changes: [
+                                {
+                                    field: 'calls',
+                                    value: { calls: [{ id: 'call-1', event: 'connect' }] },
+                                },
+                            ],
+                        },
+                    ],
+                },
+                globalVendorArgs: {},
+            }
+            const mockRes = { statusCode: 0, end: jest.fn() }
+
+            // Act & Assert — must not throw even without a callVendor
+            await expect(metaCoreVendor.incomingMsg(mockReq as any, mockRes as any, mockNext)).resolves.not.toThrow()
+            expect(mockRes.statusCode).toBe(200)
+            expect(mockRes.end).toHaveBeenCalledWith('OK')
+        })
+
+        test('should dispatch a "connect" call event to callVendor.onConnect', async () => {
+            // Arrange
+            const onConnect = jest.fn().mockImplementation(() => Promise.resolve())
+            const onTerminate = jest.fn()
+            const callVendor: any = { onConnect, onTerminate }
+            const vendorWithCalls = new MetaCoreVendor(new Queue(), callVendor)
+
+            const callEvent = { id: 'call-abc', from: '15559999999', event: 'connect' }
+            const mockReq = {
+                body: {
+                    entry: [
+                        {
+                            changes: [{ field: 'calls', value: { calls: [callEvent] } }],
+                        },
+                    ],
+                },
+                globalVendorArgs: {},
+            }
+            const mockRes = { statusCode: 0, end: jest.fn() }
+
+            // Act
+            await vendorWithCalls.incomingMsg(mockReq as any, mockRes as any, mockNext)
+
+            // Assert
+            expect(onConnect).toHaveBeenCalledWith(callEvent)
+            expect(onTerminate).not.toHaveBeenCalled()
+            expect(mockRes.statusCode).toBe(200)
+            expect(mockRes.end).toHaveBeenCalledWith('OK')
+        })
+
+        test('should dispatch a "terminate" call event to callVendor.onTerminate', async () => {
+            // Arrange
+            const onConnect = jest.fn()
+            const onTerminate = jest.fn()
+            const callVendor: any = { onConnect, onTerminate }
+            const vendorWithCalls = new MetaCoreVendor(new Queue(), callVendor)
+
+            const callEvent = { id: 'call-xyz', event: 'terminate' }
+            const mockReq = {
+                body: {
+                    entry: [
+                        {
+                            changes: [{ field: 'calls', value: { calls: [callEvent] } }],
+                        },
+                    ],
+                },
+                globalVendorArgs: {},
+            }
+            const mockRes = { statusCode: 0, end: jest.fn() }
+
+            // Act
+            await vendorWithCalls.incomingMsg(mockReq as any, mockRes as any, mockNext)
+
+            // Assert
+            expect(onTerminate).toHaveBeenCalledWith('call-xyz')
+            expect(onConnect).not.toHaveBeenCalled()
+        })
+
+        test('should not treat a "messages" field as a calls webhook (no regression)', async () => {
+            // Arrange
+            const onConnect = jest.fn()
+            const onTerminate = jest.fn()
+            const callVendor: any = { onConnect, onTerminate }
+            const vendorWithCalls = new MetaCoreVendor(new Queue(), callVendor)
+
+            const mockReq = {
+                body: { entry: [{ changes: [{ field: 'messages', value: { messages: [] } }] }] },
+                globalVendorArgs: {},
+            }
+            const mockRes = { statusCode: 0, end: jest.fn() }
+
+            // Act
+            await vendorWithCalls.incomingMsg(mockReq as any, mockRes as any, mockNext)
+
+            // Assert — falls through to the regular "empty endpoint" messages path
+            expect(onConnect).not.toHaveBeenCalled()
+            expect(onTerminate).not.toHaveBeenCalled()
+            expect(mockRes.statusCode).toBe(200)
+            expect(mockRes.end).toHaveBeenCalledWith('empty endpoint')
         })
 
         test('should handle contact without wa_id (username-only user)', async () => {

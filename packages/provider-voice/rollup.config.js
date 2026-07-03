@@ -16,7 +16,8 @@ export default {
     plugins: [
         json(),
         nodeResolve({
-            resolveOnly: (module) => !/openai|@livekit\/rtc-node|livekit-server-sdk|@builderbot\/bot/i.test(module),
+            resolveOnly: (module) =>
+                !/openai|@livekit\/rtc-node|livekit-server-sdk|@builderbot\/bot|@roamhq\/wrtc|axios/i.test(module),
         }),
         commonjs(),
         typescript(),

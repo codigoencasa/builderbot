@@ -23,6 +23,13 @@ jest.mock('fs/promises', () => ({
 
 jest.mock('@builderbot/bot')
 
+jest.mock('@builderbot/provider-voice', () => ({
+    MetaCallCoreVendor: jest.fn(),
+    OpenAISTTAdapter: jest.fn(() => ({ transcribe: jest.fn() })),
+    OpenAITTSAdapter: jest.fn(() => ({ synthesize: jest.fn(), sampleRate: 24000 })),
+    pcmToWav: jest.fn(() => Buffer.from('RIFF....WAVEfmt ')),
+}))
+
 describe('#MetaProvider', () => {
     let metaProvider: MetaProvider
     beforeEach(() => {
@@ -678,6 +685,43 @@ describe('#MetaProvider', () => {
             expect(metaProvider.sendText).not.toHaveBeenCalled()
             expect(metaProvider.sendButtons).not.toHaveBeenCalled()
         })
+
+        test('routes to callVendor.publishAudio when the recipient has an active voice call', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Hello from the flow'
+            const publishAudio = jest.fn().mockImplementation(() => Promise.resolve())
+            metaProvider.callVendor = { hasActiveCall: jest.fn(() => true), publishAudio } as never
+            jest.spyOn(metaProvider, 'sendText')
+            jest.spyOn(metaProvider, 'sendButtons')
+            jest.spyOn(metaProvider, 'sendMedia')
+
+            // Act
+            await metaProvider.sendMessage(fakeRecipient, fakeMessage)
+
+            // Assert
+            expect(publishAudio).toHaveBeenCalledWith(fakeRecipient, fakeMessage)
+            expect(metaProvider.sendText).not.toHaveBeenCalled()
+            expect(metaProvider.sendButtons).not.toHaveBeenCalled()
+            expect(metaProvider.sendMedia).not.toHaveBeenCalled()
+        })
+
+        test('falls back to the regular text route when there is no active voice call', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Hello from the flow'
+            const publishAudio = jest.fn()
+            metaProvider.callVendor = { hasActiveCall: jest.fn(() => false), publishAudio } as never
+            jest.spyOn(metaProvider, 'sendText')
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendMessage(fakeRecipient, fakeMessage, {})
+
+            // Assert
+            expect(publishAudio).not.toHaveBeenCalled()
+            expect(metaProvider.sendText).toHaveBeenCalledWith(fakeRecipient, fakeMessage, undefined, undefined)
+        })
     })
 
     describe('#sendCatalog', () => {
@@ -1305,6 +1349,21 @@ describe('#MetaProvider', () => {
             expect(downloadFile).toHaveBeenCalledWith(ctx?.url, 'your_jwt_token')
             expect(result).toContain(extension)
         })
+
+        test('wraps ctx.audio as a WAV file via pcmToWav instead of downloading a URL', async () => {
+            // Arrange
+            const { pcmToWav } = require('@builderbot/provider-voice')
+            const ctx = { audio: Buffer.alloc(320), sampleRate: 16000, from: '15551234567' }
+            const options = { path: '/tmp' }
+
+            // Act
+            const result = await metaProvider.saveFile(ctx as never, options)
+
+            // Assert
+            expect(pcmToWav).toHaveBeenCalledWith(ctx.audio, ctx.sampleRate)
+            expect(downloadFile).not.toHaveBeenCalled()
+            expect(result).toContain('.wav')
+        })
     })
 
     describe('#sendPresenceUpdate', () => {
@@ -1358,6 +1417,62 @@ describe('#MetaProvider', () => {
             expect(metaProvider.sendPresenceUpdate).toHaveBeenCalledWith(fakeMessageId)
 
             jest.useRealTimers()
+        })
+    })
+
+    describe('#buildCallVendor (enableVoiceCalls)', () => {
+        test('throws when openaiApiKey is missing and no custom adapters are provided', () => {
+            // Arrange
+            metaProvider.globalVendorArgs = {
+                ...metaProvider.globalVendorArgs,
+                enableVoiceCalls: true,
+            }
+
+            // Act & Assert
+            expect(() => metaProvider['buildCallVendor']()).toThrow(/openaiApiKey/)
+        })
+
+        test('builds the call vendor with default OpenAI adapters when openaiApiKey is provided', () => {
+            // Arrange
+            const { MetaCallCoreVendor, OpenAISTTAdapter, OpenAITTSAdapter } = require('@builderbot/provider-voice')
+            metaProvider.globalVendorArgs = {
+                ...metaProvider.globalVendorArgs,
+                enableVoiceCalls: true,
+                openaiApiKey: 'sk-test',
+            }
+
+            // Act
+            metaProvider['buildCallVendor']()
+
+            // Assert
+            expect(OpenAISTTAdapter).toHaveBeenCalledWith({ apiKey: 'sk-test' })
+            expect(OpenAITTSAdapter).toHaveBeenCalledWith({ apiKey: 'sk-test' })
+            expect(MetaCallCoreVendor).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    config: metaProvider.globalVendorArgs,
+                })
+            )
+        })
+
+        test('uses provided custom sttAdapter/ttsAdapter without requiring openaiApiKey', () => {
+            // Arrange
+            const { MetaCallCoreVendor, OpenAISTTAdapter, OpenAITTSAdapter } = require('@builderbot/provider-voice')
+            const sttAdapter = { transcribe: jest.fn() } as never
+            const ttsAdapter = { synthesize: jest.fn(), sampleRate: 24000 } as never
+            metaProvider.globalVendorArgs = {
+                ...metaProvider.globalVendorArgs,
+                enableVoiceCalls: true,
+                sttAdapter,
+                ttsAdapter,
+            }
+
+            // Act
+            metaProvider['buildCallVendor']()
+
+            // Assert
+            expect(OpenAISTTAdapter).not.toHaveBeenCalled()
+            expect(OpenAITTSAdapter).not.toHaveBeenCalled()
+            expect(MetaCallCoreVendor).toHaveBeenCalledWith(expect.objectContaining({ sttAdapter, ttsAdapter }))
         })
     })
 

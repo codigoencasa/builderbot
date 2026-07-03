@@ -35,7 +35,7 @@ export const PROVIDER_LIST: Provider[] = [
     { value: 'wppconnect', label: 'WPPConnect', hint: 'opensource' },
     // { value: 'wweb', label: 'Whatsapp-web.js', hint: 'opensource' },
     { value: 'twilio', label: 'Twilio' },
-    { value: 'meta', label: 'Meta' },
+    { value: 'meta', label: 'Meta', hint: 'optional voice calls' },
     { value: 'facebook-messenger', label: 'Facebook Messenger' },
     { value: 'instagram', label: 'Instagram' },
     { value: 'gupshup', label: 'Gupshup' },
