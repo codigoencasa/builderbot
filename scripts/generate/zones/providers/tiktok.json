@@ -1,0 +1,9 @@
+{
+    "IMPORT": "import { TikTokProvider as Provider, tiktokEvents } from '@builderbot/provider-tiktok'\n",
+    "IMPLEMENTATION": "const adapterProvider = createProvider(Provider, {\n        accessToken: process.env.TIKTOK_ACCESS_TOKEN ?? 'YOUR_ACCESS_TOKEN',\n        businessId: process.env.TIKTOK_BUSINESS_ID ?? 'YOUR_BUSINESS_ID',\n        videos: (process.env.TIKTOK_VIDEO_IDS ?? 'YOUR_VIDEO_ID').split(',').map((id) => id.trim()).filter(Boolean),\n    })",
+    "DEPENDENCIES":{
+        "@builderbot/bot": "latest",
+        "@builderbot/provider-tiktok": "latest"
+    },
+    "DEV_DEPENDENCIES":{}
+}

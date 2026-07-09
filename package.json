@@ -62,6 +62,7 @@
     "packages/provider-facebook-messenger",
     "packages/provider-gupshup",
     "packages/provider-instagram",
+    "packages/provider-tiktok",
     "packages/provider-sherpa",
     "packages/provider-twilio",
     "packages/provider-web-whatsapp",

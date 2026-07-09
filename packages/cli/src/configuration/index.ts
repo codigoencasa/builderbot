@@ -38,6 +38,7 @@ export const PROVIDER_LIST: Provider[] = [
     { value: 'meta', label: 'Meta', hint: 'optional voice calls' },
     { value: 'facebook-messenger', label: 'Facebook Messenger' },
     { value: 'instagram', label: 'Instagram' },
+    { value: 'tiktok', label: 'TikTok', hint: 'organic comments only' },
     { value: 'gupshup', label: 'Gupshup' },
     { value: 'gohighlevel', label: 'GoHighLevel' },
     { value: 'email', label: 'Email', hint: 'IMAP/SMTP' },

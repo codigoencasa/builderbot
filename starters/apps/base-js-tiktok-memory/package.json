@@ -1,0 +1,24 @@
+{
+  "name": "base-js-tiktok-memory",
+  "version": "1.0.0",
+  "description": "TikTok organic comments example (poll + public reply)",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint . --no-ignore",
+    "dev": "nodemon --signal SIGKILL ./src/app.js",
+    "start": "node ./src/app.js"
+  },
+  "keywords": ["tiktok", "builderbot"],
+  "dependencies": {
+    "@builderbot/bot": "file:../../../packages/bot",
+    "@builderbot/provider-tiktok": "file:../../../packages/provider-tiktok"
+  },
+  "devDependencies": {
+    "eslint-plugin-builderbot": "latest",
+    "eslint": "^9.39.1",
+    "nodemon": "^3.1.11"
+  },
+  "author": "",
+  "license": "ISC"
+}
