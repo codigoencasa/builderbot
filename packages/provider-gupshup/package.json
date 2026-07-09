@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/provider-gupshup",
-    "version": "1.4.3-y.4",
+    "version": "1.4.3-y.5",
     "description": "Gupshup Provider for BuilderBot",
     "main": "dist/index.cjs",
     "types": "dist/index.d.ts",
