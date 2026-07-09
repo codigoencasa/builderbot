@@ -61,13 +61,14 @@ const fullSamplesFlow = addKeyword<Provider, Database>(['samples', utils.setEven
 const main = async () => {
     const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])
     const adapterProvider = createProvider(Provider, {
-        apiKey: 'YOUR_LIVEKIT_API_KEY',
-        apiSecret: 'YOUR_LIVEKIT_API_SECRET',
-        wsUrl: 'wss://your-project.livekit.cloud',
-        roomName: 'support',
-        openaiApiKey: 'YOUR_OPENAI_API_KEY',
-        language: 'en',
-    })
+    apiKey: process.env.LIVEKIT_API_KEY ?? 'YOUR_LIVEKIT_API_KEY',
+    apiSecret: process.env.LIVEKIT_API_SECRET ?? 'YOUR_LIVEKIT_API_SECRET',
+    wsUrl: process.env.LIVEKIT_WS_URL ?? 'wss://your-project.livekit.cloud',
+    inboundNumbers: [(process.env.SIP_PHONE_NUMBER ?? '+10000000000')],
+    allowedAddresses: (process.env.SIP_ALLOWED_IPS ?? '').split(',').filter(Boolean),
+    openaiApiKey: process.env.OPENAI_API_KEY ?? 'YOUR_OPENAI_API_KEY',
+    language: 'en',
+})
     const adapterDB = new Database({
         host: process.env.MYSQL_DB_HOST,
         user: process.env.MYSQL_DB_USER,

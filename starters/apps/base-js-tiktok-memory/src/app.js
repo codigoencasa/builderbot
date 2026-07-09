@@ -6,13 +6,10 @@ const PORT = process.env.PORT ?? 3008
 /**
  * Lead-magnet style flow for organic TikTok comments.
  *
- * Env:
- *   TIKTOK_ACCESS_TOKEN, TIKTOK_BUSINESS_ID, TIKTOK_VIDEO_IDS
- *   LEAD_KEYWORD (optional), LEAD_REPLY (optional, supports {username})
+ * Env: TIKTOK_ACCESS_TOKEN, TIKTOK_BUSINESS_ID, TIKTOK_VIDEO_IDS
  */
-const LEAD_KEYWORD = (process.env.LEAD_KEYWORD ?? '').toLowerCase().trim()
+const LEAD_KEYWORD = 'info'
 const LEAD_REPLY =
-    process.env.LEAD_REPLY ??
     'Hey @{username}! Thanks for commenting — check your DMs… wait, TikTok only lets us reply here publicly 🙌 Drop us a DM with the word INFO to get the free guide.'
 
 const commentFlow = addKeyword(tiktokEvents.TT_COMMENT).addAction(async (ctx, { provider, endFlow }) => {
@@ -57,7 +54,6 @@ const main = async () => {
                 '  TIKTOK_ACCESS_TOKEN=...',
                 '  TIKTOK_BUSINESS_ID=...',
                 '  TIKTOK_VIDEO_IDS=7258231412594101531',
-                'Optional: LEAD_KEYWORD=info  LEAD_REPLY="Thanks @{username}!"',
             ].join('\n')
         )
     }

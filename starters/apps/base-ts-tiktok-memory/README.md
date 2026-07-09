@@ -23,10 +23,6 @@ Set env vars:
 export TIKTOK_ACCESS_TOKEN='your_access_token'
 export TIKTOK_BUSINESS_ID='your_open_id'
 export TIKTOK_VIDEO_IDS='7258231412594101531'
-
-# optional lead magnet filter
-export LEAD_KEYWORD='info'
-export LEAD_REPLY='Hey @{username}! Aquí tienes el link: https://example.com/guia'
 ```
 
 ## Run
@@ -37,7 +33,7 @@ pnpm run dev
 pnpm run build && pnpm start
 ```
 
-When someone comments on a watched video (and matches `LEAD_KEYWORD` if set), the bot posts a public reply.
+When someone comments on a watched video with the keyword `info`, the bot posts a public reply.
 
 ## Debug endpoints
 

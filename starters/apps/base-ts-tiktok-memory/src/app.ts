@@ -14,12 +14,9 @@ const PORT = process.env.PORT ?? 3008
  *   TIKTOK_ACCESS_TOKEN  — Business API access token
  *   TIKTOK_BUSINESS_ID   — open_id of the business account
  *   TIKTOK_VIDEO_IDS     — comma-separated video ids to watch
- *   LEAD_KEYWORD         — optional keyword that triggers the lead reply (default: any comment)
- *   LEAD_REPLY           — public reply text (supports {username})
  */
-const LEAD_KEYWORD = (process.env.LEAD_KEYWORD ?? '').toLowerCase().trim()
+const LEAD_KEYWORD = 'info'
 const LEAD_REPLY =
-    process.env.LEAD_REPLY ??
     'Hey @{username}! Thanks for commenting — check your DMs… wait, TikTok only lets us reply here publicly 🙌 Drop us a DM with the word INFO to get the free guide.'
 
 const commentFlow = addKeyword(tiktokEvents.TT_COMMENT).addAction(
@@ -59,18 +56,6 @@ const main = async () => {
         .split(',')
         .map((id) => id.trim())
         .filter(Boolean)
-
-    if (!process.env.TIKTOK_ACCESS_TOKEN || !process.env.TIKTOK_BUSINESS_ID || !videoIds.length) {
-        console.warn(
-            [
-                '[tiktok] Missing env — set before running:',
-                '  TIKTOK_ACCESS_TOKEN=...',
-                '  TIKTOK_BUSINESS_ID=...',
-                '  TIKTOK_VIDEO_IDS=7258231412594101531',
-                'Optional: LEAD_KEYWORD=info  LEAD_REPLY="Thanks @{username}!"',
-            ].join('\n')
-        )
-    }
 
     const adapterFlow = createFlow([commentFlow])
     const adapterProvider = createProvider(Provider, {

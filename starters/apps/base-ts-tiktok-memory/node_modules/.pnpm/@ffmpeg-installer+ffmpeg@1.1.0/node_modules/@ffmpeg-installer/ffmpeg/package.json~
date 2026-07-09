@@ -1,0 +1,55 @@
+{
+  "name": "@ffmpeg-installer/ffmpeg",
+  "version": "1.0.20",
+  "main": "index.js",
+  "scripts": {
+    "lint": "jshint *.js",
+    "preversion": "npm run lint",
+    "types": "tsc",
+    "preupload": "npm run types",
+    "upload": "npm --userconfig=.npmrc publish --access public",
+    "test": "tsd",
+    "download": "babel-node --presets env download.js"
+  },
+  "types": "types/index.d.ts",
+  "keywords": [
+    "ffmpeg",
+    "binary",
+    "installer",
+    "audio",
+    "sound"
+  ],
+  "author": "Kristoffer Lundén <kristoffer.lunden@gmail.com>",
+  "license": "LGPL-2.1",
+  "description": "Platform independent binary installer of FFmpeg for node projects",
+  "optionalDependencies": {
+    "@ffmpeg-installer/darwin-x64": "4.1.0",
+    "@ffmpeg-installer/linux-arm": "4.1.3",
+    "@ffmpeg-installer/linux-arm64": "4.1.4",
+    "@ffmpeg-installer/linux-ia32": "4.1.0",
+    "@ffmpeg-installer/linux-x64": "4.1.0",
+    "@ffmpeg-installer/win32-ia32": "4.1.0",
+    "@ffmpeg-installer/win32-x64": "4.1.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.13.13",
+    "@babel/node": "^7.13.13",
+    "@babel/preset-env": "^7.13.12",
+    "@types/app-root-path": "^1.2.4",
+    "@types/node": "^14.14.35",
+    "app-root-path": "^3.0.0",
+    "jshint": "^2.9.3",
+    "jsonc": "^2.0.0",
+    "tempy": "^1.0.1",
+    "tsd": "^0.14.0",
+    "typescript": "^4.2.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kribblo/node-ffmpeg-installer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kribblo/node-ffmpeg-installer/issues"
+  },
+  "homepage": "https://github.com/kribblo/node-ffmpeg-installer#readme"
+}

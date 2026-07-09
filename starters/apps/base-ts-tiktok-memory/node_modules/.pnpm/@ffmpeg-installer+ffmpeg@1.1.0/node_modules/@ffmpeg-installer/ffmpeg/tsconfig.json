@@ -1,0 +1,17 @@
+{
+    "include": [
+        "index.js",
+        "lib/**/*"
+    ],
+    "compilerOptions": {
+        "allowJs": true,
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "outDir": "types/"
+    },
+    "tsd": {
+        "testFiles": [
+            "types/**/*.test-d.ts"
+        ]
+    }
+}
