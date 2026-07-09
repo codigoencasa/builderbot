@@ -1421,7 +1421,10 @@ describe('#MetaProvider', () => {
     })
 
     describe('#buildCallVendor (enableVoiceCalls)', () => {
-        test('throws when openaiApiKey is missing and no custom adapters are provided', () => {
+        // `buildCallVendor` is async — it lazily `import()`s `@builderbot/provider-voice`
+        // (and transitively `@roamhq/wrtc`) only when voice calls are actually enabled, so
+        // bots that never opt in never load that native-dependent module graph.
+        test('throws when openaiApiKey is missing and no custom adapters are provided', async () => {
             // Arrange
             metaProvider.globalVendorArgs = {
                 ...metaProvider.globalVendorArgs,
@@ -1429,10 +1432,10 @@ describe('#MetaProvider', () => {
             }
 
             // Act & Assert
-            expect(() => metaProvider['buildCallVendor']()).toThrow(/openaiApiKey/)
+            await expect(metaProvider['buildCallVendor']()).rejects.toThrow(/openaiApiKey/)
         })
 
-        test('builds the call vendor with default OpenAI adapters when openaiApiKey is provided', () => {
+        test('builds the call vendor with default OpenAI adapters when openaiApiKey is provided', async () => {
             // Arrange
             const { MetaCallCoreVendor, OpenAISTTAdapter, OpenAITTSAdapter } = require('@builderbot/provider-voice')
             metaProvider.globalVendorArgs = {
@@ -1442,7 +1445,7 @@ describe('#MetaProvider', () => {
             }
 
             // Act
-            metaProvider['buildCallVendor']()
+            await metaProvider['buildCallVendor']()
 
             // Assert
             expect(OpenAISTTAdapter).toHaveBeenCalledWith({ apiKey: 'sk-test' })
@@ -1454,7 +1457,7 @@ describe('#MetaProvider', () => {
             )
         })
 
-        test('uses provided custom sttAdapter/ttsAdapter without requiring openaiApiKey', () => {
+        test('uses provided custom sttAdapter/ttsAdapter without requiring openaiApiKey', async () => {
             // Arrange
             const { MetaCallCoreVendor, OpenAISTTAdapter, OpenAITTSAdapter } = require('@builderbot/provider-voice')
             const sttAdapter = { transcribe: jest.fn() } as never
@@ -1467,7 +1470,7 @@ describe('#MetaProvider', () => {
             }
 
             // Act
-            metaProvider['buildCallVendor']()
+            await metaProvider['buildCallVendor']()
 
             // Assert
             expect(OpenAISTTAdapter).not.toHaveBeenCalled()

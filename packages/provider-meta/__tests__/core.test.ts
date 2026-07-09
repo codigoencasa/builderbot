@@ -211,10 +211,10 @@ describe('#MetaCoreVendor ', () => {
             }
 
             // Act
-            const statusArray = metaCoreVendor['extractStatus'](mockObj)
+            const result = metaCoreVendor['extractStatus'](mockObj)
 
             // Assert
-            expect(statusArray).toEqual([
+            expect(result.all).toEqual([
                 {
                     status: 'failed',
                     reason: 'Number(recipient_1): error_1_details',
@@ -224,6 +224,10 @@ describe('#MetaCoreVendor ', () => {
                     reason: 'Number(recipient_2): error_2_details',
                 },
             ])
+            expect(result.firstFailed).toEqual({
+                status: 'failed',
+                reason: 'Number(recipient_1): error_1_details',
+            })
         })
 
         test('should handle empty entry object', () => {
@@ -231,10 +235,10 @@ describe('#MetaCoreVendor ', () => {
             const mockObj = { entry: [] }
 
             // Act
-            const statusArray = metaCoreVendor['extractStatus'](mockObj)
+            const result = metaCoreVendor['extractStatus'](mockObj)
 
             // Assert
-            expect(statusArray).toEqual([])
+            expect(result).toEqual({ all: [], firstFailed: undefined })
         })
 
         test('should fall back to recipient_user_id when recipient_id is absent', () => {
@@ -260,15 +264,15 @@ describe('#MetaCoreVendor ', () => {
             }
 
             // Act
-            const statusArray = metaCoreVendor['extractStatus'](mockObj)
+            const result = metaCoreVendor['extractStatus'](mockObj)
 
             // Assert
-            expect(statusArray).toEqual([
-                {
-                    status: 'failed',
-                    reason: 'Number(US.13491208655302741918): reach_failed',
-                },
-            ])
+            const failed = {
+                status: 'failed',
+                reason: 'Number(US.13491208655302741918): reach_failed',
+            }
+            expect(result.all).toEqual([failed])
+            expect(result.firstFailed).toEqual(failed)
         })
     })
 
@@ -417,7 +421,10 @@ describe('#MetaCoreVendor ', () => {
                 end: jest.fn(),
             }
             const mockStatus = [{ status: 'failed', reason: 'Error reason' }]
-            jest.spyOn(metaCoreVendor, 'extractStatus' as any).mockReturnValue(mockStatus)
+            jest.spyOn(metaCoreVendor, 'extractStatus' as any).mockReturnValue({
+                all: mockStatus,
+                firstFailed: mockStatus[0],
+            })
             const mockEmit = jest.fn()
             const mockEventEmitter = {
                 emit: mockEmit,

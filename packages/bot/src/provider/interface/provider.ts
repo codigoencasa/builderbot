@@ -1,5 +1,6 @@
 import { urlencoded, json } from 'body-parser'
 import cors from 'cors'
+import type { IncomingMessage } from 'node:http'
 import polka, { type Polka } from 'polka'
 
 import type { PolkaRes, ProviderHttpServer } from './server'
@@ -174,7 +175,7 @@ abstract class ProviderClass<V = any> extends EventEmitterClass<ProviderEventTyp
     public inHandleCtx<
         T extends Pick<ProviderClass<V>, 'sendMessage'> & {
             provider: V
-        }
+        },
     >(ctxPolka: (bot: T, req: Request, res: PolkaRes) => Promise<void>): (...args: any[]) => any {
         return (req, res) => {
             const bot: T | undefined = req[this.idCtxBot] ?? undefined
@@ -219,11 +220,14 @@ abstract class ProviderClass<V = any> extends EventEmitterClass<ProviderEventTyp
         try {
             const list = (app as any).routes as { [key: string]: { old: string }[][] }
             const methodKeys = Object.keys(list)
-            const parseListRoutes = methodKeys.reduce((prev, current) => {
-                const routesForMethod = list[current].flat(2).map((i) => ({ method: current, path: i.old }))
-                prev = prev.concat(routesForMethod)
-                return prev
-            }, [] as { method: string; path: string }[])
+            const parseListRoutes = methodKeys.reduce(
+                (prev, current) => {
+                    const routesForMethod = list[current].flat(2).map((i) => ({ method: current, path: i.old }))
+                    prev = prev.concat(routesForMethod)
+                    return prev
+                },
+                [] as { method: string; path: string }[]
+            )
             const unique = parseListRoutes.map(
                 (r) => `[${r.method}]: http://localhost:${this.globalVendorArgs.port}${r.path}`
             )
@@ -242,7 +246,18 @@ abstract class ProviderClass<V = any> extends EventEmitterClass<ProviderEventTyp
         return polka()
             .use(cors())
             .use(urlencoded({ extended: true }))
-            .use(json())
+            .use(
+                json({
+                    // Capture the exact raw bytes of the request body (before JSON parsing) so
+                    // downstream providers (e.g. `@builderbot/provider-meta`'s webhook signature
+                    // check) can validate HMAC signatures against the same bytes the sender
+                    // signed, instead of re-serializing the parsed body with `JSON.stringify`
+                    // (which is not guaranteed to be byte-identical to the original payload).
+                    verify: (req: IncomingMessage & { rawBody?: string }, _res, buf: Buffer) => {
+                        req.rawBody = buf.toString('utf8')
+                    },
+                })
+            )
     }
 
     /**

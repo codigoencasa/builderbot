@@ -1,5 +1,5 @@
 import type { GlobalVendorArgs } from '@builderbot/bot/dist/types'
-import type { ISttAdapter, ITtsAdapter } from '@builderbot/provider-voice'
+import type { ISttAdapter, ITtsAdapter, WhatsAppCallEntryEvent } from '@builderbot/provider-voice'
 
 interface Image {
     id?: string
@@ -292,8 +292,24 @@ export interface Change {
 export interface Value {
     messaging_product: string
     metadata: Metadata
-    contacts: ContactMeta[]
-    messages: MessageFromMeta[]
+    // Meta sends one of these per change: messages (+contacts), statuses, or calls — never mixed.
+    contacts?: ContactMeta[]
+    messages?: MessageFromMeta[]
+    statuses?: MessageStatus[]
+    calls?: WhatsAppCallEntryEvent[]
+}
+
+/** A single `errors[]` entry on a Meta message status update. */
+export interface MessageStatusError {
+    error_data?: { details?: string }
+}
+
+/** A single entry in `value.statuses[]` on a message-status webhook change. */
+export interface MessageStatus {
+    recipient_id?: string
+    recipient_user_id?: string
+    errors?: MessageStatusError[]
+    status?: string
 }
 
 export interface Metadata {
@@ -317,8 +333,14 @@ export interface MessageFromMeta {
     from: string
     id: string
     timestamp: string
-    text: Text
+    text?: Text
     type: string
+    fromMe?: boolean
+    audio?: File | null
+    image?: File | null
+    video?: File | null
+    document?: File | null
+    sticker?: File | null
 }
 
 export interface Text {
