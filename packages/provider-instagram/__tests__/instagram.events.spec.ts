@@ -430,6 +430,42 @@ describe('InstagramEvents', () => {
             })
         })
 
+        it("should ignore comments authored by the bot's own account (self-reply loop guard)", () => {
+            instagramEvents.setListenMode('comment')
+
+            const payload: InstagramMessage = {
+                object: 'instagram',
+                entry: [
+                    {
+                        id: 'page_id',
+                        time: 1614714981098,
+                        changes: [
+                            {
+                                field: 'comments',
+                                value: {
+                                    from: {
+                                        id: 'page_id',
+                                        username: 'bot_account',
+                                    },
+                                    media: {
+                                        id: 'media_123',
+                                        media_product_type: 'REELS',
+                                    },
+                                    id: 'comment_self_reply',
+                                    text: 'revisa el dm',
+                                    timestamp: '2024-01-01T00:00:00+0000',
+                                },
+                            },
+                        ],
+                    },
+                ],
+            }
+
+            instagramEvents.eventInMsg(payload)
+
+            expect(instagramEvents.emit).not.toHaveBeenCalled()
+        })
+
         it('should handle comment events with parent_id (reply to comment)', () => {
             instagramEvents.setListenMode('comment')
 

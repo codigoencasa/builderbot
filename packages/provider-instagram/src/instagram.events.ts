@@ -187,6 +187,12 @@ export class InstagramEvents extends EventEmitterClass<ProviderEventTypes> {
     }
 
     private handleComment = (commentValue: InstagramCommentValue, pageId: string) => {
+        // Skip comments authored by the bot's own account. Public replies sent via
+        // add_ig_comment_reply create a new comment on the same media, which Meta
+        // re-delivers as a "comments" webhook — without this guard the flow
+        // re-triggers on its own reply, causing an infinite reply loop.
+        if (commentValue.from.id === pageId) return
+
         const timestamp = new Date(commentValue.timestamp).getTime() || Date.now()
 
         const sendObj = {
