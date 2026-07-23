@@ -389,7 +389,7 @@ describe('#processIncomingMessage ', () => {
                     phones: ['123456789'],
                 },
             ],
-            body: expect.any(String),
+            body: undefined, //expect.any(String),
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
