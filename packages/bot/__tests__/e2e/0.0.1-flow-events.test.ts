@@ -115,4 +115,25 @@ testSuite(`Responder a "EVENTS.VOICE_NOTE"`, async (context) => {
     assert.is(history[1], undefined)
 })
 
+testSuite(`Responder a "EVENTS.CONTACTS"`, async (context) => {
+    const { database, provider } = context
+    const contactFlow = addKeyword(EVENTS.CONTACTS).addAnswer('gracias por el contacto!')
+
+    await createBot({
+        database,
+        provider,
+        flow: createFlow([contactFlow]),
+    })
+
+    await provider.delaySendMessage(0, 'message', {
+        from: '000',
+        body: '_event_contacts__f405d946-cf07-uutt-l7e0-b6d475bc7f81',
+    })
+
+    await delay(200)
+    const history = database.listHistory.map((item) => item.answer)
+    assert.is(history[0], 'gracias por el contacto!')
+    assert.is(history[1], undefined)
+})
+
 testSuite.run()

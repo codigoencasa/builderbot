@@ -116,7 +116,7 @@ const _addAnswer =
                     answer,
                     { ...options, capture: false },
                     null as CallbackFunction<P, B>
-                ).addAction(options, cb, nested)
+                ).addAction({ ...options, ref: `${ctx.ref}A` }, cb, nested)
             },
             addAction: (
                 cb: CallbackFunction<P, B> = () => {},

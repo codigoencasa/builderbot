@@ -1,4 +1,4 @@
-import { utils } from '@builderbot/bot'
+import { EVENTS } from '@builderbot/bot'
 
 import { getMediaUrl } from './mediaUrl'
 import type { Message, ParamsIncomingMessage as ParamsIncomingMessage } from '../types'
@@ -69,7 +69,7 @@ export const processIncomingMessage = async ({
                 fileData,
                 caption: message?.image?.caption,
                 to,
-                body: utils.generateRefProvider('_event_media_'),
+                body: EVENTS.MEDIA,
                 pushName,
                 name: pushName,
             }
@@ -83,7 +83,7 @@ export const processIncomingMessage = async ({
                 url: documentUrl ?? fileData?.url,
                 fileData,
                 to,
-                body: utils.generateRefProvider('_event_document_'),
+                body: EVENTS.DOCUMENT,
                 pushName,
                 name: pushName,
             }
@@ -98,7 +98,7 @@ export const processIncomingMessage = async ({
                 fileData,
                 caption: message?.video?.caption,
                 to,
-                body: utils.generateRefProvider('_event_media_'),
+                body: EVENTS.MEDIA,
                 pushName,
                 name: pushName,
             }
@@ -111,7 +111,7 @@ export const processIncomingMessage = async ({
                 to,
                 latitude: message.location.latitude,
                 longitude: message.location.longitude,
-                body: utils.generateRefProvider('_event_location_'),
+                body: EVENTS.LOCATION,
                 pushName,
                 name: pushName,
             }
@@ -125,7 +125,7 @@ export const processIncomingMessage = async ({
                 url: audioUrl ?? fileData?.url,
                 fileData,
                 to,
-                body: utils.generateRefProvider('_event_voice_note_'),
+                body: EVENTS.VOICE_NOTE,
                 pushName,
                 name: pushName,
             }
@@ -137,7 +137,7 @@ export const processIncomingMessage = async ({
                 from: message.from,
                 to,
                 id: message.sticker.id,
-                body: utils.generateRefProvider('_event_media_'),
+                body: EVENTS.MEDIA,
                 pushName,
                 name: pushName,
             }
@@ -154,7 +154,7 @@ export const processIncomingMessage = async ({
                     },
                 ] as any,
                 to,
-                body: utils.generateRefProvider('_event_contacts_'),
+                body: EVENTS.CONTACTS,
                 pushName,
                 name: pushName,
             }
@@ -169,7 +169,7 @@ export const processIncomingMessage = async ({
                     catalog_id: message.order.catalog_id,
                     product_items: message.order.product_items,
                 },
-                body: utils.generateRefProvider('_event_order_'),
+                body: EVENTS.ORDER,
                 pushName,
                 name: pushName,
             }

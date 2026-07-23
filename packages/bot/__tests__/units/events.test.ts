@@ -1,16 +1,17 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { eventMedia, REGEX_EVENT_MEDIA } from '../../src/io/events/eventMedia'
-import { eventLocation, REGEX_EVENT_LOCATION } from '../../src/io/events/eventLocation'
+import { eventAction } from '../../src/io/events/eventAction'
+import { eventCall, REGEX_EVENT_CALL } from '../../src/io/events/eventCall'
+import { eventContacts, REGEX_EVENT_CONTACTS } from '../../src/io/events/eventContacts'
+import { eventCustom, REGEX_EVENT_CUSTOM } from '../../src/io/events/eventCustom'
 import { eventDocument, REGEX_EVENT_DOCUMENT } from '../../src/io/events/eventDocument'
-import { eventVoiceNote, REGEX_EVENT_VOICE_NOTE } from '../../src/io/events/eventVoiceNote'
+import { eventLocation, REGEX_EVENT_LOCATION } from '../../src/io/events/eventLocation'
+import { eventMedia, REGEX_EVENT_MEDIA } from '../../src/io/events/eventMedia'
 import { eventOrder, REGEX_EVENT_ORDER } from '../../src/io/events/eventOrder'
 import { eventTemplate, REGEX_EVENT_TEMPLATE } from '../../src/io/events/eventTemplate'
-import { eventCall, REGEX_EVENT_CALL } from '../../src/io/events/eventCall'
-import { eventAction } from '../../src/io/events/eventAction'
+import { eventVoiceNote, REGEX_EVENT_VOICE_NOTE } from '../../src/io/events/eventVoiceNote'
 import { eventWelcome } from '../../src/io/events/eventWelcome'
-import { eventCustom, REGEX_EVENT_CUSTOM } from '../../src/io/events/eventCustom'
 import { LIST_ALL, LIST_REGEX } from '../../src/io/events/index'
 
 // ===== eventMedia =====
@@ -36,6 +37,31 @@ test('[REGEX_EVENT_MEDIA] should not match arbitrary strings', () => {
     assert.not.ok(REGEX_EVENT_MEDIA.test('hello'))
     assert.not.ok(REGEX_EVENT_MEDIA.test('_event_media_'))
     assert.not.ok(REGEX_EVENT_MEDIA.test('_event_location__abc'))
+})
+
+// ===== eventContacts =====
+
+test('[eventContacts] should return a string with correct prefix', () => {
+    const ref = eventContacts()
+    assert.type(ref, 'string')
+    assert.ok(ref.startsWith('_event_contacts__'), `Expected prefix _event_contacts__, got: ${ref}`)
+})
+
+test('[eventContacts] should return unique values on each call', () => {
+    const ref1 = eventContacts()
+    const ref2 = eventContacts()
+    assert.is.not(ref1, ref2, 'Each call should return a unique ref')
+})
+
+test('[REGEX_EVENT_CONTACTS] should match valid media event refs', () => {
+    const ref = eventContacts()
+    assert.ok(REGEX_EVENT_CONTACTS.test(ref), `Regex should match generated ref: ${ref}`)
+})
+
+test('[REGEX_EVENT_CONTACTS] should not match arbitrary strings', () => {
+    assert.not.ok(REGEX_EVENT_CONTACTS.test('hello'))
+    assert.not.ok(REGEX_EVENT_CONTACTS.test('_event_media_'))
+    assert.not.ok(REGEX_EVENT_CONTACTS.test('_event_location__abc'))
 })
 
 // ===== eventLocation =====
@@ -261,10 +287,7 @@ test('[Cross-event] each regex should only match its own event type', () => {
         // Should NOT match other regexes
         for (const other of eventPairs) {
             if (other.name !== pair.name) {
-                assert.not.ok(
-                    other.regex.test(ref),
-                    `${pair.name} ref should NOT match ${other.name} regex`
-                )
+                assert.not.ok(other.regex.test(ref), `${pair.name} ref should NOT match ${other.name} regex`)
             }
         }
     }

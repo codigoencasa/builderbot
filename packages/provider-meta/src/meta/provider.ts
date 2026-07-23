@@ -110,7 +110,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
                 title: error.title,
                 instructions: [error.msg, 'https://builderbot.app/en/providers/meta'],
             })
-            this.emit('error', err)
+            //this.emit('error', err)
         }
     }
 
