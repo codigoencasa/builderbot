@@ -1,6 +1,6 @@
 {
     "name": "create-builderbot",
-    "version": "1.4.3-y.6",
+    "version": "1.4.3-y.7",
     "description": "",
     "license": "ISC",
     "main": "dist/index.cjs",

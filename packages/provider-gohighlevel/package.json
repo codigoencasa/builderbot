@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/provider-gohighlevel",
-    "version": "1.4.3-y.6",
+    "version": "1.4.3-y.7",
     "description": "GoHighLevel provider for builderbot - supports SMS, WhatsApp, Email, Live Chat and more channels via GHL API v2",
     "author": "codigoencasa",
     "homepage": "https://github.com/codigoencasa/builderbot#readme",
