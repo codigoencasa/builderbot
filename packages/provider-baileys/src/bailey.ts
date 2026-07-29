@@ -18,6 +18,7 @@ import {
     AnyMediaMessageContent,
     AnyMessageContent,
     BaileysEventMap,
+    Browsers,
     WAMessage,
     WASocket,
     MessageUpsertType,
@@ -26,6 +27,8 @@ import {
     isLidUser,
     DisconnectReason,
     downloadMediaMessage,
+    fetchLatestBaileysVersion,
+    fetchLatestWaWebVersion,
     getAggregateVotesInPollMessage,
     makeCacheableSignalKeyStore,
     makeWASocketOther,
@@ -54,7 +57,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
         name: `bot`,
         gifPlayback: false,
         usePairingCode: false,
-        browser: ['Windows', 'Chrome', 'Chrome 114.0.5735.198'] as WABrowserDescription,
+        browser: Browsers.appropriate('Chrome') as WABrowserDescription,
         phoneNumber: null,
         useBaileysStore: true,
         port: 3000,
@@ -314,9 +317,24 @@ class BaileysProvider extends ProviderClass<WASocket> {
         }
 
         try {
+            let version: WAVersion
+            try {
+                const waVersion = await fetchLatestWaWebVersion({})
+                version = waVersion.version
+                this.logger.log(`[Baileys] Using live WA Web version: ${version.join('.')}`)
+            } catch (err) {
+                try {
+                    const baileysVersion = await fetchLatestBaileysVersion()
+                    version = baileysVersion.version
+                    this.logger.log(`[Baileys] Fallback to Baileys repo WA version: ${version.join('.')}`)
+                } catch (e) {
+                    version = [2, 3000, 1025190524] as WAVersion
+                    this.logger.log(`[Baileys] Fallback to hardcoded WA version: ${version.join('.')}`)
+                }
+            }
             const sock = makeWASocketOther({
                 logger: loggerBaileys,
-                version: [2, 3000, 1025190524] as WAVersion,
+                version,
                 printQRInTerminal: false,
                 auth: {
                     creds: state.creds,
