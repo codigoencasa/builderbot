@@ -137,6 +137,39 @@ describe('#MetaProvider', () => {
                 headers: { Authorization: `Bearer ${fakeJwtToken}` },
             })
             expect(responseData).toEqual(fakeResponseData)
+            expect(fakeBody.to).toBe('1234567890')
+            expect(fakeBody).not.toHaveProperty('recipient')
+        })
+
+        test('should rewrite BSUID destination to Graph recipient and omit to (Jose Santos fixture)', async () => {
+            const fakeBody: Record<string, unknown> = {
+                messaging_product: 'whatsapp',
+                recipient_type: 'individual',
+                to: 'CO.2177313826172406',
+                type: 'text',
+                text: {
+                    preview_url: false,
+                    body: 'pong',
+                },
+            }
+            const fakeResponseData = { messageId: '123456' }
+            ;(axios.post as jest.MockedFunction<typeof axios.post>).mockResolvedValue({ data: fakeResponseData })
+
+            await metaProvider.sendMessageToApi(fakeBody as any)
+
+            expect(axios.post).toHaveBeenCalledWith(
+                'https://graph.facebook.com/v18.0/1234567890/messages',
+                expect.objectContaining({
+                    messaging_product: 'whatsapp',
+                    recipient_type: 'individual',
+                    recipient: 'CO.2177313826172406',
+                    type: 'text',
+                }),
+                expect.any(Object)
+            )
+            const sentBody = (axios.post as jest.Mock).mock.calls[0][1] as Record<string, unknown>
+            expect(sentBody.recipient).toBe('CO.2177313826172406')
+            expect(sentBody).not.toHaveProperty('to')
         })
     })
 

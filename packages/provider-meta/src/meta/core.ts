@@ -264,6 +264,7 @@ export class MetaCoreVendor extends EventEmitter {
         if (Array.isArray(contacts)) [contact] = contacts
         const pushName: string | undefined = contact?.profile?.name ?? 'Unknown'
         const userId: string | undefined = contact?.user_id
+        const username: string | undefined = contact?.profile?.username
 
         try {
             // O(M) concurrent dispatch, where M is the number of messages in this webhook batch —
@@ -285,6 +286,7 @@ export class MetaCoreVendor extends EventEmitter {
                         version,
                         fileData,
                         userId,
+                        username,
                     })
                     if (response) {
                         await this.queue.enqueue(() => this.processMessage(response))

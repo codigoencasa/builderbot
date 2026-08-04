@@ -572,4 +572,88 @@ describe('#processIncomingMessage ', () => {
         // Assert
         expect(result.userId).toBe('US.13491208655302741918')
     })
+
+    test('should keep phone from intact when Meta sends it', async () => {
+        const params = {
+            messageId: '123',
+            messageTimestamp: Date.now(),
+            pushName: 'Jose Santos',
+            message: { type: 'text', from: '573001112233', text: { body: 'ping' } },
+            to: '573133324152',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+            userId: 'CO.2177313826172406',
+        }
+
+        const result = await processIncomingMessage(params)
+
+        expect(result.from).toBe('573001112233')
+    })
+
+    test('should resolve from from from_user_id when phone is omitted', async () => {
+        const params = {
+            messageId: 'wamid.test',
+            messageTimestamp: '1785827662',
+            pushName: 'Jose Santos',
+            message: {
+                type: 'text',
+                from_user_id: 'CO.2177313826172406',
+                text: { body: 'ping' },
+            },
+            to: '573133324152',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+        }
+
+        const result = await processIncomingMessage(params)
+
+        expect(result.from).toBe('CO.2177313826172406')
+    })
+
+    test('should resolve from from userId when phone and from_user_id are omitted (Jose Santos fixture)', async () => {
+        const params = {
+            messageId: 'wamid.HBgTQ08uMjE3NzMxMzgyNjE3MjQwNhUUABIYIEFDQ0FFRDUxNzg0NERENjFBNTY1MEI0MTNCMkQ0MTY5AA==',
+            messageTimestamp: '1785827662',
+            pushName: 'Jose Santos',
+            message: { type: 'text', text: { body: 'ping' } },
+            to: '573133324152',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+            userId: 'CO.2177313826172406',
+            username: 'josesantos',
+        }
+
+        const result = await processIncomingMessage(params)
+
+        expect(result.from).toBe('CO.2177313826172406')
+        expect(result.userId).toBe('CO.2177313826172406')
+        expect(result.username).toBe('josesantos')
+        expect(result.body).toBe('ping')
+    })
+
+    test('should prefer phone over BSUID when both are present', async () => {
+        const params = {
+            messageId: '123',
+            messageTimestamp: Date.now(),
+            pushName: 'Jose Santos',
+            message: {
+                type: 'text',
+                from: '573001112233',
+                from_user_id: 'CO.2177313826172406',
+                text: { body: 'ping' },
+            },
+            to: '573133324152',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+            userId: 'CO.2177313826172406',
+        }
+
+        const result = await processIncomingMessage(params)
+
+        expect(result.from).toBe('573001112233')
+    })
 })

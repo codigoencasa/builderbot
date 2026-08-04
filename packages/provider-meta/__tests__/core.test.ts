@@ -672,5 +672,76 @@ describe('#MetaCoreVendor ', () => {
             // Assert — must still forward userId even when wa_id is absent
             expect(processSpy).toHaveBeenCalledWith(expect.objectContaining({ userId: 'US.13491208655302741918' }))
         })
+
+        test('Jose Santos fixture: username-only webhook resolves from to BSUID', async () => {
+            const { processIncomingMessage: realProcess } = jest.requireActual(
+                '../src/utils/processIncomingMsg'
+            ) as typeof import('../src/utils/processIncomingMsg')
+            const processSpy = require('../src/utils/processIncomingMsg').processIncomingMessage as jest.Mock
+            let resolvedMessage: Message | undefined
+            processSpy.mockImplementation(async (params: any) => {
+                resolvedMessage = await realProcess(params)
+                return resolvedMessage
+            })
+
+            const mockReq = {
+                body: {
+                    entry: [
+                        {
+                            changes: [
+                                {
+                                    value: {
+                                        metadata: {
+                                            display_phone_number: '573133324152',
+                                            phone_number_id: '123',
+                                        },
+                                        messages: [
+                                            {
+                                                type: 'text',
+                                                from_user_id: 'CO.2177313826172406',
+                                                id: 'wamid.HBgTQ08uMjE3NzMxMzgyNjE3MjQwNhUUABIYIEFDQ0FFRDUxNzg0NERENjFBNTY1MEI0MTNCMkQ0MTY5AA==',
+                                                timestamp: '1785827662',
+                                                text: { body: 'ping' },
+                                            },
+                                        ],
+                                        contacts: [
+                                            {
+                                                profile: { name: 'Jose Santos', username: 'josesantos' },
+                                                user_id: 'CO.2177313826172406',
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+                globalVendorArgs: { jwtToken: 'token', numberId: '123', version: 'v18.0' },
+            }
+            const mockRes = {
+                statusCode: 0,
+                end: jest.fn(),
+            }
+
+            await metaCoreVendor.incomingMsg(mockReq as any, mockRes as any, mockNext)
+
+            expect(processSpy).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    userId: 'CO.2177313826172406',
+                    username: 'josesantos',
+                })
+            )
+            expect(resolvedMessage).toEqual(
+                expect.objectContaining({
+                    from: 'CO.2177313826172406',
+                    userId: 'CO.2177313826172406',
+                    username: 'josesantos',
+                    body: 'ping',
+                    to: '573133324152',
+                })
+            )
+            expect(mockRes.statusCode).toBe(200)
+            expect(mockRes.end).toHaveBeenCalledWith('Messages enqueued')
+        })
     })
 })

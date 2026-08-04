@@ -13,7 +13,7 @@ import Queue from 'queue-promise'
 
 import { MetaCoreVendor } from './core'
 import { downloadFile, getOrderDetails, getProfile } from '../utils'
-import { isBSUID, parseMetaNumber } from '../utils/number'
+import { isBSUID, parseMetaNumber, resolveOutboundAddress } from '../utils/number'
 
 import type { MetaInterface } from '~/interface/meta'
 import type {
@@ -1213,7 +1213,17 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
      * })
      */
     sendMessageToApi = async (body: TextMessageBody): Promise<any> => {
-        if (body.to) body.to = this.fixPrefixMetaNumber(body.to)
+        const id = body.to ?? body.recipient
+        if (id) {
+            const address = resolveOutboundAddress(id)
+            if ('recipient' in address) {
+                body.recipient = address.recipient
+                delete body.to
+            } else {
+                body.to = this.fixPrefixMetaNumber(address.to)
+                delete body.recipient
+            }
+        }
         try {
             const fullUrl = `${URL}/${this.globalVendorArgs.version}/${this.globalVendorArgs.numberId}/messages`
             const response = await axios.post(fullUrl, body, {

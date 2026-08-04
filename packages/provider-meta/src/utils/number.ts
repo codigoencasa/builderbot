@@ -19,3 +19,13 @@ export const parseMetaNumber = (number: string): string => {
     }
     return number.replace(/\+/g, '').replace(/\s/g, '')
 }
+
+/**
+ * Map a phone or BSUID to the Graph API address field Meta expects.
+ * Phones use `to`; BSUIDs must use `recipient` (not `to`).
+ */
+export function resolveOutboundAddress(id: string): { to: string } | { recipient: string } {
+    const parsed = parseMetaNumber(id)
+    if (isBSUID(parsed)) return { recipient: parsed }
+    return { to: parsed }
+}

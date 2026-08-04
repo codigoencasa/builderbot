@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/provider-voice-sip",
-    "version": "1.4.3-y.7",
+    "version": "1.4.3-y.8",
     "description": "PSTN/SIP voice provider for BuilderBot via LiveKit SIP + OpenAI (Whisper STT / TTS)",
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",

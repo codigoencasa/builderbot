@@ -151,6 +151,7 @@ export interface Contact {
     profile: Profile
     wa_id?: string
     user_id?: string
+    parent_user_id?: string
     name: string
     phones: string[]
 }
@@ -165,6 +166,8 @@ export interface Message {
     pushName: string
     name: string
     userId?: string
+    /** WhatsApp username from contact.profile.username when present. */
+    username?: string
     url?: string
     fileData?: File | null
     payload?: string
@@ -196,12 +199,14 @@ export interface ParamsIncomingMessage {
     fileData?: File | null
     fromMe?: boolean
     userId?: string
+    username?: string
 }
 
 export type TextGenericParams = {
     messaging_product: 'whatsapp'
     recipient_type: string
-    to: string
+    to?: string
+    recipient?: string
     type: string
     [key: string]: any
 }
@@ -223,6 +228,8 @@ export interface ParsedContact {
 export interface TextMessageBody {
     messaging_product: string
     to?: string
+    /** BSUID destination — Meta requires `recipient` instead of `to` for Business-Scoped User IDs. */
+    recipient?: string
     type?: string
     recipient_type?: string
     text?: {
@@ -321,16 +328,20 @@ export interface ContactMeta {
     profile: Profile
     wa_id?: string
     user_id?: string
+    parent_user_id?: string
     name: string
     phones: string[]
 }
 
 export interface Profile {
     name: string
+    username?: string
 }
 
 export interface MessageFromMeta {
-    from: string
+    from?: string
+    /** BSUID when Meta omits the phone (`from`) for username-adopted users. */
+    from_user_id?: string
     id: string
     timestamp: string
     text?: Text

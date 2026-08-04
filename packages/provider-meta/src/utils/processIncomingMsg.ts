@@ -15,14 +15,18 @@ export const processIncomingMessage = async ({
     fileData,
     fromMe,
     userId,
+    username,
 }: ParamsIncomingMessage): Promise<Message> => {
     let responseObj: Message
+
+    // Prefer phone when Meta sends it; fall back to BSUID so ctx.from stays the reply id.
+    const from = message.from ?? message.from_user_id ?? userId
 
     switch (message.type) {
         case 'text': {
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from,
                 to,
                 body: message.text?.body,
                 name: pushName,
@@ -33,7 +37,7 @@ export const processIncomingMessage = async ({
         case 'interactive': {
             responseObj = {
                 type: 'interactive',
-                from: message.from,
+                from,
                 to,
                 body:
                     message.interactive?.button_reply?.title ??
@@ -52,7 +56,7 @@ export const processIncomingMessage = async ({
         case 'button': {
             responseObj = {
                 type: 'button',
-                from: message.from,
+                from,
                 to,
                 body: message.button?.text,
                 payload: message.button?.payload,
@@ -66,7 +70,7 @@ export const processIncomingMessage = async ({
             const imageUrl = await getMediaUrl(version, message.image?.id, numberId, jwtToken)
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from,
                 url: imageUrl ?? fileData?.url,
                 fileData,
                 caption: message?.image?.caption,
@@ -81,7 +85,7 @@ export const processIncomingMessage = async ({
             const documentUrl = await getMediaUrl(version, message.document?.id, numberId, jwtToken)
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from,
                 url: documentUrl ?? fileData?.url,
                 fileData,
                 to,
@@ -95,7 +99,7 @@ export const processIncomingMessage = async ({
             const videoUrl = await getMediaUrl(version, message.video?.id, numberId, jwtToken)
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from,
                 url: videoUrl ?? fileData?.url,
                 fileData,
                 caption: message?.video?.caption,
@@ -109,7 +113,7 @@ export const processIncomingMessage = async ({
         case 'location': {
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from,
                 to,
                 latitude: message.location.latitude,
                 longitude: message.location.longitude,
@@ -123,7 +127,7 @@ export const processIncomingMessage = async ({
             const audioUrl = await getMediaUrl(version, message.audio?.id, numberId, jwtToken)
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from,
                 url: audioUrl ?? fileData?.url,
                 fileData,
                 to,
@@ -137,7 +141,7 @@ export const processIncomingMessage = async ({
             const stickerUrl = await getMediaUrl(version, message.sticker?.id, numberId, jwtToken)
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from,
                 url: stickerUrl ?? fileData?.url,
                 fileData,
                 to,
@@ -151,7 +155,7 @@ export const processIncomingMessage = async ({
         case 'contacts': {
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from,
                 contacts: [
                     {
                         name: message.contacts[0].name,
@@ -168,7 +172,7 @@ export const processIncomingMessage = async ({
         case 'order': {
             responseObj = {
                 type: message.type,
-                from: message.from,
+                from,
                 to,
                 order: {
                     catalog_id: message.order?.catalog_id,
@@ -191,5 +195,6 @@ export const processIncomingMessage = async ({
         timestamp: messageTimestamp,
         fromMe,
         userId,
+        username,
     }
 }
