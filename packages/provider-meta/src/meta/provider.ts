@@ -12,7 +12,7 @@ import Queue from 'queue-promise'
 
 import { MetaCoreVendor } from './core'
 import { downloadFile, getProfile } from '../utils'
-import { parseMetaNumber } from '../utils/number'
+import { parseMetaNumber, resolveOutboundAddress } from '../utils/number'
 
 import type { MetaInterface } from '~/interface/meta'
 import type {
@@ -838,7 +838,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
 
         // Auto-convert to OGG/Opus if not already in that format (required for voice notes)
         if (!mimeType?.includes('ogg') && !mimeType?.includes('opus')) {
-            audioPath = await utils.convertAudio(pathVideo, 'opus')
+            audioPath = await utils.convertAudio(pathVideo, 'ogg')
         }
 
         const formData = new FormData()
@@ -1100,7 +1100,17 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
      * })
      */
     sendMessageToApi = async (body: TextMessageBody): Promise<any> => {
-        if (body.to) body.to = this.fixPrefixMetaNumber(body.to)
+        const id = body.to ?? body.recipient
+        if (id) {
+            const address = resolveOutboundAddress(id)
+            if ('recipient' in address) {
+                body.recipient = address.recipient
+                delete body.to
+            } else {
+                body.to = this.fixPrefixMetaNumber(address.to)
+                delete body.recipient
+            }
+        }
         try {
             const fullUrl = `${URL}/${this.globalVendorArgs.version}/${this.globalVendorArgs.numberId}/messages`
             const response = await axios.post(fullUrl, body, {

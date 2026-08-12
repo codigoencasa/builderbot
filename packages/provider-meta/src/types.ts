@@ -156,6 +156,8 @@ export interface ParsedContact {
 export interface TextMessageBody {
     messaging_product: string
     to?: string
+    /** BSUID destination — Meta requires `recipient` instead of `to` for Business-Scoped User IDs. */
+    recipient?: string
     type?: string
     recipient_type?: string
     text?: {

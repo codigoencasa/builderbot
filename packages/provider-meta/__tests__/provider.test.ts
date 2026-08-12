@@ -129,6 +129,46 @@ describe('#MetaProvider', () => {
             })
             expect(responseData).toEqual(fakeResponseData)
         })
+
+        test('should use recipient field when the target is a BSUID', async () => {
+            // Arrange
+            const fakeBody = {
+                messaging_product: 'whatsapp',
+                recipient_type: 'individual',
+                to: 'US.13491208655302741918',
+                type: 'text',
+                text: {
+                    preview_url: false,
+                    body: 'Hello from BSUID',
+                },
+            }
+            const fakeResponseData = { messageId: 'bsuid-123' }
+            const fakeUrl = `https://graph.facebook.com/v18.0/1234567890/messages`
+            const fakeJwtToken = 'your_jwt_token'
+
+            const axiosResponse = {
+                data: fakeResponseData,
+            }
+            ;(axios.post as jest.MockedFunction<typeof axios.get>).mockResolvedValue(axiosResponse)
+
+            // Act
+            const responseData = await metaProvider.sendMessageToApi(fakeBody)
+
+            // Assert
+            expect(axios.post).toHaveBeenCalledWith(
+                fakeUrl,
+                expect.objectContaining({
+                    messaging_product: 'whatsapp',
+                    recipient: 'US.13491208655302741918',
+                    type: 'text',
+                }),
+                {
+                    headers: { Authorization: `Bearer ${fakeJwtToken}` },
+                }
+            )
+            expect((axios.post as jest.Mock).mock.calls[0][1]).not.toHaveProperty('to')
+            expect(responseData).toEqual(fakeResponseData)
+        })
     })
 
     describe('#sendMessageMeta', () => {

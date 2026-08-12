@@ -1,6 +1,6 @@
 {
   "name": "@japcon-bot/root",
-  "version": "1.0.0",
+  "version": "1.5.2",
   "description": "Bot de wahtsapp open source para MVP o pequeños negocios",
   "main": "app.js",
   "private": true,

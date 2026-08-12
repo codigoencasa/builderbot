@@ -1,6 +1,6 @@
 {
   "name": "@japcon-bot/provider-meta",
-  "version": "1.0.0",
+  "version": "1.5.2",
   "description": "> TODO: description",
   "author": "vicente1992 <vic_ortiz20@hotmail.es>",
   "homepage": "https://github.com/vicente1992/bot-whatsapp#readme",
@@ -59,7 +59,7 @@
     "ts-jest": "^29.4.6",
     "tslib": "^2.6.2",
     "tsm": "^2.3.0",
-    "@japcon-bot/bot": "workspace:^"
+    "@builderbot/bot": "1.4.2"
   },
   "gitHead": "be4c4287fe2fa5847968c98c3d9d32088edeaca3"
 }
