@@ -93,7 +93,8 @@ export interface GHLIncomingWebhook {
     email?: string
     direction?: 'inbound' | 'outbound'
     status?: string
-    attachments?: GHLAttachment[]
+    /** GHL sends this as an array of plain URL strings for InboundMessage webhooks */
+    attachments?: (GHLAttachment | string)[]
     dateAdded?: string
     [key: string]: any
 }

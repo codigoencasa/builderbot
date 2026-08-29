@@ -1,8 +1,29 @@
 import { utils } from '@builderbot/bot'
+import mime from 'mime-types'
 
 import { parseGHLNumber } from './number'
 
-import type { GHLMessage, GHLIncomingWebhook } from '~/types'
+import type { GHLAttachment, GHLMessage, GHLIncomingWebhook } from '~/types'
+
+/**
+ * GHL's InboundMessage webhook sends `attachments` as an array of plain URL
+ * strings (not `{ url, type }` objects). Normalize both shapes so downstream
+ * code can always read `.url` / `.type`.
+ */
+const normalizeAttachments = (raw: GHLIncomingWebhook['attachments']): GHLAttachment[] => {
+    if (!raw) return []
+    return raw.map((att) => (typeof att === 'string' ? { url: att } : att))
+}
+
+/**
+ * Resolves the attachment's mime type, falling back to guessing from the
+ * URL's file extension when GHL doesn't include a `type` field.
+ */
+const resolveAttachmentType = (attachment: GHLAttachment): string => {
+    if (attachment.type) return attachment.type.toLowerCase()
+    const guessed = mime.lookup(attachment.url.split('?')[0])
+    return guessed ? guessed.toLowerCase() : ''
+}
 
 export const processIncomingMessage = (webhook: GHLIncomingWebhook): GHLMessage | null => {
     if (!webhook || webhook.direction !== 'inbound') return null
@@ -12,22 +33,16 @@ export const processIncomingMessage = (webhook: GHLIncomingWebhook): GHLMessage 
     const from = webhook.contactId || phone || ''
     const name = webhook.contactId ?? phone
 
-    // Debug log
-    console.log('[GHL DEBUG] processIncomingMessage:', {
-        'webhook.phone': webhook.phone,
-        'webhook.contactId': webhook.contactId,
-        'parsed phone': phone,
-        'final from': from,
-    })
-    const hasAttachments = webhook.attachments && webhook.attachments.length > 0
+    const attachments = normalizeAttachments(webhook.attachments)
+    const hasAttachments = attachments.length > 0
 
     let body = webhook.body ?? ''
     let type = 'text'
     let url: string | undefined
 
     if (hasAttachments) {
-        const attachment = webhook.attachments[0]
-        const attachmentType = attachment.type?.toLowerCase() ?? ''
+        const attachment = attachments[0]
+        const attachmentType = resolveAttachmentType(attachment)
 
         if (attachmentType.includes('image')) {
             type = 'image'
@@ -66,7 +81,7 @@ export const processIncomingMessage = (webhook: GHLIncomingWebhook): GHLMessage 
     }
 
     if (url) message.url = url
-    if (hasAttachments) message.attachments = webhook.attachments
+    if (hasAttachments) message.attachments = attachments
 
     return message
 }
