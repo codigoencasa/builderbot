@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/provider-voice",
-    "version": "1.4.3-y.10",
+    "version": "1.4.3-y.11",
     "description": "Realtime voice provider for BuilderBot using LiveKit (WebRTC) + OpenAI (Whisper STT / TTS)",
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
