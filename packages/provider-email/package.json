@@ -45,7 +45,7 @@
         "body-parser": "^2.2.1",
         "imapflow": "^1.0.171",
         "mailparser": "^3.7.2",
-        "nodemailer": "^6.10.1",
+        "nodemailer": "^9.0.1",
         "polka": "^0.5.2"
     },
     "gitHead": "4c667603733e1262920fbd919fa388e544f7f707"
