@@ -53,7 +53,7 @@
         "@wppconnect-team/wppconnect": "~1.37.8",
         "body-parser": "^2.2.1",
         "polka": "^0.5.2",
-        "sharp": "0.33.5"
+        "sharp": "0.35.0"
     },
     "gitHead": "4c667603733e1262920fbd919fa388e544f7f707"
 }
