@@ -1,7 +1,9 @@
+import { Linter } from 'eslint'
 import sinon from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
+import { rules } from '../src'
 import { processEndFlowWithFlowDynamic } from '../src/rules'
 
 test('processStateUpdateAwait should not report if "state.update" is not accessed', () => {
@@ -38,7 +40,7 @@ test('Debería llamar a context.report con el mensaje correcto si se detecta end
     const reportStub = sinon.stub()
 
     const contextMock: any = {
-        getAncestors: getAncestorsStub,
+        sourceCode: { getAncestors: getAncestorsStub },
         report: reportStub,
     }
 
@@ -62,6 +64,35 @@ test('Debería llamar a context.report con el mensaje correcto si se detecta end
     assert.ok(reportStub.called)
     assert.is(reportStub.firstCall.args[0].node, mockNode)
     assert.is(reportStub.firstCall.args[0].message, 'Do not use endFlow in the same execution context as flowDynamic.')
+})
+
+const lintWithRule = (code: string) =>
+    new Linter().verify(code, {
+        plugins: { builderbot: { rules } },
+        rules: { 'builderbot/func-prefix-endflow-flowdynamic': 'error' },
+    } as any)
+
+test('Debería reportar endFlow junto a flowDynamic al ejecutarse sobre ESLint 9 (issue #1241)', () => {
+    const messages = lintWithRule(
+        [
+            "addKeyword('hi').addAction(async (ctx, { flowDynamic, endFlow }) => {",
+            "    await flowDynamic('one message')",
+            "    return endFlow('bye')",
+            '})',
+        ].join('\n')
+    )
+
+    assert.is(messages.length, 1)
+    assert.is(messages[0].ruleId, 'builderbot/func-prefix-endflow-flowdynamic')
+    assert.is(messages[0].message, 'Do not use endFlow in the same execution context as flowDynamic.')
+})
+
+test('No debería reportar endFlow cuando no hay flowDynamic en el mismo contexto (ESLint 9)', () => {
+    const messages = lintWithRule(
+        ["addKeyword('hi').addAction(async (ctx, { endFlow }) => {", "    return endFlow('bye')", '})'].join('\n')
+    )
+
+    assert.is(messages.length, 0)
 })
 
 test.run()

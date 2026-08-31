@@ -27,6 +27,9 @@ export interface ReportOptions {
 }
 
 export interface Context {
-    getAncestors?: () => any
     report: (options: ReportOptions) => void
+}
+
+export interface SourceCodeContext extends Context {
+    sourceCode: { getAncestors: (node: INode) => any[] }
 }
