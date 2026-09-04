@@ -41,10 +41,11 @@ export const processIncomingMessage = async ({
                 to,
                 body:
                     message.interactive?.button_reply?.title ??
-                    message.interactive?.list_reply?.id ??
-                    message.interactive?.nfm_reply.response_json,
+                    message.interactive?.list_reply?.title ??
+                    message.interactive?.nfm_reply?.response_json,
                 title_button_reply: message.interactive?.button_reply?.title,
                 title_list_reply: message.interactive?.list_reply?.title,
+                id_list_reply: message.interactive?.list_reply?.id,
                 nfm_reply: message.interactive?.nfm_reply?.response_json
                     ? JSON.parse(message.interactive?.nfm_reply?.response_json)
                     : undefined,

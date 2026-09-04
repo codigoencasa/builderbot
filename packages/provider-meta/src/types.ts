@@ -173,6 +173,7 @@ export interface Message {
     payload?: string
     title_button_reply?: string
     title_list_reply?: string
+    id_list_reply?: string
     latitude?: number
     longitude?: number
     contacts?: Contact[]
