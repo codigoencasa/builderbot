@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/manager",
-    "version": "1.4.3-y.11",
+    "version": "1.4.3-y.12",
     "description": "Multi-tenant bot manager for BuilderBot",
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
