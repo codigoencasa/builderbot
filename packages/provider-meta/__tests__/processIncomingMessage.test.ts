@@ -46,7 +46,7 @@ describe('#processIncomingMessage ', () => {
                 from: 'sender',
                 interactive: {
                     button_reply: { title: 'Button Reply' },
-                    list_reply: { id: 'List Reply' },
+                    list_reply: { id: 'row_id_1', title: 'List Reply' },
                 },
             },
             to: 'receiver',
@@ -58,13 +58,15 @@ describe('#processIncomingMessage ', () => {
         // Act
         const result = await processIncomingMessage(params)
 
-        // Assert
+        // Assert — button_reply takes priority over list_reply when both are present
         expect(result).toEqual({
             type: 'interactive',
             from: 'sender',
             to: 'receiver',
             body: 'Button Reply',
             title_button_reply: 'Button Reply',
+            title_list_reply: 'List Reply',
+            id_list_reply: 'row_id_1',
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
@@ -81,8 +83,11 @@ describe('#processIncomingMessage ', () => {
             message: {
                 type: 'interactive',
                 from: 'sender',
+                // `id` is an internal row identifier (e.g. a random nanoid) unrelated to the
+                // user-visible option text — `body` must resolve to `title`, not `id`, so
+                // keyword/flow matching against the visible option text keeps working.
                 interactive: {
-                    list_reply: { id: 'List Reply' },
+                    list_reply: { id: 'row_id_2', title: 'List Reply' },
                 },
             },
             to: 'receiver',
@@ -101,7 +106,8 @@ describe('#processIncomingMessage ', () => {
             to: 'receiver',
             body: 'List Reply',
             title_button_reply: undefined,
-            title_list_reply: undefined,
+            title_list_reply: 'List Reply',
+            id_list_reply: 'row_id_2',
             pushName: 'John Doe',
             nfm_reply: undefined,
             name: 'John Doe',
