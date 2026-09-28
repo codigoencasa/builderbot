@@ -38,6 +38,9 @@ jest.mock('baileys', () => ({
     },
     isJidGroup: jest.fn().mockReturnValue(false),
     isJidBroadcast: jest.fn().mockReturnValue(false),
+    Browsers: {
+        appropriate: jest.fn().mockReturnValue(['Chrome', 'Mac', '']),
+    },
 }))
 
 jest.mock('fs/promises', () => ({

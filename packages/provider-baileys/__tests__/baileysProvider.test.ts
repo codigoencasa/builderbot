@@ -35,6 +35,9 @@ jest.mock('baileys', () => ({
         requestPairingCode: jest.fn(),
     })),
     getAggregateVotesInPollMessage: jest.fn().mockReturnValue([{ name: 'Option 1', voters: ['voter1'] }]),
+    Browsers: {
+        appropriate: jest.fn().mockReturnValue(['Windows', 'Chrome', 'Chrome 114.0.5735.198']),
+    },
 }))
 
 jest.mock('fs/promises', () => ({
@@ -119,6 +122,7 @@ describe('#BaileysProvider', () => {
             writeMyself: 'none',
             experimentalStore: false,
             experimentalSyncMessage: undefined,
+            fallBackAction: undefined,
         }
         // Act
         const baileysProvider = new BaileysProvider({})
