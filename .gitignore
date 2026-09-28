@@ -75,3 +75,6 @@ nonExistingFilePath
 /packages/provider-telegram/*_sessions
 /packages/provider-baileys/*.png
 /packages/provider-web-whatsapp/.wwebjs_auth/*
+
+# Agent skills / local agent config
+.agents/
