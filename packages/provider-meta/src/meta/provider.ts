@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: MetaProvider — ProviderClass adapter, busEvents wiring, Meta Graph API client, queueing
+ * Rules: Implements the provider port. Dependencies point inward to Domain via MetaCoreVendor and ~/types.
+ * BigO: O(n^2) score:1
+ * keywords: [MetaProvider, MetaCoreVendor, MessageStatusEvent]
+ * GOAL: Expose the Meta provider (send/receive + message_status bus event) behind the framework ProviderClass contract.
+ */
 import { ProviderClass, utils } from '@builderbot/bot'
 import type { Vendor } from '@builderbot/bot/dist/provider/interface/provider'
 import type { BotContext, Button, SendOptions } from '@builderbot/bot/dist/types'
@@ -21,6 +29,7 @@ import type {
     MetaOrderDetails,
     Localization,
     Message,
+    MessageStatusEvent,
     MetaList,
     Order,
     ParsedContact,
@@ -302,6 +311,10 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             func: (payload: BotContext) => {
                 this.emit('message', payload)
             },
+        },
+        {
+            event: 'message_status',
+            func: (payload: MessageStatusEvent) => this.emit('message_status', payload),
         },
         {
             event: 'host',

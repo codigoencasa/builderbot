@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: Meta payload types and value objects (MessageStatus, MessageStatusEvent, Contact, File, orders)
+ * Rules: No external dependencies. Pure structural types.
+ * BigO: O(1) score:5
+ * keywords: [MessageStatus, MessageStatusEvent, MetaGlobalVendorArgs]
+ * GOAL: Describe the raw Meta webhook/API shapes, keeping status entries fully typed and forward-compatible.
+ */
 import type { GlobalVendorArgs } from '@builderbot/bot/dist/types'
 import type { ISttAdapter, ITtsAdapter, WhatsAppCallEntryEvent } from '@builderbot/provider-voice'
 
@@ -109,6 +117,13 @@ export interface MetaGlobalVendorArgs extends GlobalVendorArgs {
      * with `401`. Applies to both `messages` and `calls` webhook events.
      */
     appSecret?: string
+    // ── Message-status webhook response (optional) ──────────────────────────
+    /**
+     * HTTP response for message-status webhook callbacks.
+     * - `'ok'` (default): always respond `200`. Correct per Meta — non-2xx responses trigger retries.
+     * - `'legacy-400'`: preserve the pre-1.4.x behaviour of responding `400` on `failed` statuses.
+     */
+    statusWebhookRespondOnFailure?: 'ok' | 'legacy-400'
 }
 
 export interface ProductItem {
@@ -307,18 +322,62 @@ export interface Value {
     calls?: WhatsAppCallEntryEvent[]
 }
 
+/** Known WhatsApp Cloud API delivery lifecycle states (open union — future values are accepted). */
+export type WhatsAppMessageStatus = 'sent' | 'delivered' | 'read' | 'failed' | (string & {})
+
 /** A single `errors[]` entry on a Meta message status update. */
 export interface MessageStatusError {
-    error_data?: { details?: string }
+    code?: number
+    title?: string
+    message?: string
+    error_data?: { details?: string; [key: string]: unknown }
 }
 
 /** A single entry in `value.statuses[]` on a message-status webhook change. */
 export interface MessageStatus {
+    /** Meta message id (wamid) of the outbound message this status refers to — correlation key. */
+    id?: string
     recipient_id?: string
     recipient_user_id?: string
+    status?: WhatsAppMessageStatus
+    /** Unix timestamp (seconds), string-encoded, as sent by Meta. */
+    timestamp?: string
     errors?: MessageStatusError[]
-    status?: string
+    conversation?: { id?: string; origin?: { type?: string; [key: string]: unknown } }
+    pricing?: { billable?: boolean; pricing_model?: string; category?: string; [key: string]: unknown }
 }
+
+/**
+ * Normalized, forward-compatible payload emitted as the `message_status` event for each
+ * entry in `value.statuses[]`.
+ */
+export interface MessageStatusEvent {
+    /** wamid; `null` when Meta omitted it. */
+    id: string | null
+    /** `recipient_id` or, for BSUID-only users, `recipient_user_id`. */
+    recipientId: string | null
+    /** BSUID (`recipient_user_id`) when present. */
+    recipientUserId: string | null
+    status: WhatsAppMessageStatus
+    timestamp: string | null
+    errors: MessageStatusError[]
+    /** Raw status entry — escape hatch for future Meta fields without a breaking type change. */
+    raw: MessageStatus
+}
+
+/**
+ * Monotonic delivery progression. Consumers can ignore out-of-order events by ranking:
+ * a status is only applied when its rank is >= the last seen rank (failed is terminal-lowest).
+ */
+export const MESSAGE_STATUS_RANK: Record<string, number> = {
+    failed: 0,
+    sent: 1,
+    delivered: 2,
+    read: 3,
+}
+
+/** Returns the rank of a status, or `-1` for unknown statuses. */
+export const statusRank = (status: string): number => MESSAGE_STATUS_RANK[status] ?? -1
 
 export interface Metadata {
     display_phone_number: string

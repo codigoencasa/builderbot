@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: MetaCoreVendor — webhook HTTP middleware (verifyToken, incomingMsg) and status/message event emission
+ * Rules: Handles HTTP request/response and event lifting only. No business rules; delegates message processing.
+ * BigO: O(n^3) score:1
+ * keywords: [MetaCoreVendor, MessageStatusEvent, MetaWebhook]
+ * GOAL: Verify Meta webhooks and lift every message_status entry into a structured event. The nested walk follows the bounded webhook shape (entry/changes/statuses), so it is not an avoidable hotspot.
+ */
 import type { MetaCallCoreVendor, WhatsAppCallEntryEvent } from '@builderbot/provider-voice'
 import EventEmitter from 'node:events'
 import type polka from 'polka'
@@ -13,6 +21,7 @@ import type {
     Message,
     MessageFromMeta,
     MessageStatus,
+    MessageStatusEvent,
     MetaGlobalVendorArgs,
 } from '~/types'
 
@@ -34,16 +43,12 @@ interface WebhookRequest {
     globalVendorArgs?: MetaGlobalVendorArgs
 }
 
-/** Normalized `{ status, reason }` pair extracted from a webhook payload's message statuses. */
-interface ExtractedStatus {
-    status: string
-    reason: string
-}
-
 /** Result of a single O(S) pass over webhook statuses. */
-interface ExtractedStatuses {
-    all: ExtractedStatus[]
-    firstFailed: ExtractedStatus | undefined
+interface NormalizedStatuses {
+    /** One normalized event per entry in every `value.statuses[]`. */
+    events: MessageStatusEvent[]
+    /** First `failed` event in payload order, if any. */
+    firstFailed: MessageStatusEvent | undefined
 }
 
 /**
@@ -86,44 +91,60 @@ export class MetaCoreVendor extends EventEmitter {
     }
 
     /**
-     * Flatten every `value.statuses[]` entry across all `entry[].changes[]` into a single list,
-     * and capture the first `failed` status in the same O(S) pass.
+     * Flatten every `value.statuses[]` entry across all `entry[].changes[]` into normalized
+     * {@link MessageStatusEvent}s, preserving the wamid, recipient, timestamp and errors.
      *
-     * O(S) where S is the total number of status entries across the whole payload — every status
-     * must be visited once because the 400 response serializes the full list; the first-failed
-     * pointer is free during that walk (no second `.find`).
+     * O(S) where S is the total number of status entries across the whole payload. Every status
+     * is visited exactly once and the payload is never mutated; the first-failed pointer is free
+     * during that walk (no second `.find`).
      *
      * Accepts a structural subset of the webhook body (rather than the full `IncomingMessage`)
      * since this only ever reads `entry[].changes[].value.statuses`.
      *
      * @param payload - The raw webhook body, or any object shaped like one.
-     * @returns `{ all, firstFailed }` from a single linear pass.
+     * @returns `{ events, firstFailed }` from a single linear pass.
      */
-    private extractStatus(payload: {
+    private normalizeStatuses(payload: {
         entry?: { changes?: { value?: { statuses?: MessageStatus[] } }[] }[]
-    }): ExtractedStatuses {
-        const entries = payload.entry ?? []
-        const all: ExtractedStatus[] = []
-        let firstFailed: ExtractedStatus | undefined
+    }): NormalizedStatuses {
+        const events: MessageStatusEvent[] = []
+        let firstFailed: MessageStatusEvent | undefined
 
-        for (const entry of entries) {
+        for (const entry of payload.entry ?? []) {
             for (const change of entry.changes ?? []) {
                 for (const status of change.value?.statuses ?? []) {
-                    const recipientId = status.recipient_id ?? status.recipient_user_id ?? 'N/A'
-                    const errorDetails = status.errors?.[0]?.error_data?.details ?? 'Unknown'
-                    const extracted: ExtractedStatus = {
-                        status: status.status ?? 'Unknown',
-                        reason: `Number(${recipientId}): ${errorDetails}`,
-                    }
-                    all.push(extracted)
-                    if (!firstFailed && extracted.status === 'failed') {
-                        firstFailed = extracted
+                    const event = this.toStatusEvent(status)
+                    events.push(event)
+                    if (!firstFailed && event.status === 'failed') {
+                        firstFailed = event
                     }
                 }
             }
         }
 
-        return { all, firstFailed }
+        return { events, firstFailed }
+    }
+
+    /**
+     * Normalize a single raw Meta status entry into a {@link MessageStatusEvent}. Unknown statuses
+     * and missing fields are preserved (never dropped) so consumers stay forward-compatible.
+     */
+    private toStatusEvent(status: MessageStatus): MessageStatusEvent {
+        return {
+            id: status.id ?? null,
+            recipientId: status.recipient_id ?? status.recipient_user_id ?? null,
+            recipientUserId: status.recipient_user_id ?? null,
+            status: status.status ?? 'unknown',
+            timestamp: status.timestamp ?? null,
+            errors: status.errors ?? [],
+            raw: status,
+        }
+    }
+
+    /** Build the legacy human-readable `notice` string for a failure (backward compatibility). */
+    private statusReason(event: MessageStatusEvent): string {
+        const errorDetails = event.errors?.[0]?.error_data?.details ?? 'Unknown'
+        return `Number(${event.recipientId ?? 'N/A'}): ${errorDetails}`
     }
 
     /**
@@ -234,15 +255,33 @@ export class MetaCoreVendor extends EventEmitter {
 
         const { jwtToken, numberId, version } = globalVendorArgs
 
-        const { all: someErrors, firstFailed: findError } = this.extractStatus(body)
+        // Message-status callbacks: emit a structured `message_status` event for every entry so
+        // consumers can correlate delivery lifecycles by wamid (`sent`/`delivered`/`read`/`failed`).
+        const { events: statusEvents, firstFailed } = this.normalizeStatuses(body)
 
-        if (findError) {
-            this.emit('notice', {
-                title: '🔔  META ALERT  🔔',
-                instructions: [findError.reason],
-            })
-            res.writeHead(400, { 'Content-Type': 'application/json' })
-            res.end(JSON.stringify(someErrors))
+        if (statusEvents.length > 0) {
+            for (const event of statusEvents) {
+                this.emit('message_status', event)
+            }
+
+            // Backward compatibility: keep the human-readable `notice` on failure.
+            if (firstFailed) {
+                this.emit('notice', {
+                    title: '🔔  META ALERT  🔔',
+                    instructions: [this.statusReason(firstFailed)],
+                })
+            }
+
+            // Respond 200 by default (non-2xx makes Meta retry the same webhook). `legacy-400`
+            // preserves the previous contract for consumers that relied on it.
+            if (firstFailed && globalVendorArgs.statusWebhookRespondOnFailure === 'legacy-400') {
+                res.writeHead(400, { 'Content-Type': 'application/json' })
+                res.end(JSON.stringify(statusEvents.map((e) => ({ status: e.status, reason: this.statusReason(e) }))))
+                return
+            }
+
+            res.statusCode = 200
+            res.end('OK')
             return
         }
 

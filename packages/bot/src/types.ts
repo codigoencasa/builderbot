@@ -1,5 +1,10 @@
 /**
- * @fileoverview Este archivo contiene las definiciones de tipos utilizadas en el proyecto.
+ * LAYER: Domain
+ * Contains: Shared type contracts (GlobalVendorArgs, ProviderEventTypes, BotContext, message DTOs)
+ * Rules: No external dependencies. Pure type declarations only, no runtime logic.
+ * BigO: O(1) score:5
+ * keywords: [ProviderEventTypes, MessageStatusEvent, BotContext]
+ * GOAL: Define the framework-wide contracts (including the message_status event) that core and providers share.
  */
 
 import type { IdleState } from './context'
@@ -23,6 +28,17 @@ export type ProviderEventTypes = {
     ready: any
     auth_failure: any
     host: any
+    message_status: [
+        arg1: {
+            id: string | null
+            recipientId: string | null
+            recipientUserId: string | null
+            status: string
+            timestamp: string | null
+            errors: any[]
+            raw: any
+        },
+    ]
     [key: string]: any
 }
 

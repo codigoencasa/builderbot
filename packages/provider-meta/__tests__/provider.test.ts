@@ -1359,9 +1359,30 @@ describe('#MetaProvider', () => {
             metaProvider.emit = (mockEventEmitter as any).emit.bind(mockEventEmitter)
 
             // Act
-            metaProvider['busEvents']()[4].func(payload)
+            const hostEvent = metaProvider['busEvents']().find((event) => event.event === 'host')
+            hostEvent.func(payload)
             // Assert
             expect(mockEventEmitter.emit).toHaveBeenCalledWith('host', payload)
+        })
+
+        test('#message_status - should emit the correct events with payloads', async () => {
+            // Arrange
+            const payload: any = {
+                id: 'wamid.test',
+                status: 'delivered',
+                timestamp: '1700000000',
+            }
+            const mockEmit = jest.fn()
+            const mockEventEmitter = {
+                emit: mockEmit,
+            }
+            metaProvider.emit = (mockEventEmitter as any).emit.bind(mockEventEmitter)
+
+            // Act
+            const statusEvent = metaProvider['busEvents']().find((event) => event.event === 'message_status')
+            statusEvent.func(payload)
+            // Assert
+            expect(mockEventEmitter.emit).toHaveBeenCalledWith('message_status', payload)
         })
     })
 
