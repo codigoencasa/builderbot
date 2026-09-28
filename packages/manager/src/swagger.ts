@@ -1,4 +1,12 @@
 /**
+ * LAYER: Application
+ * Contains: Swagger
+ * Rules: Orchestrates domain. No frameworks. Defines ports.
+ * BigO: O(1) score:5
+ * keywords: [Swagger]
+ * GOAL: Own the "swagger" concern of the manager package.
+ */
+/**
  * OpenAPI 3.0 Specification for BotManager API
  */
 export const openApiSpec = {

@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: ImapConfig, MessageSource, SmtpConfig, IEmailProviderArgs
+ * Rules: No external dependencies. Pure business logic.
+ * BigO: O(1) score:5
+ * keywords: [ImapConfig, MessageSource, SmtpConfig, IEmailProviderArgs]
+ * GOAL: Own the "types" concern of the provider-email package.
+ */
 import type { BotContext, GlobalVendorArgs } from '@builderbot/bot/dist/types'
 
 /**

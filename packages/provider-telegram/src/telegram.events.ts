@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: TelegramEvents, EventEmitterClass, ProviderEventTypes, Api
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [TelegramEvents, EventEmitterClass, ProviderEventTypes, Api]
+ * GOAL: Own the "telegram events" concern of the provider-telegram package.
+ */
 import { EventEmitterClass } from '@builderbot/bot'
 import { ProviderEventTypes } from '@builderbot/bot/dist/types'
 import { Api } from 'telegram'

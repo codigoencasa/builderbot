@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: MessengerMessage, MessengerEvents, EventEmitterClass, ProviderEventTypes
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^2) score:1
+ * keywords: [MessengerMessage, MessengerEvents, EventEmitterClass, ProviderEventTypes]
+ * GOAL: Own the "facebook events" concern of the provider-facebook-messenger package.
+ */
 import { EventEmitterClass, utils } from '@builderbot/bot'
 import { ProviderEventTypes } from '@builderbot/bot/dist/types'
 

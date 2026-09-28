@@ -1,4 +1,12 @@
 /**
+ * LAYER: Infrastructure
+ * Contains: MetaCallCoreVendorArgs, SilenceSegmenter, MetaCallClient, CallState
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^2) score:1
+ * keywords: [MetaCallCoreVendorArgs, SilenceSegmenter, MetaCallClient, CallState]
+ * GOAL: Own the "core" concern of the provider-voice package.
+ */
+/**
  * Core vendor for handling Meta (WhatsApp Business) voice calls.
  *
  * Manages the per-call state machine, WebRTC peer connections, SDP negotiation,

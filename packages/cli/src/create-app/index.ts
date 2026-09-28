@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: CreateApp
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(1) score:5
+ * keywords: [CreateApp]
+ * GOAL: Own the "create app" concern of the cli package.
+ */
 import * as fs from 'fs-extra'
 
 /**

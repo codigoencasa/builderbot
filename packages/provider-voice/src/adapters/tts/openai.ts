@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: OpenAITTSAdapterOptions, OpenAITTSAdapter
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [OpenAITTSAdapterOptions, OpenAITTSAdapter]
+ * GOAL: Own the "openai" concern of the provider-voice package.
+ */
 import OpenAI from 'openai'
 
 import { synthesize, TTS_SAMPLE_RATE } from '../../tts'

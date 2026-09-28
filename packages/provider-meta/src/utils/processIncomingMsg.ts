@@ -1,3 +1,11 @@
+/**
+ * LAYER: Application
+ * Contains: processIncomingMessage — orchestrates Meta payload → framework message context
+ * Rules: Orchestrates Domain/Infrastructure. No HTTP framework. Media via getMediaUrl.
+ * BigO: O(1) score:5
+ * keywords: [processIncomingMessage, getMediaUrl, MetaCoreVendor]
+ * GOAL: Turn a raw Meta message into the framework's incoming-message params, resolving media when present.
+ */
 import { utils } from '@builderbot/bot'
 
 import { getMediaUrl } from './mediaUrl'

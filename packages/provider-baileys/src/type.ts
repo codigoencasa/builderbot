@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: BaileyGlobalVendorArgs, GlobalVendorArgs, WABrowserDescription, WAVersion
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [BaileyGlobalVendorArgs, GlobalVendorArgs, WABrowserDescription, WAVersion]
+ * GOAL: Own the "type" concern of the provider-baileys package.
+ */
 import type { GlobalVendorArgs } from '@builderbot/bot/dist/types'
 import { proto, WABrowserDescription, WAVersion } from 'baileys'
 

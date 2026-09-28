@@ -1,4 +1,12 @@
 /**
+ * LAYER: Infrastructure
+ * Contains: LidJid, PnJid, LidCache, HybridLidCache
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n) score:3
+ * keywords: [LidJid, PnJid, LidCache, HybridLidCache]
+ * GOAL: Own the "lid cache" concern of the provider-baileys package.
+ */
+/**
  * @fileoverview LID (Local Identifier) Cache for WhatsApp Baileys Provider
  *
  * This module provides a caching layer for mapping WhatsApp Local Identifiers (LIDs)

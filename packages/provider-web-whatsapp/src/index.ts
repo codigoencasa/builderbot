@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: Src, GlobalVendorArgs
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [Src, GlobalVendorArgs]
+ * GOAL: Own the "src" concern of the provider-web-whatsapp package.
+ */
 import { ProviderClass, utils } from '@builderbot/bot'
 import type { BotContext, GlobalVendorArgs, SendOptions } from '@builderbot/bot/dist/types'
 import { createReadStream, readFileSync } from 'fs'

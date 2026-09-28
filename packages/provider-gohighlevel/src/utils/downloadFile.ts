@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: DownloadFile, AxiosResponse
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [DownloadFile, AxiosResponse]
+ * GOAL: Own the "download file" concern of the provider-gohighlevel package.
+ */
 import axios from 'axios'
 import type { AxiosResponse } from 'axios'
 import mimeTypes from 'mime-types'

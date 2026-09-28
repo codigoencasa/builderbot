@@ -1,4 +1,12 @@
 /**
+ * LAYER: Infrastructure
+ * Contains: Adapters
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [Adapters]
+ * GOAL: Own the "adapters" concern of the provider-voice package.
+ */
+/**
  * Adapter interfaces for pluggable STT and TTS backends.
  * Implement these interfaces to provide custom speech-to-text or
  * text-to-speech providers beyond the built-in OpenAI defaults.

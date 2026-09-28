@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: LruSet, TikTokVideoConfig, TikTokArgs, GlobalVendorArgs
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^2) score:1
+ * keywords: [LruSet, TikTokVideoConfig, TikTokArgs, GlobalVendorArgs]
+ * GOAL: Own the "tiktok provider" concern of the provider-tiktok package.
+ */
 import { ProviderClass } from '@builderbot/bot'
 import type { BotContext, GlobalVendorArgs, SendOptions } from '@builderbot/bot/dist/types'
 import axios, { type AxiosResponse } from 'axios'

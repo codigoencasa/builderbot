@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: TelegramProviderConfig, GlobalVendorArgs, TelegramClient, Api
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^2) score:1
+ * keywords: [TelegramProviderConfig, GlobalVendorArgs, TelegramClient, Api]
+ * GOAL: Own the "telegram provider" concern of the provider-telegram package.
+ */
 import { ProviderClass, utils } from '@builderbot/bot'
 import { BotContext, GlobalVendorArgs, SendOptions } from '@builderbot/bot/dist/types'
 import fs from 'fs'

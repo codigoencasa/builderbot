@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: VoiceInterface, VoicePayload
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(1) score:5
+ * keywords: [VoiceInterface, VoicePayload]
+ * GOAL: Own the "voice" concern of the provider-voice package.
+ */
 import type { BotContext, SendOptions } from '@builderbot/bot/dist/types'
 
 import type { VoicePayload } from '../types'

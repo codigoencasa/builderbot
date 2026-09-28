@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: LiveKitSIPCore, SilenceSegmenter, ISIPProviderArgs, SIPPayload
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^2) score:1
+ * keywords: [LiveKitSIPCore, SilenceSegmenter, ISIPProviderArgs, SIPPayload]
+ * GOAL: Own the "core" concern of the provider-voice-sip package.
+ */
 import {
     AudioFrame,
     AudioSource,

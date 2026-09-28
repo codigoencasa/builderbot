@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: ProviderWithHint, ProviderWithoutHint, Provider, ValueLabel
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(n) score:3
+ * keywords: [ProviderWithHint, ProviderWithoutHint, Provider, ValueLabel]
+ * GOAL: Own the "configuration" concern of the cli package.
+ */
 export interface ProviderWithHint {
     value: string
     label: string

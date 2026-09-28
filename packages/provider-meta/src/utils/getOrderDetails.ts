@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: getOrderDetails — Meta commerce order/catalog resolver
+ * Rules: External HTTP client. Returns Domain order types.
+ * BigO: O(n) score:3
+ * keywords: [getOrderDetails, MetaOrderDetails, MetaProvider]
+ * GOAL: Resolve order and catalog product details from the Meta Graph API.
+ */
 import axios from 'axios'
 
 import type { Order, MetaOrderDetails, MetaOrderProduct } from '~/types'

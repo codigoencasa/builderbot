@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: LIST_ALL / LIST_REGEX — event marker registries
+ * Rules: Pure constant registries. No side effects.
+ * BigO: O(1) score:5
+ * keywords: [LIST_ALL, LIST_REGEX, FlowClass]
+ * GOAL: Centralize the event markers and their matchers used by the flow engine.
+ */
 import { eventAction } from './eventAction'
 import { eventCall, REGEX_EVENT_CALL } from './eventCall'
 import { REGEX_EVENT_CUSTOM } from './eventCustom'

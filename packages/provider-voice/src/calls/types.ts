@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: CallEvent, CallAction, CallDirection, CallState
+ * Rules: No external dependencies. Pure business logic.
+ * BigO: O(1) score:5
+ * keywords: [CallEvent, CallAction, CallDirection, CallState]
+ * GOAL: Own the "types" concern of the provider-voice package.
+ */
 import type { ISttAdapter, ITtsAdapter } from '../adapters/index'
 
 export type { ISttAdapter, ITtsAdapter }

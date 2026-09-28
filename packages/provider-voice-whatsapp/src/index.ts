@@ -1,4 +1,12 @@
 /**
+ * LAYER: Infrastructure
+ * Contains: OpenAISTTAdapter, DeepgramSTTAdapter, DeepgramSTTModel, OpenAITTSAdapter
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [OpenAISTTAdapter, DeepgramSTTAdapter, DeepgramSTTModel, OpenAITTSAdapter]
+ * GOAL: Own the "src" concern of the provider-voice-whatsapp package.
+ */
+/**
  * @builderbot/provider-voice-whatsapp
  *
  * WhatsApp Business voice call provider for BuilderBot.

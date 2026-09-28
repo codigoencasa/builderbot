@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: ProviderClass — provider contract plus its polka HTTP server wiring
+ * Rules: Handles HTTP and provider lifecycle. Delegates message handling outward.
+ * BigO: O(n^2) score:1
+ * keywords: [ProviderClass, ProviderHttpServer, BotCtxMiddleware]
+ * GOAL: Define what every provider implements and expose the HTTP endpoints that start the bot. Nested walks follow bounded middleware lists.
+ */
 import { urlencoded, json } from 'body-parser'
 import cors from 'cors'
 import type { IncomingMessage } from 'node:http'

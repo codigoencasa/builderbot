@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: SherpaWrapper, WALogger
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [SherpaWrapper, WALogger]
+ * GOAL: Own the "sherpa wrapper" concern of the provider-sherpa package.
+ */
 import makeWASocketOther, {
     useMultiFileAuthState,
     DisconnectReason,

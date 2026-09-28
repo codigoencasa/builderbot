@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: Src, GlobalVendorArgs
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n) score:3
+ * keywords: [Src, GlobalVendorArgs]
+ * GOAL: Own the "src" concern of the provider-venom package.
+ */
 import { ProviderClass, utils } from '@builderbot/bot'
 import type { Vendor } from '@builderbot/bot/dist/provider/interface/provider'
 import type { BotContext, Button, GlobalVendorArgs, SendOptions } from '@builderbot/bot/dist/types'

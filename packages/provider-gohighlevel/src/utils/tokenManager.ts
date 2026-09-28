@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: TokenManager, GHLOAuthTokens
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [TokenManager, GHLOAuthTokens]
+ * GOAL: Own the "token manager" concern of the provider-gohighlevel package.
+ */
 import axios from 'axios'
 import EventEmitter from 'node:events'
 

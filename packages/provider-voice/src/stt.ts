@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: Stt, TranscribeOptions
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [Stt, TranscribeOptions]
+ * GOAL: Own the "stt" concern of the provider-voice package.
+ */
 import OpenAI, { toFile } from 'openai'
 
 import { pcmToWav } from './audio'

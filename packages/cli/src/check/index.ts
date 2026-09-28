@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: Check
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(1) score:5
+ * keywords: [Check]
+ * GOAL: Own the "check" concern of the cli package.
+ */
 import { exec } from 'node:child_process'
 import { platform, version as nodeVersion } from 'node:os'
 

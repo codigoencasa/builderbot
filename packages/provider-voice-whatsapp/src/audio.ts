@@ -1,4 +1,12 @@
 /**
+ * LAYER: Infrastructure
+ * Contains: Audio
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [Audio]
+ * GOAL: Own the "audio" concern of the provider-voice-whatsapp package.
+ */
+/**
  * Re-exports of the shared audio utilities from `@builderbot/provider-voice`.
  *
  * Consumers of `@builderbot/provider-voice-whatsapp` can import these helpers

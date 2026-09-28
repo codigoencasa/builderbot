@@ -1,4 +1,12 @@
 /**
+ * LAYER: Infrastructure
+ * Contains: MetaCallClientArgs, MetaCallClient, AxiosError, CallAction
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [MetaCallClientArgs, MetaCallClient, AxiosError, CallAction]
+ * GOAL: Own the "meta call client" concern of the provider-voice package.
+ */
+/**
  * Thin axios client for the Meta Graph API `/calls` endpoint.
  *
  * Handles authentication, request construction, and a bounded retry policy

@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: DeepgramSTTModel, DeepgramSTTAdapterOptions, DeepgramSTTAdapter
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [DeepgramSTTModel, DeepgramSTTAdapterOptions, DeepgramSTTAdapter]
+ * GOAL: Own the "deepgram" concern of the provider-voice package.
+ */
 import { pcmToWav } from '../../audio'
 import type { ISttAdapter } from '../index'
 

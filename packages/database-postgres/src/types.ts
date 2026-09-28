@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: HistoryEntry, Credential, Contact
+ * Rules: No external dependencies. Pure business logic.
+ * BigO: O(1) score:5
+ * keywords: [HistoryEntry, Credential, Contact]
+ * GOAL: Own the "types" concern of the database-postgres package.
+ */
 export type HistoryEntry = {
     ref: string
     keyword?: string

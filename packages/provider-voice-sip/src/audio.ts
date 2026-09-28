@@ -1,4 +1,12 @@
 /**
+ * LAYER: Infrastructure
+ * Contains: SilenceSegmenterOptions, SilenceSegmenter
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n) score:3
+ * keywords: [SilenceSegmenterOptions, SilenceSegmenter]
+ * GOAL: Own the "audio" concern of the provider-voice-sip package.
+ */
+/**
  * Pure audio helpers for the voice provider. No external SDK dependencies so
  * they can be unit-tested in isolation.
  *

@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: _addAnswer — builds a flow answer chain
+ * Rules: Pure flow-data construction. No external side effects.
+ * BigO: O(n) score:3
+ * keywords: [addAnswer, addKeyword, addChild]
+ * GOAL: Turn chained answers into the flow context the runtime consumes.
+ */
 import { addChild } from './addChild'
 import { toJson } from './toJson'
 import type {

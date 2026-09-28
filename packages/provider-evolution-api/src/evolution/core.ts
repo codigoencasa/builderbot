@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: EvolutionCoreVendor, EvolutionGlobalVendorArgs
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [EvolutionCoreVendor, EvolutionGlobalVendorArgs]
+ * GOAL: Own the "core" concern of the provider-evolution-api package.
+ */
 import { randomUUID } from 'node:crypto'
 import EventEmitter from 'node:events'
 import type polka from 'polka'
@@ -106,15 +114,13 @@ export class EvolutionCoreVendor extends EventEmitter {
                                 caption: message.documentMessage.caption,
                                 base64: message.base64,
                             }
-                        }
-                        else if (message.orderMessage) {
+                        } else if (message.orderMessage) {
                             responseObj = {
                                 from,
                                 name,
                                 body: generateRefProvider('_event_order_'),
                             }
-                        }
-                        else if (message.videoMessage) {
+                        } else if (message.videoMessage) {
                             responseObj = {
                                 type: data.messageType,
                                 from,

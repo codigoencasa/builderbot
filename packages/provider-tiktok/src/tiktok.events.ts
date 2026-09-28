@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: TikTokComment, TikTokCommentContext, TikTokEvents, EventEmitterClass
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [TikTokComment, TikTokCommentContext, TikTokEvents, EventEmitterClass]
+ * GOAL: Own the "tiktok events" concern of the provider-tiktok package.
+ */
 import { EventEmitterClass } from '@builderbot/bot'
 import type { BotContext, ProviderEventTypes } from '@builderbot/bot/dist/types'
 

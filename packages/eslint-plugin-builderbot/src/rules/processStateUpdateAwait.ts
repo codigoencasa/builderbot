@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: ProcessStateUpdateAwait
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(1) score:5
+ * keywords: [ProcessStateUpdateAwait]
+ * GOAL: Own the "process state update await" concern of the eslint-plugin-builderbot package.
+ */
 import { isInsideAddActionOrAddAnswer } from '../utils'
 
 const processStateUpdateAwait = (context: any) => {

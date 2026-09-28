@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: GupshupCloudIncomingMessageArgs, GupshupCloudMessage, GupshupGlobalVendorArgs
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [GupshupCloudIncomingMessageArgs, GupshupCloudMessage, GupshupGlobalVendorArgs]
+ * GOAL: Own the "process incoming msg" concern of the provider-gupshup package.
+ */
 import { utils } from '@builderbot/bot'
 import { BotContext } from '@builderbot/bot/dist/types'
 

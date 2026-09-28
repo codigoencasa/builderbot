@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: INode, SourceCodeContext
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(n) score:3
+ * keywords: [INode, SourceCodeContext]
+ * GOAL: Own the "process end flow with flow dynamic" concern of the eslint-plugin-builderbot package.
+ */
 import type { INode, SourceCodeContext } from '../types'
 import { isInsideAddActionOrAddAnswer } from '../utils'
 

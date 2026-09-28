@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: GHLChannelType, GHLGlobalVendorArgs, GHLOAuthTokens, GHLContact
+ * Rules: No external dependencies. Pure business logic.
+ * BigO: O(1) score:5
+ * keywords: [GHLChannelType, GHLGlobalVendorArgs, GHLOAuthTokens, GHLContact]
+ * GOAL: Own the "types" concern of the provider-gohighlevel package.
+ */
 import type { GlobalVendorArgs } from '@builderbot/bot/dist/types'
 
 export type GHLChannelType = 'SMS' | 'WhatsApp' | 'Email' | 'Live_Chat' | 'Facebook' | 'Instagram' | 'Custom'

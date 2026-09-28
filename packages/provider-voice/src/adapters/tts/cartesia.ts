@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: CartesiaModel, CartesiaTTSAdapterOptions, CartesiaTTSAdapter
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [CartesiaModel, CartesiaTTSAdapterOptions, CartesiaTTSAdapter]
+ * GOAL: Own the "cartesia" concern of the provider-voice package.
+ */
 import type { ITtsAdapter } from '../index'
 
 export enum CartesiaModel {

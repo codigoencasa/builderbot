@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: ITwilioProviderARgs, IMessageOptions, TwilioRequestBody, TwilioPayload
+ * Rules: No external dependencies. Pure business logic.
+ * BigO: O(1) score:5
+ * keywords: [ITwilioProviderARgs, IMessageOptions, TwilioRequestBody, TwilioPayload]
+ * GOAL: Own the "types" concern of the provider-twilio package.
+ */
 import type { Button, GlobalVendorArgs } from '@builderbot/bot/dist/types'
 
 export interface ITwilioProviderARgs extends GlobalVendorArgs {

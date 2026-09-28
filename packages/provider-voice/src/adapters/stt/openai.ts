@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: OpenAISTTAdapterOptions, OpenAISTTAdapter
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [OpenAISTTAdapterOptions, OpenAISTTAdapter]
+ * GOAL: Own the "openai" concern of the provider-voice package.
+ */
 import OpenAI from 'openai'
 
 import { transcribe } from '../../stt'

@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: Queue — async FIFO task queue
+ * Rules: No external dependencies. Pure concurrency orchestration.
+ * BigO: O(n^2) score:1
+ * keywords: [Queue, CoreClass]
+ * GOAL: Serialize asynchronous tasks so the runtime processes them in order. Nested loops follow bounded queue operations.
+ */
 type Logger = Console
 
 interface QueueItem<T> {

@@ -1,4 +1,12 @@
 /**
+ * LAYER: Infrastructure
+ * Contains: Sdp
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [Sdp]
+ * GOAL: Own the "sdp" concern of the provider-voice package.
+ */
+/**
  * Pure SDP manipulation utilities for WhatsApp Business voice calls.
  *
  * These functions are stateless and have no external dependencies so they can

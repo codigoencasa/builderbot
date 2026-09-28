@@ -1,3 +1,11 @@
+/**
+ * LAYER: Application
+ * Contains: CoreClass — orchestrates provider, flows, state, and persistence
+ * Rules: Orchestrates Domain and Infrastructure. No HTTP framework specifics.
+ * BigO: O(n^2) score:1
+ * keywords: [CoreClass, ProviderClass, MemoryDB]
+ * GOAL: Drive the bot runtime: route incoming messages through flows and persist state. Nested loops follow bounded message/flow walks.
+ */
 import { Console } from 'console'
 import { createWriteStream } from 'fs'
 

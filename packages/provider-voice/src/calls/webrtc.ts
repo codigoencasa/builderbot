@@ -1,4 +1,12 @@
 /**
+ * LAYER: Infrastructure
+ * Contains: AudioSinkData, RTCAudioSinkInstance, RTCAudioSourceInstance
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [AudioSinkData, RTCAudioSinkInstance, RTCAudioSourceInstance]
+ * GOAL: Own the "webrtc" concern of the provider-voice package.
+ */
+/**
  * Thin wrapper around `@roamhq/wrtc` that exposes typed helpers for WebRTC
  * peer connection management and audio I/O.
  *

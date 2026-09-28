@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: InstagramEventsConstants
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [InstagramEventsConstants]
+ * GOAL: Own the "instagram events constants" concern of the provider-instagram package.
+ */
 import { utils } from '@builderbot/bot'
 
 /**

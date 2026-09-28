@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: InstagramArgs, GlobalVendorArgs, AxiosResponse
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n) score:3
+ * keywords: [InstagramArgs, GlobalVendorArgs, AxiosResponse]
+ * GOAL: Own the "instagram provider" concern of the provider-instagram package.
+ */
 import { ProviderClass, utils } from '@builderbot/bot'
 import type { BotContext, GlobalVendorArgs, SendOptions } from '@builderbot/bot/dist/types'
 import axios, { AxiosResponse } from 'axios'

@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: LiveKitCoreVendor, AccessToken, OpenAISTTAdapter, OpenAITTSAdapter
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^2) score:1
+ * keywords: [LiveKitCoreVendor, AccessToken, OpenAISTTAdapter, OpenAITTSAdapter]
+ * GOAL: Own the "core" concern of the provider-voice package.
+ */
 import {
     AudioFrame,
     AudioSource,

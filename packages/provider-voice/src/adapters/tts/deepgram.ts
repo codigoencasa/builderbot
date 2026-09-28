@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: DeepgramTTSModel, DeepgramTTSAdapterOptions, DeepgramTTSAdapter
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [DeepgramTTSModel, DeepgramTTSAdapterOptions, DeepgramTTSAdapter]
+ * GOAL: Own the "deepgram" concern of the provider-voice package.
+ */
 import type { ITtsAdapter } from '../index'
 
 export enum DeepgramTTSModel {

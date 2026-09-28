@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: MemoryDB, Pool, Contact, Credential
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [MemoryDB, Pool, Contact, Credential]
+ * GOAL: Own the "postgres adapter" concern of the database-postgres package.
+ */
 import { MemoryDB } from '@builderbot/bot'
 import { Pool } from 'pg'
 

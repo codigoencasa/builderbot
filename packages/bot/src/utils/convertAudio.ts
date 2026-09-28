@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: convertAudio / FormatOptions — audio transcoding via ffmpeg
+ * Rules: Wraps an external binary. No business rules.
+ * BigO: O(1) score:5
+ * keywords: [convertAudio, FormatOptions, processIncomingMessage]
+ * GOAL: Convert incoming audio to the format the runtime expects.
+ */
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg'
 import ffmpeg from 'fluent-ffmpeg'
 import path from 'path'

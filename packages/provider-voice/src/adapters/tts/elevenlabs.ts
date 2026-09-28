@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: ElevenLabsModel, ElevenLabsTTSAdapterOptions, ElevenLabsTTSAdapter
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [ElevenLabsModel, ElevenLabsTTSAdapterOptions, ElevenLabsTTSAdapter]
+ * GOAL: Own the "elevenlabs" concern of the provider-voice package.
+ */
 import type { ITtsAdapter } from '../index'
 
 export enum ElevenLabsModel {

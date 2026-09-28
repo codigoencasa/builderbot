@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: Tts, SynthesizeOptions
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [Tts, SynthesizeOptions]
+ * GOAL: Own the "tts" concern of the provider-voice package.
+ */
 import OpenAI from 'openai'
 
 /** Sample rate of OpenAI TTS PCM output (24 kHz, 16-bit, mono). */

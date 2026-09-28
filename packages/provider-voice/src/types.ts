@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: SttModel, TtsModel, TtsVoice, IVoiceProviderArgs
+ * Rules: No external dependencies. Pure business logic.
+ * BigO: O(1) score:5
+ * keywords: [SttModel, TtsModel, TtsVoice, IVoiceProviderArgs]
+ * GOAL: Own the "types" concern of the provider-voice package.
+ */
 import type { GlobalVendorArgs } from '@builderbot/bot/dist/types'
 
 import type { ISttAdapter, ITtsAdapter } from './adapters/index'

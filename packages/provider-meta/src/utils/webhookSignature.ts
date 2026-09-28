@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: Meta webhook signature verification helpers (HMAC-SHA256)
+ * Rules: Wraps node:crypto. No business rules; pure technical utility.
+ * BigO: O(n) score:3
+ * keywords: [verifyMetaSignature, extractMetaSignature, MetaWebhook]
+ * GOAL: Verify Meta's X-Hub-Signature-256 over the raw webhook body using the app secret.
+ */
 import { createHmac, timingSafeEqual } from 'node:crypto'
 
 /**

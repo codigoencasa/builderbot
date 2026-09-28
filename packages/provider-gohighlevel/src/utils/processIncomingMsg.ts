@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: GHLAttachment, GHLMessage, GHLIncomingWebhook
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n) score:3
+ * keywords: [GHLAttachment, GHLMessage, GHLIncomingWebhook]
+ * GOAL: Own the "process incoming msg" concern of the provider-gohighlevel package.
+ */
 import { utils } from '@builderbot/bot'
 import mime from 'mime-types'
 

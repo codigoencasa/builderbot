@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: ISIPProviderArgs, SIPPayload, GlobalVendorArgs
+ * Rules: No external dependencies. Pure business logic.
+ * BigO: O(1) score:5
+ * keywords: [ISIPProviderArgs, SIPPayload, GlobalVendorArgs]
+ * GOAL: Own the "types" concern of the provider-voice-sip package.
+ */
 import type { GlobalVendorArgs } from '@builderbot/bot/dist/types'
 
 /**

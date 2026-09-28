@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: Utils, WriteStream
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [Utils, WriteStream]
+ * GOAL: Own the "utils" concern of the provider-baileys package.
+ */
 import { utils } from '@builderbot/bot'
 import type { WriteStream } from 'fs'
 import { createWriteStream } from 'fs'

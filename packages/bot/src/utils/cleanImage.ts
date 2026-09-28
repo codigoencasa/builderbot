@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: cleanImage — temporary media cleanup
+ * Rules: Wraps the filesystem. No business rules.
+ * BigO: O(1) score:5
+ * keywords: [cleanImage, CoreClass]
+ * GOAL: Delete cached media files that are no longer needed.
+ */
 import { promises as fsPromises } from 'fs'
 
 /**

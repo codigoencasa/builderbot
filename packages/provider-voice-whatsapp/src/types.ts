@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: IWhatsAppVoiceProviderArgs, GlobalVendorArgs
+ * Rules: No external dependencies. Pure business logic.
+ * BigO: O(1) score:5
+ * keywords: [IWhatsAppVoiceProviderArgs, GlobalVendorArgs]
+ * GOAL: Own the "types" concern of the provider-voice-whatsapp package.
+ */
 import type { GlobalVendorArgs } from '@builderbot/bot/dist/types'
 import type { ISttAdapter, ITtsAdapter } from '@builderbot/provider-voice'
 

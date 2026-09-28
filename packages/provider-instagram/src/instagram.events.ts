@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: InstagramListenMode, InstagramCommentValue, InstagramMessage, InstagramEvents
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^2) score:1
+ * keywords: [InstagramListenMode, InstagramCommentValue, InstagramMessage, InstagramEvents]
+ * GOAL: Own the "instagram events" concern of the provider-instagram package.
+ */
 import { EventEmitterClass, utils } from '@builderbot/bot'
 import type { BotContext, ProviderEventTypes } from '@builderbot/bot/dist/types'
 

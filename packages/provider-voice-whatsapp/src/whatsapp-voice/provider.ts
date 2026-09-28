@@ -1,4 +1,12 @@
 /**
+ * LAYER: Infrastructure
+ * Contains: OpenAISTTAdapter, OpenAITTSAdapter, WhatsAppVoiceInterface
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^3) score:1
+ * keywords: [OpenAISTTAdapter, OpenAITTSAdapter, WhatsAppVoiceInterface]
+ * GOAL: Own the "provider" concern of the provider-voice-whatsapp package.
+ */
+/**
  * WhatsApp Voice Provider for BuilderBot.
  *
  * Accepts inbound WhatsApp Business voice calls via the Meta Graph API,

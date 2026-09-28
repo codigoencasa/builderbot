@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: WhatsAppVoiceInterface, WhatsAppVoicePayload
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(1) score:5
+ * keywords: [WhatsAppVoiceInterface, WhatsAppVoicePayload]
+ * GOAL: Own the "whatsapp voice" concern of the provider-voice-whatsapp package.
+ */
 import type { BotContext, SendOptions } from '@builderbot/bot/dist/types'
 
 import type { WhatsAppVoicePayload } from '../types'

@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: DialogFlowContextOptions, DialogFlowCredentials, DialogFlowCXContextOptions, MessageContextIncoming
+ * Rules: No external dependencies. Pure business logic.
+ * BigO: O(1) score:5
+ * keywords: [DialogFlowContextOptions, DialogFlowCredentials, DialogFlowCXContextOptions, MessageContextIncoming]
+ * GOAL: Own the "types" concern of the contexts-dialogflow-cx package.
+ */
 import type { Button } from '@builderbot/bot/dist/types'
 
 export interface DialogFlowContextOptions {

@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: MetaInterface — the public contract the MetaProvider implements
+ * Rules: Type-level contract only. Depends on Domain types; no runtime logic.
+ * BigO: O(1) score:5
+ * keywords: [MetaInterface, MetaProvider, SendOptions]
+ * GOAL: Declare the operations (send text/media/list, reactions, orders) the Meta provider must expose.
+ */
 import type { SendOptions, BotContext, Button } from '@builderbot/bot/dist/types'
 
 import type {
