@@ -169,7 +169,7 @@ class TelegramProvider extends ProviderClass<TelegramEvents> {
         fs.mkdirSync(tmpDir, { recursive: true })
         const fileExtension = mimeType.split('/')[1]
         const fileName: string = `${Date.now().toString()}-${chatId}.${fileExtension}`
-        let filePath = path.join(tmpDir, fileName)
+        const filePath = path.join(tmpDir, fileName)
 
         fs.writeFileSync(filePath, Buffer.from(buffer))
 
