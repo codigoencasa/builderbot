@@ -80,9 +80,9 @@ UVU gotcha:
 - Prefer narrowed directory + anchored regex for true single-file runs.
 
 ## Test Runner Map
-- Jest packages: `@builderbot/provider-baileys`, `@builderbot/provider-evolution-api`, `@builderbot/provider-facebook-messenger`, `@builderbot/provider-gupshup`, `@builderbot/provider-instagram`, `@builderbot/provider-meta`, `@builderbot/provider-sherpa`, `@builderbot/provider-twilio`, `@builderbot/provider-venom`, `@builderbot/provider-web-whatsapp`, `@builderbot/provider-wppconnect`.
+- Jest packages: `@builderbot/provider-baileys`, `@builderbot/provider-email`, `@builderbot/provider-evolution-api`, `@builderbot/provider-facebook-messenger`, `@builderbot/provider-gohighlevel`, `@builderbot/provider-gupshup`, `@builderbot/provider-instagram`, `@builderbot/provider-meta`, `@builderbot/provider-sherpa`, `@builderbot/provider-telegram`, `@builderbot/provider-tiktok`, `@builderbot/provider-twilio`, `@builderbot/provider-venom`, `@builderbot/provider-voice`, `@builderbot/provider-voice-sip`, `@builderbot/provider-voice-whatsapp`, `@builderbot/provider-web-whatsapp`, `@builderbot/provider-wppconnect`.
 - UVU packages: `@builderbot/bot`, `@builderbot/cli`, `@builderbot/manager`, `@builderbot/contexts-dialogflow`, `@builderbot/contexts-dialogflow-cx`, `@builderbot/database-json`, `@builderbot/database-mongo`, `@builderbot/database-mysql`, `@builderbot/database-postgres`, `eslint-plugin-builderbot`.
-- No `test` script currently: `create-builderbot`, `@builderbot/provider-telegram`.
+- No `test` script currently: `create-builderbot`.
 
 ## Code Style: Formatting and Imports
 Source of truth: root `eslint.config.js` and `.prettierrc.json`.
