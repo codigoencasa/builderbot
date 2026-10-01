@@ -49,7 +49,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     stateHandler = new SingleState()
     globalStateHandler = new GlobalState()
     dynamicBlacklist = new BlackList()
-    generalArgs: GeneralArgs & { host?: string } = {
+    generalArgs: GeneralArgs & { host?: string } & { globalArg?: boolean } = {
         blackList: [],
         listEvents: {},
         delay: 0,
@@ -134,6 +134,13 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         {
             event: 'message',
             func: (msg: MessageContextIncoming) => {
+                const fromNum = msg.from ? msg.from.replace('@c.us', '').replace('+', '').replace(/\s/g, '') : ''
+                const hostNum = this.generalArgs.host
+                    ? this.generalArgs.host.replace('@c.us', '').replace('+', '').replace(/\s/g, '')
+                    : ''
+                if (this.generalArgs.globalArg === false && fromNum === hostNum) {
+                    return
+                }
                 return this.handleMsg({ ...msg, host: `${this.generalArgs?.host}` })
             },
         },
@@ -828,6 +835,13 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             req: any,
             res: any
         ) => Promise<void>
-    ) => this.provider.inHandleCtx(ctxPolka)
+    ) => {
+        try {
+            return this.provider.inHandleCtx(ctxPolka)
+        } catch (e) {
+            console.error('[handleCtx error]', e)
+            return Promise.resolve()
+        }
+    }
 }
 export { CoreClass }
