@@ -240,12 +240,13 @@ describe('#BaileysProvider - Reliability', () => {
             expect(provider['mapSet'].size).toBe(0)
         })
 
-        test('should clear idsDuplicates', () => {
-            provider['idsDuplicates'].push('dup1', 'dup2')
+        test('should clear idsDuplicates', async () => {
+            provider['idsDuplicates'].set('dup1', Date.now() + 1000)
+            provider['idsDuplicates'].set('dup2', Date.now() + 1000)
 
-            provider['cleanup']()
+            await provider['cleanup']()
 
-            expect(provider['idsDuplicates'].length).toBe(0)
+            expect(provider['idsDuplicates'].size).toBe(0)
         })
 
         test('should handle cleanup when caches are already undefined', () => {
@@ -349,25 +350,36 @@ describe('#BaileysProvider - Reliability', () => {
 
     describe('#setupPeriodicCleanup', () => {
         test('should trim idsDuplicates when over 1000 items', () => {
-            // Fill with 1500 items
+            // Fake timers also advance Date.now; keep entries alive past one sweep.
+            const future = Date.now() + 2 * 600000
             for (let i = 0; i < 1500; i++) {
-                provider['idsDuplicates'].push(`id_${i}`)
+                provider['idsDuplicates'].set(`id_${i}`, future)
             }
 
-            // Advance timer by 10 minutes
             jest.advanceTimersByTime(600000)
 
-            expect(provider['idsDuplicates'].length).toBe(1000)
+            expect(provider['idsDuplicates'].size).toBe(1000)
         })
 
         test('should not trim idsDuplicates when under 1000 items', () => {
+            const future = Date.now() + 2 * 600000
             for (let i = 0; i < 500; i++) {
-                provider['idsDuplicates'].push(`id_${i}`)
+                provider['idsDuplicates'].set(`id_${i}`, future)
             }
 
             jest.advanceTimersByTime(600000)
 
-            expect(provider['idsDuplicates'].length).toBe(500)
+            expect(provider['idsDuplicates'].size).toBe(500)
+        })
+
+        test('should expire idsDuplicates entries after the TTL', () => {
+            provider['idsDuplicates'].set('old', Date.now() - 1)
+            provider['idsDuplicates'].set('fresh', Date.now() + 2 * 600000)
+
+            jest.advanceTimersByTime(600000)
+
+            expect(provider['idsDuplicates'].has('old')).toBe(false)
+            expect(provider['idsDuplicates'].has('fresh')).toBe(true)
         })
 
         test('should clear mapSet when over 1000 entries', () => {
@@ -395,7 +407,7 @@ describe('#BaileysProvider - Reliability', () => {
 
     describe('Duplicate message detection', () => {
         test('idsDuplicates should start empty', () => {
-            expect(provider['idsDuplicates'].length).toBe(0)
+            expect(provider['idsDuplicates'].size).toBe(0)
         })
 
         test('mapSet should start empty', () => {

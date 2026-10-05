@@ -92,8 +92,12 @@ class BaileysProvider extends ProviderClass<WASocket> {
     private logger: Console
     private logStream: NodeJS.WritableStream
 
-    private idsDuplicates = []
+    /** Dedupe window: messageId__from → expiry timestamp (T2, RFC 0002) */
+    private idsDuplicates = new Map<string, number>()
     private mapSet = new Set()
+
+    private static readonly DEDUPE_TTL_MS = 5 * 60 * 1000
+    private static readonly DEDUPE_MAX_ENTRIES = 5000
 
     /** LID → Phone Number cache for privacy-preserving identifier resolution */
     private lidCache: LidCache
@@ -192,13 +196,21 @@ class BaileysProvider extends ProviderClass<WASocket> {
         // Limpiar duplicados cada 10 minutos para evitar memory leaks
         this.cleanupInterval = setInterval(() => {
             const maxSize = 1000
-            if (this.idsDuplicates.length > maxSize) {
+            const now = Date.now()
+            for (const [key, expiresAt] of this.idsDuplicates) {
+                if (expiresAt <= now) this.idsDuplicates.delete(key)
+            }
+            if (this.idsDuplicates.size > maxSize) {
+                const excess = this.idsDuplicates.size - maxSize
+                let removed = 0
+                for (const key of this.idsDuplicates.keys()) {
+                    if (removed >= excess) break
+                    this.idsDuplicates.delete(key)
+                    removed++
+                }
                 this.logger.log(
-                    `[${new Date().toISOString()}] Cleaning duplicates array: ${
-                        this.idsDuplicates.length
-                    } -> ${maxSize}`
+                    `[${new Date().toISOString()}] Cleaning duplicates map: ${this.idsDuplicates.size + removed} -> ${this.idsDuplicates.size}`
                 )
-                this.idsDuplicates = this.idsDuplicates.slice(-maxSize) // Mantener solo los últimos 1000
             }
 
             // Limpiar mapSet si tiene demasiadas entradas
@@ -258,7 +270,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             this.messageCache?.close()
             this.messageCache = undefined
             this.mapSet.clear()
-            this.idsDuplicates.length = 0
+            this.idsDuplicates.clear()
 
             if (this.lidCache?.close) {
                 await this.lidCache.close().catch((error) => this.logger.error('[Baileys] LID flush failed:', error))
@@ -359,15 +371,19 @@ class BaileysProvider extends ProviderClass<WASocket> {
     }
 
     protected getMessage = async (key: { remoteJid: string; id: string }): Promise<proto.IMessage | undefined> => {
-        if (!key.id) return {}
+        if (!key.id) return undefined
 
-        // Intentar recuperar el mensaje del cache
-        const cachedMessage = this.messageCache?.get<proto.IMessage>(`msg:${key.id}`)
-        if (cachedMessage) {
-            return cachedMessage
+        // Baileys contract: `undefined` on miss so it can trigger a retry.
+        // Returning `{}` makes Baileys believe the message was found (H3).
+        return this.messageCache?.get<proto.IMessage>(`msg:${key.id}`)
+    }
+
+    /** Cache outgoing messages so getMessage can answer retry/poll lookups (T1). */
+    private cacheOutgoingMessage(sent: any): any {
+        if (sent?.key?.id && sent?.message) {
+            this.messageCache?.set(`msg:${sent.key.id}`, sent.message)
         }
-
-        return {}
+        return sent
     }
 
     protected saveCredsGlobal: (() => Promise<void>) | null = null
@@ -702,7 +718,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     // Buscar siempre el que tenga formato @s.whatsapp.net (puede estar en remoteJid o remoteJidAlt)
                     const remoteJid = (messageCtx?.key as any)?.remoteJid
                     const remoteJidAlt = (messageCtx?.key as any)?.remoteJidAlt
-                    const fromParse = remoteJid?.includes('@lid') ? remoteJidAlt || remoteJid?.split('@')[0] : remoteJid
+                    // Never fabricate a PN from a LID: keep the @lid JID and let
+                    // resolveNumber/lidCache resolve it later (T3, RFC 0002 §9.3).
+                    const fromParse = remoteJid?.includes('@lid') ? remoteJidAlt || remoteJid : remoteJid
 
                     let payload = {
                         ...messageCtx,
@@ -792,15 +810,14 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     const processDuplicate = () => {
                         if (messageCtx?.key?.id) {
                             const idWs = `${messageCtx.key.id}__${payload.from}`
-                            const isDuplicate = this.idsDuplicates.includes(idWs)
-                            if (isDuplicate) {
-                                this.idsDuplicates = []
-                                return false
+                            const now = Date.now()
+                            const expiresAt = this.idsDuplicates.get(idWs)
+                            if (expiresAt !== undefined && expiresAt > now) return false
+                            if (this.idsDuplicates.size >= BaileysProvider.DEDUPE_MAX_ENTRIES) {
+                                const oldest = this.idsDuplicates.keys().next().value
+                                if (oldest !== undefined) this.idsDuplicates.delete(oldest)
                             }
-                            if (this.idsDuplicates.length > 10) {
-                                this.idsDuplicates = []
-                            }
-                            this.idsDuplicates.push(idWs)
+                            this.idsDuplicates.set(idWs, now + BaileysProvider.DEDUPE_TTL_MS)
                         }
                         return true
                     }
@@ -1017,7 +1034,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             image: { url: filePath },
             caption: text,
         }
-        return this.vendor.sendMessage(number, payload)
+        return this.cacheOutgoingMessage(await this.vendor.sendMessage(number, payload))
     }
 
     /**
@@ -1033,7 +1050,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             caption: text,
             gifPlayback: this.globalVendorArgs.gifPlayback,
         }
-        return this.vendor.sendMessage(number, payload)
+        return this.cacheOutgoingMessage(await this.vendor.sendMessage(number, payload))
     }
 
     /**
@@ -1051,7 +1068,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             ptt: isPTT,
             mimetype: 'audio/ogg; codecs=opus',
         }
-        return this.vendor.sendMessage(number, payload)
+        return this.cacheOutgoingMessage(await this.vendor.sendMessage(number, payload))
     }
 
     /**
@@ -1062,7 +1079,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
      */
     sendText = async (number: string, message: string) => {
         const payload: AnyMessageContent = { text: message }
-        return this.vendor.sendMessage(number, payload)
+        return this.cacheOutgoingMessage(await this.vendor.sendMessage(number, payload))
     }
 
     /**
@@ -1083,7 +1100,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             caption: text,
         }
 
-        return this.vendor.sendMessage(number, payload)
+        return this.cacheOutgoingMessage(await this.vendor.sendMessage(number, payload))
     }
 
     /**
@@ -1130,7 +1147,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
      */
 
     sendMessage = async (numberIn: string, message: string, options?: SendOptions): Promise<any> => {
-        options = { ...options, ...options['options'] }
+        options = { ...(options ?? {}), ...(options?.['options'] ?? {}) }
         const number = await this.resolveNumber(numberIn)
 
         if (options.buttons?.length) return this.sendButtons(number, message, options.buttons)
@@ -1262,7 +1279,11 @@ class BaileysProvider extends ProviderClass<WASocket> {
         const mimeType = this.getMimeType(ctx as WAMessage)
         if (!mimeType) throw new Error('MIME type not found')
         const extension = mime.extension(mimeType) as string
-        const buffer = await downloadMediaMessage(ctx as WAMessage, 'buffer', {})
+        // Pass ctx so Baileys can request a reupload on 410/404 (T5, upstream #2767)
+        const buffer = await downloadMediaMessage(ctx as WAMessage, 'buffer', {}, {
+            reuploadRequest: (msg: WAMessage) => this.vendor.updateMediaMessage(msg),
+            logger: this.logger,
+        } as any)
         const fileName = this.generateFileName(extension)
 
         const pathFile = join(options?.path ?? tmpdir(), fileName)

@@ -8,6 +8,7 @@ import path from 'path'
 import { IStickerOptions } from 'wa-sticker-formatter'
 
 import { BaileysProvider } from '../src'
+import * as baileysUtils from '../src/utils'
 
 const phoneNumber = '+123456789'
 
@@ -166,18 +167,32 @@ describe('#BaileysProvider', () => {
     })
 
     describe('#getMessage', () => {
-        // BUG(H3): Baileys expects `undefined` on a cache miss (`getMessage:
-        // (key) => Promise<proto.IMessage | undefined>`); returning `{}` makes
-        // Baileys believe the message was found. Fixed in Phase 2 of RFC 0002.
-        test('should return empty message object', async () => {
-            // Arrange
-            const mockedKey = { remoteJid: 'exampleRemoteJid', id: 'exampleId' }
+        // H3 fixed in Phase 2: Baileys expects `undefined` on a cache miss
+        // (`getMessage: (key) => Promise<proto.IMessage | undefined>`); a truthy
+        // `{}` made Baileys believe the message was found.
+        test('should return undefined on cache miss', async () => {
+            const result = await provider['getMessage']({ remoteJid: 'exampleRemoteJid', id: 'exampleId' })
+            expect(result).toBeUndefined()
+        })
 
-            // Act
-            const result = await provider['getMessage'](mockedKey)
+        test('should return undefined when key has no id', async () => {
+            const result = await provider['getMessage']({ remoteJid: 'exampleRemoteJid', id: '' })
+            expect(result).toBeUndefined()
+        })
 
-            // Assert
-            expect(result).toEqual({})
+        test('should return the cached message on hit', async () => {
+            const message = { conversation: 'cached' } as any
+            provider.messageCache?.set('msg:hit-id', message)
+            const result = await provider['getMessage']({ remoteJid: 'exampleRemoteJid', id: 'hit-id' })
+            expect(result).toBe(message)
+        })
+
+        test('should cache outgoing messages so retries can find them', async () => {
+            const sent = { key: { id: 'out-1' }, message: { conversation: 'hello' } }
+            provider.vendor = { sendMessage: (jest.fn() as any).mockResolvedValue(sent) } as any
+            await provider.sendText('123@s.whatsapp.net', 'hello')
+            const result = await provider['getMessage']({ remoteJid: '123@s.whatsapp.net', id: 'out-1' })
+            expect(result).toEqual({ conversation: 'hello' })
         })
     })
 
@@ -221,6 +236,22 @@ describe('#BaileysProvider', () => {
             expect(generateFileNameSpy).toHaveBeenCalled()
             expect(filePath).toContain('mock-file.jpeg')
             expect(path.isAbsolute(filePath)).toBe(true)
+        })
+
+        test('should pass reuploadRequest ctx to downloadMediaMessage (T5, upstream #2767)', async () => {
+            const { downloadMediaMessage } = jest.mocked(await import('baileys'))
+            const ctx: any = { key: { id: 'media-1' }, message: { imageMessage: { mimetype: 'image/jpeg' } } }
+            provider.vendor = { updateMediaMessage: jest.fn() } as any
+            jest.spyOn(provider, 'generateFileName' as any).mockReturnValue('file.jpeg')
+
+            await provider.saveFile(ctx, { path: '/tmp' })
+
+            expect(downloadMediaMessage).toHaveBeenCalledWith(
+                ctx,
+                'buffer',
+                {},
+                expect.objectContaining({ reuploadRequest: expect.any(Function) })
+            )
         })
 
         test('should throw an error when MIME type is not found', async () => {
@@ -510,6 +541,16 @@ describe('#BaileysProvider', () => {
             // Assert
             expect(result).toEqual('success')
             expect(mockSendText).toHaveBeenCalledWith(numberIn, message)
+        })
+
+        test('should send text message when options is undefined (T4)', async () => {
+            const mockSendText = mockSendSuccess
+            provider.sendText = mockSendText
+
+            const result = await provider.sendMessage(phoneNumber, 'Hello, world!')
+
+            expect(result).toEqual('success')
+            expect(mockSendText).toHaveBeenCalledWith(phoneNumber, 'Hello, world!')
         })
 
         test('should send buttons if options contain buttons', async () => {
@@ -1094,6 +1135,66 @@ describe('#BaileysProvider', () => {
                 'message',
                 expect.objectContaining({ body: '_event_order___mock-uuid' })
             )
+        })
+
+        test('LID without remoteJidAlt keeps the @lid JID instead of fabricating a PN (T3)', async () => {
+            const cleanSpy = jest.mocked(baileysUtils.baileyCleanNumber)
+            cleanSpy.mockClear()
+
+            const mockMessage = {
+                message: { conversation: 'hola' },
+                pushName: 'LID User',
+                key: { remoteJid: '999000123456789@lid', remoteJidAlt: undefined, id: 'lid-msg-1' },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [mockMessage], type: 'notify' })
+
+            // First normalization call must receive the raw @lid JID, never the
+            // fabricated numeric prefix '999000123456789'.
+            expect(cleanSpy).toHaveBeenCalledWith('999000123456789@lid')
+            expect(cleanSpy).not.toHaveBeenCalledWith('999000123456789')
+        })
+
+        test('three identical messages emit exactly one event (T2)', async () => {
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const build = () => ({
+                message: { conversation: 'duplicated' },
+                pushName: 'User',
+                key: { remoteJid: '15550000001@s.whatsapp.net', id: 'dup-id-1', fromMe: false },
+            })
+
+            const upsert = provider['busEvents']()[0].func
+            await upsert({ messages: [build()], type: 'notify' })
+            await upsert({ messages: [build()], type: 'notify' })
+            await upsert({ messages: [build()], type: 'notify' })
+
+            const messageEvents = emitSpy.mock.calls.filter(
+                ([event, payload]: any[]) => event === 'message' && payload?.key?.id === 'dup-id-1'
+            )
+            expect(messageEvents).toHaveLength(1)
+        })
+
+        test('a repeated message is accepted again after the dedupe TTL expires (T2)', async () => {
+            jest.useFakeTimers()
+            try {
+                const emitSpy = jest.spyOn(provider, 'emit')
+                const build = () => ({
+                    message: { conversation: 'later' },
+                    pushName: 'User',
+                    key: { remoteJid: '15550000002@s.whatsapp.net', id: 'dup-id-2', fromMe: false },
+                })
+                const upsert = provider['busEvents']()[0].func
+                await upsert({ messages: [build()], type: 'notify' })
+                jest.advanceTimersByTime(5 * 60 * 1000 + 1)
+                await upsert({ messages: [build()], type: 'notify' })
+
+                const messageEvents = emitSpy.mock.calls.filter(
+                    ([event, payload]: any[]) => event === 'message' && payload?.key?.id === 'dup-id-2'
+                )
+                expect(messageEvents).toHaveLength(2)
+            } finally {
+                jest.useRealTimers()
+            }
         })
 
         test('Detect broadcast in a message', async () => {
