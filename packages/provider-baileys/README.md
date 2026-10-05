@@ -47,6 +47,29 @@ When enabled:
 Legacy `groupsIgnore` (default `true`) keeps ignoring groups and broadcasts when
 `allowGroups` is not set.
 
+## Live validation (manual, opt-in)
+
+Automated tests mock Baileys, so they cannot catch packaging or protocol issues.
+`scripts/live-smoke.cjs` links a real device and exercises the built provider:
+
+```bash
+pnpm --filter @builderbot/provider-baileys build
+cd packages/provider-baileys
+
+node scripts/live-smoke.cjs                        # QR pairing (NV1)
+SEND=1 node scripts/live-smoke.cjs                 # + text and image (NV2/NV3)
+PHASE=resume SEND=1 node scripts/live-smoke.cjs    # restart with saved creds + reconnect (NV4/NV5)
+MEDIA=1 SEND=1 node scripts/live-smoke.cjs         # full outbound media batch
+```
+
+- Runs in its own temporary cwd (`/tmp/baileys-live-smoke` by default, override with
+  `SMOKE_ROOT`); it never touches your application directories or sessions.
+- Prints the QR to the terminal and to `<SMOKE_ROOT>/qr-blocks.log`; results land in
+  `<SMOKE_ROOT>/result-<phase>.json`.
+- Sends only to the linked account's own chat unless you set `DEST`. **Do not point it
+  at third parties**: WhatsApp restricts accounts for cold outreach.
+- It links a real device to your account — unlink it in WhatsApp afterwards.
+
 ## Multi-session deployments (memory)
 
 Baileys `rc14` still creates one `AsyncLocalStorage` per socket and never

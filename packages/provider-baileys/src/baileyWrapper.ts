@@ -6,7 +6,8 @@
  * keywords: [BaileyWrapper]
  * GOAL: Own the "bailey wrapper" concern of the provider-baileys package.
  */
-import makeWASocketOther, {
+import makeWASocketDefault, {
+    makeWASocket as makeWASocketNamed,
     useMultiFileAuthState,
     DisconnectReason,
     proto,
@@ -31,6 +32,16 @@ import type {
     WAVersion,
     WABrowserDescription,
 } from 'baileys'
+
+/**
+ * Baileys ships ESM-only. In the CommonJS bundle `require('baileys')` returns the
+ * module namespace, and Rollup's interop rewrites the default import to that same
+ * namespace object — which is not callable. Prefer the stable named export
+ * (`makeWASocket`) and fall back to a callable default when available.
+ */
+const makeWASocketOther = (
+    typeof makeWASocketNamed === 'function' ? makeWASocketNamed : makeWASocketDefault
+) as typeof makeWASocketNamed
 
 export {
     makeWASocketOther,

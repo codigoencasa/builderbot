@@ -28,13 +28,57 @@
 
 > Interpretación: es madurez de evidencia, no probabilidad de fallo. Las fases 0–1 (lifecycle) están sólidas; las fases 2–5 del RFC 0002 concentran la deuda restante.
 
-### Aceptación live (WhatsApp) — NV
+### Aceptación live (WhatsApp) — NV — ✅ ejecutada 2026-10-05
 
-- [ ] NV1 QR real escaneado → `connection: 'open'`
-- [ ] NV2 Envío/recepción de texto
-- [ ] NV3 Envío/recepción de media
-- [ ] NV4 Reinicio con credenciales persistidas (sin re-escanear)
-- [ ] NV5 Reconexión tras pérdida de red
+Arnés aislado: `/tmp/baileys-live-smoke/smoke.cjs` (cwd temporal propio, sesión
+`smoke_sessions`, ningún recurso de la app tocado).
+
+- [x] NV1 QR real escaneado → `connection: 'open'` (3 QR; hubo un `515 restart required` y la reconexión automática lo resolvió)
+- [x] NV2 Envío de texto (ids reales devueltos por WhatsApp)
+- [x] NV3 Envío de imagen (tras corregir el bug de normalización, ver abajo)
+- [x] NV4 Reinicio con credenciales persistidas → `open` con **0 QR**
+- [x] NV5 Reconexión tras cierre forzado del socket → vuelve a `open`
+
+**Hallazgos del live (no visibles con mocks):**
+
+1. **CJS roto** — `dist/index.cjs` fallaba con `makeWASocketOther is not a function`:
+   Baileys es ESM-only y el interop de Rollup reescribía `.default` al namespace.
+   Bug **pre-existente** (afecta también a rc13); el build ESM no estaba afectado.
+   Corregido usando el named export `makeWASocket` + test de regresión.
+2. **Destino sin normalizar** — `sendImage`/`sendVideo`/`sendAudio`/`sendText`/
+   `sendFile`/`sendButtons`/`sendSticker`/`sendLocation`/`sendContact`/
+   `sendPresenceUpdate` pasaban el número crudo a Baileys → `Cannot destructure
+   property 'user' of 'jidDecode(...)'`. Corregido normalizando con `resolveNumber`.
+
+> Nota: `companion_reg_refresh` (upstream #2765) **no** bloqueó el emparejamiento en
+> esta prueba; el flujo QR completó en rc14. La nota de riesgo se mantiene para
+> cuentas afectadas por el cohorte upstream.
+
+#### Batch A — media saliente (2026-10-05)
+
+Arnés: `/tmp/baileys-live-smoke/media-smoke.cjs` (todo a self-chat, assets locales,
+servidor HTTP propio para la ruta de descarga). **11/11 envíos ejecutados**:
+
+| Prueba | Resultado |
+|---|---|
+| `sendImage` | ✅ id real |
+| `sendVideo` | ✅ id real |
+| `sendAudio` (PTT, ogg/opus) | ✅ id real |
+| `sendFile` (PDF) | ✅ id real |
+| `sendSticker` (PNG→webp con **sharp**) | ✅ id real **tras corregir el retorno** |
+| `sendLocation` | ✅ devuelve `{status:'success'}` (API documentada) |
+| `sendContact` | ✅ devuelve `{status:'success'}` (API documentada) |
+| `sendPoll` | ✅ id real |
+| `sendPresenceUpdate` | ✅ composing/paused |
+| `sendMedia` (URL de imagen) | ✅ id real (descarga + mime) |
+| `sendMedia` (mp3 → **conversión ffmpeg**) | ✅ id real |
+
+Tercer hallazgo del live: `sendSticker` no devolvía el mensaje ni lo cacheaba
+(afectaba a `getMessage` en reintentos). Corregido y verificado en vivo
+(`cacheado=true`).
+
+> `sendLocation`/`sendContact` devuelven `{status:'success'}` sin `key`; es la API
+> existente y no se cambió para no romper consumidores. Mejora opcional futura.
 
 ## Detalle por dimensión
 
@@ -125,7 +169,7 @@
 
 ### P3 — validación externa
 
-- [ ] **T16** Smoke live NV1–NV5 con sesión aislada (requiere escaneo del usuario)
+- [x] **T16** Smoke live NV1–NV5 ejecutado con sesión aislada — **5/5 PASS** (ver arriba). Destapó y cerró 2 bugs reales (CJS interop, destino sin normalizar)
 - [x] **T17** Upgrade a `rc14` — *hecho en `fix/baileys-phase-5-upgrade`*. Contrastado: rc13→rc14 son 8 commits (fix Long #2586, `Browsers.android` #2201, tc-token anidado #2607, WA Web version #2728); deps y peers idénticos. **PR #2765 sigue abierto (sin merge, última actividad 2026-09-23)** → el fallo `companion_reg_refresh` en emparejamientos nuevos **persiste en rc14**; no se aplicó fork/parche. Decisión pendiente: esperar merge o parchear
 - [x] **T18** Fuga ALS contrastada: rc14 instalado sigue sin `disable()` ni `dispose` (PR #2807 abierto, última actividad 2026-09-22). Mitigación sin parche: docs de aislamiento por proceso + aviso en `auth_failure` al agotar reconexiones — *hecho*
 

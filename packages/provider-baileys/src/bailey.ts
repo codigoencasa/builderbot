@@ -1088,7 +1088,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             image: { url: filePath },
             caption: text,
         }
-        return this.cacheOutgoingMessage(await this.vendor.sendMessage(number, payload))
+        return this.cacheOutgoingMessage(await this.vendor.sendMessage(await this.resolveNumber(number), payload))
     }
 
     /**
@@ -1104,7 +1104,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             caption: text,
             gifPlayback: this.globalVendorArgs.gifPlayback,
         }
-        return this.cacheOutgoingMessage(await this.vendor.sendMessage(number, payload))
+        return this.cacheOutgoingMessage(await this.vendor.sendMessage(await this.resolveNumber(number), payload))
     }
 
     /**
@@ -1122,7 +1122,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             ptt: isPTT,
             mimetype: 'audio/ogg; codecs=opus',
         }
-        return this.cacheOutgoingMessage(await this.vendor.sendMessage(number, payload))
+        return this.cacheOutgoingMessage(await this.vendor.sendMessage(await this.resolveNumber(number), payload))
     }
 
     /**
@@ -1133,7 +1133,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
      */
     sendText = async (number: string, message: string) => {
         const payload: AnyMessageContent = { text: message }
-        return this.cacheOutgoingMessage(await this.vendor.sendMessage(number, payload))
+        return this.cacheOutgoingMessage(await this.vendor.sendMessage(await this.resolveNumber(number), payload))
     }
 
     /**
@@ -1154,7 +1154,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             caption: text,
         }
 
-        return this.cacheOutgoingMessage(await this.vendor.sendMessage(number, payload))
+        return this.cacheOutgoingMessage(await this.vendor.sendMessage(await this.resolveNumber(number), payload))
     }
 
     /**
@@ -1189,7 +1189,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             headerType: 1,
         }
 
-        return this.vendor.sendMessage(numberClean, buttonMessage)
+        return this.vendor.sendMessage(await this.resolveNumber(numberClean), buttonMessage)
     }
 
     /**
@@ -1219,7 +1219,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
     sendLocation = async (remoteJid: string, latitude: any, longitude: any, messages: any = null) => {
         await this.vendor.sendMessage(
-            remoteJid,
+            await this.resolveNumber(remoteJid),
             {
                 location: {
                     degreesLatitude: latitude,
@@ -1260,7 +1260,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             'END:VCARD'
 
         await this.vendor.sendMessage(
-            remoteJid,
+            await this.resolveNumber(remoteJid),
             {
                 contacts: {
                     displayName: '.',
@@ -1279,7 +1279,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
      * @example await sendPresenceUpdate("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "recording")
      */
     sendPresenceUpdate = async (remoteJid: any, WAPresence: any) => {
-        await this.vendor.sendPresenceUpdate(WAPresence, remoteJid)
+        await this.vendor.sendPresenceUpdate(WAPresence, await this.resolveNumber(remoteJid))
     }
 
     /**
@@ -1304,7 +1304,11 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
         const buffer = await sticker.toMessage()
 
-        await this.vendor.sendMessage(remoteJid, buffer, { quoted: messages })
+        // Return + cache like every other sender so callers get the key and
+        // getMessage can answer a retry (T16 finding).
+        return this.cacheOutgoingMessage(
+            await this.vendor.sendMessage(await this.resolveNumber(remoteJid), buffer, { quoted: messages })
+        )
     }
 
     private getMimeType = (ctx: WAMessage): string | undefined => {

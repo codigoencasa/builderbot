@@ -350,6 +350,45 @@ describe('#BaileysProvider', () => {
         })
     })
 
+    describe('#send* destination normalization (T16)', () => {
+        test('sendImage normalizes a bare phone number into a JID', async () => {
+            const mockSendMessage = jest.fn() as any
+            provider.vendor.sendMessage = mockSendMessage
+            const cleanSpy = jest.mocked(baileysUtils.baileyCleanNumber)
+            cleanSpy.mockClear()
+
+            await provider.sendImage('15551230000', '/tmp/pic.png', 'caption')
+
+            // A bare number must be converted before Baileys calls jidDecode()
+            expect(cleanSpy).toHaveBeenCalledWith('15551230000')
+            expect(mockSendMessage).toHaveBeenCalledWith(
+                phoneNumber,
+                expect.objectContaining({ image: { url: '/tmp/pic.png' }, caption: 'caption' })
+            )
+        })
+
+        test('sendText normalizes a bare phone number into a JID', async () => {
+            const mockSendMessage = jest.fn() as any
+            provider.vendor.sendMessage = mockSendMessage
+
+            await provider.sendText('15551230000', 'hola')
+
+            expect(mockSendMessage).toHaveBeenCalledWith(phoneNumber, { text: 'hola' })
+        })
+
+        test('sendFile normalizes a bare phone number into a JID', async () => {
+            const mockSendMessage = jest.fn() as any
+            provider.vendor.sendMessage = mockSendMessage
+
+            await provider.sendFile('15551230000', '/tmp/doc.pdf', 'caption')
+
+            expect(mockSendMessage).toHaveBeenCalledWith(
+                phoneNumber,
+                expect.objectContaining({ document: { url: '/tmp/doc.pdf' }, caption: 'caption' })
+            )
+        })
+    })
+
     describe('#sendSticker', () => {
         test('should send a sticker message', async () => {
             // Arrange
@@ -357,13 +396,17 @@ describe('#BaileysProvider', () => {
             const stickerUrl = 'https://example.com/sticker.png'
             const stickerOptions: Partial<IStickerOptions> = {}
             const messages = 'Hello Word!'
-            const mockSendMessage = jest.fn() as any
+            const sentMessage = { key: { id: 'sticker-1' }, message: { stickerMessage: {} } }
+            const mockSendMessage = (jest.fn() as any).mockResolvedValue(sentMessage)
             provider.vendor.sendMessage = mockSendMessage
             // Act
-            await provider.sendSticker(remoteJid, stickerUrl, stickerOptions, messages)
+            const sent = await provider.sendSticker(remoteJid, stickerUrl, stickerOptions, messages)
 
-            // Assert
-            expect(mockSendMessage).toHaveBeenCalledWith(remoteJid, expect.any(Buffer), { quoted: messages })
+            // Assert — the destination is normalized before hitting Baileys
+            expect(mockSendMessage).toHaveBeenCalledWith(phoneNumber, expect.any(Buffer), { quoted: messages })
+            // T16: stickers now return the sent message and cache it for getMessage retries
+            expect(sent).toBe(sentMessage)
+            expect(await provider['getMessage']({ remoteJid, id: 'sticker-1' })).toBe(sentMessage.message)
         })
 
         test('should send a sticker message null', async () => {
@@ -376,8 +419,8 @@ describe('#BaileysProvider', () => {
             // Act
             await provider.sendSticker(remoteJid, stickerUrl, stickerOptions)
 
-            // Assert
-            expect(mockSendMessage).toHaveBeenCalledWith(remoteJid, expect.any(Buffer), { quoted: null })
+            // Assert — the destination is normalized before hitting Baileys
+            expect(mockSendMessage).toHaveBeenCalledWith(phoneNumber, expect.any(Buffer), { quoted: null })
         })
     })
 
@@ -392,8 +435,8 @@ describe('#BaileysProvider', () => {
             // Act
             await provider.sendPresenceUpdate(remoteJid, WAPresence)
 
-            // Assert
-            expect(mockSendPresenceUpdate).toHaveBeenCalledWith(WAPresence, remoteJid)
+            // Assert — the destination is normalized before hitting Baileys
+            expect(mockSendPresenceUpdate).toHaveBeenCalledWith(WAPresence, phoneNumber)
         })
     })
 
@@ -420,7 +463,7 @@ describe('#BaileysProvider', () => {
             // Assert
             expect(result).toEqual({ status: 'success' })
             expect(mockSendMessage).toHaveBeenCalledWith(
-                remoteJid,
+                phoneNumber,
                 {
                     contacts: {
                         displayName: '.',
@@ -458,7 +501,7 @@ describe('#BaileysProvider', () => {
             // Assert
             expect(result).toEqual({ status: 'success' })
             expect(mockSendMessage).toHaveBeenCalledWith(
-                remoteJid,
+                phoneNumber,
                 {
                     contacts: {
                         displayName: '.',
@@ -494,7 +537,7 @@ describe('#BaileysProvider', () => {
             // Assert
             expect(result).toEqual({ status: 'success' })
             expect(mockSendMessage).toHaveBeenCalledWith(
-                remoteJid,
+                phoneNumber,
                 {
                     location: {
                         degreesLatitude: latitude,
@@ -520,7 +563,7 @@ describe('#BaileysProvider', () => {
             // Assert
             expect(result).toEqual({ status: 'success' })
             expect(mockSendMessage).toHaveBeenCalledWith(
-                remoteJid,
+                phoneNumber,
                 {
                     location: {
                         degreesLatitude: latitude,
