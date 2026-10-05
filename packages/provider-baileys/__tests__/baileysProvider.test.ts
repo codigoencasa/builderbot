@@ -123,6 +123,7 @@ describe('#BaileysProvider', () => {
             experimentalStore: false,
             experimentalSyncMessage: undefined,
             fallBackAction: undefined,
+            captureProcessSignals: false,
         }
         // Act
         const baileysProvider = new BaileysProvider({})
@@ -1299,8 +1300,9 @@ describe('#BaileysProvider', () => {
     describe('#indexHome', () => {
         test('should send the correct image file', () => {
             // Arrange
+            const existsSpy = jest.spyOn(fs, 'existsSync').mockReturnValue(true)
             const mockedReadStream = jest.fn()
-            const mockedFileStream = { pipe: jest.fn() }
+            const mockedFileStream = { pipe: jest.fn(), on: jest.fn() }
             mockedReadStream.mockReturnValueOnce(mockedFileStream)
             require('fs').createReadStream = mockedReadStream
             const req = { params: { idBotName: 'bot123' } }
@@ -1313,6 +1315,27 @@ describe('#BaileysProvider', () => {
             provider['indexHome'](req as any, res as any, mockNext)
             // Assert
             expect(res.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'image/png' })
+
+            existsSpy.mockRestore()
+            mockedJoin.mockRestore()
+        })
+
+        // BUG(H4): a missing QR file used to crash the process because
+        // createReadStream fails asynchronously and had no error listener.
+        test('should return the 404 page when the QR file does not exist', () => {
+            // Arrange
+            const existsSpy = jest.spyOn(fs, 'existsSync').mockReturnValue(false)
+            const req = { params: { idBotName: 'bot123' } }
+            const res = { writeHead: jest.fn(), end: jest.fn(), headersSent: false }
+
+            // Act
+            provider['indexHome'](req as any, res as any, mockNext)
+
+            // Assert
+            expect(res.writeHead).toHaveBeenCalledWith(404, { 'Content-Type': 'text/html' })
+            expect(res.end).toHaveBeenCalled()
+
+            existsSpy.mockRestore()
         })
     })
 

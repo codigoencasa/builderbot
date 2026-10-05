@@ -28,6 +28,16 @@ export interface BaileyGlobalVendorArgs extends GlobalVendorArgs {
     host?: any
 
     /**
+     * When `true`, the provider registers its own `SIGINT`/`SIGTERM`/`SIGUSR1`/
+     * `SIGUSR2` handlers to flush caches and shut down cleanly.
+     *
+     * Default `false`: the provider never touches process signals, so embedded
+     * apps and other providers keep full control of shutdown. Call
+     * {@link BaileysProvider.destroy} for explicit teardown.
+     */
+    captureProcessSignals?: boolean
+
+    /**
      * Estrategia de caché para resolución LID→PN.
      * - 'file' (default): HybridLidCache (memory + file persistence)
      * - 'memory': MemoryLidCache (solo memoria, no persiste)

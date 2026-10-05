@@ -250,6 +250,95 @@ describe('#BaileysProvider - Reliability', () => {
         })
     })
 
+    // ===== Process signal handling (Phase 1) =====
+
+    describe('#setupCleanupHandlers', () => {
+        test('should not register process signal handlers by default', async () => {
+            const onSpy = jest.spyOn(process, 'on')
+            const p = new BaileysProvider({ name: 'sig-default', port: 3990 })
+
+            const signals = onSpy.mock.calls
+                .map(([event]) => event)
+                .filter((event) => ['SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2'].includes(event as string))
+
+            expect(signals).toHaveLength(0)
+
+            await p.destroy()
+            onSpy.mockRestore()
+        })
+
+        test('should never call process.removeAllListeners', async () => {
+            const wipeSpy = jest.spyOn(process, 'removeAllListeners')
+            const p = new BaileysProvider({ name: 'sig-no-wipe', port: 3991 })
+
+            expect(wipeSpy).not.toHaveBeenCalled()
+
+            await p.destroy()
+            wipeSpy.mockRestore()
+        })
+
+        test('should register and then detach its own handlers when captureProcessSignals is true', async () => {
+            const onSpy = jest.spyOn(process, 'on')
+            const removeSpy = jest.spyOn(process, 'removeListener')
+            const signals = ['SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2']
+
+            const p = new BaileysProvider({ name: 'sig-on', port: 3992, captureProcessSignals: true })
+            for (const signal of signals) {
+                expect(onSpy).toHaveBeenCalledWith(signal, expect.any(Function))
+            }
+
+            await p.destroy()
+
+            for (const signal of signals) {
+                expect(removeSpy).toHaveBeenCalledWith(signal, expect.any(Function))
+            }
+            onSpy.mockRestore()
+            removeSpy.mockRestore()
+        })
+    })
+
+    // ===== Idempotent teardown (Phase 1) =====
+
+    describe('#destroy', () => {
+        test('should be idempotent', async () => {
+            await provider.destroy()
+            expect(provider.msgRetryCounterCache).toBeUndefined()
+
+            await expect(provider.destroy()).resolves.toBeUndefined()
+        })
+
+        test('should clear the periodic cleanup interval', async () => {
+            expect(provider['cleanupInterval']).toBeDefined()
+
+            await provider.destroy()
+
+            expect(provider['cleanupInterval']).toBeUndefined()
+        })
+    })
+
+    // ===== initVendor double-socket regression (Phase 1) =====
+
+    describe('#initVendor', () => {
+        test('should not recursively re-enter initVendor when releaseTmp fails', async () => {
+            const releaseTmpModule = require('../src/releaseTmp')
+            const releaseSpy = jest
+                .spyOn(releaseTmpModule, 'releaseTmp')
+                .mockRejectedValueOnce(new Error('releaseTmp boom'))
+
+            const initSpy = jest.spyOn(provider as any, 'initVendor')
+
+            provider.globalVendorArgs.useBaileysStore = true
+            provider.globalVendorArgs.timeRelease = 1000
+
+            await provider['initVendor']()
+
+            expect(initSpy).toHaveBeenCalledTimes(1)
+
+            releaseSpy.mockRestore()
+            initSpy.mockRestore()
+        })
+    })
+
     // ===== Periodic Cleanup (setupPeriodicCleanup) =====
 
     describe('#setupPeriodicCleanup', () => {
@@ -420,14 +509,8 @@ describe('#BaileysProvider - Reliability', () => {
     // ===== releaseSessionFiles =====
 
     describe('#releaseSessionFiles', () => {
-        test('should call releaseTmp and clearInterval', async () => {
-            // This test verifies the method doesn't throw
-            // releaseTmp is imported from a separate module
-            try {
-                await provider.releaseSessionFiles()
-            } catch {
-                // Expected to potentially fail in test env since releaseTmp may need filesystem
-            }
+        test('should resolve without throwing', async () => {
+            await expect(provider.releaseSessionFiles()).resolves.toBeUndefined()
         })
     })
 })

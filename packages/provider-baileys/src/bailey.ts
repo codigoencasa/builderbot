@@ -11,7 +11,7 @@ import type { BotContext, Button, SendOptions } from '@builderbot/bot/dist/types
 import type { Boom } from '@hapi/boom'
 import { Console } from 'console'
 import type { PathOrFileDescriptor } from 'fs'
-import { createReadStream, createWriteStream, readFileSync } from 'fs'
+import { createReadStream, createWriteStream, existsSync, readFileSync } from 'fs'
 import { readFile, writeFile } from 'fs/promises'
 import mime from 'mime-types'
 import NodeCache from 'node-cache'
@@ -56,7 +56,7 @@ import {
     type MessageContext,
     type LidJid,
 } from './lidCache'
-import { releaseTmp } from './releaseTmp'
+import { cleanSessionFiles, releaseTmp } from './releaseTmp'
 import type { BaileyGlobalVendorArgs } from './type'
 import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber, emptyDirSessions } from './utils'
 
@@ -77,6 +77,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
         autoRefresh: 0,
         experimentalSyncMessage: undefined,
         fallBackAction: undefined,
+        captureProcessSignals: false,
     }
 
     private reconnectAttempts = 0
@@ -95,6 +96,15 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
     /** LID → Phone Number cache for privacy-preserving identifier resolution */
     private lidCache: LidCache
+
+    /** Set once cleanup() runs, to keep teardown idempotent */
+    private isCleaned = false
+
+    /** Handle for the periodic housekeeping interval */
+    private cleanupInterval?: NodeJS.Timeout
+
+    /** Process signal handlers registered by this instance (opt-in) */
+    private signalHandlers: Array<{ event: NodeJS.Signals; handler: (...args: any[]) => void }> = []
 
     constructor(args: Partial<BaileyGlobalVendorArgs>) {
         super()
@@ -161,38 +171,28 @@ class BaileysProvider extends ProviderClass<WASocket> {
      * - Add cleanup function to process.exit
      */
     private setupCleanupHandlers() {
-        const cleanup = () => {
-            this.logger.log(`[${new Date().toISOString()}] Iniciando limpieza de recursos...`)
-            this.cleanup()
+        // Opt-in only: by default the provider never touches the host's process
+        // lifecycle. `removeAllListeners` is deliberately avoided so we never
+        // clobber handlers registered by the app or by other providers.
+        if (!this.globalVendorArgs.captureProcessSignals) return
+
+        const signals: NodeJS.Signals[] = ['SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2']
+
+        for (const signal of signals) {
+            const handler = () => {
+                this.logger.log(`[${new Date().toISOString()}] Received ${signal}, shutting down...`)
+                this.cleanup()
+                    .catch((error) => console.error('Error durante cleanup:', error))
+                    .finally(() => process.exit(0))
+            }
+            process.on(signal, handler)
+            this.signalHandlers.push({ event: signal, handler })
         }
-
-        // Remove existing listeners to prevent duplicates
-        process.removeAllListeners('SIGINT')
-        process.removeAllListeners('SIGTERM')
-        process.removeAllListeners('SIGUSR1')
-        process.removeAllListeners('SIGUSR2')
-        process.removeAllListeners('uncaughtException')
-        process.removeAllListeners('unhandledRejection')
-
-        process.on('SIGINT', cleanup)
-        process.on('SIGTERM', cleanup)
-        process.on('SIGUSR1', cleanup)
-        process.on('SIGUSR2', cleanup)
-
-        process.on('uncaughtException', (error) => {
-            this.logger.log(`[${new Date().toISOString()}] Uncaught Exception:`, error)
-            this.cleanup()
-            process.exit(1)
-        })
-
-        process.on('unhandledRejection', (reason, promise) => {
-            this.logger.log(`[${new Date().toISOString()}] Unhandled Rejection at:`, promise, 'reason:', reason)
-        })
     }
 
     private setupPeriodicCleanup() {
         // Limpiar duplicados cada 10 minutos para evitar memory leaks
-        setInterval(() => {
+        this.cleanupInterval = setInterval(() => {
             const maxSize = 1000
             if (this.idsDuplicates.length > maxSize) {
                 this.logger.log(
@@ -209,10 +209,40 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 this.mapSet.clear()
             }
         }, 600000) // 10 minutos
+
+        // Never keep the event loop alive because of a housekeeping timer
+        if (typeof this.cleanupInterval.unref === 'function') {
+            this.cleanupInterval.unref()
+        }
     }
 
-    private cleanup() {
+    private async cleanup(): Promise<void> {
+        if (this.isCleaned) return
+        this.isCleaned = true
+
         try {
+            // Stop housekeeping timers first
+            if (this.cleanupInterval) {
+                clearInterval(this.cleanupInterval)
+                this.cleanupInterval = undefined
+            }
+
+            // Detach only the handlers we registered ourselves
+            for (const { event, handler } of this.signalHandlers) {
+                process.removeListener(event, handler)
+            }
+            this.signalHandlers = []
+
+            // Close the socket before releasing the caches it depends on
+            if (this.vendor) {
+                try {
+                    this.vendor.ws?.close()
+                    this.vendor.end?.(new Error('Provider cleanup'))
+                } catch (e) {
+                    this.logger.log(`[${new Date().toISOString()}] Error closing socket:`, e)
+                }
+            }
+
             if (this.msgRetryCounterCache) {
                 this.msgRetryCounterCache.close()
                 this.msgRetryCounterCache = undefined
@@ -228,30 +258,41 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 this.messageCache = undefined
             }
 
-            // Cerrar LID cache (flush final a disco)
-            if (this.lidCache?.close) {
-                this.lidCache.close().catch((err) => {
-                    this.logger.error(`[${new Date().toISOString()}] Error closing LID cache:`, err)
-                })
-            }
-
             this.mapSet.clear()
             this.idsDuplicates.length = 0
 
-            if (this.logStream && typeof this.logStream.end === 'function') {
-                this.logStream.end()
+            // Cerrar LID cache (flush final a disco)
+            if (this.lidCache?.close) {
+                await this.lidCache.close().catch((err) => {
+                    this.logger.error(`[${new Date().toISOString()}] Error closing LID cache:`, err)
+                })
             }
 
             this.logger.log(`[${new Date().toISOString()}] Recursos limpiados correctamente`)
         } catch (error) {
             console.error('Error durante cleanup:', error)
+        } finally {
+            // End the log stream last, after every log write above
+            if (this.logStream && typeof this.logStream.end === 'function') {
+                this.logStream.end()
+            }
         }
+    }
+
+    /**
+     * Releases every resource held by the provider: socket, caches, timers,
+     * LID cache flush and log stream. Idempotent.
+     *
+     * Hosts that embed the provider should call this from their own shutdown
+     * path, since the provider does not capture process signals by default.
+     */
+    public async destroy(): Promise<void> {
+        await this.cleanup()
     }
 
     public async releaseSessionFiles() {
         const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
-        const idTimer = await releaseTmp(NAME_DIR_SESSION, 0)
-        clearInterval(idTimer)
+        await cleanSessionFiles(NAME_DIR_SESSION)
     }
 
     protected beforeHttpServerInit(): void {
@@ -266,13 +307,8 @@ class BaileysProvider extends ProviderClass<WASocket> {
     protected afterHttpServerInit(): void {}
 
     public indexHome: polka.Middleware = (req, res) => {
-        try {
-            const botName = req[this.idBotName]
-            const qrPath = join(process.cwd(), `${botName}.qr.png`)
-            const fileStream = createReadStream(qrPath)
-            res.writeHead(200, { 'Content-Type': 'image/png' })
-            fileStream.pipe(res)
-        } catch (e) {
+        const notReady = () => {
+            if (res.headersSent) return
             res.writeHead(404, { 'Content-Type': 'text/html' })
             res.end(`
                 <!DOCTYPE html>
@@ -286,6 +322,24 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 </body>
                 </html>
             `)
+        }
+
+        try {
+            const botName = req[this.idBotName]
+            const qrPath = join(process.cwd(), `${botName}.qr.png`)
+
+            if (!existsSync(qrPath)) {
+                return notReady()
+            }
+
+            const fileStream = createReadStream(qrPath)
+            // `createReadStream` fails asynchronously, so this listener is
+            // mandatory: without it a missing QR file would crash the process.
+            fileStream.on('error', () => notReady())
+            res.writeHead(200, { 'Content-Type': 'image/png' })
+            fileStream.pipe(res)
+        } catch (e) {
+            notReady()
         }
     }
 
@@ -320,8 +374,8 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 }
             }
         } catch (e) {
+            // Best-effort cleanup: never spawn a second socket from here
             this.logger.log(e)
-            this.initVendor().then((v) => this.listenOnEvents(v))
         }
 
         try {
