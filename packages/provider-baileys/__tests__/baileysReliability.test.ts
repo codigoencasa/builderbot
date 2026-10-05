@@ -44,6 +44,7 @@ jest.mock('baileys', () => ({
 }))
 
 jest.mock('fs/promises', () => ({
+    ...jest.requireActual<typeof import('fs/promises')>('fs/promises'),
     writeFile: jest.fn(),
 }))
 
@@ -78,8 +79,10 @@ describe('#BaileysProvider - Reliability', () => {
         })
     })
 
-    afterEach(() => {
+    afterEach(async () => {
+        await provider.destroy()
         jest.useRealTimers()
+        jest.restoreAllMocks()
     })
 
     // ===== Reconnection Logic =====
@@ -177,16 +180,19 @@ describe('#BaileysProvider - Reliability', () => {
             provider['reconnectAttempts'] = 0
             provider['reconnectDelay'] = 1000
             const setTimeoutSpy = jest.spyOn(global, 'setTimeout')
-            provider['initVendor'] = jest.fn().mockReturnValue({ then: jest.fn() }) as any
+            provider['initVendor'] = jest.fn(async () => undefined) as any
 
             // First attempt: delay should be 1000ms * 2^0 = 1000ms
             await provider['delayedReconnect']()
             expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 1000)
 
+            // Finish the pending attempt before scheduling another one.
+            await jest.advanceTimersByTimeAsync(1000)
             // Second attempt: delay should be 1000ms * 2^1 = 2000ms
             await provider['delayedReconnect']()
             expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 2000)
 
+            await jest.advanceTimersByTimeAsync(2000)
             // Third attempt: delay should be 1000ms * 2^2 = 4000ms
             await provider['delayedReconnect']()
             expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 4000)

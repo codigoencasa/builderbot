@@ -11,7 +11,7 @@ import type { BotContext, Button, SendOptions } from '@builderbot/bot/dist/types
 import type { Boom } from '@hapi/boom'
 import { Console } from 'console'
 import type { PathOrFileDescriptor } from 'fs'
-import { createReadStream, createWriteStream, existsSync, readFileSync } from 'fs'
+import { createReadStream, createWriteStream, readFileSync } from 'fs'
 import { readFile, writeFile } from 'fs/promises'
 import mime from 'mime-types'
 import NodeCache from 'node-cache'
@@ -19,6 +19,7 @@ import { tmpdir } from 'os'
 import { join, basename, resolve } from 'path'
 import pino from 'pino'
 import type polka from 'polka'
+import { finished } from 'stream/promises'
 import type { IStickerOptions } from 'wa-sticker-formatter'
 import { Sticker } from 'wa-sticker-formatter'
 
@@ -97,8 +98,14 @@ class BaileysProvider extends ProviderClass<WASocket> {
     /** LID → Phone Number cache for privacy-preserving identifier resolution */
     private lidCache: LidCache
 
-    /** Set once cleanup() runs, to keep teardown idempotent */
+    /** Prevent new work as soon as shutdown starts. */
     private isCleaned = false
+    private cleanupPromise?: Promise<void>
+    private initPromise?: Promise<WASocket['ev'] | undefined>
+    private reconnectTimer?: NodeJS.Timeout
+    private reconnectTask?: Promise<void>
+    private reconnectInProgress = false
+    private sessionCleanupTimer?: NodeJS.Timeout
 
     /** Handle for the periodic housekeeping interval */
     private cleanupInterval?: NodeJS.Timeout
@@ -160,16 +167,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
         this.setupPeriodicCleanup()
     }
 
-    /**
-     * Setup cleanup handlers
-     * @description
-     * - Remove existing listeners to prevent duplicates
-     * - Add new listeners
-     * - Add cleanup function to all listeners
-     * - Add cleanup function to uncaughtException and unhandledRejection
-     * - Add cleanup function to SIGINT, SIGTERM, SIGUSR1, SIGUSR2
-     * - Add cleanup function to process.exit
-     */
+    /** Register only this instance's opt-in shutdown handlers. */
     private setupCleanupHandlers() {
         // Opt-in only: by default the provider never touches the host's process
         // lifecycle. `removeAllListeners` is deliberately avoided so we never
@@ -216,65 +214,72 @@ class BaileysProvider extends ProviderClass<WASocket> {
         }
     }
 
-    private async cleanup(): Promise<void> {
-        if (this.isCleaned) return
+    private cleanup(): Promise<void> {
+        if (this.cleanupPromise) return this.cleanupPromise
         this.isCleaned = true
 
+        if (this.cleanupInterval) clearInterval(this.cleanupInterval)
+        if (this.reconnectTimer) clearTimeout(this.reconnectTimer)
+        if (this.sessionCleanupTimer) clearInterval(this.sessionCleanupTimer)
+        this.cleanupInterval = undefined
+        this.reconnectTimer = undefined
+        this.sessionCleanupTimer = undefined
+        this.reconnectInProgress = false
+
+        for (const { event, handler } of this.signalHandlers) process.removeListener(event, handler)
+        this.signalHandlers = []
+
+        // Every concurrent caller waits for the same complete teardown.
+        this.cleanupPromise = this.performCleanup()
+        return this.cleanupPromise
+    }
+
+    private async performCleanup(): Promise<void> {
         try {
-            // Stop housekeeping timers first
-            if (this.cleanupInterval) {
-                clearInterval(this.cleanupInterval)
-                this.cleanupInterval = undefined
-            }
+            // Initialization may be suspended in auth/version/pairing I/O. Its
+            // stopping guards prevent a late socket; keep logs open until it settles.
+            if (this.reconnectTask) await this.reconnectTask
+            if (this.initPromise) await this.initPromise.catch((error) => this.logger.error(error))
 
-            // Detach only the handlers we registered ourselves
-            for (const { event, handler } of this.signalHandlers) {
-                process.removeListener(event, handler)
-            }
-            this.signalHandlers = []
-
-            // Close the socket before releasing the caches it depends on
             if (this.vendor) {
                 try {
-                    this.vendor.ws?.close()
-                    this.vendor.end?.(new Error('Provider cleanup'))
-                } catch (e) {
-                    this.logger.log(`[${new Date().toISOString()}] Error closing socket:`, e)
+                    // Baileys end() owns WebSocket closure and is async at runtime.
+                    // Do not close twice, and ignore its connection.update during shutdown.
+                    await this.vendor.end?.(undefined)
+                } catch (error) {
+                    this.logger.error('[Baileys] Socket shutdown failed:', error)
                 }
             }
 
-            if (this.msgRetryCounterCache) {
-                this.msgRetryCounterCache.close()
-                this.msgRetryCounterCache = undefined
-            }
-
-            if (this.userDevicesCache) {
-                this.userDevicesCache.close()
-                this.userDevicesCache = undefined
-            }
-
-            if (this.messageCache) {
-                this.messageCache.close()
-                this.messageCache = undefined
-            }
-
+            this.msgRetryCounterCache?.close()
+            this.msgRetryCounterCache = undefined
+            this.userDevicesCache?.close()
+            this.userDevicesCache = undefined
+            this.messageCache?.close()
+            this.messageCache = undefined
             this.mapSet.clear()
             this.idsDuplicates.length = 0
 
-            // Cerrar LID cache (flush final a disco)
             if (this.lidCache?.close) {
-                await this.lidCache.close().catch((err) => {
-                    this.logger.error(`[${new Date().toISOString()}] Error closing LID cache:`, err)
-                })
+                await this.lidCache.close().catch((error) => this.logger.error('[Baileys] LID flush failed:', error))
             }
 
+            const server = this.server?.server
+            if (server?.listening) {
+                await new Promise<void>((resolve, reject) => {
+                    server.close((error) => (error ? reject(error) : resolve()))
+                    server.closeIdleConnections?.()
+                }).catch((error) => this.logger.error('[Baileys] HTTP shutdown failed:', error))
+            }
             this.logger.log(`[${new Date().toISOString()}] Recursos limpiados correctamente`)
         } catch (error) {
             console.error('Error durante cleanup:', error)
         } finally {
-            // End the log stream last, after every log write above
+            // Await the actual flush/close, not just the call to end().
             if (this.logStream && typeof this.logStream.end === 'function') {
+                const flushed = finished(this.logStream)
                 this.logStream.end()
+                await flushed.catch((error) => console.error('[Baileys] Log shutdown failed:', error))
             }
         }
     }
@@ -286,8 +291,16 @@ class BaileysProvider extends ProviderClass<WASocket> {
      * Hosts that embed the provider should call this from their own shutdown
      * path, since the provider does not capture process signals by default.
      */
-    public async destroy(): Promise<void> {
-        await this.cleanup()
+    public destroy(): Promise<void> {
+        return this.cleanup()
+    }
+
+    public start(...args: Parameters<ProviderClass['start']>): void {
+        if (!this.isCleaned) super.start(...args)
+    }
+
+    protected listenOnEvents(vendor: any): void {
+        if (!this.isCleaned) super.listenOnEvents(vendor)
     }
 
     public async releaseSessionFiles() {
@@ -308,7 +321,10 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
     public indexHome: polka.Middleware = (req, res) => {
         const notReady = () => {
-            if (res.headersSent) return
+            if (res.headersSent) {
+                res.destroy()
+                return
+            }
             res.writeHead(404, { 'Content-Type': 'text/html' })
             res.end(`
                 <!DOCTYPE html>
@@ -328,16 +344,15 @@ class BaileysProvider extends ProviderClass<WASocket> {
             const botName = req[this.idBotName]
             const qrPath = join(process.cwd(), `${botName}.qr.png`)
 
-            if (!existsSync(qrPath)) {
-                return notReady()
-            }
-
             const fileStream = createReadStream(qrPath)
-            // `createReadStream` fails asynchronously, so this listener is
-            // mandatory: without it a missing QR file would crash the process.
-            fileStream.on('error', () => notReady())
-            res.writeHead(200, { 'Content-Type': 'image/png' })
-            fileStream.pipe(res)
+            fileStream.once('error', notReady)
+            // Delay headers until the file is open so ENOENT/EACCES can return 404.
+            fileStream.once('open', () => {
+                if (res.destroyed) return fileStream.destroy()
+                res.writeHead(200, { 'Content-Type': 'image/png' })
+                fileStream.pipe(res)
+            })
+            res.once('close', () => fileStream.destroy())
         } catch (e) {
             notReady()
         }
@@ -360,17 +375,32 @@ class BaileysProvider extends ProviderClass<WASocket> {
     /**
      * Iniciar todo Bailey
      */
-    protected initVendor = async () => {
+    protected initVendor = (): Promise<WASocket['ev'] | undefined> => {
+        if (this.isCleaned) return Promise.resolve(undefined)
+        if (this.initPromise) return this.initPromise
+        this.initPromise = this.createVendor().finally(() => {
+            this.initPromise = undefined
+        })
+        return this.initPromise
+    }
+
+    private createVendor = async (): Promise<WASocket['ev'] | undefined> => {
         const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
         const { state, saveCreds } = await useMultiFileAuthState(NAME_DIR_SESSION)
+        if (this.isCleaned) return
         const loggerBaileys = pino({ level: 'fatal' })
 
         this.saveCredsGlobal = saveCreds
 
         try {
             if (this.globalVendorArgs.useBaileysStore) {
-                if (this.globalVendorArgs.timeRelease > 0) {
-                    await releaseTmp(NAME_DIR_SESSION, this.globalVendorArgs.timeRelease)
+                if (this.globalVendorArgs.timeRelease > 0 && !this.sessionCleanupTimer) {
+                    const timer = await releaseTmp(NAME_DIR_SESSION, this.globalVendorArgs.timeRelease)
+                    if (this.isCleaned) {
+                        if (timer) clearInterval(timer)
+                        return
+                    }
+                    this.sessionCleanupTimer = timer
                 }
             }
         } catch (e) {
@@ -394,6 +424,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     this.logger.log(`[Baileys] Fallback to hardcoded WA version: ${version.join('.')}`)
                 }
             }
+            if (this.isCleaned) return
             const sock = makeWASocketOther({
                 logger: loggerBaileys,
                 version,
@@ -450,6 +481,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             }
 
             sock.ev.on('connection.update', async (update: { connection: any; lastDisconnect: any; qr: any }) => {
+                if (this.isCleaned || this.vendor !== sock) return
                 const { connection, lastDisconnect, qr } = update
 
                 this.logger.log(`[${new Date().toISOString()}] Connection update: ${connection}`)
@@ -520,7 +552,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             })
 
             sock.ev.on('creds.update', async () => {
-                await saveCreds()
+                if (!this.isCleaned) await saveCreds()
             })
 
             return sock.ev
@@ -1254,10 +1286,15 @@ class BaileysProvider extends ProviderClass<WASocket> {
             504, // Gateway timeout
         ]
 
-        return reconnectableCodes.includes(statusCode) && this.reconnectAttempts < this.maxReconnectAttempts
+        return (
+            !this.isCleaned &&
+            reconnectableCodes.includes(statusCode) &&
+            this.reconnectAttempts < this.maxReconnectAttempts
+        )
     }
 
     private async delayedReconnect(): Promise<void> {
+        if (this.isCleaned || this.reconnectInProgress) return
         if (this.reconnectAttempts >= this.maxReconnectAttempts) {
             this.logger.log(
                 `[${new Date().toISOString()}] Max reconnection attempts reached (${this.maxReconnectAttempts})`
@@ -1271,6 +1308,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             return
         }
 
+        this.reconnectInProgress = true
         this.reconnectAttempts++
         const delay = Math.min(this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1), 30000) // Max 30 segundos
 
@@ -1280,22 +1318,28 @@ class BaileysProvider extends ProviderClass<WASocket> {
             } in ${delay}ms`
         )
 
-        setTimeout(async () => {
-            try {
-                // Cerrar el socket anterior para evitar conflictos de conexión (xml-not-well-formed)
-                if (this.vendor) {
-                    try {
-                        this.vendor.ws?.close()
-                        this.vendor.end(new Error('Reconnecting'))
-                    } catch (e) {
-                        this.logger.log(`[${new Date().toISOString()}] Error closing previous socket:`, e)
-                    }
-                }
-                this.initVendor().then((v) => this.listenOnEvents(v))
-            } catch (error) {
-                this.logger.log(`[${new Date().toISOString()}] Reconnection failed:`, error)
-            }
+        this.reconnectTimer = setTimeout(() => {
+            this.reconnectTimer = undefined
+            if (this.isCleaned) return
+            this.reconnectTask = this.reconnectVendor().finally(() => {
+                this.reconnectTask = undefined
+            })
         }, delay)
+        this.reconnectTimer.unref?.()
+    }
+
+    private async reconnectVendor(): Promise<void> {
+        try {
+            if (this.isCleaned) return
+            if (this.vendor) await this.vendor.end(undefined)
+            if (this.isCleaned) return
+            const events = await this.initVendor()
+            if (events && !this.isCleaned) this.listenOnEvents(events)
+        } catch (error) {
+            if (!this.isCleaned) this.logger.error('[Baileys] Reconnection failed:', error)
+        } finally {
+            this.reconnectInProgress = false
+        }
     }
 }
 

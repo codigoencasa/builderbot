@@ -6,7 +6,7 @@ Snapshot congelado antes del hardening descrito en
 | Métrica | Valor |
 |---|---|
 | Paquete | `@builderbot/provider-baileys@1.4.3-y.12` |
-| Commit base | `accb3ec3` |
+| Commit base | `06d1e9c0` |
 | `baileys` | `7.0.0-rc13` |
 | `pnpm-lock.yaml` (sha256, 16) | `5235b1c1abbf3624` |
 | Tests | **175 passed / 175 total** (5 suites) |
@@ -36,4 +36,8 @@ Baileys. Se marcan con `// BUG(H<n>)` y se corrigen en fases posteriores.
 
 Los tests crean directorios `<name>_sessions` y ficheros `*.log` en el cwd del
 paquete. Están cubiertos por `.gitignore` (líneas 35 y 74) pero se acumulan.
-Desde Fase 0 se limpian automáticamente vía `jest.globalTeardown.ts`.
+Tras la revisión de Fases 0–1, cada suite se ejecuta en un cwd temporal propio
+mediante `jest.environment.cjs`. Al terminar se elimina únicamente ese workspace;
+nunca se escanean ni borran sesiones, logs o QR del directorio de la aplicación.
+
+La suite ya no usa `--forceExit`: el cierre debe completar sin ocultar handles.

@@ -1,6 +1,7 @@
 import { utils } from '@builderbot/bot'
-import { beforeEach, describe, expect, jest, test } from '@jest/globals'
+import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals'
 import { useMultiFileAuthState } from 'baileys'
+import { EventEmitter } from 'events'
 import fs from 'fs'
 import mime from 'mime-types'
 import path from 'path'
@@ -41,6 +42,7 @@ jest.mock('baileys', () => ({
 }))
 
 jest.mock('fs/promises', () => ({
+    ...jest.requireActual<typeof import('fs/promises')>('fs/promises'),
     readFile: jest.fn().mockImplementation(() => Promise.resolve(Buffer.from('audio-buffer') as any)),
     writeFile: jest.fn(),
 }))
@@ -105,7 +107,12 @@ describe('#BaileysProvider', () => {
         provider.vendor = jest.fn() as any
     })
 
-    test('should initialize BaileysProvider correctly with default arguments', () => {
+    afterEach(async () => {
+        await provider.destroy()
+        jest.restoreAllMocks()
+    })
+
+    test('should initialize BaileysProvider correctly with default arguments', async () => {
         // Arrange
         const defaultArgs = {
             name: 'bot',
@@ -130,6 +137,7 @@ describe('#BaileysProvider', () => {
 
         // Assert
         expect(baileysProvider.globalVendorArgs).toEqual(defaultArgs)
+        await baileysProvider.destroy()
     })
 
     describe('#beforeHttpServerInit', () => {
@@ -1300,23 +1308,20 @@ describe('#BaileysProvider', () => {
     describe('#indexHome', () => {
         test('should send the correct image file', () => {
             // Arrange
-            const existsSpy = jest.spyOn(fs, 'existsSync').mockReturnValue(true)
-            const mockedReadStream = jest.fn()
-            const mockedFileStream = { pipe: jest.fn(), on: jest.fn() }
-            mockedReadStream.mockReturnValueOnce(mockedFileStream)
-            require('fs').createReadStream = mockedReadStream
+            const mockedFileStream = Object.assign(new EventEmitter(), { pipe: jest.fn(), destroy: jest.fn() })
+            jest.spyOn(fs, 'createReadStream').mockReturnValue(mockedFileStream as any)
             const req = { params: { idBotName: 'bot123' } }
-            const res = { writeHead: jest.fn(), end: jest.fn() }
+            const res = { writeHead: jest.fn(), end: jest.fn(), once: jest.fn() }
             const expectedImagePath = 'ruta/esperada/bot123.qr.png'
             const mockedJoin = jest.spyOn(path, 'join')
             mockedJoin.mockReturnValueOnce(expectedImagePath)
 
             // Act
             provider['indexHome'](req as any, res as any, mockNext)
+            mockedFileStream.emit('open', 1)
             // Assert
             expect(res.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'image/png' })
 
-            existsSpy.mockRestore()
             mockedJoin.mockRestore()
         })
 
@@ -1324,18 +1329,18 @@ describe('#BaileysProvider', () => {
         // createReadStream fails asynchronously and had no error listener.
         test('should return the 404 page when the QR file does not exist', () => {
             // Arrange
-            const existsSpy = jest.spyOn(fs, 'existsSync').mockReturnValue(false)
+            const fileStream = Object.assign(new EventEmitter(), { pipe: jest.fn(), destroy: jest.fn() })
+            jest.spyOn(fs, 'createReadStream').mockReturnValue(fileStream as any)
             const req = { params: { idBotName: 'bot123' } }
-            const res = { writeHead: jest.fn(), end: jest.fn(), headersSent: false }
+            const res = { writeHead: jest.fn(), end: jest.fn(), headersSent: false, once: jest.fn() }
 
             // Act
             provider['indexHome'](req as any, res as any, mockNext)
+            fileStream.emit('error', new Error('ENOENT'))
 
             // Assert
             expect(res.writeHead).toHaveBeenCalledWith(404, { 'Content-Type': 'text/html' })
             expect(res.end).toHaveBeenCalled()
-
-            existsSpy.mockRestore()
         })
     })
 

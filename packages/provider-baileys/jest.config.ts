@@ -7,13 +7,14 @@ import type { Config } from 'jest'
 
 const config: Config = {
     maxWorkers: 2,
-    preset: 'ts-jest',
+    transform: {
+        '^.+\\.tsx?$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.json' }],
+    },
     verbose: true,
     cache: true,
-    testEnvironment: 'node',
-    // Removes `<name>_sessions/` dirs and `*.log` files created by tests in the
-    // package cwd. See jest.globalTeardown.ts.
-    globalTeardown: '<rootDir>/jest.globalTeardown.ts',
+    // Each suite owns a temporary cwd. Never scan application directories to
+    // guess which sessions/logs are test artifacts.
+    testEnvironment: '<rootDir>/jest.environment.cjs',
 }
 
 export default config

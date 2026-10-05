@@ -219,6 +219,25 @@ Hoy `groupsIgnore:false` no habilita nada porque `baileyIsValidNumber('…@g.us'
 
 ---
 
+## 5.3 Correcciones tras la revisión de Fases 0–1
+
+Los commits iniciales `a750a1a5` y `b22c6cc8` no bastaban para aceptar las fases.
+La revisión reprodujo eliminación de sesiones/claves, reinicio tras shutdown,
+retorno prematuro de cierres concurrentes y respuestas QR sin finalizar.
+
+Correcciones aplicadas, limitadas a estas fases:
+
+- Workspace temporal propio por suite (`jest.environment.cjs`), sin glob de borrado en el cwd de la aplicación.
+- Limpieza positiva de archivos `builderbot-temp-<id>.tmp`; todo el material de autenticación y los archivos desconocidos se preservan.
+- `cleanupPromise` compartida; cancelación de timers de reconexión y limpieza de sesiones.
+- Guards de cierre en arranque/eventos; espera de inicialización y reconexiones ya en curso.
+- Espera del cierre asíncrono del socket, del servidor HTTP y del stream de logs.
+- QR: headers después de `open`; error previo devuelve 404, error posterior destruye la respuesta.
+- Tests de regresión con socket mockeado y servidor HTTP local real; suite sin `--forceExit`.
+
+Esto no modifica el routing de Fase 2 ni actualiza Baileys. La validación local
+no sustituye una prueba de conexión real con WhatsApp, prevista para Fase 5.
+
 ## 6. Puerta de calidad por fase (Definition of Done)
 
 Una fase se considera cerrada cuando **todo** lo siguiente es cierto:

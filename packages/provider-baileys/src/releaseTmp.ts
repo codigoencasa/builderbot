@@ -1,77 +1,60 @@
 /**
  * LAYER: Infrastructure
  * Contains: ReleaseTmp, cleanSessionFiles
- * Rules: Implements ports from Application. Can use any framework.
+ * Rules: Removes only explicitly owned temporary artifacts, never authentication state.
  * BigO: O(n) score:3
- * keywords: [ReleaseTmp, cleanSessionFiles]
- * GOAL: Own the "release tmp" concern of the provider-baileys package.
+ * keywords: [ReleaseTmp, SessionCleanup, AuthenticationState]
+ * GOAL: Clean provider-owned temporary artifacts without deleting current or future Baileys keys.
  */
-import { existsSync } from 'fs'
+import { existsSync, type Dirent } from 'fs'
 import { readdir, unlink } from 'fs/promises'
 import { join } from 'path'
 
-const keepFiles = ['creds.json', 'baileys_store.json', 'app-state-sync', 'session']
+// Positive ownership rule: authentication JSON, arbitrary .tmp files and unknown
+// future key categories must survive. Only this reserved artifact namespace is disposable.
+const OWNED_TEMP_FILE = /^builderbot-temp-[a-zA-Z0-9_-]+\.tmp$/
 
 /**
- * Removes every non-essential file inside a session directory in a single pass.
- *
- * Files listed in {@link keepFiles} (credentials and app-state) are preserved.
- *
- * @alpha
- * @param sessionName - Session directory name, relative to `process.cwd()`
+ * One-shot cleanup of explicitly owned `builderbot-temp-<id>.tmp` files.
+ * All credentials, Signal keys, caches and unknown files are preserved.
+ * @param sessionName - Session directory relative to `process.cwd()`
  */
 export const cleanSessionFiles = async (sessionName: string): Promise<void> => {
-    const PATH_SRC = join(process.cwd(), sessionName)
-
-    if (!existsSync(PATH_SRC)) return
-
-    let filesToClean: string[]
+    const sessionPath = join(process.cwd(), sessionName)
+    let files: Dirent[]
     try {
-        filesToClean = await readdir(PATH_SRC)
-    } catch (e) {
-        console.log(`Error:`, e)
-        return
+        files = await readdir(sessionPath, { withFileTypes: true })
+    } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') return
+        throw error
     }
 
-    for (const iterator of filesToClean) {
-        const checkFile = keepFiles.some((i) => iterator.includes(i))
-        if (checkFile) continue
-
+    for (const file of files) {
+        if (!file.isFile() || !OWNED_TEMP_FILE.test(file.name)) continue
         try {
-            const fileToDelete = join(PATH_SRC, iterator)
-            if (!existsSync(fileToDelete)) continue
-            await unlink(fileToDelete)
-            console.log(`🏷️ Clean:`, iterator)
-        } catch (e) {
-            console.log(`Error:`, e)
+            await unlink(join(sessionPath, file.name))
+        } catch (error) {
+            if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
         }
     }
 }
 
-/**
- * Starts a periodic cleanup of a session directory.
- *
- * The returned timer is `unref()`ed so it never keeps the process alive.
- *
- * @alpha
- * @param sessionName - Session directory name, relative to `process.cwd()`
- * @param ms - Interval between cleanup passes, in milliseconds
- * @returns The interval handle, or `undefined` if the session directory does not exist
- */
+/** Starts non-overlapping cleanup passes. The caller owns and must clear the timer. */
 export const releaseTmp = async (sessionName: string, ms: number): Promise<NodeJS.Timeout | undefined> => {
-    const PATH_SRC = join(process.cwd(), sessionName)
+    if (!Number.isFinite(ms) || ms <= 0 || !existsSync(join(process.cwd(), sessionName))) return undefined
 
-    if (!existsSync(PATH_SRC)) {
-        return undefined
-    }
-
-    const idTimer = setInterval(() => {
-        cleanSessionFiles(sessionName).catch((e) => console.log(`Error:`, e))
+    let cleaning = false
+    const timer = setInterval(async () => {
+        if (cleaning) return
+        cleaning = true
+        try {
+            await cleanSessionFiles(sessionName)
+        } catch (error) {
+            console.error('[Baileys] Temporary artifact cleanup failed:', error)
+        } finally {
+            cleaning = false
+        }
     }, ms)
-
-    if (typeof idTimer.unref === 'function') {
-        idTimer.unref()
-    }
-
-    return idTimer
+    timer.unref?.()
+    return timer
 }
