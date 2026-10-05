@@ -42,6 +42,15 @@ concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: false
 
+# Evita descargar Chromium (~150MB) y binarios de MongoDB durante el install:
+# es el paso más lento del release y no se necesitan para publicar.
+env:
+    NODE_VERSION: 22.20.0
+    PUPPETEER_SKIP_DOWNLOAD: 'true'
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
+    PUPPETEER_SKIP_FIREFOX_DOWNLOAD: 'true'
+    MONGOMS_DOWNLOAD_DIR: ~/.cache/mongodb-binaries
+
 jobs:
     ############ RELEASE ############
     release-prod:
@@ -62,10 +71,19 @@ jobs:
 
             - uses: pnpm/action-setup@v4
 
+            - name: Cache heavy binaries
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      ~/.cache/puppeteer
+                      ~/.cache/mongodb-binaries
+                  key: heavy-binaries-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+                  restore-keys: heavy-binaries-${{ runner.os }}-
+
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
-                  node-version: 22.20.0
+                  node-version: ${{ env.NODE_VERSION }}
                   cache: 'pnpm'
                   registry-url: https://registry.npmjs.org/
 
