@@ -54,7 +54,7 @@ concretos.
 | `message_id` | 0/14 (está en `key.id`) | 14/14 |
 | `timestamp` | 0/14 (está en `messageTimestamp`) | 14/14 |
 | `to` | 0/14 | 14/14 |
-| `fromMe` (nivel raíz) | **0/14** (solo `key.fromMe`) | **0/14** (declarado en el tipo, nunca asignado) |
+| `fromMe` (nivel raíz) | **0/14** (solo `key.fromMe`) | **14/14** ✅ (`processIncomingMsg.ts:205` lo devuelve; `core.ts` pasa `message.fromMe ?? false`) |
 | `username` | 1/14 (solo si WhatsApp lo envía) | 1/14 (solo si Meta lo envía) |
 | `userId` | 0/14 (el LID vive en `key.remoteJid`) | 1/14 (BSUID) |
 | `participant` / `sender` / `participantUsername` | 1/14 (solo grupos) | 0/14 |
@@ -75,8 +75,11 @@ concretos.
 
 1. **Baileys sí emite `pushName`** (14/14): llega por el spread del `WAMessage`.
    La conclusión inicial ("no existe") era incorrecta.
-2. **`fromMe` falta en el nivel raíz en AMBOS** proveedores: en Baileys está en
-   `key.fromMe`; en Meta el tipo lo declara pero el emisor no lo asigna.
+2. **`fromMe` solo falta en Baileys** (está en `key.fromMe`, no en la raíz).
+   **Corrección a la primera lectura del audit:** Meta SÍ lo expone en la raíz
+   (`processIncomingMsg.ts:205` lo devuelve; `core.ts` le pasa `message.fromMe ?? false`).
+   El 0/14 inicial fue un artefacto del harness sintético, que invocó
+   `processIncomingMessage` sin el parámetro `fromMe`.
 3. **Los refs `_event_*_` ya coinciden** entre proveedores (mismo helper y mismo
    formato con UUID). La única excepción: Baileys **no** emite ref para `contact`
    ni para `poll` (se quedan con `body: undefined`).

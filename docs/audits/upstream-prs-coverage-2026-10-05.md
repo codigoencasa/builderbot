@@ -65,3 +65,70 @@ Resumen: **1 PR superado (#1236)**, **2 parcialmente cubiertos (#1244 mejor que 
 
 - No adoptar el patrón de ramas gigantes de #1236/#1244 (513 y 35 ficheros, ambos `CONFLICTING`).
 - No tocar Redis, nx, nodemailer ni los bumps de sharp de otros proveedores.
+
+---
+
+## 5. Análisis 3-POV de cada punto (verificado contra código)
+
+> Verificación previa (2026-10-05): `sharp@0.33.3` exige `node ^18.17.0 || ^20.3.0 || >=21.0.0`
+> (+ `libvips >= 8.15.2`); root pide `node >=18`; Meta **sí** expone `fromMe` en raíz
+> (`processIncomingMsg.ts:205`; el audit sintético lo omitió por no pasar el parámetro);
+> el core **no tiene evento CONTACTS** (`LIST_ALL` = WELCOME/MEDIA/LOCATION/DOCUMENT/
+> VOICE_NOTE/ACTION/ORDER/TEMPLATE/CALL); Baileys ya filtra auto-mensajes vía
+> `writeMyself` (`bailey.ts:847-855`) pero no expone `fromMe` en raíz.
+
+### P1. `engines` en `provider-baileys`
+
+| POV | Análisis |
+|---|---|
+| **Consumidor API** | `engines` solo avisa en install (error si `engine-strict`). El valor del PR #1259 (`>=20.12.1`) es **incorrecto**: bloquearía Node 18.17/20.3-20.12 sin motivo. El suelo real es el de sharp: `^18.17.0 \|\| ^20.3.0 \|\| >=21.0.0`. |
+| **Maintainer** | Coherencia: root `>=18`, CONTRIBUTING 20+, CI 22. El valor debe copiar el de `sharp@0.33.3`, no inventarse. Documenta también `libvips >= 8.15.2`. |
+| **Operador** | Fallo típico en producción: sharp/libvips binario incompatible al arrancar. `engines` correcto da señal temprana en CI/deploy; incorrecto rompe deploys válidos. |
+| **Veredicto** | ✅ Hacer, con el rango **real de sharp**, no el del PR. Esfuerzo trivial, riesgo bajo. |
+
+### P2. `notice` de webhook en Meta (de #1259)
+
+| POV | Análisis |
+|---|---|
+| **Consumidor API** | DX real: recuerda configurar el webhook. No rompe nada (evento ignorable). Ya hay convención: meta emite `notice` en errores (`provider.ts:124`) y baileys también (`bailey.ts:1179`). |
+| **Maintainer** | Seguir el shape existente `{title, instructions[]}`. Debe emitirse **una vez** (tras `ready`), no en cada reconexión. |
+| **Operador** | `notice` suele ir a consola; si se emite por reconexión es ruido en logs. Gate: flag de "ya emitido" por proceso. |
+| **Veredicto** | ✅ Hacer, una sola vez por proceso. Esfuerzo pequeño + test. |
+
+### P3. `fromMe` en raíz (Baileys)
+
+| POV | Análisis |
+|---|---|
+| **Consumidor API** | Habilita `if (ctx.fromMe) return` sin conocer `key.fromMe`. Aditivo. Conecta con el objetivo de #1258 (filtro de auto-respuestas) sin tocar core. |
+| **Maintainer** | **Corrección:** Meta ya lo expone (`processIncomingMsg.ts:205`); falta solo Baileys. Un campo derivado de `key.fromMe`, test incluido. Encaja en Fase 2 del RFC 0003. |
+| **Operador** | Baileys ya mitiga loops con `writeMyself`; Meta casi nunca entrega mensajes propios por webhook. Riesgo nulo, valor de observabilidad. |
+| **Veredicto** | ✅ Hacer (solo Baileys), aditivo. RFC 0003 §2.1/2.3 ya corregido. |
+
+### P4. `pushName ?? profile.username` en Meta (de #1244)
+
+| POV | Análisis |
+|---|---|
+| **Consumidor API** | Usuarios solo-username (sin `profile.name`) hoy llegan como `name: 'Unknown'`. El fallback da un nombre usable. Aditivo. |
+| **Maintainer** | Una línea en `core.ts:298` + test. Alineado con el rollout de usernames de Meta. |
+| **Operador** | Sin impacto. |
+| **Veredicto** | ✅ Trivial. Empaquetar con P2 (misma zona de Meta). |
+
+### P5. Refs `_event_contacts_` y poll en Baileys
+
+| POV | Análisis |
+|---|---|
+| **Consumidor API** | Hoy `ctx.body` es `undefined` para contacto/poll en Baileys (el flujo no puede matchear). Ojo: **Meta tiene el mismo hueco estructural** — emite `_event_contacts_` pero el core no tiene evento CONTACTS, así que tampoco matchea. |
+| **Maintainer** | Orden correcto: (a) evento CONTACTS en core (`eventContacts.ts` + `LIST_ALL`/`LIST_REGEX`) — es la parte core de #1244, hecha limpia; (b) emitir `_event_contacts_` en Baileys. Poll: no hay evento POLL en core y en Baileys los resultados llegan por `messages.update`; requiere diseño nuevo → **diferir** a RFC 0003. |
+| **Operador** | Evento nuevo en core es aditivo; flujos que no lo usan no se ven afectados. |
+| **Veredicto** | 🟡 Dividir: **P5a** CONTACTS (core + Baileys) ahora; **P5b** poll → RFC 0003. |
+
+## 6. Plan alineado (orden por valor/esfuerzo/riesgo)
+
+| Ola | Contenido | Paquetes | Riesgo |
+|---|---|---|---|
+| **W1** (trivial, sin core) | P1 `engines` (rango real) + P3 `fromMe` (baileys) + P4 `pushName` fallback + P2 `notice` una vez | `provider-baileys`, `provider-meta` | Bajo |
+| **W2** (core) | P5a evento CONTACTS en core + ref `_event_contacts_` en Baileys | `bot`, `provider-baileys` | Bajo-medio |
+| **W3** (contrato) | RFC 0003 envelope (requiere las 4 decisiones) + P5b poll | `bot`, ambos providers | Medio |
+
+Dependencias: W2 antes que cualquier ref de contactos; W3 requiere aprobación de las
+decisiones del RFC 0003 (type/messageId/to/raw).
