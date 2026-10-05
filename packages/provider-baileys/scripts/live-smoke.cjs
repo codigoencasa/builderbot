@@ -32,7 +32,19 @@ const path = require('node:path')
 const { execFileSync } = require('node:child_process')
 
 const PACKAGE_ROOT = path.resolve(__dirname, '..')
+const REPO_ROOT = path.resolve(PACKAGE_ROOT, '..', '..')
 const ROOT = process.env.SMOKE_ROOT || path.join(os.tmpdir(), 'baileys-live-smoke')
+
+// Safety: the smoke run stores REAL WhatsApp credentials, so it must never live
+// inside the repository (a stray `git add -A` would leak the account keys).
+if (!path.relative(REPO_ROOT, ROOT).startsWith('..')) {
+    console.error(
+        `[live-smoke] refusing to run: SMOKE_ROOT points inside the repository (${ROOT}).\n` +
+            `Use a path outside the repo, e.g. SMOKE_ROOT=/tmp/baileys-live-smoke`
+    )
+    process.exit(1)
+}
+
 const RUN_DIR = path.join(ROOT, 'run')
 const ASSETS = path.join(ROOT, 'assets')
 const PHASE = process.env.PHASE || 'pair'

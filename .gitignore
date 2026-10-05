@@ -78,3 +78,12 @@ nonExistingFilePath
 
 # Agent skills / local agent config
 .agents/
+
+# WhatsApp session / credential material — NEVER commit (real auth keys live here)
+# The provider writes to `<cwd>/<name>_sessions`, so this must match at any depth.
+*_sessions/
+smoke_sessions/
+baileys_store/
+baileys-live-smoke/
+creds.json
+qr.png
