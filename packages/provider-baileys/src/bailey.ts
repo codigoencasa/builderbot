@@ -404,7 +404,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
         const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
         const { state, saveCreds } = await useMultiFileAuthState(NAME_DIR_SESSION)
         if (this.isCleaned) return
-        const loggerBaileys = pino({ level: 'fatal' })
+        // T10: configurable; default 'error' so decrypt failures (Bad MAC, No
+        // session) are visible instead of hidden by 'fatal'.
+        const loggerBaileys = pino({ level: this.globalVendorArgs.baileysLogLevel ?? 'error' })
 
         this.saveCredsGlobal = saveCreds
 
@@ -436,7 +438,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     version = baileysVersion.version
                     this.logger.log(`[Baileys] Fallback to Baileys repo WA version: ${version.join('.')}`)
                 } catch (e) {
-                    version = [2, 3000, 1025190524] as WAVersion
+                    // T9: keep in sync with the WA Web version shipped by the
+                    // pinned Baileys release (rc14 default).
+                    version = [2, 3000, 1043857760] as WAVersion
                     this.logger.log(`[Baileys] Fallback to hardcoded WA version: ${version.join('.')}`)
                 }
             }
@@ -472,11 +476,19 @@ class BaileysProvider extends ProviderClass<WASocket> {
             })
 
             this.vendor = sock
+
+            // T6: register listeners BEFORE any await (pairing can take seconds
+            // and events arriving meanwhile would be lost).
+            this.attachSocketListeners(sock, saveCreds)
+
             if (this.globalVendorArgs.usePairingCode && !sock.authState.creds.registered) {
                 if (this.globalVendorArgs.phoneNumber) {
-                    const phoneNumberClean = utils.removePlus(this.globalVendorArgs.phoneNumber)
-                    const code = await sock.requestPairingCode(this.globalVendorArgs.phoneNumber)
+                    // T6: request the code with the cleaned E.164 number, not the raw input
+                    const phoneNumberClean = utils.removePlus(this.globalVendorArgs.phoneNumber).replace(/\D/g, '')
+                    const code = await sock.requestPairingCode(phoneNumberClean)
+                    if (this.isCleaned) return
                     await utils.delay(2000)
+                    if (this.isCleaned) return
                     this.emit('require_action', {
                         title: '⚡⚡ ACTION REQUIRED ⚡⚡',
                         instructions: [
@@ -496,6 +508,20 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 }
             }
 
+            return sock.ev
+        } catch (e) {
+            this.logger.log(e)
+            this.emit('auth_failure', [
+                `Something unexpected has occurred, do not panic`,
+                `Restart the BOT`,
+                `You can also check a log that has been created baileys.log`,
+                `Need help: https://link.codigoencasa.com/DISCORD`,
+            ])
+        }
+    }
+
+    private attachSocketListeners(sock: WASocket, saveCreds: () => Promise<void>): void {
+        {
             sock.ev.on('connection.update', async (update: { connection: any; lastDisconnect: any; qr: any }) => {
                 if (this.isCleaned || this.vendor !== sock) return
                 const { connection, lastDisconnect, qr } = update
@@ -511,13 +537,37 @@ class BaileysProvider extends ProviderClass<WASocket> {
                         `[${new Date().toISOString()}] Connection closed. Status: ${statusCode}, Reason: ${reason}`
                     )
 
-                    // Casos donde NO debemos reconectar
+                    // T7: never delete auth material automatically. The host
+                    // decides; opt-in via `clearAuthOnLogout` restores old behavior.
                     if (statusCode === DisconnectReason.loggedOut) {
-                        this.logger.log(`[${new Date().toISOString()}] Logged out, clearing session and restarting...`)
-                        const PATH_BASE = join(process.cwd(), `${this.globalVendorArgs.name}_sessions`)
-                        await emptyDirSessions(PATH_BASE)
-                        this.reconnectAttempts = 0
-                        await this.delayedReconnect()
+                        this.logger.log(`[${new Date().toISOString()}] Logged out by WhatsApp; session preserved`)
+                        if (this.globalVendorArgs.clearAuthOnLogout) {
+                            const PATH_BASE = join(process.cwd(), `${this.globalVendorArgs.name}_sessions`)
+                            await emptyDirSessions(PATH_BASE)
+                            this.reconnectAttempts = 0
+                            await this.delayedReconnect()
+                            return
+                        }
+                        this.emit('auth_failure', [
+                            `WhatsApp logged this session out (401)`,
+                            `Auth files were preserved in ${this.globalVendorArgs.name}_sessions`,
+                            `Unlink the device manually or set clearAuthOnLogout: true to auto-reset`,
+                            `Need help: https://link.codigoencasa.com/DISCORD`,
+                        ])
+                        return
+                    }
+
+                    // T8: a replaced connection means another live socket owns the
+                    // session; reconnecting starts a tug-of-war and risks a ban.
+                    if (statusCode === DisconnectReason.connectionReplaced) {
+                        this.logger.log(
+                            `[${new Date().toISOString()}] Connection replaced by another socket; not reconnecting`
+                        )
+                        this.emit('auth_failure', [
+                            `Connection replaced (440): another instance opened this session`,
+                            `Stop the other instance before restarting this one`,
+                            `Check baileys.log for details`,
+                        ])
                         return
                     }
 
@@ -570,16 +620,6 @@ class BaileysProvider extends ProviderClass<WASocket> {
             sock.ev.on('creds.update', async () => {
                 if (!this.isCleaned) await saveCreds()
             })
-
-            return sock.ev
-        } catch (e) {
-            this.logger.log(e)
-            this.emit('auth_failure', [
-                `Something unexpected has occurred, do not panic`,
-                `Restart the BOT`,
-                `You can also check a log that has been created baileys.log`,
-                `Need help: https://link.codigoencasa.com/DISCORD`,
-            ])
         }
     }
 
@@ -1293,10 +1333,10 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
     private shouldReconnect(statusCode: number): boolean {
         // Lista de códigos donde SÍ debemos reconectar
+        // T8: connectionReplaced (440) excluded — handled as auth_failure above
         const reconnectableCodes = [
             DisconnectReason.connectionClosed,
             DisconnectReason.connectionLost,
-            DisconnectReason.connectionReplaced,
             DisconnectReason.timedOut,
             DisconnectReason.badSession,
             DisconnectReason.restartRequired,
@@ -1331,7 +1371,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
         this.reconnectInProgress = true
         this.reconnectAttempts++
-        const delay = Math.min(this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1), 30000) // Max 30 segundos
+        // T8: exponential backoff with ±20% jitter to avoid thundering-herd retries
+        const base = Math.min(this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1), 30000)
+        const delay = Math.round(base * (0.8 + Math.random() * 0.4))
 
         this.logger.log(
             `[${new Date().toISOString()}] Reconnection attempt ${this.reconnectAttempts}/${

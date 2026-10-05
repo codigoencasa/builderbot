@@ -17,7 +17,7 @@ import * as wrapper from '../src/baileyWrapper'
 
 jest.mock('../src/baileyWrapper', () => ({
     Browsers: { appropriate: () => ['Ubuntu', 'Chrome', '1'] },
-    DisconnectReason: { connectionClosed: 428, loggedOut: 401 },
+    DisconnectReason: { connectionClosed: 428, loggedOut: 401, connectionReplaced: 440 },
     useMultiFileAuthState: jest.fn(),
     fetchLatestWaWebVersion: jest.fn(),
     makeCacheableSignalKeyStore: (keys: unknown) => keys,
@@ -27,6 +27,12 @@ jest.mock('../src/lidCache', () => ({
     createLidCache: () => ({ close: jest.fn(async () => {}) }),
 }))
 jest.mock('wa-sticker-formatter', () => ({ Sticker: jest.fn() }))
+
+// Keep pairing tests fast: the real utils.delay waits 2s after the code.
+jest.mock('@builderbot/bot', () => {
+    const actual = jest.requireActual<typeof import('@builderbot/bot')>('@builderbot/bot')
+    return { ...actual, utils: { ...actual.utils, delay: async () => {} } }
+})
 
 function deferred() {
     let resolve!: () => void
@@ -51,6 +57,8 @@ describe('lifecycle review regressions', () => {
                 })
             }),
             authState: { creds: { registered: true } },
+            requestPairingCode: jest.fn(async () => 'PAIR1234'),
+            user: { id: '15550000000:1@s.whatsapp.net' },
         }
         jest.mocked(wrapper.useMultiFileAuthState).mockImplementation(
             async () =>
@@ -201,6 +209,96 @@ describe('lifecycle review regressions', () => {
         await provider.destroy()
         expect(provider['sessionCleanupTimer']).toBeUndefined()
         expect(clearSpy).toHaveBeenCalledWith(timer)
+    })
+
+    test('loggedOut preserves auth files and emits auth_failure instead of wiping (T7)', async () => {
+        const utilsModule = require('../src/utils')
+        const emptySpy = jest.spyOn(utilsModule, 'emptyDirSessions')
+        const emitSpy = jest.spyOn(provider, 'emit')
+        await provider['initVendor']()
+
+        socket.ev.emit('connection.update', {
+            connection: 'close',
+            lastDisconnect: { error: { output: { statusCode: 401 } } },
+        })
+        await Promise.resolve()
+
+        expect(emptySpy).not.toHaveBeenCalled()
+        expect(emitSpy).toHaveBeenCalledWith(
+            'auth_failure',
+            expect.arrayContaining([expect.stringContaining('preserved')])
+        )
+        expect(provider['reconnectTimer']).toBeUndefined()
+        emptySpy.mockRestore()
+    })
+
+    test('connectionReplaced (440) emits auth_failure and never schedules a reconnect (T8)', async () => {
+        jest.useFakeTimers()
+        const emitSpy = jest.spyOn(provider, 'emit')
+        await provider['initVendor']()
+
+        socket.ev.emit('connection.update', {
+            connection: 'close',
+            lastDisconnect: { error: { output: { statusCode: 440 } } },
+        })
+        await Promise.resolve()
+
+        expect(emitSpy).toHaveBeenCalledWith(
+            'auth_failure',
+            expect.arrayContaining([expect.stringContaining('replaced')])
+        )
+        expect(provider['reconnectTimer']).toBeUndefined()
+        await jest.advanceTimersByTimeAsync(120_000)
+        expect(wrapper.makeWASocketOther).toHaveBeenCalledTimes(1)
+    })
+
+    test('reconnect backoff applies jitter within ±20% of the base delay (T8)', async () => {
+        jest.useFakeTimers()
+        const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0)
+        const setTimeoutSpy = jest.spyOn(global, 'setTimeout')
+        await provider['initVendor']()
+        provider['reconnectAttempts'] = 2 // next attempt: base = 1000 * 2^2 = 4000
+
+        await provider['delayedReconnect']()
+
+        // random=0 → factor 0.8 → 3200, not the raw 4000 base
+        expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 3200)
+        jest.advanceTimersByTime(3199)
+        expect(wrapper.makeWASocketOther).toHaveBeenCalledTimes(1)
+        randomSpy.mockRestore()
+    })
+
+    test('pairing code is requested with the cleaned phone number (T6)', async () => {
+        socket.authState.creds.registered = false
+        provider.globalVendorArgs.usePairingCode = true
+        provider.globalVendorArgs.phoneNumber = '+1 (555) 000-0001'
+
+        await provider['initVendor']()
+
+        expect(socket.requestPairingCode).toHaveBeenCalledWith('15550000001')
+    })
+
+    test('connection.update listeners are attached before pairing resolves (T6)', async () => {
+        socket.authState.creds.registered = false
+        provider.globalVendorArgs.usePairingCode = true
+        provider.globalVendorArgs.phoneNumber = '15550000001'
+        const pairing = deferred()
+        socket.requestPairingCode.mockImplementationOnce(async () => {
+            await pairing.promise
+            return 'PAIR1234'
+        })
+        const emitSpy = jest.spyOn(provider, 'emit')
+
+        const init = provider['initVendor']()
+        await Promise.resolve()
+        await Promise.resolve()
+        // Socket still awaiting pairing, but a live connection event is handled
+        socket.ev.emit('connection.update', { connection: 'open' })
+        await Promise.resolve()
+        expect(emitSpy).toHaveBeenCalledWith('ready', true)
+
+        pairing.resolve()
+        await init
     })
 
     test('missing QR returns 404 and destroy closes a real HTTP listener and the log stream', async () => {

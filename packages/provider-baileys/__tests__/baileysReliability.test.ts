@@ -123,6 +123,11 @@ describe('#BaileysProvider - Reliability', () => {
             expect(result).toBe(true)
         })
 
+        test('should return false for connectionReplaced (440) — no tug-of-war (T8)', () => {
+            const result = provider['shouldReconnect'](440)
+            expect(result).toBe(false)
+        })
+
         test('should return false for unknown status codes', () => {
             const result = provider['shouldReconnect'](999)
             expect(result).toBe(false)
@@ -179,6 +184,8 @@ describe('#BaileysProvider - Reliability', () => {
         test('should use exponential backoff for delay', async () => {
             provider['reconnectAttempts'] = 0
             provider['reconnectDelay'] = 1000
+            // T8: pin jitter to factor 1.0 so base delays stay deterministic
+            const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.5)
             const setTimeoutSpy = jest.spyOn(global, 'setTimeout')
             provider['initVendor'] = jest.fn(async () => undefined) as any
 
@@ -196,17 +203,41 @@ describe('#BaileysProvider - Reliability', () => {
             // Third attempt: delay should be 1000ms * 2^2 = 4000ms
             await provider['delayedReconnect']()
             expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 4000)
+            randomSpy.mockRestore()
         })
 
         test('should cap delay at 30000ms', async () => {
             provider['reconnectAttempts'] = 8 // 1000 * 2^8 = 256000 > 30000
             provider['reconnectDelay'] = 1000
+            const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.5)
             const setTimeoutSpy = jest.spyOn(global, 'setTimeout')
             provider['initVendor'] = jest.fn().mockReturnValue({ then: jest.fn() }) as any
 
             await provider['delayedReconnect']()
 
             expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 30000)
+            randomSpy.mockRestore()
+        })
+
+        test('should apply jitter within ±20% of the base delay (T8)', async () => {
+            provider['reconnectAttempts'] = 0
+            provider['reconnectDelay'] = 1000
+            const setTimeoutSpy = jest.spyOn(global, 'setTimeout')
+            const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0)
+            provider['initVendor'] = jest.fn(async () => undefined) as any
+
+            await provider['delayedReconnect']()
+            expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 800)
+
+            await jest.advanceTimersByTimeAsync(800)
+            randomSpy.mockReturnValue(0.999)
+            await provider['delayedReconnect']()
+            // base 2000 * ~1.2 → just under 2400
+            const calls = setTimeoutSpy.mock.calls
+            const lastDelay = calls[calls.length - 1]?.[1] as number
+            expect(lastDelay).toBeGreaterThan(2300)
+            expect(lastDelay).toBeLessThanOrEqual(2400)
+            randomSpy.mockRestore()
         })
     })
 

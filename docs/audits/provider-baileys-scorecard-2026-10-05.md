@@ -106,11 +106,11 @@
 
 ### P1 — riesgo alto, esfuerzo medio
 
-- [ ] **T6** Pairing: usar `phoneNumberClean` en `requestPairingCode`; adjuntar listeners antes del await; guards de shutdown tras pairing
-- [ ] **T7** `loggedOut`: confirmación explícita o backup antes de `emptyDirSessions` (borrado de auth)
-- [ ] **T8** Reconexión: no reintentar en `connectionReplaced` (440); backoff con jitter (Fase 6, H11)
-- [ ] **T9** Versión WA: fallback a `fetchLatestBaileysVersion` y eliminar/actualizar el hardcodeado (Fase 5, H21)
-- [ ] **T10** Logger Baileys a nivel configurable (no `fatal`) + contadores de errores por código
+- [x] **T6** Pairing: número digits-only en `requestPairingCode`; listeners antes del await; guards de shutdown — *hecho en `fix/baileys-phase-6-resilience`*
+- [x] **T7** `loggedOut` preserva auth y emite `auth_failure`; wipe solo con `clearAuthOnLogout: true` — *hecho*
+- [x] **T8** 440 → `auth_failure` sin reconexión; backoff con jitter ±20% (Fase 6, H11) — *hecho*
+- [x] **T9** Fallback hardcodeado actualizado a `[2,3000,1043857760]` (rc14); cadena live→repo→hardcode (H21) — *hecho*
+- [x] **T10** `baileysLogLevel` configurable, default `'error'` (Bad MAC visible) — *hecho*; contadores por código quedan para Fase 7
 
 ### P2 — deuda estructural
 

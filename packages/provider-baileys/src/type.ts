@@ -38,6 +38,20 @@ export interface BaileyGlobalVendorArgs extends GlobalVendorArgs {
     captureProcessSignals?: boolean
 
     /**
+     * Log level for the internal Baileys (pino) logger.
+     * Default: 'error' — decrypt failures (Bad MAC, No session) stay visible.
+     * Use 'fatal' to restore the previous silent behavior.
+     */
+    baileysLogLevel?: 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace'
+
+    /**
+     * When `true`, a WhatsApp `loggedOut` (401) wipes the auth directory and
+     * re-pairs automatically. Default `false`: auth files are preserved and an
+     * `auth_failure` event is emitted instead (T7).
+     */
+    clearAuthOnLogout?: boolean
+
+    /**
      * Estrategia de caché para resolución LID→PN.
      * - 'file' (default): HybridLidCache (memory + file persistence)
      * - 'memory': MemoryLidCache (solo memoria, no persiste)

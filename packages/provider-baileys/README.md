@@ -29,6 +29,21 @@ files** and must not be deleted to reclaim disk space.
 
 Tests use separate temporary workspaces; they never clean application sessions or logs.
 
+## Resilience options
+
+- `baileysLogLevel` (default `'error'`): level of the internal Baileys pino logger.
+  `'fatal'` restores the old silent behavior but hides decrypt failures (Bad MAC,
+  No session).
+- `clearAuthOnLogout` (default `false`): when WhatsApp logs the session out (401),
+  auth files are **preserved** and an `auth_failure` event is emitted. Set `true`
+  to wipe `<name>_sessions` and re-pair automatically (legacy behavior).
+- `connectionReplaced` (440) never auto-reconnects: another live socket owns the
+  session and retrying starts a tug-of-war that can escalate to a ban. An
+  `auth_failure` event is emitted instead.
+- Reconnects use exponential backoff (1s base, 30s cap) with ±20% jitter.
+- Pairing codes are requested with the digits-only phone number, and socket
+  listeners are attached before the pairing request resolves.
+
 
 ## Official Course
 
