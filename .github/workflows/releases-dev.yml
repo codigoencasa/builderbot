@@ -2,6 +2,12 @@ name: 🚀 (DEV) Liberando versiones
 
 on:
     workflow_dispatch:
+        inputs:
+            dry_run:
+                description: 'Dry run: valida auth y muestra qué se publicaría, sin versionar ni publicar'
+                required: false
+                default: false
+                type: boolean
     pull_request:
         branches:
             - builderbot-dev
@@ -154,7 +160,25 @@ jobs:
                   git config user.name "github-actions[bot]"
                   git config user.email "github-actions[bot]@users.noreply.github.com"
 
+            - name: Dry run — reportar la versión y qué se publicaría
+              if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: |
+                  BASE_VERSION=$(node -p "require('./lerna.json').version.replace(/-alpha.*/, '')")
+                  NEW_VERSION="${BASE_VERSION}-alpha.${{ github.run_number }}"
+                  echo "DRY RUN — no se versionará ni publicará nada"
+                  echo "📦 Versión que se publicaría: ${NEW_VERSION} (dist-tag: alpha)"
+                  echo "📋 Paquetes (versión actual → versión de la alpha):"
+                  NEW_VERSION="$NEW_VERSION" node - <<'NODE'
+                  const { execSync } = require('node:child_process')
+                  const pkgs = JSON.parse(execSync('npx lerna ls --json', { encoding: 'utf8' }))
+                  for (const p of pkgs) console.log(`   - ${p.name}: ${p.version} → ${process.env.NEW_VERSION}`)
+                  console.log(`\nTotal: ${pkgs.length} paquetes se publicarían como ${process.env.NEW_VERSION}`)
+                  NODE
+
             - name: Release Alpha
+              if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
               run: |
                   # Obtener versión base sin sufijo alpha
                   BASE_VERSION=$(node -p "require('./lerna.json').version.replace(/-alpha.*/, '')")
@@ -174,6 +198,7 @@ jobs:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
             - name: 📋 Log Deployed Version
+              if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
               run: |
                   echo "=========================================="
                   echo "🚀 VERSIÓN DESPLEGADA (ALPHA)"
