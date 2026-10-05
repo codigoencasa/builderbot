@@ -7,9 +7,37 @@
  * GOAL: Turn a raw Meta message into the framework's incoming-message params, resolving media when present.
  */
 import { utils } from '@builderbot/bot'
+import type { ProviderContentType } from '@builderbot/bot/dist/types'
 
 import { getMediaUrl } from './mediaUrl'
 import type { Message, ParamsIncomingMessage as ParamsIncomingMessage } from '../types'
+
+/**
+ * Maps a Meta webhook message to the canonical ProviderContentType (RFC 0003).
+ * The legacy `type` field is left untouched; this is the cross-provider vocabulary.
+ */
+const metaContentType = (message: any): ProviderContentType => {
+    const type = message?.type
+    if (type === 'interactive') {
+        if (message.interactive?.button_reply) return 'button'
+        if (message.interactive?.list_reply) return 'list'
+        return 'unknown'
+    }
+    const map: Record<string, ProviderContentType> = {
+        text: 'text',
+        image: 'image',
+        video: 'video',
+        audio: 'audio',
+        document: 'document',
+        sticker: 'sticker',
+        location: 'location',
+        contacts: 'contact',
+        order: 'order',
+        button: 'button',
+        reaction: 'reaction',
+    }
+    return map[type] ?? 'unknown'
+}
 
 export const processIncomingMessage = async ({
     messageId,
@@ -201,6 +229,10 @@ export const processIncomingMessage = async ({
     return {
         ...responseObj,
         message_id: messageId,
+        // W3 (RFC 0003): canonical envelope fields, additive over the legacy shape.
+        messageId,
+        contentType: metaContentType(message),
+        raw: message,
         timestamp: messageTimestamp,
         fromMe,
         userId,

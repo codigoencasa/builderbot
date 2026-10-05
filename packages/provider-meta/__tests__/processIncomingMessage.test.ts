@@ -27,6 +27,9 @@ describe('#processIncomingMessage ', () => {
             name: 'John Doe',
             pushName: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'text',
+            raw: params.message,
             timestamp: expect.any(Number),
         }
 
@@ -70,6 +73,9 @@ describe('#processIncomingMessage ', () => {
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'button',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -112,6 +118,9 @@ describe('#processIncomingMessage ', () => {
             nfm_reply: undefined,
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'list',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -147,6 +156,9 @@ describe('#processIncomingMessage ', () => {
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'button',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -184,6 +196,9 @@ describe('#processIncomingMessage ', () => {
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'image',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -220,6 +235,9 @@ describe('#processIncomingMessage ', () => {
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'document',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -256,6 +274,9 @@ describe('#processIncomingMessage ', () => {
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'video',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -291,6 +312,9 @@ describe('#processIncomingMessage ', () => {
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'location',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -326,6 +350,9 @@ describe('#processIncomingMessage ', () => {
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'audio',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -366,6 +393,9 @@ describe('#processIncomingMessage ', () => {
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'sticker',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -405,6 +435,9 @@ describe('#processIncomingMessage ', () => {
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'contact',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -469,6 +502,9 @@ describe('#processIncomingMessage ', () => {
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'order',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -554,6 +590,9 @@ describe('#processIncomingMessage ', () => {
         // Assert
         expect(result).toEqual({
             message_id: '123',
+            messageId: '123',
+            contentType: 'unknown',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })

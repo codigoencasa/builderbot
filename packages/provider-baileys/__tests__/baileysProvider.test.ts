@@ -57,6 +57,9 @@ jest.mock('wa-sticker-formatter', () => {
 })
 
 jest.mock('../src/utils', () => ({
+    // Spread the real module so new pure helpers (e.g. baileyContentType) stay
+    // available; only the functions below are stubbed.
+    ...(jest.requireActual('../src/utils') as object),
     // Real group/broadcast JIDs must pass through so T15 routing can be asserted;
     // everything else keeps the legacy stubbed phone number.
     baileyCleanNumber: jest
@@ -1400,6 +1403,39 @@ describe('#BaileysProvider', () => {
             expect(byId('contact-2')).toHaveLength(1)
             const refCalls = utils.generateRefProvider.mock.calls.map(([prefix]: any[]) => prefix)
             expect(refCalls.filter((p: string) => p === '_event_contacts_')).toHaveLength(2)
+        })
+
+        test('exposes canonical envelope fields (W3)', async () => {
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const image = {
+                message: { imageMessage: { mimetype: 'image/jpeg' } },
+                messageTimestamp: 1750000000,
+                pushName: 'Tia',
+                key: { remoteJid: '15550000007@s.whatsapp.net', id: 'env-1', fromMe: false },
+            }
+            const lidText = {
+                message: { conversation: 'hola' },
+                messageTimestamp: 1750000001,
+                pushName: 'Tia',
+                key: { remoteJid: '122299361538159@lid', id: 'env-2', fromMe: false },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [image, lidText], type: 'notify' })
+
+            const byId = (id: string) => emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === id)
+            expect(byId('env-1')).toHaveLength(1)
+            const p1 = byId('env-1')[0][1]
+            expect(p1.contentType).toBe('image')
+            expect(p1.messageId).toBe('env-1')
+            expect(p1.timestamp).toBe(1750000000)
+            expect(p1.userId).toBeUndefined()
+            expect(p1.raw).toBe(image)
+
+            expect(byId('env-2')).toHaveLength(1)
+            const p2 = byId('env-2')[0][1]
+            expect(p2.contentType).toBe('text')
+            expect(p2.userId).toBe('122299361538159@lid')
+            expect(p2.messageId).toBe('env-2')
         })
 
         test('allowGroups does not enable broadcasts (T15)', async () => {

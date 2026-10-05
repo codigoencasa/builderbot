@@ -107,6 +107,54 @@ export type BotContext = {
     [key: string]: any
 }
 
+/**
+ * Canonical content classification shared by all providers (RFC 0003).
+ * Providers may keep their legacy `type` field untouched; this is the
+ * cross-provider vocabulary.
+ */
+export type ProviderContentType =
+    | 'text'
+    | 'image'
+    | 'video'
+    | 'audio'
+    | 'document'
+    | 'sticker'
+    | 'location'
+    | 'contact'
+    | 'order'
+    | 'poll'
+    | 'button'
+    | 'list'
+    | 'reaction'
+    | 'unknown'
+
+/**
+ * Standard inbound message envelope (RFC 0003). Every field is optional
+ * except the ones already required by BotContext (`body`, `from`), so this
+ * is purely additive over the legacy payloads.
+ */
+export type ProviderMessage = BotContext & {
+    /** Canonical content classification (provider-agnostic). */
+    contentType?: ProviderContentType
+    /** Message id (canonical; Meta also keeps legacy `message_id`). */
+    messageId?: string
+    /** Unix seconds. */
+    timestamp?: number
+    /** Destination/business number when the provider knows it. */
+    to?: string
+    /** Opaque extra identity: BSUID (Meta) or LID (Baileys). */
+    userId?: string
+    /** WhatsApp username when the platform sends one. */
+    username?: string
+    /** True for messages sent by the bot account itself. */
+    fromMe?: boolean
+    /** Provider-native payload, untransformed (forward-compat). */
+    raw?: unknown
+    /** Group author (groups only). */
+    participant?: string
+    participantUsername?: string
+}
+
 export type MessageContextIncoming = {
     from: string
     ref?: string

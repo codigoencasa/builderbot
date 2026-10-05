@@ -201,6 +201,12 @@ export interface Message {
     audio?: Buffer
     /** Sample rate (Hz) of `audio`, when present. */
     sampleRate?: number
+    /** Canonical id, alias of `message_id` (RFC 0003). */
+    messageId?: string
+    /** Canonical content classification (RFC 0003); legacy `type` is untouched. */
+    contentType?: string
+    /** Raw Meta webhook message, untransformed (RFC 0003). */
+    raw?: unknown
 }
 
 export interface ParamsIncomingMessage {

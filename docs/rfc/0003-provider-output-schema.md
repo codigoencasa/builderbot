@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | **Draft** (pendiente de aprobación) |
+| Status | **Implemented** (W3, rama `fix/w3-message-envelope`) |
 | Author | Engineering (agent-assisted) |
 | Provenance | Auditoría de `packages/provider-meta` vs `packages/provider-baileys` (2026-10-05) |
 | Target version | `1.5.x` (aditivo; sin breaking en el core) |
@@ -177,17 +177,28 @@ Independientes de la estandarización, son incoherencias propias:
   canónico conservando el valor original en `raw.type`.
 - **Fase 4 — docs**: tabla única en `docs/providers/message-schema.md` + notas en cada README.
 
-## 5. Decisiones abiertas (bloqueantes)
+## 5. Decisiones (resueltas 2026-10-05)
 
-1. **`type` en Meta**: ¿se normaliza (`interactive` → `button`/`list`) o se deja el valor
-   actual y solo se añade el canónico en `type` de Baileys?
-   - (a) Normalizar: contrato único, pero puede romper consumidores que comparen
-     `ctx.type === 'interactive'`.
-   - (b) No normalizar: cero ruptura, pero `type` sigue significando cosas distintas.
-   - (c) Añadir `contentType` canónico y dejar `type` como está (lo más seguro).
-2. **Id**: ¿`messageId` nuevo en ambos (recomendado) o se reutiliza `message_id` en Baileys?
-3. **`to` en Baileys**: ¿el número propio del bot (`host.phone`) o se deja `undefined`?
-4. **`raw`**: ¿incluirlo siempre (peso/ruido en logs) o solo con `globalVendorArgs.includeRaw`?
+1. **`type` en Meta** → **(c) `contentType` canónico**, `type` legacy intacto. Cero ruptura.
+2. **Id** → **`messageId` nuevo en ambos**; Meta conserva `message_id` como alias.
+3. **`to` en Baileys** → **número propio del bot** (`globalVendorArgs.host.phone`; `undefined`
+   antes del primer `connection.update`).
+4. **`raw`** → **siempre** (es una referencia, no una copia: coste 0 de memoria).
+
+### Implementación (W3)
+
+- `@builderbot/bot`: nuevos tipos `ProviderContentType` y `ProviderMessage` en `src/types.ts`.
+- `provider-baileys`: `baileyContentType()` en `utils.ts`; el payload de `messages.upsert`
+  añade `contentType`, `messageId`, `timestamp`, `to`, `userId` (LID), `raw`; el payload de
+  poll (`messages.update`) añade `contentType: 'poll'`, `messageId`, `raw` (conserva `type: 'poll'`).
+- `provider-meta`: `metaContentType()` en `processIncomingMsg.ts`; el `Message` añade
+  `messageId` (alias de `message_id`), `contentType` (`interactive` → `button`/`list` según
+  el reply), `raw` (mensaje original del webhook).
+- Tests: 23 nuevos en baileys (tabla de 21 casos de `baileyContentType` + envelope + LID),
+  13 `toEqual` de meta actualizados con los campos nuevos. Suites: baileys 254/254,
+  meta 160/160, bot 181/181. Builds de los 3 paquetes OK.
+- Poll entrante (`pollCreationMessage`): clasificado como `contentType: 'poll'`; **sin** evento
+  de core nuevo (los resultados de encuestas ya llegan por `messages.update`).
 
 ## 6. No-objetivos
 

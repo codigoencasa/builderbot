@@ -58,7 +58,13 @@ import {
 } from './lidCache'
 import { cleanSessionFiles, releaseTmp } from './releaseTmp'
 import type { BaileyGlobalVendorArgs } from './type'
-import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber, emptyDirSessions } from './utils'
+import {
+    baileyGenerateImage,
+    baileyCleanNumber,
+    baileyContentType,
+    baileyIsValidNumber,
+    emptyDirSessions,
+} from './utils'
 
 class BaileysProvider extends ProviderClass<WASocket> {
     public globalVendorArgs: BaileyGlobalVendorArgs = {
@@ -781,6 +787,14 @@ class BaileysProvider extends ProviderClass<WASocket> {
                         // W1: expose fromMe at the root so consumers can filter
                         // self-messages without reaching into `key` (matches Meta).
                         fromMe: Boolean(messageKey.fromMe),
+                        // W3 (RFC 0003): canonical envelope fields, additive over the
+                        // legacy WAMessage spread.
+                        contentType: baileyContentType(messageCtx?.message),
+                        messageId: messageKey.id,
+                        timestamp: Number(messageCtx?.messageTimestamp) || undefined,
+                        to: this.globalVendorArgs.host?.phone,
+                        userId: remoteJid?.includes('@lid') ? remoteJid : undefined,
+                        raw: messageCtx,
                         // T15 option C: for groups, `from` is the group JID and the
                         // author travels in `participant`/`sender`.
                         ...(isGroupMessage
@@ -931,6 +945,10 @@ class BaileysProvider extends ProviderClass<WASocket> {
                                 from: baileyCleanNumber(key.remoteJid, true),
                                 voters: pollCreation,
                                 type: 'poll',
+                                // W3 (RFC 0003): canonical fields alongside legacy `type`.
+                                contentType: 'poll',
+                                messageId: key?.id,
+                                raw: messageCtx,
                             }
                             this.emit('message', payload)
                         }
