@@ -4,18 +4,58 @@ on:
     push:
         branches:
             - builderbot-prod
+    # Permite lanzar un release real a mano desde la UI (Actions → Run workflow),
+    # sin necesidad de empujar a builderbot-prod. Útil para validar con dry_run=true.
+    workflow_dispatch:
+        inputs:
+            bump:
+                description: 'Tipo de bump de versión'
+                required: true
+                default: 'patch'
+                type: choice
+                options:
+                    - patch
+                    - minor
+                    - major
+                    - prepatch
+                    - preminor
+                    - prerelease
+            dist_tag:
+                description: 'Dist-tag de npm'
+                required: true
+                default: 'latest'
+                type: choice
+                options:
+                    - latest
+                    - next
+                    - beta
+                    - alpha
+                    - dev
+            dry_run:
+                description: 'Dry run: verifica auth y qué se publicaría, sin versionar ni publicar'
+                required: false
+                default: false
+                type: boolean
+
+# Nunca cancelar un release a medias: podría dejar versiones/tags a medio publicar.
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: false
+
 jobs:
     ############ RELEASE ############
     release-prod:
         if: ${{ !github.event.act }}
         name: Release
         runs-on: ubuntu-latest
+        timeout-minutes: 45
         permissions:
             contents: write
-            packages: write
+            # Requerido para provenance / trusted publishing (OIDC) de npm.
+            id-token: write
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                   fetch-depth: 0
                   token: ${{ secrets.GITHUB_TOKEN }}
@@ -23,7 +63,7 @@ jobs:
             - uses: pnpm/action-setup@v4
 
             - name: Setup Node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: 22.20.0
                   cache: 'pnpm'
@@ -37,22 +77,68 @@ jobs:
             - name: Install NPM Dependencies
               run: pnpm install --frozen-lockfile
 
+            # Falla rápido y con un mensaje accionable si NPM_TOKEN no sirve.
+            - name: Preflight — verificar NPM_TOKEN
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: |
+                  if [ -z "$NODE_AUTH_TOKEN" ]; then
+                      echo "::error::Falta el secret NPM_TOKEN. Añádelo en Settings → Secrets and variables → Actions."
+                      exit 1
+                  fi
+                  if ! npm whoami >/dev/null 2>&1; then
+                      echo "::error::NPM_TOKEN inválido o expirado (401 Unauthorized)."
+                      echo "::error::Genera un token nuevo en https://www.npmjs.com/settings/~/tokens (tipo 'Automation', que omite el 2FA) y actualiza el secret NPM_TOKEN."
+                      exit 1
+                  fi
+                  echo "✅ Autenticado en npm como: $(npm whoami)"
+
+            # `pnpm build` (no build:full) para NO ejecutar `pnpm i`, que puede
+            # reescribir pnpm-lock.yaml y dejar el árbol sucio → `lerna version` fallaría.
             - name: Build Package (before versioning)
               run: |
                   echo "🔨 Construyendo paquetes antes de versionar..."
-                  pnpm build:full
+                  pnpm run build
                   echo "✅ Build exitoso"
 
-            - name: Bump version with lerna
+            # --- DRY RUN: sin efectos secundarios ---
+            - name: Dry run — reportar qué se publicaría
+              if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
               run: |
-                  echo "📦 Actualizando versiones con lerna..."
-                  npx lerna version patch --force-publish --yes --no-push
+                  node - <<'NODE'
+                  const { execSync } = require('node:child_process')
+                  const pkgs = JSON.parse(execSync('npx lerna ls --json', { encoding: 'utf8' }))
+                  console.log('DRY RUN — nada se versionará ni publicará\n')
+                  let publishable = 0
+                  for (const p of pkgs) {
+                      let exists = false
+                      try {
+                          execSync(`npm view ${p.name}@${p.version} version`, { stdio: 'pipe' })
+                          exists = true
+                      } catch {
+                          exists = false
+                      }
+                      if (!exists) publishable++
+                      console.log(`${exists ? '⏭  ya existe ' : '🆕 publicable'}  ${p.name}@${p.version}`)
+                  }
+                  console.log(`\nResumen: ${publishable}/${pkgs.length} paquetes publicables con las versiones actuales.`)
+                  console.log('En un run real, `lerna version` sube TODAS las versiones antes de publicar.')
+                  NODE
 
-                  # Verificar versiones actualizadas
+            - name: Bump version with lerna
+              if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
+              run: |
+                  BUMP="${{ github.event_name == 'workflow_dispatch' && inputs.bump || 'patch' }}"
+                  echo "📦 Actualizando versiones con lerna ($BUMP)..."
+                  npx lerna version "$BUMP" --force-publish --yes --no-push
+
                   echo "📋 Versiones actualizadas:"
                   npx lerna ls --json | jq -r '.[] | "  - \(.name): \(.version)"'
 
             - name: Get npm version
+              if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
               id: package-version
               run: |
                   VERSION=$(node -p "require('./lerna.json').version")
@@ -60,15 +146,20 @@ jobs:
                   echo "📦 Versión detectada: $VERSION"
 
             - name: Push changes and tags
+              if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
               run: |
-                  git push origin builderbot-prod --follow-tags --no-verify
-                  echo "✅ Cambios y tags subidos al repositorio"
+                  git push origin HEAD:${{ github.ref_name }} --follow-tags --no-verify
+                  echo "✅ Cambios y tags subidos a ${{ github.ref_name }}"
 
             - name: Publish packages to npm
-              run: npx lerna publish from-package --yes
+              if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
+              run: |
+                  DIST_TAG="${{ github.event_name == 'workflow_dispatch' && inputs.dist_tag || 'latest' }}"
+                  echo "🚀 Publicando con dist-tag: $DIST_TAG"
+                  npx lerna publish from-package --yes --dist-tag "$DIST_TAG"
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
             - name: Release Github
-              if: success()
+              if: ${{ success() && !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
               run: node ./scripts/github.js --version="${{ steps.package-version.outputs.version}}" --token="${{ secrets.GITHUB_TOKEN }}"

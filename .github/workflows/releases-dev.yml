@@ -135,9 +135,19 @@ jobs:
                   path: packages
 
             - name: Verify npm authentication
-              run: npm whoami
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: |
+                  if [ -z "$NODE_AUTH_TOKEN" ]; then
+                      echo "::error::Falta el secret NPM_TOKEN. Añádelo en Settings → Secrets and variables → Actions."
+                      exit 1
+                  fi
+                  if ! npm whoami >/dev/null 2>&1; then
+                      echo "::error::NPM_TOKEN inválido o expirado (401 Unauthorized)."
+                      echo "::error::Genera un token nuevo en https://www.npmjs.com/settings/~/tokens (tipo 'Automation', que omite el 2FA) y actualiza el secret NPM_TOKEN."
+                      exit 1
+                  fi
+                  echo "✅ Autenticado en npm como: $(npm whoami)"
 
             - name: Configure Git
               run: |
