@@ -87,3 +87,6 @@ baileys_store/
 baileys-live-smoke/
 creds.json
 qr.png
+
+# Orphaned local clone of the old wa-calls-ref submodule (gitlink removed)
+wa-calls-ref/
