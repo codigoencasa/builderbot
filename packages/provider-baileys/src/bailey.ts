@@ -72,6 +72,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
         timeRelease: 0, //21600000
         writeMyself: 'none',
         groupsIgnore: true,
+        allowGroups: false,
         readStatus: false,
         experimentalStore: false,
         autoRefresh: 0,
@@ -466,9 +467,11 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 defaultQueryTimeoutMs: 60_000, // 1 minuto para queries
                 emitOwnEvents: false, // No emitir eventos propios
                 shouldIgnoreJid: (jid: string) => {
-                    if (this.globalVendorArgs.groupsIgnore) {
-                        return isJidGroup(jid) || isJidBroadcast(jid)
-                    }
+                    // T15 option C: `allowGroups` takes precedence over the legacy
+                    // `groupsIgnore` for group chats only; broadcasts keep the old rule.
+                    if (isJidGroup(jid))
+                        return this.globalVendorArgs.allowGroups ? false : this.globalVendorArgs.groupsIgnore
+                    if (isJidBroadcast(jid)) return this.globalVendorArgs.groupsIgnore
                     return false
                 },
                 ...this.globalVendorArgs,
@@ -761,11 +764,21 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     // resolveNumber/lidCache resolve it later (T3, RFC 0002 §9.3).
                     const fromParse = remoteJid?.includes('@lid') ? remoteJidAlt || remoteJid : remoteJid
 
+                    const isGroupMessage = `${remoteJid ?? ''}`.includes('@g.us')
+
                     let payload = {
                         ...messageCtx,
                         body: textToBody,
                         name: messageCtx?.pushName,
                         from: baileyCleanNumber(fromParse),
+                        // T15 option C: for groups, `from` is the group JID and the
+                        // author travels in `participant`/`sender`.
+                        ...(isGroupMessage
+                            ? {
+                                  participant: (messageCtx?.key as any)?.participant,
+                                  sender: (messageCtx?.key as any)?.participant,
+                              }
+                            : {}),
                     }
 
                     if (messageCtx.message?.locationMessage) {
@@ -836,7 +849,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     )
                         continue
 
-                    if (!baileyIsValidNumber(payload.from)) {
+                    // T15 option C: groups only pass when explicitly enabled.
+                    const isAllowedGroup = this.globalVendorArgs.allowGroups && isGroupMessage
+                    if (!isAllowedGroup && !baileyIsValidNumber(payload.from)) {
                         continue
                     }
 

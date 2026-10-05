@@ -29,6 +29,24 @@ files** and must not be deleted to reclaim disk space.
 
 Tests use separate temporary workspaces; they never clean application sessions or logs.
 
+## Group messages (opt-in)
+
+Group messages are **off by default**. Enable them with `allowGroups: true`:
+
+```ts
+createBot({ /* ... */ }, { allowGroups: true })
+```
+
+When enabled:
+
+- `from` is the group JID (`120363000000000000@g.us`)
+- `participant` and `sender` carry the author JID
+- `allowGroups` takes precedence over `groupsIgnore` **for groups only**;
+  status broadcasts still follow `groupsIgnore`
+
+Legacy `groupsIgnore` (default `true`) keeps ignoring groups and broadcasts when
+`allowGroups` is not set.
+
 ## Resilience options
 
 - `baileysLogLevel` (default `'error'`): level of the internal Baileys pino logger.

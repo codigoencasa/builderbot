@@ -140,7 +140,10 @@ Hoy `groupsIgnore:false` no habilita nada porque `baileyIsValidNumber('…@g.us'
 | **B. No soportar (explícito)** | Mantener descarte, documentar y **deprecar** `groupsIgnore` o renombrarlo | Bajo | ✅ Por defecto |
 | **C. Configurable** | `allowGroups: boolean` con `from` = grupo, default `false` | Medio | Si se quiere A sin breaking |
 
-> **Gate**: sin decisión del maintainer, la Fase 2 aplica **B** (no cambia comportamiento, solo documenta y limpia).
+> **Gate resuelto (2026-10-05)**: el maintainer eligió la **opción C**. Implementado
+> como `allowGroups` (default `false`): `from` = JID del grupo, `participant` y
+> `sender` con el autor, y precedencia sobre `groupsIgnore` **solo** para grupos
+> (los broadcasts siguen la regla anterior). Ver `fix/baileys-phase-2-groups`.
 
 ---
 

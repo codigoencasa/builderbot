@@ -22,6 +22,14 @@ export interface BaileyGlobalVendorArgs extends GlobalVendorArgs {
     timeRelease?: number
     experimentalStore?: boolean
     groupsIgnore: boolean
+
+    /**
+     * T15 option C: when `true`, group messages are delivered.
+     * `from` is the group JID (`...@g.us`) and the author is exposed in
+     * `participant` / `sender`. Takes precedence over `groupsIgnore` for groups
+     * only (broadcasts still follow `groupsIgnore`). Default: `false`.
+     */
+    allowGroups?: boolean
     readStatus: boolean
     version?: WAVersion //
     autoRefresh?: number

@@ -57,7 +57,13 @@ jest.mock('wa-sticker-formatter', () => {
 })
 
 jest.mock('../src/utils', () => ({
-    baileyCleanNumber: jest.fn().mockImplementation(() => phoneNumber),
+    // Real group/broadcast JIDs must pass through so T15 routing can be asserted;
+    // everything else keeps the legacy stubbed phone number.
+    baileyCleanNumber: jest
+        .fn()
+        .mockImplementation((number: string) =>
+            number?.includes('@g.us') || number?.includes('broadcast') ? number : phoneNumber
+        ),
     baileyIsValidNumber: jest.fn((number: string) => {
         if (!number || number.trim() === '') return false
         return !number.includes('@g.us')
@@ -124,6 +130,7 @@ describe('#BaileysProvider', () => {
             phoneNumber: null,
             useBaileysStore: true,
             groupsIgnore: true,
+            allowGroups: false,
             readStatus: false,
             port: 3000,
             autoRefresh: 0,
@@ -1195,6 +1202,61 @@ describe('#BaileysProvider', () => {
             } finally {
                 jest.useRealTimers()
             }
+        })
+
+        test('group message is discarded when allowGroups is false (default, T15)', async () => {
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const groupMessage = {
+                message: { conversation: 'hola grupo' },
+                pushName: 'Member',
+                key: { remoteJid: '120363000000000000@g.us', id: 'grp-off-1', fromMe: false, participant: '1@lid' },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [groupMessage], type: 'notify' })
+
+            const events = emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === 'grp-off-1')
+            expect(events).toHaveLength(0)
+        })
+
+        test('group message is delivered with from=group JID and participant when allowGroups is true (T15)', async () => {
+            provider.globalVendorArgs.allowGroups = true
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const groupMessage = {
+                message: { conversation: 'hola grupo' },
+                pushName: 'Member',
+                key: {
+                    remoteJid: '120363000000000000@g.us',
+                    id: 'grp-on-1',
+                    fromMe: false,
+                    participant: '15551230000@s.whatsapp.net',
+                },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [groupMessage], type: 'notify' })
+
+            const events = emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === 'grp-on-1')
+            expect(events).toHaveLength(1)
+            expect(events[0][1]).toEqual(
+                expect.objectContaining({
+                    from: '120363000000000000@g.us',
+                    participant: '15551230000@s.whatsapp.net',
+                    sender: '15551230000@s.whatsapp.net',
+                })
+            )
+        })
+
+        test('allowGroups does not enable broadcasts (T15)', async () => {
+            provider.globalVendorArgs.allowGroups = true
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const broadcast = {
+                message: { conversation: 'status' },
+                key: { remoteJid: 'status@broadcast', id: 'bcast-1', fromMe: false },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [broadcast], type: 'notify' })
+
+            const events = emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === 'bcast-1')
+            expect(events).toHaveLength(0)
         })
 
         test('Detect broadcast in a message', async () => {

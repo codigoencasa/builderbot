@@ -116,9 +116,12 @@
 
 - [x] **T11** `lidCache`: PN normalizado en `MemoryLidCache`, `close()` libera el timer, TTL real por entrada (`entryTs`), `compact()` reescribe de verdad (Fase 3, H13–H16) — *hecho en `fix/baileys-phase-3-4-hygiene`*
 - [x] **T12** Tipos: `import type`/`export type` en wrapper/type, `isLidUser` fuera de bailey.ts, `BaileyGlobalVendorArgs` exportado (H17–H20) — *hecho*
-- [x] **T13** Deps retiradas (`keyed-db`, `cheerio`, `fluent-ffmpeg`, `jimp`, `sharp`); `@types/polka` a dev; lockfile editado a mano (snapshot baileys sin peers jimp/sharp) — *hecho*
+- [x] **T13** Deps retiradas (`keyed-db`, `cheerio`, `jimp`, `@ffmpeg-installer/ffmpeg`); `@types/polka` a dev — *hecho*.
+  **Corrección posterior:** `sharp` y `fluent-ffmpeg` se **conservan**: `dist/index.cjs`
+  incluye `@builderbot/bot` y los requiere en runtime; quitarlos rompía la carga
+  del paquete (detectado con el probe fuera del workspace, POV consumidor)
 - [x] **T14** Handlers `qr`/`open`/`loggedOut`/440 cubiertos; cobertura total 81.24→85.58 líneas, bailey.ts 79→84.89 — *hecho*
-- [ ] **T15** Gate de grupos (RFC §9.1): elegir A/B/C antes de soportar grupos
+- [x] **T15** Gate de grupos: **opción C** elegida — `allowGroups` (default `false`), `from` = JID del grupo, `participant`/`sender` con el autor, precedencia sobre `groupsIgnore` solo para grupos — *hecho en `fix/baileys-phase-2-groups`*
 
 ### P3 — validación externa
 

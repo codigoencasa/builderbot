@@ -69,8 +69,10 @@
     },
     "dependencies": {
         "baileys": "7.0.0-rc13",
+        "fluent-ffmpeg": "^2.1.2",
         "fs-extra": "^11.3.2",
-        "node-cache": "^5.1.2"
+        "node-cache": "^5.1.2",
+        "sharp": "0.33.3"
     },
     "gitHead": "4c667603733e1262920fbd919fa388e544f7f707"
 }
