@@ -766,17 +766,25 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
                     const isGroupMessage = `${remoteJid ?? ''}`.includes('@g.us')
 
+                    const messageKey = (messageCtx?.key ?? {}) as any
+
                     let payload = {
                         ...messageCtx,
                         body: textToBody,
                         name: messageCtx?.pushName,
                         from: baileyCleanNumber(fromParse),
+                        // WhatsApp usernames (Baileys >= rc13, upstream PR #2480).
+                        // A user with a username is addressed by @lid, so `from`
+                        // may be a LID: treat it as the stable key and read the
+                        // username from here instead of parsing the JID.
+                        username: messageKey.remoteJidUsername,
                         // T15 option C: for groups, `from` is the group JID and the
                         // author travels in `participant`/`sender`.
                         ...(isGroupMessage
                             ? {
-                                  participant: (messageCtx?.key as any)?.participant,
-                                  sender: (messageCtx?.key as any)?.participant,
+                                  participant: messageKey.participant,
+                                  sender: messageKey.participant,
+                                  participantUsername: messageKey.participantUsername,
                               }
                             : {}),
                     }

@@ -1288,6 +1288,74 @@ describe('#BaileysProvider', () => {
             )
         })
 
+        test('exposes the chat counterpart username when WhatsApp sends one', async () => {
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const message = {
+                message: { conversation: 'hola' },
+                pushName: 'Tia',
+                key: {
+                    remoteJid: '122299361538159@lid',
+                    remoteJidAlt: undefined,
+                    remoteJidUsername: 'meow1222',
+                    id: 'uname-1',
+                    fromMe: false,
+                },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [message], type: 'notify' })
+
+            const events = emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === 'uname-1')
+            expect(events).toHaveLength(1)
+            // `from` is normalized by baileyCleanNumber (mocked here); the username
+            // must survive untouched regardless of the JID form.
+            expect(events[0][1].username).toBe('meow1222')
+        })
+
+        test('exposes the participant username in group messages (allowGroups)', async () => {
+            provider.globalVendorArgs.allowGroups = true
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const message = {
+                message: { conversation: '.info' },
+                pushName: 'Tia',
+                key: {
+                    remoteJid: '120363410123779747@g.us',
+                    remoteJidAlt: undefined,
+                    fromMe: false,
+                    participant: '122299361538159@lid',
+                    participantAlt: undefined,
+                    participantUsername: 'meow1222',
+                    id: 'uname-grp-1',
+                },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [message], type: 'notify' })
+
+            const events = emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === 'uname-grp-1')
+            expect(events).toHaveLength(1)
+            expect(events[0][1]).toEqual(
+                expect.objectContaining({
+                    from: '120363410123779747@g.us',
+                    participant: '122299361538159@lid',
+                    participantUsername: 'meow1222',
+                })
+            )
+        })
+
+        test('leaves username undefined when WhatsApp does not send one', async () => {
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const message = {
+                message: { conversation: 'sin username' },
+                key: { remoteJid: '15550000003@s.whatsapp.net', id: 'uname-none-1', fromMe: false },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [message], type: 'notify' })
+
+            const events = emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === 'uname-none-1')
+            expect(events).toHaveLength(1)
+            expect(events[0][1].username).toBeUndefined()
+            expect(events[0][1].participantUsername).toBeUndefined()
+        })
+
         test('allowGroups does not enable broadcasts (T15)', async () => {
             provider.globalVendorArgs.allowGroups = true
             const emitSpy = jest.spyOn(provider, 'emit')

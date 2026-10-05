@@ -29,6 +29,35 @@ files** and must not be deleted to reclaim disk space.
 
 Tests use separate temporary workspaces; they never clean application sessions or logs.
 
+## Usernames and LID senders
+
+WhatsApp users with a **username** are addressed by a LID (`<id>@lid`) instead of a
+phone-number JID. Baileys surfaces the username fields (upstream PR #2480, present
+since `rc13`), and the provider forwards them on the `message` event:
+
+| Field | Meaning |
+|---|---|
+| `username` | Username of the chat counterpart, when WhatsApp sends it (`key.remoteJidUsername`) |
+| `participantUsername` | Username of the group author, groups only (`key.participantUsername`) |
+
+```ts
+bot.on('message', async (ctx) => {
+    // ctx.from may legitimately be a LID such as '122299361538159@lid'
+    console.log(ctx.from, ctx.username, ctx.participantUsername)
+})
+```
+
+**Important**
+
+- Treat `from` as an **opaque, stable key**: it can be a `@lid`. Do not parse it as a
+  phone number.
+- In private chats WhatsApp often sends **only** the LID (`remoteJidAlt` and
+  `remoteJidUsername` can both be `undefined`). Replying still works: the provider
+  resolves LID→PN through the cache and `signalRepository.lidMapping`, and sends to
+  the `@lid` directly when no PN mapping exists.
+- Sending **to** a username is not supported by Baileys (the upstream lookup API was
+  never merged): send to a PN or a LID.
+
 ## Group messages (opt-in)
 
 Group messages are **off by default**. Enable them with `allowGroups: true`:

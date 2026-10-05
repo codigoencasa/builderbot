@@ -167,6 +167,14 @@ Tercer hallazgo del live: `sendSticker` no devolvía el mensaje ni lo cacheaba
 - [x] **T14** Handlers `qr`/`open`/`loggedOut`/440 cubiertos; cobertura total 81.24→85.58 líneas, bailey.ts 79→84.89 — *hecho*
 - [x] **T15** Gate de grupos: **opción C** elegida — `allowGroups` (default `false`), `from` = JID del grupo, `participant`/`sender` con el autor, precedencia sobre `groupsIgnore` solo para grupos — *hecho en `fix/baileys-phase-2-groups`*
 
+### Usernames / LID (hallazgo de investigación, 2026-10-05)
+
+- [x] `username` y `participantUsername` expuestos en el payload (Baileys >= rc13, upstream PR #2480) — *hecho*
+- [x] Documentado que `from` puede ser `@lid` y debe tratarse como clave opaca — *hecho*
+- [ ] Sin soporte para **enviar** a un username: la API de lookup upstream (#2680) nunca se fusionó
+- [ ] Recuperar el PN cuando el servidor omite `*_pn`: el PR upstream #2744 se cerró **sin mergear**;
+      hoy depende del `LIDMappingStore` (aprendizaje por envelope + usync en `getLIDForPN`)
+
 ### P3 — validación externa
 
 - [x] **T16** Smoke live NV1–NV5 ejecutado con sesión aislada — **5/5 PASS** (ver arriba). Destapó y cerró 2 bugs reales (CJS interop, destino sin normalizar)
