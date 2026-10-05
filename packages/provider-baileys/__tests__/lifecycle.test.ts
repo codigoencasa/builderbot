@@ -301,6 +301,36 @@ describe('lifecycle review regressions', () => {
         await init
     })
 
+    test('connection open emits ready and host with parsed phone (T14)', async () => {
+        const emitSpy = jest.spyOn(provider, 'emit')
+        await provider['initVendor']()
+
+        socket.ev.emit('connection.update', { connection: 'open' })
+        await Promise.resolve()
+
+        expect(emitSpy).toHaveBeenCalledWith('ready', true)
+        expect(emitSpy).toHaveBeenCalledWith('host', expect.objectContaining({ phone: '15550000000' }))
+        expect(provider['reconnectAttempts']).toBe(0)
+    })
+
+    test('qr event emits require_action and generates the QR image (T14)', async () => {
+        const utilsModule = require('../src/utils')
+        const qrSpy = jest.spyOn(utilsModule, 'baileyGenerateImage').mockResolvedValue(undefined)
+        const emitSpy = jest.spyOn(provider, 'emit')
+        await provider['initVendor']()
+
+        socket.ev.emit('connection.update', { qr: '2@fake-qr-data' })
+        await Promise.resolve()
+        await Promise.resolve()
+
+        expect(emitSpy).toHaveBeenCalledWith(
+            'require_action',
+            expect.objectContaining({ payload: { qr: '2@fake-qr-data' } })
+        )
+        expect(qrSpy).toHaveBeenCalledWith('2@fake-qr-data', 'lifecycle.qr.png')
+        qrSpy.mockRestore()
+    })
+
     test('missing QR returns 404 and destroy closes a real HTTP listener and the log stream', async () => {
         provider['beforeHttpServerInit']()
         await new Promise<void>((resolve) => provider.server.listen(0, resolve))

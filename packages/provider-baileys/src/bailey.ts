@@ -33,7 +33,6 @@ import {
     MessageUpsertType,
     isJidGroup,
     isJidBroadcast,
-    isLidUser,
     DisconnectReason,
     downloadMediaMessage,
     fetchLatestBaileysVersion,

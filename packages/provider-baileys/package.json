@@ -48,6 +48,7 @@
         "@types/jest": "^30.0.0",
         "@types/mime-types": "^2.1.4",
         "@types/node": "^24.10.2",
+        "@types/polka": "^0.5.7",
         "@types/qr-image": "^3.2.9",
         "@types/sinon": "^17.0.3",
         "body-parser": "^2.2.1",
@@ -67,16 +68,9 @@
         "wtfnode": "^0.10.1"
     },
     "dependencies": {
-        "@adiwajshing/keyed-db": "^0.2.4",
-        "@ffmpeg-installer/ffmpeg": "^1.1.0",
-        "@types/polka": "^0.5.7",
         "baileys": "7.0.0-rc13",
-        "cheerio": "^1.1.2",
-        "fluent-ffmpeg": "^2.1.2",
         "fs-extra": "^11.3.2",
-        "jimp": "^1.6.1",
-        "node-cache": "^5.1.2",
-        "sharp": "0.33.3"
+        "node-cache": "^5.1.2"
     },
     "gitHead": "4c667603733e1262920fbd919fa388e544f7f707"
 }

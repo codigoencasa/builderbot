@@ -10,4 +10,5 @@ import { baileyCleanNumber } from './utils'
 
 export * from './bailey'
 export * from './lidCache'
+export type { BaileyGlobalVendorArgs } from './type'
 export { baileyCleanNumber }

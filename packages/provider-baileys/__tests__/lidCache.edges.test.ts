@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect, beforeEach, afterEach } from '@jest/globals'
-import { rm, mkdir } from 'fs/promises'
+import { rm, mkdir, readFile } from 'fs/promises'
 import { join } from 'path'
 
 import { HybridLidCache, MemoryLidCache, normalizeLid } from '../src/lidCache'
@@ -495,6 +495,21 @@ describe('lidCache EDGE CASES: MemoryLidCache Specific', () => {
         expect(await cache.get('ttl@lid')).toBeNull()
     })
 
+    test('should normalize PN like HybridLidCache (T11)', async () => {
+        const cache = new MemoryLidCache(3600)
+        await cache.set('norm@lid', '+1 (555) 000-0001')
+        expect(await cache.get('norm@lid')).toBe('15550000001@s.whatsapp.net')
+        await cache.close()
+    })
+
+    test('close() releases the NodeCache timer (T11)', async () => {
+        const cache = new MemoryLidCache(3600)
+        expect((cache as any).memory.checkTimeout).toBeDefined()
+        await cache.close()
+        // NodeCache.close() destroys the timer object but keeps the property
+        expect((cache as any).memory.checkTimeout._destroyed).toBe(true)
+    })
+
     test('MemoryLidCache should handle all edge cases same as Hybrid', async () => {
         const cache = new MemoryLidCache(3600)
 
@@ -514,6 +529,51 @@ describe('lidCache EDGE CASES: MemoryLidCache Specific', () => {
         // Unicode
         await cache.set('emoji😀@lid', '123@s.whatsapp.net')
         expect(await cache.get('emoji😀@lid')).toBe('123@s.whatsapp.net')
+    })
+})
+
+// ============================================================================
+// ============================================================================
+// EDGE CASE: Real per-entry TTL (T11)
+// ============================================================================
+describe('lidCache EDGE CASES: Real TTL', () => {
+    test('flush preserves original timestamps: untouched entries keep their ts', async () => {
+        const session = 'ttl-real-' + Date.now()
+        const cache = new HybridLidCache(session, 3600)
+        await cache.ready()
+
+        await cache.set('first@lid', '111@s.whatsapp.net')
+        await cache.flushToDisk()
+        const filePath = join(process.cwd(), `${session}_sessions`, 'lid-cache.json')
+        const firstTs = JSON.parse(await readFile(filePath, 'utf-8')).entries['first@lid'].ts
+
+        // A later write to another entry must not refresh the first one
+        await new Promise((r) => setTimeout(r, 25))
+        await cache.set('second@lid', '222@s.whatsapp.net')
+        await cache.flushToDisk()
+        const after = JSON.parse(await readFile(filePath, 'utf-8')).entries
+        expect(after['first@lid'].ts).toBe(firstTs)
+        expect(after['second@lid'].ts).toBeGreaterThan(firstTs)
+
+        await cache.close()
+        await rm(join(process.cwd(), `${session}_sessions`), { recursive: true, force: true })
+    })
+
+    test('compact() rewrites the file even right after a flush (T11)', async () => {
+        const session = 'compact-real-' + Date.now()
+        const cache = new HybridLidCache(session, 3600)
+        await cache.ready()
+
+        await cache.set('one@lid', '111@s.whatsapp.net')
+        await cache.flushToDisk()
+        // compact() immediately after a flush used to be a no-op (flushing guard)
+        await cache.compact()
+        const filePath = join(process.cwd(), `${session}_sessions`, 'lid-cache.json')
+        const data = JSON.parse(await readFile(filePath, 'utf-8'))
+        expect(Object.keys(data.entries)).toEqual(['one@lid'])
+
+        await cache.close()
+        await rm(join(process.cwd(), `${session}_sessions`), { recursive: true, force: true })
     })
 })
 

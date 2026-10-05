@@ -68,7 +68,6 @@ const DEFAULT_FLUSH_INTERVAL_MS = 30000
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024
 
 /** Compact when more than 10k entries */
-const COMPACT_AT_ENTRIES = 10000
 
 /** Disable persistence after 10 consecutive flush failures */
 const MAX_FLUSH_FAILURES = 10
@@ -447,6 +446,9 @@ export class HybridLidCache implements LidCache {
     /** True if flushToDisk() is currently running (prevents concurrent flushes) */
     private flushing = false
 
+    /** Per-entry write timestamps — the real TTL source (T11, H15) */
+    private entryTs = new Map<string, number>()
+
     /** Interval handle for periodic auto-flush */
     private flushInterval?: NodeJS.Timeout
 
@@ -599,6 +601,7 @@ export class HybridLidCache implements LidCache {
         const normalizedPn = normalizePn(pn)
 
         this.memory.set(normalizedLid, normalizedPn)
+        this.entryTs.set(normalizedLid, Date.now())
         this.dirty = true
     }
 
@@ -638,6 +641,7 @@ export class HybridLidCache implements LidCache {
     async clear(): Promise<void> {
         if (this.isClosed) return
         this.memory.flushAll()
+        this.entryTs.clear()
         this.dirty = true
         this.logger.info?.('[LID Cache] Cache cleared')
         await this.flushToDisk()
@@ -715,9 +719,9 @@ export class HybridLidCache implements LidCache {
             return
         }
 
-        // Force full rewrite
-        this.dirty = true
-        await this.flushToDisk()
+        // Real rewrite, bypassing the flushing guard (T11, H13)
+        await this.writeSnapshot()
+        this.dirty = false
         this.logger.info?.('[LID Cache] Compacted', { entries: keys.length })
     }
 
@@ -739,38 +743,7 @@ export class HybridLidCache implements LidCache {
         this.flushing = true
 
         try {
-            await mkdir(dirname(this.filePath), { recursive: true })
-
-            const keys = this.memory.keys()
-
-            // Compact if entry count exceeds threshold
-            if (keys.length > COMPACT_AT_ENTRIES) {
-                await this.compact()
-            }
-
-            const entries: Record<string, CacheEntry> = {}
-            const now = Date.now()
-
-            for (const key of keys) {
-                const value = this.memory.get<string>(key)
-                if (!value) continue
-
-                entries[key] = {
-                    pn: value,
-                    ts: now,
-                }
-            }
-
-            const data: CacheFileData = {
-                version: CACHE_FILE_VERSION,
-                entries,
-            }
-
-            // Write with secure permissions
-            await writeFile(this.filePath, JSON.stringify(data, null, 2), {
-                encoding: 'utf-8',
-                mode: FILE_PERMISSIONS,
-            })
+            await this.writeSnapshot()
 
             this.dirty = false
             this.consecutiveFlushFailures = 0 // Reset on success
@@ -798,6 +771,47 @@ export class HybridLidCache implements LidCache {
         } finally {
             this.flushing = false
         }
+    }
+
+    /**
+     * Writes the current in-memory state to disk, preserving each entry's
+     * original write timestamp (T11, H15). Caller holds the flushing guard
+     * (or is compact(), which is allowed to bypass it).
+     *
+     * @internal
+     */
+    private async writeSnapshot(): Promise<void> {
+        await mkdir(dirname(this.filePath), { recursive: true })
+
+        const keys = this.memory.keys()
+        const entries: Record<string, CacheEntry> = {}
+        const now = Date.now()
+
+        for (const key of keys) {
+            const value = this.memory.get<string>(key)
+            if (!value) continue
+
+            entries[key] = {
+                pn: value,
+                ts: this.entryTs.get(key) ?? now,
+            }
+        }
+
+        // Drop timestamps of entries already evicted from memory
+        for (const key of [...this.entryTs.keys()]) {
+            if (!this.memory.has(key)) this.entryTs.delete(key)
+        }
+
+        const data: CacheFileData = {
+            version: CACHE_FILE_VERSION,
+            entries,
+        }
+
+        // Write with secure permissions
+        await writeFile(this.filePath, JSON.stringify(data, null, 2), {
+            encoding: 'utf-8',
+            mode: FILE_PERMISSIONS,
+        })
     }
 
     /**
@@ -871,7 +885,9 @@ export class HybridLidCache implements LidCache {
                 continue
             }
 
+            // Preserve original write timestamp so the TTL stays real
             this.memory.set(key, entry.pn)
+            this.entryTs.set(key, entry.ts)
             loadedCount++
         }
 
@@ -980,7 +996,7 @@ export class MemoryLidCache implements LidCache {
         if (!isValidPn(pn)) return
 
         const normalized = normalizeLid(lid)
-        this.memory.set(normalized, pn)
+        this.memory.set(normalized, normalizePn(pn))
     }
 
     /**
@@ -1004,13 +1020,13 @@ export class MemoryLidCache implements LidCache {
     }
 
     /**
-     * Closes the cache. For MemoryLidCache, this is a no-op.
+     * Closes the cache, releasing the NodeCache timer (T11).
      *
-     * @remarks The NodeCache instance is not closed to allow continued testing.
-     * If you need to free memory, use `clear()` before `close()`.
+     * @remarks After close(), the underlying NodeCache is closed and its
+     * checkperiod timer stops. Data is ephemeral; nothing is persisted.
      */
     async close(): Promise<void> {
-        // No-op for memory cache - data is already ephemeral
+        this.memory.close()
     }
 }
 

@@ -7,7 +7,7 @@
  * GOAL: Own the "type" concern of the provider-baileys package.
  */
 import type { GlobalVendorArgs } from '@builderbot/bot/dist/types'
-import { proto, WABrowserDescription, WAVersion } from 'baileys'
+import type { proto, WABrowserDescription, WAVersion } from 'baileys'
 
 import type { LidCache } from './lidCache'
 

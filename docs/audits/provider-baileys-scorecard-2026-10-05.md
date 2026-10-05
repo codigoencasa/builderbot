@@ -114,11 +114,11 @@
 
 ### P2 — deuda estructural
 
-- [ ] **T11** `lidCache`: normalizar PN en `MemoryLidCache.set`, cerrar NodeCache en `close()`, TTL por entrada real, `compact()` real (Fase 3, H13–H16)
-- [ ] **T12** Tipos: `import type`/`export type`, quitar `isLidUser` sin uso, exportar `BaileyGlobalVendorArgs` (Fase 4, H17–H20)
-- [ ] **T13** Deps: retirar las 5 sin uso tras verificar consumidores (Fase 4, H19)
-- [ ] **T14** Tests: cubrir handlers `qr`/`open`/`loggedOut` (485–550) y subir ramas de bailey.ts >80%
-- [ ] **T15** Gate de grupos (RFC §9.1): elegir A/B/C antes de Fase 2
+- [x] **T11** `lidCache`: PN normalizado en `MemoryLidCache`, `close()` libera el timer, TTL real por entrada (`entryTs`), `compact()` reescribe de verdad (Fase 3, H13–H16) — *hecho en `fix/baileys-phase-3-4-hygiene`*
+- [x] **T12** Tipos: `import type`/`export type` en wrapper/type, `isLidUser` fuera de bailey.ts, `BaileyGlobalVendorArgs` exportado (H17–H20) — *hecho*
+- [x] **T13** Deps retiradas (`keyed-db`, `cheerio`, `fluent-ffmpeg`, `jimp`, `sharp`); `@types/polka` a dev; lockfile editado a mano (snapshot baileys sin peers jimp/sharp) — *hecho*
+- [x] **T14** Handlers `qr`/`open`/`loggedOut`/440 cubiertos; cobertura total 81.24→85.58 líneas, bailey.ts 79→84.89 — *hecho*
+- [ ] **T15** Gate de grupos (RFC §9.1): elegir A/B/C antes de soportar grupos
 
 ### P3 — validación externa
 
