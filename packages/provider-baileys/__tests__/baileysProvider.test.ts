@@ -1378,6 +1378,30 @@ describe('#BaileysProvider', () => {
             expect(byId('fromme-1')[0][1].fromMe).toBe(true)
         })
 
+        test('emits _event_contacts_ ref for contact cards (W2)', async () => {
+            // Note: '@builderbot/bot' is automocked in this suite, so
+            // utils.generateRefProvider returns undefined; assert the call instead.
+            const { utils } = jest.requireMock('@builderbot/bot') as any
+            utils.generateRefProvider.mockClear()
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const single = {
+                message: { contactMessage: { displayName: 'Bob', vcard: 'BEGIN:VCARD' } },
+                key: { remoteJid: '15550000006@s.whatsapp.net', id: 'contact-1', fromMe: false },
+            }
+            const multiple = {
+                message: { contactsArrayMessage: { displayName: '2 contactos', contacts: [] } },
+                key: { remoteJid: '15550000006@s.whatsapp.net', id: 'contact-2', fromMe: false },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [single, multiple], type: 'notify' })
+
+            const byId = (id: string) => emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === id)
+            expect(byId('contact-1')).toHaveLength(1)
+            expect(byId('contact-2')).toHaveLength(1)
+            const refCalls = utils.generateRefProvider.mock.calls.map(([prefix]: any[]) => prefix)
+            expect(refCalls.filter((p: string) => p === '_event_contacts_')).toHaveLength(2)
+        })
+
         test('allowGroups does not enable broadcasts (T15)', async () => {
             provider.globalVendorArgs.allowGroups = true
             const emitSpy = jest.spyOn(provider, 'emit')

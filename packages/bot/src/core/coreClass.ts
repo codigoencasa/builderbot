@@ -697,6 +697,10 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             if (LIST_REGEX.REGEX_EVENT_CALL.test(body)) {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.CALL) || []
             }
+
+            if (LIST_REGEX.REGEX_EVENT_CONTACTS.test(body)) {
+                msgToSend = this.flowClass.find(this.generalArgs.listEvents.CONTACTS) || []
+            }
         }
 
         await this.stateHandler.updateState({ from })({ __end_flow__: false })

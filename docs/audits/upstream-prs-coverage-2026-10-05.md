@@ -137,6 +137,18 @@ Resumen: **1 PR superado (#1236)**, **2 parcialmente cubiertos (#1244 mejor que 
   (`provider-meta/src/meta/provider.ts`, flag `webhookNoticeEmitted`).
 - Tests: 3 nuevos (fromMe raíz; notice-once; fallback de pushName). Suites: baileys 231/231, meta 160/160. Lint y build limpios.
 | **W2** (core) | P5a evento CONTACTS en core + ref `_event_contacts_` en Baileys | `bot`, `provider-baileys` | Bajo-medio |
+
+**Estado W2: ✅ implementado** (rama `fix/w2-contacts-event`). Detalles:
+- Core: nuevo `packages/bot/src/io/events/eventContacts.ts` (`eventContacts` + `REGEX_EVENT_CONTACTS`),
+  registrado en `LIST_ALL.CONTACTS` y `LIST_REGEX.REGEX_EVENT_CONTACTS`; `coreClass.ts` añade el bloque
+  de routing `REGEX_EVENT_CONTACTS → listEvents.CONTACTS` junto a los demás eventos.
+- Baileys: `contactMessage` y `contactsArrayMessage` emiten `body = _event_contacts_<uuid>`
+  (antes `undefined`). Meta ya emitía ese ref; ahora por fin matchea un evento del core.
+- Tests: 4 nuevos en `bot` (42/42 en events), 1 en baileys (espiando `generateRefProvider`,
+  pues la suite usa automock de `@builderbot/bot`), suite meta sin cambios (160/160, el test de
+  contacts ya existente sigue pasando). Suites completas: baileys 232/232, bot 181/181 (6 skipped
+  preexistentes), meta 160/160. Builds de `bot` y `provider-baileys` OK.
+- Bonus: `eslint --fix` en `events.test.ts` corrigió 9 errores de `import/order` **preexistentes**.
 | **W3** (contrato) | RFC 0003 envelope (requiere las 4 decisiones) + P5b poll | `bot`, ambos providers | Medio |
 
 Dependencias: W2 antes que cualquier ref de contactos; W3 requiere aprobación de las

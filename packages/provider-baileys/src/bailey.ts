@@ -844,6 +844,16 @@ class BaileysProvider extends ProviderClass<WASocket> {
                         }
                     }
 
+                    // W2: contact cards previously emitted with body undefined, so no
+                    // flow could match them. `_event_contacts_` matches Meta and the
+                    // core CONTACTS event.
+                    if (messageCtx.message?.contactMessage || messageCtx.message?.contactsArrayMessage) {
+                        payload = {
+                            ...payload,
+                            body: utils.generateRefProvider('_event_contacts_'),
+                        }
+                    }
+
                     if (payload.from === 'status@broadcast') continue
                     payload.from = baileyCleanNumber(payload.from, true)
 
