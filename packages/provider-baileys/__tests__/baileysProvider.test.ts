@@ -157,6 +157,9 @@ describe('#BaileysProvider', () => {
     })
 
     describe('#getMessage', () => {
+        // BUG(H3): Baileys expects `undefined` on a cache miss (`getMessage:
+        // (key) => Promise<proto.IMessage | undefined>`); returning `{}` makes
+        // Baileys believe the message was found. Fixed in Phase 2 of RFC 0002.
         test('should return empty message object', async () => {
             // Arrange
             const mockedKey = { remoteJid: 'exampleRemoteJid', id: 'exampleId' }

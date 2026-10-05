@@ -11,6 +11,9 @@ const config: Config = {
     verbose: true,
     cache: true,
     testEnvironment: 'node',
+    // Removes `<name>_sessions/` dirs and `*.log` files created by tests in the
+    // package cwd. See jest.globalTeardown.ts.
+    globalTeardown: '<rootDir>/jest.globalTeardown.ts',
 }
 
 export default config
