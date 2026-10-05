@@ -68,7 +68,7 @@
         "wtfnode": "^0.10.1"
     },
     "dependencies": {
-        "baileys": "7.0.0-rc13",
+        "baileys": "7.0.0-rc14",
         "fluent-ffmpeg": "^2.1.2",
         "fs-extra": "^11.3.2",
         "node-cache": "^5.1.2",

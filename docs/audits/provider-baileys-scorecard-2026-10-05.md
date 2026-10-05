@@ -126,8 +126,8 @@
 ### P3 — validación externa
 
 - [ ] **T16** Smoke live NV1–NV5 con sesión aislada (requiere escaneo del usuario)
-- [ ] **T17** Upgrade a `rc14` + evaluar PR upstream #2765 (companion_reg_refresh) cuando se fusione
-- [ ] **T18** Evaluar mitigación para fuga ALS upstream (#2806/#2807) en despliegues multi-sesión
+- [x] **T17** Upgrade a `rc14` — *hecho en `fix/baileys-phase-5-upgrade`*. Contrastado: rc13→rc14 son 8 commits (fix Long #2586, `Browsers.android` #2201, tc-token anidado #2607, WA Web version #2728); deps y peers idénticos. **PR #2765 sigue abierto (sin merge, última actividad 2026-09-23)** → el fallo `companion_reg_refresh` en emparejamientos nuevos **persiste en rc14**; no se aplicó fork/parche. Decisión pendiente: esperar merge o parchear
+- [x] **T18** Fuga ALS contrastada: rc14 instalado sigue sin `disable()` ni `dispose` (PR #2807 abierto, última actividad 2026-09-22). Mitigación sin parche: docs de aislamiento por proceso + aviso en `auth_failure` al agotar reconexiones — *hecho*
 
 ## Vinculación con RFC 0002
 

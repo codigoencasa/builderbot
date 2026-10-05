@@ -1378,6 +1378,10 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 `Maximum reconnection attempts reached`,
                 `Please check your internet connection`,
                 `Check baileys.log for details`,
+                // T18: each reconnect creates a socket whose AsyncLocalStorage is
+                // never released upstream (#2806); long-running hosts should recycle
+                // the process after repeated reconnects.
+                `After many reconnects, consider restarting the process (upstream memory leak #2806)`,
                 `Need help: https://link.codigoencasa.com/DISCORD`,
             ])
             return

@@ -7,7 +7,7 @@ Snapshot congelado antes del hardening descrito en
 |---|---|
 | Paquete | `@builderbot/provider-baileys@1.4.3-y.12` |
 | Commit base | `06d1e9c0` |
-| `baileys` | `7.0.0-rc13` |
+| `baileys` | `7.0.0-rc13` → `7.0.0-rc14` (Fase 5, `fix/baileys-phase-5-upgrade`) |
 | `pnpm-lock.yaml` (sha256, 16) | `5235b1c1abbf3624` |
 | Tests | **175 passed / 175 total** (5 suites) |
 | `dist/` | 1.9 MB |

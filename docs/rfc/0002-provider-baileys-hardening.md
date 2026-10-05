@@ -184,7 +184,7 @@ Hoy `groupsIgnore:false` no habilita nada porque `baileyIsValidNumber('…@g.us'
 | Objetivo | Alinear con upstream y quitar el fallback obsoleto |
 | Cubre | H21, H22, H23 |
 | Archivos | `package.json`, `pnpm-lock.yaml`, `src/bailey.ts` |
-| Cambios | **5.1** Bump `baileys` → `7.0.0-rc14` (sin breaking de API; trae WA version nueva, `Browsers.android`, fix tc-token). **5.2** Fallback hardcodeado → `[2,3000,1043857760]` **o** eliminarlo usando `fetchLatestBaileysVersion` como único fallback. **5.3** Sustituir `...globalVendorArgs` por una **allowlist** de opciones de socket. **5.4** (Opcional) exponer `Browsers.android` como opción documentada (experimental, habilita view-once). |
+| Cambios | **5.1** Bump `baileys` → `7.0.0-rc14` ✅ (`fix/baileys-phase-5-upgrade`; deps/peers idénticos, 8 commits: #2586, #2201, #2607, #2728). **5.2** Fallback hardcodeado → `[2,3000,1043857760]` ✅ (P1/T9). **5.3** Sustituir `...globalVendorArgs` por una **allowlist** de opciones de socket (pendiente). **5.4** (Opcional) `Browsers.android` disponible en rc14, sin exponer aún. **Nota**: PR #2765 (`companion_reg_refresh`) sigue abierto → emparejamientos nuevos pueden fallar; sesiones ya vinculadas no se ven afectadas. |
 | Aceptación | `pnpm install` limpio, build y tests verdes. Smoke manual: conexión por QR **y** por pairing code; envío texto/imagen/documento; recepción DM; reinicio tras `loggedOut`. |
 | Pruebas | Suite del paquete + `pnpm run build` raíz. Smoke manual documentado en el PR. |
 | Riesgo | Medio (dependencia de red/protocolo). Mitigación: fase aislada y revertible; rc14 es patch sobre rc13. |

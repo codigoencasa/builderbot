@@ -47,6 +47,20 @@ When enabled:
 Legacy `groupsIgnore` (default `true`) keeps ignoring groups and broadcasts when
 `allowGroups` is not set.
 
+## Multi-session deployments (memory)
+
+Baileys `rc14` still creates one `AsyncLocalStorage` per socket and never
+releases it (upstream [#2806](https://github.com/WhiskeySockets/Baileys/issues/2806),
+fix PR [#2807](https://github.com/WhiskeySockets/Baileys/pull/2807) open).
+Heap then grows with *sockets ever created*, including every reconnect.
+
+Until upstream merges the fix:
+
+- Prefer **one process per session** (process isolation).
+- Recycle long-running processes after repeated reconnects (the provider logs a
+  hint when `maxReconnectAttempts` is reached).
+- A single-session bot is not meaningfully affected.
+
 ## Resilience options
 
 - `baileysLogLevel` (default `'error'`): level of the internal Baileys pino logger.
