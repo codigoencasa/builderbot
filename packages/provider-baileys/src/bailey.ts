@@ -778,6 +778,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
                         // may be a LID: treat it as the stable key and read the
                         // username from here instead of parsing the JID.
                         username: messageKey.remoteJidUsername,
+                        // W1: expose fromMe at the root so consumers can filter
+                        // self-messages without reaching into `key` (matches Meta).
+                        fromMe: Boolean(messageKey.fromMe),
                         // T15 option C: for groups, `from` is the group JID and the
                         // author travels in `participant`/`sender`.
                         ...(isGroupMessage

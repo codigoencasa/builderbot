@@ -838,5 +838,48 @@ describe('#MetaCoreVendor ', () => {
             expect(mockRes.statusCode).toBe(200)
             expect(mockRes.end).toHaveBeenCalledWith('Messages enqueued')
         })
+
+        test('falls back to profile.username when profile.name is absent', async () => {
+            // Arrange — username-only contacts may not send profile.name
+            const processSpy = require('../src/utils/processIncomingMsg').processIncomingMessage as jest.Mock
+            processSpy.mockImplementation(() => true)
+            const mockReq = {
+                body: {
+                    entry: [
+                        {
+                            changes: [
+                                {
+                                    value: {
+                                        messages: [
+                                            {
+                                                type: 'text',
+                                                from_user_id: 'US.13491208655302741918',
+                                                id: 'wamid.NONAME',
+                                                timestamp: '1785827662',
+                                                text: { body: 'hi' },
+                                            },
+                                        ],
+                                        contacts: [
+                                            {
+                                                profile: { username: 'josesantos' },
+                                                user_id: 'US.13491208655302741918',
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+                globalVendorArgs: {},
+            }
+            const mockRes = { statusCode: 0, end: jest.fn() }
+
+            // Act
+            await metaCoreVendor.incomingMsg(mockReq as any, mockRes as any, mockNext)
+
+            // Assert — flows get the username as display name instead of 'Unknown'
+            expect(processSpy).toHaveBeenCalledWith(expect.objectContaining({ pushName: 'josesantos' }))
+        })
     })
 })

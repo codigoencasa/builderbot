@@ -127,6 +127,15 @@ Resumen: **1 PR superado (#1236)**, **2 parcialmente cubiertos (#1244 mejor que 
 | Ola | Contenido | Paquetes | Riesgo |
 |---|---|---|---|
 | **W1** (trivial, sin core) | P1 `engines` (rango real) + P3 `fromMe` (baileys) + P4 `pushName` fallback + P2 `notice` una vez | `provider-baileys`, `provider-meta` | Bajo |
+
+**Estado W1: ✅ implementado** (rama `fix/w1-provider-dx-backlog`). Detalles:
+- P1: `engines.node = "^18.17.0 || ^20.3.0 || >=21.0.0"` en `provider-baileys/package.json`
+  (rango real de `sharp@0.33.3`, no el `>=20.12.1` del PR #1259).
+- P3: `fromMe: Boolean(key.fromMe)` en la raíz del payload de Baileys (`bailey.ts`).
+- P4: `pushName ?? profile.username ?? 'Unknown'` en `provider-meta/src/meta/core.ts`.
+- P2: `notice` "🔗 WEBHOOK REQUIRED" emitido **una vez por proceso** tras `ready`
+  (`provider-meta/src/meta/provider.ts`, flag `webhookNoticeEmitted`).
+- Tests: 3 nuevos (fromMe raíz; notice-once; fallback de pushName). Suites: baileys 231/231, meta 160/160. Lint y build limpios.
 | **W2** (core) | P5a evento CONTACTS en core + ref `_event_contacts_` en Baileys | `bot`, `provider-baileys` | Bajo-medio |
 | **W3** (contrato) | RFC 0003 envelope (requiere las 4 decisiones) + P5b poll | `bot`, ambos providers | Medio |
 

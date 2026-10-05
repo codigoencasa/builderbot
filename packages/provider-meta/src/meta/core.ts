@@ -301,7 +301,9 @@ export class MetaCoreVendor extends EventEmitter {
         const to = value?.metadata?.display_phone_number
         let contact: ContactMeta | undefined
         if (Array.isArray(contacts)) [contact] = contacts
-        const pushName: string | undefined = contact?.profile?.name ?? 'Unknown'
+        // Username-only contacts may not send profile.name; fall back to the username
+        // so flows get a usable display name instead of 'Unknown'.
+        const pushName: string | undefined = contact?.profile?.name ?? contact?.profile?.username ?? 'Unknown'
         const userId: string | undefined = contact?.user_id
         const username: string | undefined = contact?.profile?.username
 

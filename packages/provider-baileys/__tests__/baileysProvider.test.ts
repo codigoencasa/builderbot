@@ -1356,6 +1356,28 @@ describe('#BaileysProvider', () => {
             expect(events[0][1].participantUsername).toBeUndefined()
         })
 
+        test('exposes fromMe at the payload root', async () => {
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const incoming = {
+                message: { conversation: 'de otro' },
+                key: { remoteJid: '15550000004@s.whatsapp.net', id: 'fromme-0', fromMe: false },
+            }
+            const own = {
+                message: { conversation: 'propio' },
+                key: { remoteJid: '15550000005@s.whatsapp.net', id: 'fromme-1', fromMe: true },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [incoming], type: 'notify' })
+            provider.globalVendorArgs.writeMyself = 'both'
+            await provider['busEvents']()[0].func({ messages: [own], type: 'notify' })
+
+            const byId = (id: string) => emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === id)
+            expect(byId('fromme-0')).toHaveLength(1)
+            expect(byId('fromme-0')[0][1].fromMe).toBe(false)
+            expect(byId('fromme-1')).toHaveLength(1)
+            expect(byId('fromme-1')[0][1].fromMe).toBe(true)
+        })
+
         test('allowGroups does not enable broadcasts (T15)', async () => {
             provider.globalVendorArgs.allowGroups = true
             const emitSpy = jest.spyOn(provider, 'emit')

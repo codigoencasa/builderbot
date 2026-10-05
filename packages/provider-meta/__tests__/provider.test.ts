@@ -80,6 +80,37 @@ describe('#MetaProvider', () => {
 
             // Assert
             expect(mockEventEmitter.emit).toHaveBeenCalledWith('ready')
+            expect(mockEventEmitter.emit).toHaveBeenCalledWith(
+                'notice',
+                expect.objectContaining({ title: '🔗 WEBHOOK REQUIRED' })
+            )
+        })
+
+        test('should emit the webhook notice only once across re-inits', async () => {
+            // Arrange
+            const fakeProfile: WhatsAppProfile = {
+                display_phone_number: '+1234567890',
+                verified_name: '',
+                code_verification_status: '',
+                quality_rating: '',
+                platform_type: '',
+                throughput: { level: '' },
+                id: '',
+            }
+            ;(require('../src/utils').getProfile as jest.Mock).mockImplementation(() => fakeProfile)
+            const mockEmit = jest.fn()
+            metaProvider.vendor = { emit: jest.fn() } as any
+            metaProvider.emit = mockEmit as any
+
+            // Act — two successful inits (e.g. server restart)
+            await metaProvider['afterHttpServerInit']()
+            await metaProvider['afterHttpServerInit']()
+
+            // Assert — 'ready' fires twice, the webhook notice only once
+            const noticeCalls = mockEmit.mock.calls.filter(
+                ([event, payload]: any[]) => event === 'notice' && payload?.title === '🔗 WEBHOOK REQUIRED'
+            )
+            expect(noticeCalls).toHaveLength(1)
         })
 
         test('should emit "notice" event with error message when initialization fails', async () => {

@@ -46,6 +46,8 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
     public queue: Queue = new Queue()
     /** Core vendor for WhatsApp Business voice calls — only set when `enableVoiceCalls` is true. */
     public callVendor?: MetaCallCoreVendor
+    /** W1: emit the webhook-setup notice only once per process, not on every (re)init. */
+    private webhookNoticeEmitted = false
 
     public globalVendorArgs: MetaGlobalVendorArgs = {
         name: 'bot',
@@ -98,6 +100,20 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             }
             this.vendor.emit('host', host)
             this.emit('ready')
+
+            if (!this.webhookNoticeEmitted) {
+                this.webhookNoticeEmitted = true
+                this.emit('notice', {
+                    title: '🔗 WEBHOOK REQUIRED',
+                    instructions: [
+                        'Remember to configure the webhook in your Meta dashboard:',
+                        '- Callback URL: https://<your-domain>/webhook',
+                        '- Verify with your verifyToken',
+                        '- Subscribe to the "messages" field',
+                        'https://builderbot.app/en/providers/meta',
+                    ],
+                })
+            }
         } catch (err) {
             const errorMap = {
                 'Invalid token': { title: '🔑 TOKEN ERROR', msg: 'Check META_ACCESS_TOKEN in .env' },
