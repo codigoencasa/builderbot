@@ -238,6 +238,15 @@ Correcciones aplicadas, limitadas a estas fases:
 Esto no modifica el routing de Fase 2 ni actualiza Baileys. La validación local
 no sustituye una prueba de conexión real con WhatsApp, prevista para Fase 5.
 
+## 5.4 Scorecard de madurez (2026-10-05)
+
+Auditoría posterior a las correcciones de Fases 0–1, contrastada con 63 issues
+upstream (05-jul → 05-oct 2026): **[docs/audits/provider-baileys-scorecard-2026-10-05.md](../audits/provider-baileys-scorecard-2026-10-05.md)**.
+
+Resultado: **≈ 46.5/100** de madurez de evidencia (lifecycle 18/20 sólido;
+ routing de mensajes 6/20 y QR 6/15 concentran la deuda). El score no mide
+probabilidad de fallo; la aceptación live con WhatsApp (NV1–NV5) sigue pendiente.
+
 ## 6. Puerta de calidad por fase (Definition of Done)
 
 Una fase se considera cerrada cuando **todo** lo siguiente es cierto:
