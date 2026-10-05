@@ -20,7 +20,8 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/codigoencasa/bot-whatsapp/tree/main/packages/create-builderbot"
+        "url": "git+https://github.com/codigoencasa/builderbot.git",
+        "directory": "packages/create-builderbot"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^29.0.0",

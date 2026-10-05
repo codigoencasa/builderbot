@@ -36,6 +36,11 @@ on:
                 required: false
                 default: false
                 type: boolean
+            publish_only:
+                description: 'Publicar SOLO la versión actual (sin subir versión). Úsalo para recuperar un release parcial'
+                required: false
+                default: false
+                type: boolean
 
 # Nunca cancelar un release a medias: podría dejar versiones/tags a medio publicar.
 concurrency:
@@ -146,7 +151,7 @@ jobs:
                   NODE
 
             - name: Bump version with lerna
-              if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
+              if: ${{ !(github.event_name == 'workflow_dispatch' && (inputs.dry_run || inputs.publish_only)) }}
               run: |
                   BUMP="${{ github.event_name == 'workflow_dispatch' && inputs.bump || 'patch' }}"
                   echo "📦 Actualizando versiones con lerna ($BUMP)..."
@@ -164,7 +169,7 @@ jobs:
                   echo "📦 Versión detectada: $VERSION"
 
             - name: Push changes and tags
-              if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
+              if: ${{ !(github.event_name == 'workflow_dispatch' && (inputs.dry_run || inputs.publish_only)) }}
               run: |
                   git push origin HEAD:${{ github.ref_name }} --follow-tags --no-verify
                   echo "✅ Cambios y tags subidos a ${{ github.ref_name }}"

@@ -2,6 +2,10 @@
     "name": "@builderbot/provider-gupshup",
     "version": "1.4.3",
     "description": "Gupshup Provider for BuilderBot",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/codigoencasa/builderbot.git"
+    },
     "main": "dist/index.cjs",
     "types": "dist/index.d.ts",
     "type": "module",

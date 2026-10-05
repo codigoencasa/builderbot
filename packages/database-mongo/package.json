@@ -17,7 +17,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/codigoencasa/bot-whatsapp.git"
+        "url": "git+https://github.com/codigoencasa/builderbot.git"
     },
     "scripts": {
         "build": "rimraf dist && rollup --config",
@@ -26,9 +26,9 @@
         "test:debug": " npx tsm --inspect-brk ../../node_modules/uvu/bin.js ./__tests__ .test.ts"
     },
     "bugs": {
-        "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
+        "url": "https://github.com/codigoencasa/builderbot/issues"
     },
-    "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
+    "homepage": "https://github.com/codigoencasa/builderbot#readme",
     "dependencies": {
         "@builderbot/bot": "workspace:*",
         "mongodb": "^7.0.0"

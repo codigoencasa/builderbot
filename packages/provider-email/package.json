@@ -3,7 +3,7 @@
     "version": "1.4.3",
     "description": "Email provider for BuilderBot using IMAP/SMTP",
     "author": "Leifer Mendez <leifer33@gmail.com>",
-    "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
+    "homepage": "https://github.com/codigoencasa/builderbot#readme",
     "license": "MIT",
     "main": "dist/index.cjs",
     "types": "dist/index.d.ts",
@@ -13,7 +13,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/codigoencasa/bot-whatsapp.git"
+        "url": "git+https://github.com/codigoencasa/builderbot.git"
     },
     "scripts": {
         "build": "rimraf dist && rollup --config",
@@ -26,7 +26,7 @@
         "test": "__tests__"
     },
     "bugs": {
-        "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
+        "url": "https://github.com/codigoencasa/builderbot/issues"
     },
     "devDependencies": {
         "@builderbot/bot": "workspace:*",

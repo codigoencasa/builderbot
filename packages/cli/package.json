@@ -39,7 +39,8 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/codigoencasa/bot-whatsapp/tree/main/packages/cli"
+        "url": "git+https://github.com/codigoencasa/builderbot.git",
+        "directory": "packages/cli"
     },
     "gitHead": "4c667603733e1262920fbd919fa388e544f7f707"
 }

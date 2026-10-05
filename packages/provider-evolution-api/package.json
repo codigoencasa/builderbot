@@ -3,7 +3,7 @@
     "version": "1.4.3",
     "description": "> TODO: description",
     "author": "aurik3 <aurik3@gmail.com>",
-    "homepage": "https://github.com/aurik3/bot-whatsapp#readme",
+    "homepage": "https://github.com/codigoencasa/builderbot#readme",
     "license": "ISC",
     "main": "dist/index.cjs",
     "types": "dist/index.d.ts",
@@ -17,7 +17,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/aurik3/bot-whatsapp.git"
+        "url": "git+https://github.com/codigoencasa/builderbot.git"
     },
     "scripts": {
         "build": "rimraf dist && rollup --config",
@@ -26,7 +26,7 @@
         "test:watch": "jest --watchAll --coverage"
     },
     "bugs": {
-        "url": "https://github.com/aurik3/bot-whatsapp/issues"
+        "url": "https://github.com/codigoencasa/builderbot/issues"
     },
     "dependencies": {
         "@polka/parse": "1.0.0-next.0",
