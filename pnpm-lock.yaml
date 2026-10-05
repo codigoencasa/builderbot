@@ -661,9 +661,6 @@ importers:
                 specifier: 0.33.3
                 version: 0.33.3
         devDependencies:
-            jest-environment-node:
-                specifier: 30.2.0
-                version: 30.2.0
             '@builderbot/bot':
                 specifier: workspace:*
                 version: link:../bot
@@ -712,6 +709,9 @@ importers:
             jest:
                 specifier: ^30.2.0
                 version: 30.2.0(@types/node@24.10.2)(ts-node@10.9.2(@types/node@24.10.2)(typescript@5.9.3))
+            jest-environment-node:
+                specifier: 30.2.0
+                version: 30.2.0
             mime-types:
                 specifier: ^3.0.2
                 version: 3.0.2
@@ -7225,10 +7225,10 @@ packages:
         peerDependencies:
             '@babel/core': ^7.11.0 || ^8.0.0-beta.1
 
-    baileys@7.0.0-rc14:
+    baileys@7.0.0-rc13:
         resolution:
             {
-                integrity: sha512-pewtrljhWx5JTUBvvkXZz1fL3JPiwzjBsnhx/DWf2LWBx1cZNH7J/sF22xDehba5mySWUQU4a1Pwt7lWARUxaA==,
+                integrity: sha512-v8k74K8B5R7WNYGa26MyJAYEu3Wc4BSuK01QaK8lr30lhE8Nga31nWNu8KN0NDDt+Fsvkq4SQFFI8Q13ghjKmA==,
             }
         engines: { node: '>=20.0.0' }
         peerDependencies:
@@ -7244,10 +7244,10 @@ packages:
             link-preview-js:
                 optional: true
 
-    baileys@7.0.0-rc13:
+    baileys@7.0.0-rc14:
         resolution:
             {
-                integrity: sha512-v8k74K8B5R7WNYGa26MyJAYEu3Wc4BSuK01QaK8lr30lhE8Nga31nWNu8KN0NDDt+Fsvkq4SQFFI8Q13ghjKmA==,
+                integrity: sha512-pewtrljhWx5JTUBvvkXZz1fL3JPiwzjBsnhx/DWf2LWBx1cZNH7J/sF22xDehba5mySWUQU4a1Pwt7lWARUxaA==,
             }
         engines: { node: '>=20.0.0' }
         peerDependencies:
@@ -21989,7 +21989,7 @@ snapshots:
             babel-plugin-jest-hoist: 30.2.0
             babel-preset-current-node-syntax: 1.2.0(@babel/core@7.28.5)
 
-    baileys@7.0.0-rc14(bufferutil@4.0.9)(sharp@0.33.3)(utf-8-validate@5.0.10):
+    baileys@7.0.0-rc13(bufferutil@4.0.9)(jimp@1.6.1)(sharp@0.33.3)(utf-8-validate@5.0.10):
         dependencies:
             '@cacheable/node-cache': 1.7.5
             '@hapi/boom': 9.1.4
@@ -22003,6 +22003,8 @@ snapshots:
             sharp: 0.33.3
             whatsapp-rust-bridge: 0.5.4
             ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        optionalDependencies:
+            jimp: 1.6.1
         transitivePeerDependencies:
             - bufferutil
             - supports-color
@@ -22045,7 +22047,7 @@ snapshots:
             - supports-color
             - utf-8-validate
 
-    baileys@7.0.0-rc13(bufferutil@4.0.9)(jimp@1.6.1)(sharp@0.33.3)(utf-8-validate@5.0.10):
+    baileys@7.0.0-rc14(bufferutil@4.0.9)(sharp@0.33.3)(utf-8-validate@5.0.10):
         dependencies:
             '@cacheable/node-cache': 1.7.5
             '@hapi/boom': 9.1.4
@@ -22059,8 +22061,6 @@ snapshots:
             sharp: 0.33.3
             whatsapp-rust-bridge: 0.5.4
             ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-        optionalDependencies:
-            jimp: 1.6.1
         transitivePeerDependencies:
             - bufferutil
             - supports-color
