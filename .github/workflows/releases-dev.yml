@@ -96,11 +96,26 @@ jobs:
                   path: packages/*/dist
                   retention-days: 1
 
+    ############ FORK NOTICE ############
+    # GitHub no comparte los secrets con los PRs de forks, así que publicar una
+    # alpha es imposible en ese caso. En lugar de fallar en rojo, lo omitimos y
+    # lo explicamos (el resto del pipeline — tests y build — sí corre).
+    fork-notice:
+        name: ℹ️ Fork sin secrets
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: Explain why the alpha release is skipped
+              run: |
+                  echo "::notice::PR desde un fork: se omite la publicación de la alpha porque GitHub no expone los secrets (NPM_TOKEN) a los forks. Los tests y el build sí se ejecutan."
+
     ############ RELEASE ############
     release:
         name: 📦 Release Alpha
         runs-on: ubuntu-latest
         needs: [test, build]
+        # Los PRs de forks no reciben secrets → no se puede autenticar ni publicar.
+        if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork }}
         permissions:
             contents: write
             packages: write
