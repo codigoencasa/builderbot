@@ -334,9 +334,15 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             try {
                 await this.queuePrincipal.enqueue(
                     from,
-                    async () => {
+                    async (signal) => {
+                        // Cancelación cooperativa: si el item ya expiró/limpió, no continuar la cadena
+                        if (signal?.cancelled) return
+
                         await this.sendProviderAndSave(numberOrId, ctxMessage)
-                            .then(() => resolveCbEveryCtx(ctxMessage))
+                            .then(() => {
+                                if (signal?.cancelled) return
+                                return resolveCbEveryCtx(ctxMessage)
+                            })
                             .catch((error) => {
                                 logger.error(`Error en sendProviderAndSave (ID ${ctxMessage.ref}):`, error)
                                 throw error
@@ -344,7 +350,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
 
                         logger.log(`[QUEUE_SE_ENVIO]: `, ctxMessage)
                     },
-                    ctxMessage.ref
+                    ctxMessage.ref,
+                    ctxMessage?.options?.timeout
                 )
             } catch (error) {
                 logger.error(`Error al encolar (ID ${ctxMessage.ref}):`, error)
@@ -755,8 +762,12 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             await delay(delayMs)
             await this.queuePrincipal.enqueue(
                 numberOrId,
-                () => this.sendProviderAndSave(numberOrId, ctxMessage),
-                ctxMessage.ref
+                (signal) => {
+                    if (signal?.cancelled) return Promise.resolve()
+                    return this.sendProviderAndSave(numberOrId, ctxMessage)
+                },
+                ctxMessage.ref,
+                ctxMessage?.options?.timeout
             )
             // await queuePromises.dequeue()
         }
@@ -798,6 +809,30 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             }),
             ctxMethods: this.buildCtxMethods(),
         })
+    }
+
+    /**
+     * Detiene el runtime del bot: cierra el servidor HTTP del provider y limpia la cola.
+     * Es seguro llamarlo aunque el servidor no se haya iniciado (p. ej. providers sin HTTP,
+     * tests o `stop()` antes de `httpServer()`): ese caso se ignora silenciosamente.
+     */
+    public async stop(): Promise<void> {
+        try {
+            await this.queuePrincipal.clearAll()
+        } catch (error) {
+            logger.error(`[stop:queue]: ${JSON.stringify(error)}`)
+        }
+        try {
+            const providerStop = (this.provider as { stop?: () => Promise<void> })?.stop
+            if (typeof providerStop === 'function') {
+                await providerStop.call(this.provider)
+            }
+        } catch (error) {
+            const code = (error as NodeJS.ErrnoException)?.code
+            if (code !== 'ERR_SERVER_NOT_RUNNING') {
+                logger.error(`[stop]: ${JSON.stringify(error)}`)
+            }
+        }
     }
 
     /**

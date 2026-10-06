@@ -81,6 +81,11 @@ export type ActionPropertiesKeyword = {
     media?: string
     capture?: boolean
     delay?: number
+    /**
+     * Override del timeout de la cola (ms) para este mensaje. Si se omite, se usa el
+     * timeout global de `queue.timeout`.
+     */
+    timeout?: number
     regex?: boolean
     sensitive?: boolean
 }

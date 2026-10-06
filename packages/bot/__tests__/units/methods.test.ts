@@ -91,6 +91,16 @@ test('Debere probar las addAnswer', () => {
     assert.is(MAIN_CTX.ctx.options.buttons?.length, 1)
 })
 
+test('addAnswer propaga el timeout por flujo', () => {
+    const MAIN_CTX = addKeyword('hola').addAnswer('etc', { timeout: 1234 })
+    assert.is(MAIN_CTX.ctx.options.timeout, 1234)
+})
+
+test('addAnswer sin timeout no define la opción', () => {
+    const MAIN_CTX = addKeyword('hola').addAnswer('etc')
+    assert.is(MAIN_CTX.ctx.options.timeout, undefined)
+})
+
 test('Obtener toJson', () => {
     const [ctxA, ctxB, ctxC] = addKeyword('hola').addAnswer('pera!').addAnswer('chao').toJson()
 

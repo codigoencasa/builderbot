@@ -1,6 +1,6 @@
+import * as sinon from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import * as sinon from 'sinon'
 
 import { CoreClass } from '../../src/core/coreClass'
 import FlowClass from '../../src/io/flowClass'
@@ -267,10 +267,7 @@ test('[CoreClass] sendProviderAndSave should skip internal answers', async () =>
             from: 'user123',
             refSerialize: 'ser1',
         })
-        assert.not.ok(
-            provider.sendMessage.called,
-            `Provider sendMessage should NOT be called for "${answer}"`
-        )
+        assert.not.ok(provider.sendMessage.called, `Provider sendMessage should NOT be called for "${answer}"`)
     }
 })
 
@@ -474,6 +471,58 @@ test('[CoreClass] dynamicBlacklist should be modifiable at runtime', () => {
     assert.ok(core.dynamicBlacklist.checkIf('newuser'))
     core.dynamicBlacklist.remove('newuser')
     assert.not.ok(core.dynamicBlacklist.checkIf('newuser'))
+})
+
+// ===== stop() =====
+
+test('[CoreClass] stop() delegates to provider.stop()', async () => {
+    const { flowClass, database, provider, args } = createMockDeps()
+    const stopStub = sinon.stub().resolves()
+    provider.stop = stopStub
+    const core = new CoreClass(flowClass, database as any, provider as any, args)
+
+    await core.stop()
+
+    assert.is(stopStub.callCount, 1)
+})
+
+test('[CoreClass] stop() clears all queues', async () => {
+    const { flowClass, database, provider, args } = createMockDeps()
+    const core = new CoreClass(flowClass, database as any, provider as any, args)
+    const spy = sinon.spy(core.queuePrincipal, 'clearAll')
+
+    await core.stop()
+
+    assert.is(spy.callCount, 1)
+})
+
+test('[CoreClass] stop() tolerates a provider without stop()', async () => {
+    const { flowClass, database, provider, args } = createMockDeps()
+    const core = new CoreClass(flowClass, database as any, provider as any, args)
+
+    let threw = false
+    try {
+        await core.stop()
+    } catch {
+        threw = true
+    }
+    assert.not.ok(threw, 'stop() should not throw when provider has no stop()')
+})
+
+test('[CoreClass] stop() ignores ERR_SERVER_NOT_RUNNING', async () => {
+    const { flowClass, database, provider, args } = createMockDeps()
+    const err: NodeJS.ErrnoException = new Error('Server is not running')
+    err.code = 'ERR_SERVER_NOT_RUNNING'
+    provider.stop = sinon.stub().rejects(err)
+    const core = new CoreClass(flowClass, database as any, provider as any, args)
+
+    let threw = false
+    try {
+        await core.stop()
+    } catch {
+        threw = true
+    }
+    assert.not.ok(threw, 'stop() should ignore ERR_SERVER_NOT_RUNNING')
 })
 
 test.run()
