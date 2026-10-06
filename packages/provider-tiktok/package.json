@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/provider-tiktok",
-    "version": "1.4.3",
+    "version": "1.4.4",
     "description": "Provider for TikTok Business Comments (organic comment polling + public reply)",
     "keywords": [
         "tiktok",

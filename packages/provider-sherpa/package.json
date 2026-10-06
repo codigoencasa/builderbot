@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/provider-sherpa",
-    "version": "1.4.3",
+    "version": "1.4.4",
     "description": "Provider Sherpa for BuilderBot - WhatsApp integration using Whaileys",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
