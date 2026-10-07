@@ -1,4 +1,5 @@
-import { createBot, createProvider, createFlow, addKeyword, MemoryDB as Database } from '@builderbot/bot'
+import { createBot, createProvider, createFlow, addKeyword } from '@builderbot/bot'
+import { MemoryDB as Database } from '@builderbot/bot'
 import { TikTokProvider as Provider, tiktokEvents } from '@builderbot/provider-tiktok'
 
 const PORT = process.env.PORT ?? 3008
@@ -52,12 +53,12 @@ const commentFlow = addKeyword(tiktokEvents.TT_COMMENT).addAction(
 )
 
 const main = async () => {
+    const adapterFlow = createFlow([commentFlow])
     const videoIds = (process.env.TIKTOK_VIDEO_IDS ?? '')
         .split(',')
         .map((id) => id.trim())
         .filter(Boolean)
 
-    const adapterFlow = createFlow([commentFlow])
     const adapterProvider = createProvider(Provider, {
         accessToken: process.env.TIKTOK_ACCESS_TOKEN ?? 'YOUR_ACCESS_TOKEN',
         businessId: process.env.TIKTOK_BUSINESS_ID ?? 'YOUR_BUSINESS_ID',
@@ -65,6 +66,7 @@ const main = async () => {
         name: 'tiktok-bot',
         port: Number(PORT),
     })
+
     const adapterDB = new Database()
 
     const { handleCtx, httpServer } = await createBot({
@@ -103,8 +105,9 @@ const main = async () => {
         })
     )
 
-    httpServer(+PORT)
     console.info(`[tiktok] listening on :${PORT} — watching ${videoIds.length || 0} video(s)`)
+
+    httpServer(+PORT)
 }
 
 main()

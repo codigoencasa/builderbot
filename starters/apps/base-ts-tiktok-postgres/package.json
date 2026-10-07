@@ -1,7 +1,7 @@
 {
-  "name": "base-bailey-json",
+  "name": "base-ts-tiktok-postgres",
   "version": "1.0.0",
-  "description": "",
+  "description": "TikTok organic comments example (poll + public reply)",
   "main": "dist/app.js",
   "type": "module",
   "scripts": {
@@ -10,7 +10,10 @@
     "dev": "npm run lint && nodemon --signal SIGKILL  ./src/app.ts",
     "build": "npx rollup -c"
   },
-  "keywords": [],
+  "keywords": [
+    "tiktok",
+    "builderbot"
+  ],
   "dependencies": {
     "@builderbot/bot": "latest",
     "@builderbot/provider-tiktok": "latest",

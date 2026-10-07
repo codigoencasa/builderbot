@@ -6,13 +6,16 @@
   "type": "module",
   "scripts": {
     "lint": "eslint . --no-ignore",
-    "dev": "nodemon --signal SIGKILL ./src/app.js",
+    "dev": "npm run lint && nodemon --signal SIGKILL ./src/app.js",
     "start": "node ./src/app.js"
   },
-  "keywords": ["tiktok", "builderbot"],
+  "keywords": [
+    "tiktok",
+    "builderbot"
+  ],
   "dependencies": {
-    "@builderbot/bot": "file:../../../packages/bot",
-    "@builderbot/provider-tiktok": "file:../../../packages/provider-tiktok"
+    "@builderbot/bot": "latest",
+    "@builderbot/provider-tiktok": "latest"
   },
   "devDependencies": {
     "eslint-plugin-builderbot": "latest",

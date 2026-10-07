@@ -12,6 +12,8 @@ type genericProps = {
     FLOW?: string
     /** Optional: replaces the `createFlow([...])` argument list. */
     FLOW_LIST?: string
+    /** Optional: replaces the default HTTP endpoint block in the entrypoint. */
+    ENDPOINTS?: string
 }
 
 /** Default flow list used by the base template (chat-oriented). */
@@ -19,6 +21,9 @@ const DEFAULT_FLOW_LIST = 'welcomeFlow, registerFlow, fullSamplesFlow'
 
 /** Block of default flows in the template, replaceable by a provider FLOW. */
 const FLOWS_BLOCK = /\/\*\* flows-default \*\*\/[\s\S]*?\/\*\* flows-default-end \*\*\//
+
+/** Block of default HTTP endpoints, replaceable by a provider ENDPOINTS. */
+const ENDPOINTS_BLOCK = /\/\*\* endpoints-default \*\*\/[\s\S]*?\/\*\* endpoints-default-end \*\*\//
 const BASE_TEMPLATE: string = join(process.cwd(), 'scripts', 'generate')
 const BASE_TEMPLATES_APP: string = join(process.cwd(), 'starters', 'apps')
 
@@ -84,7 +89,9 @@ const replaceZones = async (fullPath: string, database: string, provider: string
 
     let newTextPlain = textPlain
         .replace(`/** import-zone **/`, jsonConstantsDB.IMPORT + jsonConstantsProvider.IMPORT)
-        .replace(FLOWS_BLOCK, (match) => (providerFlow ? providerFlow : match))
+        // Provider flows end with a trailing newline; strip it so the template's
+        // own `\n\n` before `const main` yields exactly one blank line.
+        .replace(FLOWS_BLOCK, (match) => (providerFlow ? providerFlow.replace(/\n+$/, '') : match))
         // The marker is a standalone line so the generated `createFlow` call stays
         // on one line (prettier would otherwise wrap it around the comment).
         .replace(/ *\/\*\* flow-list-replace \*\*\/\n/, '')
@@ -92,12 +99,17 @@ const replaceZones = async (fullPath: string, database: string, provider: string
             'const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])',
             `const adapterFlow = createFlow([${jsonConstantsProvider.FLOW_LIST ?? DEFAULT_FLOW_LIST}])`
         )
+        .replace(ENDPOINTS_BLOCK, (match) =>
+            jsonConstantsProvider.ENDPOINTS ? jsonConstantsProvider.ENDPOINTS : match
+        )
         .replace(`/** provider-replace **/`, jsonConstantsProvider.IMPLEMENTATION)
         .replace(`/** database-replace **/`, jsonConstantsDB.IMPLEMENTATION)
-        // Drop the flow markers when the default block is kept, so generated
+        // Drop the block markers when the default blocks are kept, so generated
         // starters are byte-identical to the pre-marker template.
         .replace(/\/\*\* flows-default \*\*\/\n/, '')
         .replace(/\/\*\* flows-default-end \*\*\/\n\n/, '')
+        .replace(/ *\/\*\* endpoints-default \*\*\/\n/, '')
+        .replace(/ *\/\*\* endpoints-default-end \*\*\/\n/, '')
 
     // Provider flows never use the default `join`-based media samples, so drop
     // the now-unused imports instead of shipping dead code.
@@ -120,6 +132,34 @@ const replaceZones = async (fullPath: string, database: string, provider: string
  * @param fullPath Generated starter directory.
  * @param provider Provider zone name.
  */
+/**
+ * Merge optional per-provider package.json metadata (name, description,
+ * keywords...) into the generated package.json. Dependencies are never touched
+ * here — they come from the provider/database zones.
+ *
+ * Layout: `zones/extras/<provider>/package.json`. The literal `{{dir}}` in a
+ * string value is replaced with the generated starter directory name.
+ *
+ * @param fullPath Generated starter directory.
+ * @param provider Provider zone name.
+ */
+const applyPackageExtras = async (fullPath: string, provider: string): Promise<void> => {
+    const extras = join(BASE_TEMPLATE, 'zones', 'extras', provider, 'package.json')
+    if (!existsSync(extras)) return
+
+    const pkgPath = join(fullPath, 'package.json')
+    const extra = JSON.parse(readFileSync(extras, 'utf8')) as Record<string, unknown>
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as Record<string, unknown>
+    const dirName = fullPath.split(/[\\/]/).pop() ?? ''
+
+    for (const [key, value] of Object.entries(extra)) {
+        if (key === 'dependencies' || key === 'devDependencies') continue
+        pkg[key] = typeof value === 'string' ? value.replace('{{dir}}', dirName) : value
+    }
+
+    writeFileSync(pkgPath, JSON.stringify(pkg, null, 2))
+}
+
 const copyProviderExtras = async (fullPath: string, provider: string): Promise<void> => {
     const extrasDir = join(BASE_TEMPLATE, 'zones', 'extras', provider)
     if (!existsSync(extrasDir)) return
@@ -210,6 +250,7 @@ const main = async (): Promise<void> => {
                     await replaceZones(full, database.value, provider.value, runtimeLanguage)
                     await copyProviderExtras(full, provider.value)
                     await mergeDependencies(full, database.value, provider.value, runtimeLanguage)
+                    await applyPackageExtras(full, provider.value)
                     console.log(`Generated ${runtimeLanguage.toUpperCase()} 🌟: ${database.value}-${provider.value}`)
                 }
             }

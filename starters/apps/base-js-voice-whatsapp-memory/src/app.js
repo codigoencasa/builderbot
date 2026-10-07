@@ -2,6 +2,8 @@ import { createBot, createProvider, createFlow, addKeyword, utils } from '@build
 import { MemoryDB as Database } from '@builderbot/bot'
 import { MetaProvider as Provider } from '@builderbot/provider-meta'
 
+const PORT = process.env.PORT ?? 3008
+
 const docFlow = addKeyword(['doc', 'documentation']).addAnswer(
     'You can read the documentation at https://builderbot.app/docs'
 )
@@ -36,19 +38,18 @@ const registerFlow = addKeyword(utils.setEvent('REGISTER_FLOW'))
         await flowDynamic(`${state.get('name')}, thanks for your information. Your age: ${state.get('age')}`)
     })
 
-
 const main = async () => {
     const adapterFlow = createFlow([welcomeFlow, docFlow, agentFlow, registerFlow])
     const adapterProvider = createProvider(Provider, {
-    jwtToken: process.env.META_JWT_TOKEN ?? 'YOUR_META_JWT_TOKEN',
-    numberId: process.env.META_NUMBER_ID ?? 'YOUR_META_NUMBER_ID',
-    verifyToken: process.env.META_VERIFY_TOKEN ?? 'YOUR_META_VERIFY_TOKEN',
-    version: 'v20.0',
-    // WhatsApp Business voice calls (inbound): WebRTC/SDP negotiation + STT/TTS.
-    // Transcribed caller speech arrives as a normal `message`, so flows work as-is.
-    enableVoiceCalls: true,
-    openaiApiKey: process.env.OPENAI_API_KEY ?? 'YOUR_OPENAI_API_KEY',
-    language: process.env.STT_LANGUAGE ?? 'en',
+        jwtToken: process.env.META_JWT_TOKEN ?? 'YOUR_META_JWT_TOKEN',
+        numberId: process.env.META_NUMBER_ID ?? 'YOUR_META_NUMBER_ID',
+        verifyToken: process.env.META_VERIFY_TOKEN ?? 'YOUR_META_VERIFY_TOKEN',
+        version: 'v20.0',
+        // WhatsApp Business voice calls (inbound): WebRTC/SDP negotiation + STT/TTS.
+        // Transcribed caller speech arrives as a normal `message`, so flows work as-is.
+        enableVoiceCalls: true,
+        openaiApiKey: process.env.OPENAI_API_KEY ?? 'YOUR_OPENAI_API_KEY',
+        language: process.env.STT_LANGUAGE ?? 'en',
 })
 
     const adapterDB = new Database()

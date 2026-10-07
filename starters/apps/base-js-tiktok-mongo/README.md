@@ -1,44 +1,56 @@
-<p align="center">
-  <a href="https://builderbot.app/">
-    <picture>
-      <img src="https://builderbot.app/assets/thumbnail-vector.png" height="80">
-    </picture>
-    <h2 align="center">BuilderBot</h2>
-  </a>
-</p>
+# TikTok organic comments starter
 
+Minimal BuilderBot example for **TikTok organic comments** (poll + public reply).
 
+> TikTok has no comment webhook and no comment→DM. This bot polls watched videos and replies **publicly** under new comments.
 
-<p align="center">
-  <a aria-label="NPM version" href="https://www.npmjs.com/package/@builderbot/bot">
-    <img alt="" src="https://img.shields.io/npm/v/@builderbot/bot?color=%2300c200&label=%40bot-whatsapp">
-  </a>
-  <a aria-label="Join the community on GitHub" href="https://link.codigoencasa.com/DISCORD">
-    <img alt="" src="https://img.shields.io/discord/915193197645402142?logo=discord">
-  </a>
-</p>
+## Setup
 
+From the monorepo root (recommended while developing the provider):
 
-## Getting Started
+```bash
+# build the provider
+pnpm --filter @builderbot/provider-tiktok build
 
-With this library, you can build automated conversation flows agnostic to the WhatsApp provider, set up automated responses for frequently asked questions, receive and respond to messages automatically, and track interactions with customers. Additionally, you can easily set up triggers to expand functionalities limitlessly.
-
-```
-npm create builderbot@latest
+# run the example
+cd starters/apps/<this-starter>
+pnpm install
 ```
 
+Set env vars:
 
-## Documentation
+```bash
+export TIKTOK_ACCESS_TOKEN='your_access_token'
+export TIKTOK_BUSINESS_ID='your_open_id'
+export TIKTOK_VIDEO_IDS='7258231412594101531'
+```
 
-Visit [builderbot](https://builderbot.app/) to view the full documentation.
+## Run
 
+```bash
+pnpm run dev
+# or
+pnpm run build && pnpm start
+```
 
-## Official Course
+When someone comments on a watched video with the keyword `info`, the bot posts a public reply.
 
-If you want to discover all the functions and features offered by the library you can take the course.
-[View Course](https://app.codigoencasa.com/courses/builderbot?refCode=LEIFER)
+## Debug endpoints
 
+| Method | Path | Body |
+|--------|------|------|
+| `POST` | `/v1/reply-comment` | `{ "videoId", "commentId", "message" }` |
+| `POST` | `/v1/watch` | `{ "videoId", "createdAt?" }` |
 
-## Contact Us
-- [💻 Discord](https://link.codigoencasa.com/DISCORD)
-- [👌 𝕏 (Twitter)](https://twitter.com/leifermendez)
+Example:
+
+```bash
+curl -X POST http://localhost:3008/v1/reply-comment \
+  -H 'Content-Type: application/json' \
+  -d '{"videoId":"7258231412594101531","commentId":"COMMENT_ID","message":"Thanks!"}'
+```
+
+## Docs
+
+- Package: [`@builderbot/provider-tiktok`](../../../packages/provider-tiktok/README.md)
+- Site: [builderbot.app](https://builderbot.app/)

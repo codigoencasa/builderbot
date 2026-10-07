@@ -7,13 +7,16 @@
   "scripts": {
     "start": "node ./dist/app.js",
     "lint": "eslint . --no-ignore",
-    "dev": "nodemon --signal SIGKILL ./src/app.ts",
+    "dev": "npm run lint && nodemon --signal SIGKILL  ./src/app.ts",
     "build": "npx rollup -c"
   },
-  "keywords": ["tiktok", "builderbot"],
+  "keywords": [
+    "tiktok",
+    "builderbot"
+  ],
   "dependencies": {
-    "@builderbot/bot": "file:../../../packages/bot",
-    "@builderbot/provider-tiktok": "file:../../../packages/provider-tiktok"
+    "@builderbot/bot": "latest",
+    "@builderbot/provider-tiktok": "latest"
   },
   "devDependencies": {
     "@types/node": "^25.0.0",

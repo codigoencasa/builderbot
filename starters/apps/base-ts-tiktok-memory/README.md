@@ -1,4 +1,4 @@
-# base-ts-tiktok-memory
+# TikTok organic comments starter
 
 Minimal BuilderBot example for **TikTok organic comments** (poll + public reply).
 
@@ -12,8 +12,8 @@ From the monorepo root (recommended while developing the provider):
 # build the provider
 pnpm --filter @builderbot/provider-tiktok build
 
-# run the example (link workspace packages)
-cd starters/apps/base-ts-tiktok-memory
+# run the example
+cd starters/apps/<this-starter>
 pnpm install
 ```
 

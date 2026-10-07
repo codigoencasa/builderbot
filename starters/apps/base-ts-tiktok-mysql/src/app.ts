@@ -1,70 +1,72 @@
-import { join } from 'path'
-import { createBot, createProvider, createFlow, addKeyword, utils } from '@builderbot/bot'
+import { createBot, createProvider, createFlow, addKeyword } from '@builderbot/bot'
 import { MysqlAdapter as Database } from '@builderbot/database-mysql'
-import { TikTokProvider as Provider } from '@builderbot/provider-tiktok'
+import { TikTokProvider as Provider, tiktokEvents } from '@builderbot/provider-tiktok'
 
 const PORT = process.env.PORT ?? 3008
 
-const discordFlow = addKeyword<Provider, Database>('doc').addAnswer(
-    ['You can see the documentation here', '📄 https://builderbot.app/docs \n', 'Do you want to continue? *yes*'].join(
-        '\n'
-    ),
-    { capture: true },
-    async (ctx, { gotoFlow, flowDynamic }) => {
-        if (ctx.body.toLocaleLowerCase().includes('yes')) {
-            return gotoFlow(registerFlow)
+/**
+ * Lead-magnet style flow for organic TikTok comments.
+ *
+ * TikTok has no webhook and no comment→DM. The provider polls watched videos
+ * and emits `tiktokEvents.TT_COMMENT`. Replies are always **public** under the
+ * comment via `sendMessage` / `replyToComment`.
+ *
+ * Env:
+ *   TIKTOK_ACCESS_TOKEN  — Business API access token
+ *   TIKTOK_BUSINESS_ID   — open_id of the business account
+ *   TIKTOK_VIDEO_IDS     — comma-separated video ids to watch
+ */
+const LEAD_KEYWORD = 'info'
+const LEAD_REPLY =
+    'Hey @{username}! Thanks for commenting — check your DMs… wait, TikTok only lets us reply here publicly 🙌 Drop us a DM with the word INFO to get the free guide.'
+
+const commentFlow = addKeyword(tiktokEvents.TT_COMMENT).addAction(
+    async (ctx, { provider, endFlow }) => {
+        const text = (ctx.comment?.text ?? '').toLowerCase()
+        const username = ctx.comment?.username || ctx.username || 'friend'
+
+        if (LEAD_KEYWORD && !text.includes(LEAD_KEYWORD)) {
+            console.info('[tiktok] comment ignored (no keyword match)', {
+                from: ctx.from,
+                text: ctx.comment?.text,
+            })
+            return endFlow()
         }
-        await flowDynamic('Thanks!')
-        return
+
+        const reply = LEAD_REPLY.replace('{username}', username)
+        console.info('[tiktok] replying to comment', {
+            commentId: ctx.comment?.id,
+            videoId: ctx.comment?.videoId,
+            from: ctx.from,
+        })
+
+        // Prefer explicit comment target; falls back to pendingComments map.
+        await provider.sendMessage(ctx.from, reply, {
+            comment: {
+                id: ctx.comment?.id,
+                videoId: ctx.comment?.videoId,
+            },
+        })
+
+        return endFlow()
     }
 )
 
-const welcomeFlow = addKeyword<Provider, Database>(['hi', 'hello', 'hola'])
-    .addAnswer(`🙌 Hello welcome to this *Chatbot*`)
-    .addAnswer(
-        [
-            'I share with you the following links of interest about the project',
-            '👉 *doc* to view the documentation',
-        ].join('\n'),
-        { delay: 800, capture: true },
-        async (ctx, { fallBack }) => {
-            if (!ctx.body.toLocaleLowerCase().includes('doc')) {
-                return fallBack('You should type *doc*')
-            }
-            return
-        },
-        [discordFlow]
-    )
-
-const registerFlow = addKeyword<Provider, Database>(utils.setEvent('REGISTER_FLOW'))
-    .addAnswer(`What is your name?`, { capture: true }, async (ctx, { state }) => {
-        await state.update({ name: ctx.body })
-    })
-    .addAnswer('What is your age?', { capture: true }, async (ctx, { state }) => {
-        await state.update({ age: ctx.body })
-    })
-    .addAction(async (_, { flowDynamic, state }) => {
-        await flowDynamic(`${state.get('name')}, thanks for your information!: Your age: ${state.get('age')}`)
-    })
-
-const fullSamplesFlow = addKeyword<Provider, Database>(['samples', utils.setEvent('SAMPLES')])
-    .addAnswer(`💪 I'll send you a lot files...`)
-    .addAnswer(`Send image from Local`, { media: join(process.cwd(), 'assets', 'sample.png') })
-    .addAnswer(`Send video from URL`, {
-        media: 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTJ0ZGdjd2syeXAwMjQ4aWdkcW04OWlqcXI3Ynh1ODkwZ25zZWZ1dCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/LCohAb657pSdHv0Q5h/giphy.mp4',
-    })
-    .addAnswer(`Send audio from URL`, { media: 'https://cdn.freesound.org/previews/728/728142_11861866-lq.mp3' })
-    .addAnswer(`Send file from URL`, {
-        media: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-    })
-
 const main = async () => {
-    const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])
+    const adapterFlow = createFlow([commentFlow])
+    const videoIds = (process.env.TIKTOK_VIDEO_IDS ?? '')
+        .split(',')
+        .map((id) => id.trim())
+        .filter(Boolean)
+
     const adapterProvider = createProvider(Provider, {
-        accessToken: 'accessToken',
-        businessId: 'businessId',
-        videos: ['videoId']
+        accessToken: process.env.TIKTOK_ACCESS_TOKEN ?? 'YOUR_ACCESS_TOKEN',
+        businessId: process.env.TIKTOK_BUSINESS_ID ?? 'YOUR_BUSINESS_ID',
+        videos: videoIds.length ? videoIds : ['YOUR_VIDEO_ID'],
+        name: 'tiktok-bot',
+        port: Number(PORT),
     })
+
     const adapterDB = new Database({
         host: process.env.MYSQL_DB_HOST,
         user: process.env.MYSQL_DB_USER,
@@ -78,53 +80,37 @@ const main = async () => {
         database: adapterDB,
     })
 
+    // Manual public reply (useful for debugging without waiting for a poll).
     adapterProvider.server.post(
-        '/v1/messages',
+        '/v1/reply-comment',
         handleCtx(async (bot, req, res) => {
-            const { number, message, urlMedia } = req.body
-            await bot.sendMessage(number, message, { media: urlMedia ?? null })
-            return res.end('sended')
-        })
-    )
-
-    adapterProvider.server.post(
-        '/v1/register',
-        handleCtx(async (bot, req, res) => {
-            const { number, name } = req.body
-            await bot.dispatch('REGISTER_FLOW', { from: number, name })
-            return res.end('trigger')
-        })
-    )
-
-    adapterProvider.server.post(
-        '/v1/samples',
-        handleCtx(async (bot, req, res) => {
-            const { number, name } = req.body
-            await bot.dispatch('SAMPLES', { from: number, name })
-            return res.end('trigger')
-        })
-    )
-
-    adapterProvider.server.post(
-        '/v1/blacklist',
-        handleCtx(async (bot, req, res) => {
-            const { number, intent } = req.body
-            if (intent === 'remove') bot.blacklist.remove(number)
-            if (intent === 'add') bot.blacklist.add(number)
-
+            const { videoId, commentId, message } = req.body ?? {}
+            if (!videoId || !commentId || !message) {
+                res.writeHead(400, { 'Content-Type': 'application/json' })
+                return res.end(JSON.stringify({ error: 'videoId, commentId and message are required' }))
+            }
+            const result = await bot.provider.replyToComment(videoId, commentId, message)
             res.writeHead(200, { 'Content-Type': 'application/json' })
-            return res.end(JSON.stringify({ status: 'ok', number, intent }))
+            return res.end(JSON.stringify({ status: 'ok', result }))
         })
     )
 
-    adapterProvider.server.get(
-        '/v1/blacklist/list',
+    // Watch an extra video at runtime without restarting.
+    adapterProvider.server.post(
+        '/v1/watch',
         handleCtx(async (bot, req, res) => {
-            const blacklist = bot.blacklist.getList()
+            const { videoId, createdAt } = req.body ?? {}
+            if (!videoId) {
+                res.writeHead(400, { 'Content-Type': 'application/json' })
+                return res.end(JSON.stringify({ error: 'videoId is required' }))
+            }
+            bot.provider.watchVideo(videoId, createdAt)
             res.writeHead(200, { 'Content-Type': 'application/json' })
-            return res.end(JSON.stringify({ status: 'ok', blacklist }))
+            return res.end(JSON.stringify({ status: 'ok', videoId }))
         })
     )
+
+    console.info(`[tiktok] listening on :${PORT} — watching ${videoIds.length || 0} video(s)`)
 
     httpServer(+PORT)
 }

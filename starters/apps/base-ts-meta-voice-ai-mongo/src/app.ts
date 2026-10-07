@@ -3,6 +3,8 @@ import { MongoAdapter as Database } from '@builderbot/database-mongo'
 import { MetaProvider as Provider } from '@builderbot/provider-meta'
 import OpenAI from 'openai'
 
+const PORT = process.env.PORT ?? 3008
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
 const SYSTEM_PROMPT =
@@ -25,19 +27,18 @@ const aiFlow = addKeyword<Provider, Database>('/.*/', { regex: true }).addAction
     await flowDynamic(reply)
 })
 
-
 const main = async () => {
     const adapterFlow = createFlow([aiFlow])
     const adapterProvider = createProvider(Provider, {
-    jwtToken: process.env.META_JWT_TOKEN ?? 'YOUR_META_JWT_TOKEN',
-    numberId: process.env.META_NUMBER_ID ?? 'YOUR_META_NUMBER_ID',
-    verifyToken: process.env.META_VERIFY_TOKEN ?? 'YOUR_META_VERIFY_TOKEN',
-    version: 'v20.0',
-    // WhatsApp Business voice calls (inbound): WebRTC/SDP negotiation + STT/TTS.
-    // Transcribed caller speech arrives as a normal `message`, so flows work as-is.
-    enableVoiceCalls: true,
-    openaiApiKey: process.env.OPENAI_API_KEY ?? 'YOUR_OPENAI_API_KEY',
-    language: process.env.STT_LANGUAGE ?? 'en',
+        jwtToken: process.env.META_JWT_TOKEN ?? 'YOUR_META_JWT_TOKEN',
+        numberId: process.env.META_NUMBER_ID ?? 'YOUR_META_NUMBER_ID',
+        verifyToken: process.env.META_VERIFY_TOKEN ?? 'YOUR_META_VERIFY_TOKEN',
+        version: 'v20.0',
+        // WhatsApp Business voice calls (inbound): WebRTC/SDP negotiation + STT/TTS.
+        // Transcribed caller speech arrives as a normal `message`, so flows work as-is.
+        enableVoiceCalls: true,
+        openaiApiKey: process.env.OPENAI_API_KEY ?? 'YOUR_OPENAI_API_KEY',
+        language: process.env.STT_LANGUAGE ?? 'en',
 })
 
         const adapterDB = new Database({

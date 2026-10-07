@@ -1,9 +1,9 @@
 import { join } from 'path'
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@builderbot/bot'
 /** import-zone **/
-/** flows-default **/
 const PORT = process.env.PORT ?? 3008
 
+/** flows-default **/
 const discordFlow = addKeyword<Provider, Database>('doc').addAnswer(
     ['You can see the documentation here', '📄 https://builderbot.app/docs \n', 'Do you want to continue? *yes*'].join(
         '\n'
@@ -70,6 +70,7 @@ const main = async () => {
         database: adapterDB,
     })
 
+    /** endpoints-default **/
     adapterProvider.server.post(
         '/v1/messages',
         handleCtx(async (bot, req, res) => {
@@ -118,6 +119,7 @@ const main = async () => {
         })
     )
 
+    /** endpoints-default-end **/
     httpServer(+PORT)
 }
 
