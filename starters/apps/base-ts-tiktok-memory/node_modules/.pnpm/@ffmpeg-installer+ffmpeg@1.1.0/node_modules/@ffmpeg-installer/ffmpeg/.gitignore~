@@ -1,7 +1,0 @@
-.idea
-*.iml
-node_modules
-*.tgz
-.npmrc
-types/index.d.ts
-
