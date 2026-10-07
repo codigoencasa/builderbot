@@ -38,10 +38,33 @@ export enum CallAction {
     Accept = 'accept',
     /** Reject the incoming call. */
     Reject = 'reject',
-    /** End an active call. */
-    End = 'end',
-    /** Initiate an outbound call (reserved for future use in v1). */
-    Call = 'call',
+    /**
+     * Terminate an active call.
+     *
+     * Wire value per the Meta Calling API reference: `POST /{phone-number-id}/calls`
+     * accepts `connect | pre_accept | accept | reject | terminate`.
+     * @see https://developers.facebook.com/docs/whatsapp/cloud-api/calling/reference/
+     */
+    Terminate = 'terminate',
+    /**
+     * @deprecated Use {@link Terminate}. Kept as an alias for backward
+     * compatibility — its wire value was corrected from the invalid `'end'`
+     * (rejected by Meta with a 4xx) to Meta's documented `'terminate'`.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values -- intentional deprecated alias
+    End = 'terminate',
+    /**
+     * Initiate a business-initiated (outbound) call. Wire value per the Meta
+     * Calling API reference.
+     * @see https://developers.facebook.com/docs/whatsapp/cloud-api/calling/reference/
+     */
+    Connect = 'connect',
+    /**
+     * @deprecated Use {@link Connect}. Kept as an alias — its wire value was
+     * corrected from the invalid `'call'` to Meta's documented `'connect'`.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values -- intentional deprecated alias
+    Call = 'connect',
 }
 
 /**

@@ -421,4 +421,109 @@ describe('MetaCallCoreVendor', () => {
             expect((notices[0] as { title: string }).title).toContain('missing SDP')
         })
     })
+
+    // ── Race: terminate while onConnect is in flight (T2) ────────────────────
+
+    describe('terminate during onConnect (race)', () => {
+        test('does NOT send accept when the caller hangs up while pre_accept is in flight', async () => {
+            const { MetaCallClient } = require('../src/calls/meta-call-client') as {
+                MetaCallClient: jest.MockedClass<typeof import('../src/calls/meta-call-client').MetaCallClient>
+            }
+            const clientInstance = MetaCallClient.mock.results[0].value as {
+                preAccept: jest.MockedFunction<() => Promise<void>>
+                accept: jest.MockedFunction<() => Promise<void>>
+            }
+
+            // Simulate the caller hanging up (terminate webhook) while the
+            // pre_accept HTTP request is still in flight.
+            clientInstance.preAccept.mockImplementationOnce(
+                () =>
+                    new Promise<void>((resolve) => {
+                        core.onTerminate(CALL_ID)
+                        resolve()
+                    })
+            )
+
+            await core.onConnect(connectEvent())
+
+            expect(clientInstance.accept).not.toHaveBeenCalled()
+            expect(core.hasActiveCall(CALL_ID)).toBe(false)
+            expect(core.hasActiveCall(CALLER_PHONE)).toBe(false)
+        })
+    })
+
+    // ── Segmenter rebuild on inbound sample-rate change (T6) ─────────────────
+
+    describe('wireAudioSink sample-rate changes', () => {
+        test('rebuilds the silence segmenter when the inbound sample rate changes mid-call', async () => {
+            const { createPeerConnection, createAudioSink } = require('../src/calls/webrtc') as {
+                createPeerConnection: jest.Mock
+                createAudioSink: jest.Mock
+            }
+            const { SilenceSegmenter } = require('../src/audio') as { SilenceSegmenter: jest.Mock }
+
+            await core.onConnect(connectEvent())
+
+            const pc = createPeerConnection.mock.results[0].value as {
+                ontrack: ((e: { track: { kind: string } }) => void) | null
+            }
+            pc.ontrack?.({ track: { kind: 'audio' } })
+
+            const sink = createAudioSink.mock.results[0].value as {
+                ondata: ((d: { samples: Int16Array; sampleRate: number; channelCount: number }) => void) | null
+            }
+
+            // One segmenter was created during onConnect.
+            expect(SilenceSegmenter).toHaveBeenCalledTimes(1)
+
+            // Same rate → no rebuild.
+            sink.ondata?.({ samples: new Int16Array([100]), sampleRate: 48000, channelCount: 1 })
+            expect(SilenceSegmenter).toHaveBeenCalledTimes(1)
+
+            // Rate change (48kHz → 16kHz) → flush old segmenter + rebuild.
+            sink.ondata?.({ samples: new Int16Array([100]), sampleRate: 16000, channelCount: 1 })
+            expect(SilenceSegmenter).toHaveBeenCalledTimes(2)
+            const firstSegmenter = SilenceSegmenter.mock.results[0].value as { flush: jest.Mock }
+            expect(firstSegmenter.flush).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    // ── Playback pacing and cancelation (T7) ─────────────────────────────────
+
+    describe('publishAudio playback', () => {
+        test('stops pushing frames when the call is terminated mid-playback', async () => {
+            const { chunkPcm } = require('../src/audio') as { chunkPcm: jest.Mock }
+            // Five 10ms frames (PUBLISH_FRAME_MS = 10).
+            const frames = Array.from({ length: 5 }, () => new Int16Array(240))
+            chunkPcm.mockReturnValue(frames)
+
+            const source = { onData: jest.fn(), createTrack: jest.fn() }
+            injectSession(core, CALL_ID, CALLER_PHONE, { source })
+
+            jest.useFakeTimers()
+            try {
+                const publish = core.publishAudio(CALLER_PHONE, 'hello')
+
+                // Let the TTS promise resolve and the first paced tick run.
+                await Promise.resolve()
+                await Promise.resolve()
+
+                // Advance partway through playback (≈ 3 of 5 frames).
+                jest.advanceTimersByTime(15)
+
+                // Caller hangs up mid-playback → playback must stop.
+                core.onTerminate(CALL_ID)
+
+                // Even after advancing well past the total duration, no more frames go out.
+                jest.advanceTimersByTime(1000)
+                await publish
+
+                expect(source.onData.mock.calls.length).toBeGreaterThan(0)
+                expect(source.onData.mock.calls.length).toBeLessThan(frames.length)
+            } finally {
+                chunkPcm.mockReturnValue([new Int16Array([1, 2, 3])])
+                jest.useRealTimers()
+            }
+        })
+    })
 })

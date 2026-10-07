@@ -33,7 +33,15 @@ jest.mock('@builderbot/provider-voice', () => ({
     pcmToWav: jest.fn(() => Buffer.alloc(0)),
     MetaCallCoreVendor: jest.fn(),
     CallEvent: { Connect: 'connect', Terminate: 'terminate' },
-    CallAction: { PreAccept: 'pre_accept', Accept: 'accept', Reject: 'reject', End: 'end', Call: 'call' },
+    CallAction: {
+        PreAccept: 'pre_accept',
+        Accept: 'accept',
+        Reject: 'reject',
+        Terminate: 'terminate',
+        End: 'terminate',
+        Connect: 'connect',
+        Call: 'connect',
+    },
     CallDirection: { UserInitiated: 'USER_INITIATED', BusinessInitiated: 'BUSINESS_INITIATED' },
     CallState: {
         Idle: 'idle',

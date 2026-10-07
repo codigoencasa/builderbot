@@ -292,6 +292,11 @@ export class MetaCallCoreVendor extends EventEmitter {
                 instructions: [`tipos: ${candidateTypes.join(', ') || 'NINGUNO (posible fallo de STUN/NAT)'}`],
             })
 
+            // Race guard: the caller may have hung up (terminate webhook) while
+            // the SDP/ICE work above was in flight. If the session is gone, do
+            // not send pre_accept for a call Meta already considers terminated.
+            if (!this.sessions.has(callId)) return
+
             this.emit('notice', {
                 title: '[API ] Sending pre_accept to Meta',
                 instructions: [`call_id: ${callId}`],
@@ -322,6 +327,10 @@ export class MetaCallCoreVendor extends EventEmitter {
                 title: '[API ] pre_accept OK',
                 instructions: [`call_id: ${callId}`],
             })
+
+            // Race guard: a terminate that arrived while pre_accept was in flight
+            // already released the session — never send accept for a dead call.
+            if (!this.sessions.has(callId)) return
 
             // Transition: Connecting → PreAccepted
             this.transitionState(callId, CallState.Connecting, CallState.PreAccepted)

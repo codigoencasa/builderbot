@@ -9,6 +9,7 @@ const axiosMock = require('axios') as {
 }
 
 import { MetaCallClient } from '../src/calls/meta-call-client'
+import { CallAction } from '../src/calls/types'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -172,13 +173,16 @@ describe('MetaCallClient', () => {
     // ── end / reject methods ──────────────────────────────────────────────────
 
     describe('end and reject actions', () => {
-        test('end sends correct action', async () => {
+        test('end sends Meta\'s documented "terminate" action', async () => {
             axiosMock.post.mockResolvedValue(okResponse())
 
             await client.end(CALL_ID)
 
             const [, body] = axiosMock.post.mock.calls[0] as [string, CallBody]
-            expect(body.action).toBe('end')
+            // Meta Calling API accepts connect|pre_accept|accept|reject|terminate.
+            // 'end' is NOT a valid action and would be rejected with a 4xx.
+            // https://developers.facebook.com/docs/whatsapp/cloud-api/calling/reference/
+            expect(body.action).toBe('terminate')
             expect(body.call_id).toBe(CALL_ID)
         })
 
@@ -190,6 +194,26 @@ describe('MetaCallClient', () => {
             const [, body] = axiosMock.post.mock.calls[0] as [string, CallBody]
             expect(body.action).toBe('reject')
             expect(body.call_id).toBe(CALL_ID)
+        })
+    })
+
+    // ── Wire contract: enum values must match Meta's documented actions ───────
+
+    describe('CallAction wire contract (Meta Calling API)', () => {
+        test('enum values match the actions documented by Meta', () => {
+            // https://developers.facebook.com/docs/whatsapp/cloud-api/calling/reference/
+            expect(CallAction.PreAccept).toBe('pre_accept')
+            expect(CallAction.Accept).toBe('accept')
+            expect(CallAction.Reject).toBe('reject')
+            expect(CallAction.Terminate).toBe('terminate')
+            expect(CallAction.Connect).toBe('connect')
+        })
+
+        test('deprecated aliases keep the corrected wire values', () => {
+            // Backward compatibility: the old member names must not resurrect the
+            // invalid 'end'/'call' wire values.
+            expect(CallAction.End).toBe('terminate')
+            expect(CallAction.Call).toBe('connect')
         })
     })
 })

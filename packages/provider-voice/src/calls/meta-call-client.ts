@@ -108,16 +108,19 @@ export class MetaCallClient {
     }
 
     /**
-     * End an active call.
+     * Terminate an active call.
+     *
+     * Sends Meta's documented `terminate` action (the Calling API rejects any
+     * other value — including the previously used invalid `'end'` — with a 4xx).
      *
      * @param callId The call identifier.
-     * @returns Resolves when Meta acknowledges the end action.
+     * @returns Resolves when Meta acknowledges the terminate action.
      * @throws {Error} On HTTP 4xx (no retry) or after exhausting retries on 5xx / network errors.
      */
     public async end(callId: string): Promise<void> {
         const body: CallActionBody = {
             messaging_product: 'whatsapp',
-            action: CallAction.End,
+            action: CallAction.Terminate,
             call_id: callId,
         }
         await this.postWithRetry(body)
