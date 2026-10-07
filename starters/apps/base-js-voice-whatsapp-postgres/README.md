@@ -1,44 +1,52 @@
-<p align="center">
-  <a href="https://builderbot.app/">
-    <picture>
-      <img src="https://builderbot.app/assets/thumbnail-vector.png" height="80">
-    </picture>
-    <h2 align="center">BuilderBot</h2>
-  </a>
-</p>
+# Voice WhatsApp starter — Meta Cloud API + BuilderBot
 
-
-
-<p align="center">
-  <a aria-label="NPM version" href="https://www.npmjs.com/package/@builderbot/bot">
-    <img alt="" src="https://img.shields.io/npm/v/@builderbot/bot?color=%2300c200&label=%40bot-whatsapp">
-  </a>
-  <a aria-label="Join the community on GitHub" href="https://link.codigoencasa.com/DISCORD">
-    <img alt="" src="https://img.shields.io/discord/915193197645402142?logo=discord">
-  </a>
-</p>
-
-
-## Getting Started
-
-With this library, you can build automated conversation flows agnostic to the WhatsApp provider, set up automated responses for frequently asked questions, receive and respond to messages automatically, and track interactions with customers. Additionally, you can easily set up triggers to expand functionalities limitlessly.
+Starter that answers **inbound WhatsApp Business voice calls** using
+`@builderbot/provider-meta` with the opt-in `enableVoiceCalls` flag.
 
 ```
-npm create builderbot@latest
+Caller (WhatsApp)  ->  Meta Calling webhook (field: "calls", SDP offer)
+                   ->  BuilderBot negotiates WebRTC (pre_accept + accept)
+                   ->  STT (Whisper) -> `message` event -> your flow
+                   ->  reply -> TTS -> audio back to the caller
 ```
 
+Transcribed caller speech arrives as a normal `message`, so **your keyword flows
+work unchanged**. Replies are synthesized to speech: media and buttons are not
+supported on a voice call.
 
-## Documentation
+## Requirements
 
-Visit [builderbot](https://builderbot.app/) to view the full documentation.
+- A WhatsApp Business number on the **Cloud API** (not the WhatsApp Business app).
+- **Calling enabled** for that number (WhatsApp Manager -> your number -> Calling).
+- Your Meta app **subscribed to the `calls` webhook field**, pointing at
+  `https://<your-host>/webhook`.
+- An OpenAI API key (default Whisper STT + TTS adapters).
 
+## Setup
 
-## Official Course
+```bash
+cp .env.example .env    # fill in the values
+npm install
+npm run dev
+```
 
-If you want to discover all the functions and features offered by the library you can take the course.
-[View Course](https://app.codigoencasa.com/courses/builderbot?refCode=LEIFER)
+## Environment
 
+| Variable | Description |
+| --- | --- |
+| `META_JWT_TOKEN` | Meta system-user access token (Graph API) |
+| `META_NUMBER_ID` | WhatsApp Business phone number ID |
+| `META_VERIFY_TOKEN` | Webhook verification token you choose |
+| `OPENAI_API_KEY` | Used by the default STT (Whisper) and TTS adapters |
+| `STT_LANGUAGE` | ISO-639-1 language hint for transcription (e.g. `en`, `es`) |
+| `PORT` | HTTP port (default `3008`) |
 
-## Contact Us
-- [💻 Discord](https://link.codigoencasa.com/DISCORD)
-- [👌 𝕏 (Twitter)](https://twitter.com/leifermendez)
+## Custom speech stack
+
+Pass `sttAdapter` / `ttsAdapter` to `createProvider` to swap OpenAI for Deepgram,
+ElevenLabs or Cartesia (all available in `@builderbot/provider-voice`).
+
+## Notes
+
+- Outbound calls and DTMF are not implemented yet.
+- The bot answers **after the caller speaks** (there is no greeting on connect).

@@ -1,6 +1,7 @@
 import { join } from 'path'
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@builderbot/bot'
 /** import-zone **/
+/** flows-default **/
 const PORT = process.env.PORT ?? 3008
 
 const discordFlow = addKeyword('doc').addAnswer(
@@ -56,7 +57,10 @@ const fullSamplesFlow = addKeyword(['samples', utils.setEvent('SAMPLES')])
         media: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
     })
 
+/** flows-default-end **/
+
 const main = async () => {
+    /** flow-list-replace **/
     const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])
     /** provider-replace **/
     /** database-replace **/

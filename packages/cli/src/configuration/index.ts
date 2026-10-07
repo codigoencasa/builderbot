@@ -52,7 +52,8 @@ export const PROVIDER_LIST: Provider[] = [
     { value: 'email', label: 'Email', hint: 'IMAP/SMTP' },
     { value: 'voice', label: 'Voice', hint: 'LiveKit + OpenAI' },
     { value: 'voice-sip', label: 'Voice SIP (PSTN)', hint: 'LiveKit SIP + OpenAI' },
-    { value: 'voice-whatsapp', label: 'Voice WhatsApp', hint: 'Meta WebRTC + OpenAI' },
+    { value: 'voice-whatsapp', label: 'Voice WhatsApp', hint: 'Meta calls, flow-based' },
+    { value: 'meta-voice-ai', label: 'Meta + Voice AI', hint: 'Meta calls + LLM' },
 ]
 
 export const PROVIDER_DATA: ValueLabel[] = [

@@ -12,7 +12,7 @@
   "keywords": [],
   "dependencies": {
     "@builderbot/bot": "latest",
-    "@builderbot/provider-voice-whatsapp": "latest",
+    "@builderbot/provider-meta": "latest",
     "@builderbot/database-mongo": "latest"
   },
   "devDependencies": {

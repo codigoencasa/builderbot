@@ -1,9 +1,24 @@
 import { copy } from 'fs-extra'
 import { join } from 'path'
 import { rimraf } from 'rimraf'
-import { readFileSync, readdirSync, writeFileSync } from 'fs'
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'fs'
 
-type genericProps = { IMPORT: string; IMPLEMENTATION: string; DEPENDENCIES: Object; DEV_DEPENDENCIES: Object }
+type genericProps = {
+    IMPORT: string
+    IMPLEMENTATION: string
+    DEPENDENCIES: Object
+    DEV_DEPENDENCIES: Object
+    /** Optional: replaces the default flow block in the app entrypoint. */
+    FLOW?: string
+    /** Optional: replaces the `createFlow([...])` argument list. */
+    FLOW_LIST?: string
+}
+
+/** Default flow list used by the base template (chat-oriented). */
+const DEFAULT_FLOW_LIST = 'welcomeFlow, registerFlow, fullSamplesFlow'
+
+/** Block of default flows in the template, replaceable by a provider FLOW. */
+const FLOWS_BLOCK = /\/\*\* flows-default \*\*\/[\s\S]*?\/\*\* flows-default-end \*\*\//
 const BASE_TEMPLATE: string = join(process.cwd(), 'scripts', 'generate')
 const BASE_TEMPLATES_APP: string = join(process.cwd(), 'starters', 'apps')
 
@@ -45,7 +60,7 @@ const cleanTemplates = async (): Promise<void> => {
  * @param database
  * @param provider
  */
-const replaceZones = async (fullPath: string, database: string, provider: string) => {
+const replaceZones = async (fullPath: string, database: string, provider: string, language: 'js' | 'ts') => {
     const findApp = readdirSync(`${fullPath}/src`).find((f) => f.startsWith('app'))
 
     if (!findApp) {
@@ -61,11 +76,65 @@ const replaceZones = async (fullPath: string, database: string, provider: string
     const pathEntryPoint = join(fullPath, 'src', findApp)
     const textPlain = readFileSync(pathEntryPoint, 'utf8')
 
-    const newTextPlain = textPlain
+    // Provider flows are authored with TypeScript generics; strip them for JS.
+    const providerFlow =
+        jsonConstantsProvider.FLOW && language === 'js'
+            ? jsonConstantsProvider.FLOW.replace(/<Provider, Database>/g, '')
+            : jsonConstantsProvider.FLOW
+
+    let newTextPlain = textPlain
         .replace(`/** import-zone **/`, jsonConstantsDB.IMPORT + jsonConstantsProvider.IMPORT)
+        .replace(FLOWS_BLOCK, (match) => (providerFlow ? providerFlow : match))
+        // The marker is a standalone line so the generated `createFlow` call stays
+        // on one line (prettier would otherwise wrap it around the comment).
+        .replace(/ *\/\*\* flow-list-replace \*\*\/\n/, '')
+        .replace(
+            'const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])',
+            `const adapterFlow = createFlow([${jsonConstantsProvider.FLOW_LIST ?? DEFAULT_FLOW_LIST}])`
+        )
         .replace(`/** provider-replace **/`, jsonConstantsProvider.IMPLEMENTATION)
         .replace(`/** database-replace **/`, jsonConstantsDB.IMPLEMENTATION)
+        // Drop the flow markers when the default block is kept, so generated
+        // starters are byte-identical to the pre-marker template.
+        .replace(/\/\*\* flows-default \*\*\/\n/, '')
+        .replace(/\/\*\* flows-default-end \*\*\/\n\n/, '')
+
+    // Provider flows never use the default `join`-based media samples, so drop
+    // the now-unused imports instead of shipping dead code.
+    if (providerFlow) {
+        newTextPlain = newTextPlain.replace("import { join } from 'path'\n", '')
+        if (!providerFlow.includes('utils.')) {
+            newTextPlain = newTextPlain.replace('createFlow, addKeyword, utils }', 'createFlow, addKeyword }')
+        }
+    }
+
     writeFileSync(pathEntryPoint, newTextPlain)
+}
+
+/**
+ * Copy optional per-provider extras (README, .env.example) when present.
+ *
+ * Layout: `zones/extras/<provider>/{README.md,env.example}`. Providers without
+ * an extras directory keep the base template files untouched.
+ *
+ * @param fullPath Generated starter directory.
+ * @param provider Provider zone name.
+ */
+const copyProviderExtras = async (fullPath: string, provider: string): Promise<void> => {
+    const extrasDir = join(BASE_TEMPLATE, 'zones', 'extras', provider)
+    if (!existsSync(extrasDir)) return
+
+    const files: Array<[string, string]> = [
+        ['env.example', '.env.example'],
+        ['README.md', 'README.md'],
+    ]
+
+    for (const [from, to] of files) {
+        const src = join(extrasDir, from)
+        if (existsSync(src)) {
+            await copy(src, join(fullPath, to), { overwrite: true })
+        }
+    }
 }
 
 /**
@@ -138,7 +207,8 @@ const main = async (): Promise<void> => {
                     const runtimeLanguage = language.value as 'js' | 'ts'
                     await delay(10)
                     const full = await copyBase(runtimeLanguage, database.value, provider.value)
-                    await replaceZones(full, database.value, provider.value)
+                    await replaceZones(full, database.value, provider.value, runtimeLanguage)
+                    await copyProviderExtras(full, provider.value)
                     await mergeDependencies(full, database.value, provider.value, runtimeLanguage)
                     console.log(`Generated ${runtimeLanguage.toUpperCase()} 🌟: ${database.value}-${provider.value}`)
                 }
