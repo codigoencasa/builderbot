@@ -679,6 +679,53 @@ describe('#MetaCoreVendor ', () => {
             expect(mockRes.end).toHaveBeenCalledWith('OK')
         })
 
+        test('should emit call_status for business-initiated call statuses', async () => {
+            // Arrange
+            const callVendor: any = { onConnect: jest.fn(), onTerminate: jest.fn() }
+            const vendorWithCalls = new MetaCoreVendor(new Queue(), callVendor)
+
+            const mockReq = {
+                body: {
+                    entry: [
+                        {
+                            changes: [
+                                {
+                                    field: 'calls',
+                                    value: {
+                                        calls: [],
+                                        statuses: [
+                                            {
+                                                id: 'wacid.1',
+                                                type: 'call',
+                                                status: 'RINGING',
+                                                timestamp: '1762216151',
+                                                recipient_id: '15559999999',
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+                globalVendorArgs: {},
+            }
+            const mockRes = { statusCode: 0, end: jest.fn() }
+
+            const events: unknown[] = []
+            vendorWithCalls.on('call_status', (e) => events.push(e))
+
+            // Act
+            await vendorWithCalls.incomingMsg(mockReq as any, mockRes as any, mockNext)
+
+            // Assert
+            expect(events).toEqual([
+                { callId: 'wacid.1', status: 'RINGING', timestamp: '1762216151', recipientId: '15559999999' },
+            ])
+            expect(mockRes.statusCode).toBe(200)
+            expect(mockRes.end).toHaveBeenCalledWith('OK')
+        })
+
         test('should dispatch a "terminate" call event to callVendor.onTerminate', async () => {
             // Arrange
             const onConnect = jest.fn()

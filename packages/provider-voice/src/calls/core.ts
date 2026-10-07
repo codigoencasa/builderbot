@@ -25,6 +25,8 @@ import { MetaCallClient } from './meta-call-client'
 import { assertOpus, transformAnswer } from './sdp'
 import { CallState } from './types'
 import type {
+    CallActiveEvent,
+    CallEndedEvent,
     IMetaCallCoreConfig,
     ISttAdapter,
     ITtsAdapter,
@@ -197,11 +199,7 @@ export class MetaCallCoreVendor extends EventEmitter {
                 })
                 if (state === 'connected') {
                     if (session.state === CallState.Accepted) {
-                        this.transitionState(callId, CallState.Accepted, CallState.Active)
-                        this.emit('notice', {
-                            title: '[ICE ] WebRTC peer connected — call is Active',
-                            instructions: [`call_id: ${callId} | from: ${event.from}`],
-                        })
+                        this.activateCall(callId, event)
                     }
                 } else if (state === 'failed' || state === 'closed') {
                     void this.onTerminate(callId)
@@ -373,11 +371,7 @@ export class MetaCallCoreVendor extends EventEmitter {
             // onconnectionstatechange guard skipped the Accepted→Active transition).
             // Check now and drive the state machine forward if needed.
             if (session.pc.connectionState === 'connected') {
-                this.transitionState(callId, CallState.Accepted, CallState.Active)
-                this.emit('notice', {
-                    title: '[ICE ] WebRTC peer connected — call is Active (post-accept check)',
-                    instructions: [`call_id: ${callId} | from: ${event.from}`],
-                })
+                this.activateCall(callId, event)
             }
         } catch (err) {
             this.emit('notice', {
@@ -410,12 +404,59 @@ export class MetaCallCoreVendor extends EventEmitter {
             this.enqueueUtterance(session, partial, callId)
         }
 
+        const endedEvent: CallEndedEvent = { callId, from: session.callerPhone }
+
         this.releaseSession(callId)
 
         this.emit('notice', {
             title: 'WhatsApp Voice: call terminated',
             instructions: [`call_id "${callId}" has ended and resources have been released.`],
         })
+
+        this.emit('call_ended', endedEvent)
+    }
+
+    /**
+     * Drive the `Accepted → Active` transition and announce the call.
+     *
+     * Emits the `call_active` event (so consumers can greet the caller or log
+     * the call), emits the diagnostic notice and, when `greetingMessage` is
+     * configured, speaks it to the caller.
+     *
+     * Called from both the ICE `connected` handler and the post-accept check so
+     * the event fires exactly once per call, and only once the media path is
+     * open (audio sent before that is not heard).
+     *
+     * @param callId The call identifier.
+     * @param event  The original `connect` webhook event.
+     */
+    private activateCall(callId: string, event: WhatsAppCallEntryEvent): void {
+        const session = this.sessions.get(callId)
+        if (!session) return
+
+        this.transitionState(callId, CallState.Accepted, CallState.Active)
+
+        this.emit('notice', {
+            title: '[ICE ] WebRTC peer connected — call is Active',
+            instructions: [`call_id: ${callId} | from: ${event.from}`],
+        })
+
+        const activeEvent: CallActiveEvent = {
+            callId,
+            from: event.from,
+            to: event.to,
+            direction: event.direction,
+        }
+        this.emit('call_active', activeEvent)
+
+        if (this.config.greetingMessage) {
+            void this.publishAudio(callId, this.config.greetingMessage).catch((err: Error) => {
+                this.emit('notice', {
+                    title: 'WhatsApp Voice: greeting failed',
+                    instructions: [`call_id "${callId}": ${err.message}`],
+                })
+            })
+        }
     }
 
     // ── Session lookup ────────────────────────────────────────────────────────

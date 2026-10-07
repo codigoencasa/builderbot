@@ -145,6 +145,28 @@ export interface WhatsAppCallValue {
     }
     /** Array of call events in this batch. */
     calls: WhatsAppCallEntryEvent[]
+    /**
+     * Call status updates — Meta only sends these for business-initiated calls
+     * (`RINGING` | `ACCEPTED` | `REJECTED`). Inbound calls only produce
+     * `connect` / `terminate` entries in {@link calls}.
+     */
+    statuses?: WhatsAppCallStatus[]
+}
+
+/**
+ * A single call status entry (business-initiated calls only).
+ */
+export interface WhatsAppCallStatus {
+    /** The WhatsApp call ID (`wacid...`). */
+    id: string
+    /** Always 'call'. */
+    type: string
+    /** Current status — `RINGING` | `ACCEPTED` | `REJECTED`. */
+    status: string
+    /** Unix timestamp (seconds, as a string). */
+    timestamp: string
+    /** The WhatsApp user's phone number (callee). */
+    recipient_id?: string
 }
 
 /**
@@ -207,6 +229,51 @@ export interface WhatsAppVoicePayload {
     sampleRate?: number
 }
 
+/**
+ * Payload emitted on the `call_active` event.
+ *
+ * Fired once the WebRTC media path is open (the call is `Active`), which is the
+ * first moment audio sent to the caller is actually heard. Useful to greet the
+ * caller from a flow (`bot.dispatch('CALL_GREETING', { from })`) or to log the
+ * start of a call.
+ */
+export interface CallActiveEvent {
+    /** The WhatsApp call ID. */
+    callId: string
+    /** Caller's WhatsApp phone number (E.164). */
+    from: string
+    /** Callee's WhatsApp phone number (E.164). */
+    to: string
+    /** Who initiated the call. */
+    direction: CallDirection
+}
+
+/**
+ * Payload emitted on the `call_ended` event when a known call is released
+ * (caller hung up, business ended it, or the peer connection failed/closed).
+ */
+export interface CallEndedEvent {
+    /** The WhatsApp call ID. */
+    callId: string
+    /** Caller's WhatsApp phone number (E.164). */
+    from: string
+}
+
+/**
+ * Payload emitted on the `call_status` event for business-initiated calls
+ * (`RINGING` | `ACCEPTED` | `REJECTED`).
+ */
+export interface CallStatusEvent {
+    /** The WhatsApp call ID. */
+    callId: string
+    /** Current status — `RINGING` | `ACCEPTED` | `REJECTED`. */
+    status: string
+    /** Unix timestamp (seconds, as a string). */
+    timestamp: string
+    /** The WhatsApp user's phone number (callee), when present. */
+    recipientId?: string
+}
+
 // ── Call core configuration ──────────────────────────────────────────────────
 
 /**
@@ -236,4 +303,11 @@ export interface IMetaCallCoreConfig {
      * ICE, so all candidates must be embedded in the SDP. Default: 2000.
      */
     iceGatheringTimeoutMs?: number
+    /**
+     * Optional message spoken to the caller as soon as the call becomes active.
+     *
+     * The bot otherwise waits for the caller to speak first; set this to greet
+     * them (e.g. `'Hello, how can I help you?'`).
+     */
+    greetingMessage?: string
 }

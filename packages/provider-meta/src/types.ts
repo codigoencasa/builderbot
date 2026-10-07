@@ -97,6 +97,11 @@ export interface MetaGlobalVendorArgs extends GlobalVendorArgs {
     ttsAdapter?: ITtsAdapter
     /** Language hint (ISO-639-1) for STT transcription, e.g. 'es'. */
     language?: string
+    /**
+     * Optional message spoken to the caller as soon as the call becomes active.
+     * Without it the bot waits for the caller to speak first.
+     */
+    greetingMessage?: string
     /** Milliseconds of trailing silence that close an utterance. Default 800. */
     silenceMs?: number
     /** RMS amplitude (0..1) below which a frame is considered silence. Default 0.015. */

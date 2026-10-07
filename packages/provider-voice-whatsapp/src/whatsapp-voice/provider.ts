@@ -25,6 +25,9 @@ import { join, resolve } from 'node:path'
 
 import type { WhatsAppVoiceInterface } from '../interface/whatsapp-voice'
 import type {
+    CallActiveEvent,
+    CallEndedEvent,
+    CallStatusEvent,
     IWhatsAppVoiceProviderArgs,
     ISttAdapter,
     ITtsAdapter,
@@ -162,6 +165,18 @@ class WhatsAppVoiceProvider extends ProviderClass<MetaCallCoreVendor> implements
         {
             event: 'message',
             func: (payload: WhatsAppVoicePayload) => this.emit('message', payload as BotContext),
+        },
+        {
+            event: 'call_active',
+            func: (payload: CallActiveEvent) => this.emit('call_active', payload),
+        },
+        {
+            event: 'call_ended',
+            func: (payload: CallEndedEvent) => this.emit('call_ended', payload),
+        },
+        {
+            event: 'call_status',
+            func: (payload: CallStatusEvent) => this.emit('call_status', payload),
         },
     ]
 
@@ -305,14 +320,24 @@ class WhatsAppVoiceProvider extends ProviderClass<MetaCallCoreVendor> implements
                 for (const change of entry.changes) {
                     if (change.field !== 'calls') continue
                     const callsValue = change.value
-                    if (!callsValue?.calls?.length) continue
+                    if (!callsValue) continue
 
-                    for (const callEvent of callsValue.calls) {
+                    for (const callEvent of callsValue.calls ?? []) {
                         if (callEvent.event === CallEvent.Connect) {
                             void this.vendor.onConnect(callEvent)
                         } else if (callEvent.event === CallEvent.Terminate) {
                             this.vendor.onTerminate(callEvent.id)
                         }
+                    }
+
+                    // Business-initiated calls also report RINGING/ACCEPTED/REJECTED here.
+                    for (const status of callsValue.statuses ?? []) {
+                        this.emit('call_status', {
+                            callId: status.id,
+                            status: status.status,
+                            timestamp: status.timestamp,
+                            recipientId: status.recipient_id,
+                        } as CallStatusEvent)
                     }
                 }
             }

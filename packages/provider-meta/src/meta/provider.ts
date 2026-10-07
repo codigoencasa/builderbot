@@ -9,7 +9,14 @@
 import { ProviderClass, utils } from '@builderbot/bot'
 import type { Vendor } from '@builderbot/bot/dist/provider/interface/provider'
 import type { BotContext, Button, SendOptions } from '@builderbot/bot/dist/types'
-import type { ISttAdapter, ITtsAdapter, MetaCallCoreVendor } from '@builderbot/provider-voice'
+import type {
+    CallActiveEvent,
+    CallEndedEvent,
+    CallStatusEvent,
+    ISttAdapter,
+    ITtsAdapter,
+    MetaCallCoreVendor,
+} from '@builderbot/provider-voice'
 import axios from 'axios'
 import FormData from 'form-data'
 import { createReadStream } from 'fs'
@@ -152,6 +159,10 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             this.callVendor.on('notice', (payload: { title: string; instructions: string[] }) =>
                 this.emit('notice', payload)
             )
+            // Call lifecycle: `call_active` fires once the media path is open (the
+            // first moment the caller can hear audio), `call_ended` on release.
+            this.callVendor.on('call_active', (payload: CallActiveEvent) => this.emit('call_active', payload))
+            this.callVendor.on('call_ended', (payload: CallEndedEvent) => this.emit('call_ended', payload))
         }
 
         const vendor = new MetaCoreVendor(this.queue, this.callVendor)
@@ -331,6 +342,10 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         {
             event: 'message_status',
             func: (payload: MessageStatusEvent) => this.emit('message_status', payload),
+        },
+        {
+            event: 'call_status',
+            func: (payload: CallStatusEvent) => this.emit('call_status', payload),
         },
         {
             event: 'host',

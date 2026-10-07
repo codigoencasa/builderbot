@@ -488,6 +488,145 @@ describe('MetaCallCoreVendor', () => {
         })
     })
 
+    // ── Call lifecycle events (Fase A-W1) ────────────────────────────────────
+
+    describe('call lifecycle events', () => {
+        const SDP_ANSWER_MOCK = {
+            sdp: 'v=0\r\no=- 0 0 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\nm=audio 9 UDP/TLS/RTP/SAVPF 111\r\nc=IN IP4 0.0.0.0\r\na=rtpmap:111 opus/48000/2\r\na=setup:actpass\r\n',
+        }
+
+        interface FakePc {
+            connectionState: string
+            onconnectionstatechange: (() => void) | null
+        }
+
+        const webrtcMock = (): { createPeerConnection: any } =>
+            require('../src/calls/webrtc') as { createPeerConnection: any }
+
+        const lastPc = (): FakePc => {
+            const { createPeerConnection } = webrtcMock()
+            const results = createPeerConnection.mock.results as Array<{ value: unknown }>
+            return results[results.length - 1].value as FakePc
+        }
+
+        test('emits call_active once the peer connection reports connected', async () => {
+            await core.onConnect(connectEvent())
+
+            const events: unknown[] = []
+            core.on('call_active', (e) => events.push(e))
+
+            const pc = lastPc()
+            pc.connectionState = 'connected'
+            pc.onconnectionstatechange?.()
+
+            expect(events).toHaveLength(1)
+            expect(events[0]).toMatchObject({
+                callId: CALL_ID,
+                from: CALLER_PHONE,
+                to: '12345678900',
+                direction: CallDirection.UserInitiated,
+            })
+        })
+
+        test('emits call_active from the post-accept check when ICE connected early', async () => {
+            const { createPeerConnection } = webrtcMock()
+            // ICE reaches 'connected' before accept resolves → the post-accept check drives it.
+            createPeerConnection.mockImplementationOnce(() => ({
+                setRemoteDescription: jest.fn().mockImplementation(() => Promise.resolve()),
+                createAnswer: jest.fn().mockImplementation(() => Promise.resolve(SDP_ANSWER_MOCK)),
+                setLocalDescription: jest.fn().mockImplementation(() => Promise.resolve()),
+                addTrack: jest.fn(),
+                close: jest.fn(),
+                onconnectionstatechange: null,
+                ontrack: null,
+                connectionState: 'connected',
+            }))
+
+            const events: unknown[] = []
+            core.on('call_active', (e) => events.push(e))
+
+            await core.onConnect(connectEvent())
+
+            expect(events).toHaveLength(1)
+        })
+
+        test('does not emit call_active twice when both paths run', async () => {
+            await core.onConnect(connectEvent())
+
+            const events: unknown[] = []
+            core.on('call_active', (e) => events.push(e))
+
+            const pc = lastPc()
+            pc.connectionState = 'connected'
+            pc.onconnectionstatechange?.()
+            // Second state change (e.g. a duplicate ICE event) must not re-announce.
+            pc.onconnectionstatechange?.()
+
+            expect(events).toHaveLength(1)
+        })
+
+        test('speaks the configured greetingMessage when the call becomes active', async () => {
+            const greetingCore = new MetaCallCoreVendor({
+                sttAdapter: makeSttAdapter(),
+                ttsAdapter: makeTtsAdapter(),
+                config: { ...BASE_CONFIG, greetingMessage: 'Hello there' },
+            })
+            const publishSpy = jest.spyOn(greetingCore, 'publishAudio').mockResolvedValue(undefined)
+
+            await greetingCore.onConnect(connectEvent())
+
+            const pc = lastPc()
+            pc.connectionState = 'connected'
+            pc.onconnectionstatechange?.()
+
+            expect(publishSpy).toHaveBeenCalledWith(CALL_ID, 'Hello there')
+        })
+
+        test('does not speak anything when no greetingMessage is configured', async () => {
+            const publishSpy = jest.spyOn(core, 'publishAudio').mockResolvedValue(undefined)
+
+            await core.onConnect(connectEvent())
+
+            const pc = lastPc()
+            pc.connectionState = 'connected'
+            pc.onconnectionstatechange?.()
+
+            expect(publishSpy).not.toHaveBeenCalled()
+        })
+
+        test('emits call_ended with the caller phone on terminate', async () => {
+            await core.onConnect(connectEvent())
+
+            const events: unknown[] = []
+            core.on('call_ended', (e) => events.push(e))
+
+            core.onTerminate(CALL_ID)
+
+            expect(events).toEqual([{ callId: CALL_ID, from: CALLER_PHONE }])
+        })
+
+        test('does not emit call_ended for an unknown callId', () => {
+            const events: unknown[] = []
+            core.on('call_ended', (e) => events.push(e))
+
+            core.onTerminate('unknown-call')
+
+            expect(events).toHaveLength(0)
+        })
+
+        test('does not emit call_ended twice when terminate runs twice', async () => {
+            await core.onConnect(connectEvent())
+
+            const events: unknown[] = []
+            core.on('call_ended', (e) => events.push(e))
+
+            core.onTerminate(CALL_ID)
+            core.onTerminate(CALL_ID)
+
+            expect(events).toHaveLength(1)
+        })
+    })
+
     // ── Playback pacing and cancelation (T7) ─────────────────────────────────
 
     describe('publishAudio playback', () => {

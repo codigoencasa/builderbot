@@ -6,7 +6,7 @@
  * keywords: [MetaCoreVendor, MessageStatusEvent, MetaWebhook]
  * GOAL: Verify Meta webhooks and lift every message_status entry into a structured event. The nested walk follows the bounded webhook shape (entry/changes/statuses), so it is not an avoidable hotspot.
  */
-import type { MetaCallCoreVendor, WhatsAppCallEntryEvent } from '@builderbot/provider-voice'
+import type { CallStatusEvent, MetaCallCoreVendor, WhatsAppCallEntryEvent } from '@builderbot/provider-voice'
 import EventEmitter from 'node:events'
 import type polka from 'polka'
 import type Queue from 'queue-promise'
@@ -242,6 +242,18 @@ export class MetaCoreVendor extends EventEmitter {
                     }
                 }
             }
+
+            // Business-initiated calls also report RINGING/ACCEPTED/REJECTED here.
+            // Inbound calls only produce connect/terminate entries above.
+            for (const status of callsChange.value?.statuses ?? []) {
+                this.emit('call_status', {
+                    callId: status.id,
+                    status: status.status,
+                    timestamp: status.timestamp,
+                    recipientId: status.recipient_id,
+                } as CallStatusEvent)
+            }
+
             res.statusCode = 200
             res.end('OK')
             return

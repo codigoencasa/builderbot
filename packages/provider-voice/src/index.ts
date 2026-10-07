@@ -40,9 +40,13 @@ export type {
     IMetaCallCoreConfig,
     WhatsAppCallSession,
     WhatsAppCallEntryEvent,
+    WhatsAppCallStatus,
     WhatsAppCallValue,
     WhatsAppCallEntry,
     WhatsAppCallWebhookPayload,
     CallActionBody,
     WhatsAppVoicePayload,
+    CallActiveEvent,
+    CallEndedEvent,
+    CallStatusEvent,
 } from './calls/types'

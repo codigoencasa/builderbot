@@ -88,11 +88,32 @@
 3. ~~"Saludar al aceptar"~~ → debe ser al pasar a `Active` (media path abierto), si no el audio se pierde.
 4. ~~"Barge-in = cancelar y ya"~~ → requiere debounce anti-ruido y evento `playback_interrupted` para coherencia del historial del LLM.
 
+## Estado de implementación (A-W1 — ✅ 2026-10-07)
+
+Implementado A4 + la plomería de A3 en `provider-voice`, `provider-meta` y `provider-voice-whatsapp`:
+
+- **A4 — evento `call_active`**: se emite en la transición `Accepted → Active` (un único `activateCall()` invocado desde el handler de ICE y desde el chequeo post-accept, de modo que dispara **una sola vez** y sólo cuando el media path está abierto). Payload: `{ callId, from, to, direction }`.
+- **A4 — `greetingMessage`**: opción de config nueva; si está presente, el core sintetiza y envía el saludo al activarse la llamada (fire-and-forget con `notice` si falla el TTS). Disponible en `provider-meta` y en `provider-voice-whatsapp`.
+- **A3 — evento `call_ended`**: se emite en `onTerminate` con `{ callId, from }` (idempotente: no se repite si `terminate` llega dos veces).
+- **A3 — evento `call_status`**: parseo de `value.statuses` (`RINGING`/`ACCEPTED`/`REJECTED`) en el webhook de ambos providers, con el tipo `WhatsAppCallStatus` añadido al modelo del webhook. *(Su valor completo llega con Fase B: en inbound solo hay `connect`/`terminate`.)*
+
+**Bug encontrado por los tests**: en `provider-voice-whatsapp` el handler hacía `continue` cuando `calls` venía vacío, así que los `statuses` nunca se procesaban. Corregido (guard sobre `change.value` + `calls ?? []`).
+
+**Tests**: +8 en `provider-voice` (activación por ICE, por chequeo post-accept, no-duplicado, saludo configurado/no configurado, `call_ended` presente/desconocido/no-duplicado), +1 en `provider-meta`, +2 en `provider-voice-whatsapp`. Mutation-check verificado en el saludo (falla si se desactiva).
+
+**Uso desde la app**:
+
+```ts
+adapterProvider.on('call_active', ({ from }) => bot.dispatch('CALL_GREETING', { from }))
+adapterProvider.on('call_ended', ({ callId }) => console.info('call ended', callId))
+```
+
 ## Aceptación live — NV (pendiente)
 
-- [ ] NV1: barge-in en llamada real (hablar encima del bot → se calla y escucha).
+- [ ] NV1: barge-in en llamada real (hablar encima del bot → se calla y escucha). *(A-W2, no implementado aún)*
 - [ ] NV2: saludo audible al atender (latencia medida).
-- [ ] NV3: spike DTMF in-band (presionar dígitos → ¿llegan en PCM?).
+- [ ] NV3: spike DTMF in-band (presionar dígitos → ¿llegan en PCM?). *(A-W3, no implementado aún)*
+- [ ] NV4: `call_active` dispara una sola vez en llamada real y `call_ended` al colgar.
 
 ---
 

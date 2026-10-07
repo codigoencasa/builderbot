@@ -128,6 +128,34 @@ const connectPayload = (callId = 'call-001', from = '15551234567'): WhatsAppCall
     ],
 })
 
+const statusPayload = (callId = 'call-001', status = 'RINGING'): WhatsAppCallWebhookPayload => ({
+    object: 'whatsapp_business_account',
+    entry: [
+        {
+            id: 'WABA',
+            changes: [
+                {
+                    field: 'calls',
+                    value: {
+                        messaging_product: 'whatsapp',
+                        metadata: { display_phone_number: '12345678900', phone_number_id: '999' },
+                        calls: [],
+                        statuses: [
+                            {
+                                id: callId,
+                                type: 'call',
+                                status,
+                                timestamp: '1762216151',
+                                recipient_id: '15551234567',
+                            },
+                        ],
+                    },
+                },
+            ],
+        },
+    ],
+})
+
 const terminatePayload = (callId = 'call-001'): WhatsAppCallWebhookPayload => ({
     object: 'whatsapp_business_account',
     entry: [
@@ -181,6 +209,34 @@ describe('WhatsAppVoiceProvider webhook handler', () => {
         handleWebhook = (provider as unknown as { handleWebhook: typeof handleWebhook }).handleWebhook
         handleVerification = (provider as unknown as { handleVerification: typeof handleVerification })
             .handleVerification
+    })
+
+    // ── Business-initiated call statuses ─────────────────────────────────────
+
+    describe('call status events', () => {
+        test('emits call_status for each status entry', () => {
+            const events: unknown[] = []
+            provider.on('call_status', (e) => events.push(e))
+
+            const res = makeRes()
+            handleWebhook({ body: statusPayload('wacid.9', 'RINGING') }, res)
+
+            expect(events).toEqual([
+                { callId: 'wacid.9', status: 'RINGING', timestamp: '1762216151', recipientId: '15551234567' },
+            ])
+            expect(res.status).toBe(200)
+        })
+
+        test('does not emit call_status when there are no statuses', () => {
+            const events: unknown[] = []
+            provider.on('call_status', (e) => events.push(e))
+
+            const res = makeRes()
+            handleWebhook({ body: connectPayload() }, res)
+
+            expect(events).toHaveLength(0)
+            expect(res.status).toBe(200)
+        })
     })
 
     // ── FR-1: Always 200 ─────────────────────────────────────────────────────

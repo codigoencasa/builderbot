@@ -18,11 +18,15 @@ export { CallEvent, CallAction, CallDirection, CallState } from '@builderbot/pro
 export type {
     WhatsAppCallSession,
     WhatsAppCallEntryEvent,
+    WhatsAppCallStatus,
     WhatsAppCallValue,
     WhatsAppCallEntry,
     WhatsAppCallWebhookPayload,
     CallActionBody,
     WhatsAppVoicePayload,
+    CallActiveEvent,
+    CallEndedEvent,
+    CallStatusEvent,
 } from '@builderbot/provider-voice'
 
 // ── Provider configuration union ─────────────────────────────────────────────
@@ -54,6 +58,11 @@ interface IWhatsAppVoiceProviderBase extends GlobalVendorArgs {
     version: string
     /** Language hint (ISO-639-1) for STT transcription, e.g. 'es'. */
     language?: string
+    /**
+     * Optional message spoken to the caller as soon as the call becomes active.
+     * Without it the bot waits for the caller to speak first.
+     */
+    greetingMessage?: string
     /** Milliseconds of trailing silence that close an utterance. Default 800. */
     silenceMs?: number
     /** RMS amplitude (0..1) below which a frame is considered silence. Default 0.015. */
