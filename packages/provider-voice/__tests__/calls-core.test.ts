@@ -627,6 +627,87 @@ describe('MetaCallCoreVendor', () => {
         })
     })
 
+    // ── Barge-in (Fase A-W2) ─────────────────────────────────────────────────
+
+    describe('barge-in', () => {
+        interface SegmenterOptions {
+            onSpeechStart?: () => void
+            minSpeechMs?: number
+        }
+
+        const segmenterOptions = (index = 0): SegmenterOptions => {
+            const { SilenceSegmenter } = require('../src/audio') as { SilenceSegmenter: any }
+            return SilenceSegmenter.mock.calls[index][0] as SegmenterOptions
+        }
+
+        test('wires onSpeechStart with the default debounce when barge-in is enabled', async () => {
+            await core.onConnect(connectEvent())
+
+            const opts = segmenterOptions()
+            expect(typeof opts.onSpeechStart).toBe('function')
+            expect(opts.minSpeechMs).toBe(120)
+        })
+
+        test('does not wire onSpeechStart when bargeIn is false', async () => {
+            const noBargeCore = new MetaCallCoreVendor({
+                sttAdapter: makeSttAdapter(),
+                ttsAdapter: makeTtsAdapter(),
+                config: { ...BASE_CONFIG, bargeIn: false },
+            })
+
+            await noBargeCore.onConnect(connectEvent())
+
+            expect(segmenterOptions().onSpeechStart).toBeUndefined()
+        })
+
+        test('stops playback and emits playback_interrupted when the caller speaks', async () => {
+            const { chunkPcm } = require('../src/audio') as { chunkPcm: any }
+            const frames = Array.from({ length: 5 }, () => new Int16Array(240))
+            chunkPcm.mockReturnValue(frames)
+
+            const source = { onData: jest.fn(), createTrack: jest.fn() }
+
+            // Real session (so the segmenter is created) with a controllable source.
+            await core.onConnect(connectEvent())
+            const session = (core as unknown as { sessions: Map<string, { source: unknown }> }).sessions.get(CALL_ID)
+            session!.source = source
+
+            const events: unknown[] = []
+            core.on('playback_interrupted', (e) => events.push(e))
+
+            jest.useFakeTimers()
+            try {
+                const publish = core.publishAudio(CALLER_PHONE, 'hello')
+                await Promise.resolve()
+                await Promise.resolve()
+                jest.advanceTimersByTime(15)
+                const framesBeforeSpeech = source.onData.mock.calls.length
+
+                // The caller starts talking → the segmenter reports speech start.
+                segmenterOptions().onSpeechStart?.()
+
+                jest.advanceTimersByTime(1000)
+                await publish
+
+                expect(source.onData.mock.calls.length).toBe(framesBeforeSpeech)
+                expect(events).toEqual([{ callId: CALL_ID, from: CALLER_PHONE }])
+            } finally {
+                chunkPcm.mockReturnValue([new Int16Array([1, 2, 3])])
+                jest.useRealTimers()
+            }
+        })
+
+        test('is a no-op (no event) when nothing is playing', async () => {
+            await core.onConnect(connectEvent())
+
+            const events: unknown[] = []
+            core.on('playback_interrupted', (e) => events.push(e))
+
+            expect(() => segmenterOptions().onSpeechStart?.()).not.toThrow()
+            expect(events).toHaveLength(0)
+        })
+    })
+
     // ── Playback pacing and cancelation (T7) ─────────────────────────────────
 
     describe('publishAudio playback', () => {

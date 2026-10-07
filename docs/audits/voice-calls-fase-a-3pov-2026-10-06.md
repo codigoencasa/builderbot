@@ -108,9 +108,22 @@ adapterProvider.on('call_active', ({ from }) => bot.dispatch('CALL_GREETING', { 
 adapterProvider.on('call_ended', ({ callId }) => console.info('call ended', callId))
 ```
 
+## Estado de implementación (A-W2 — ✅ 2026-10-07)
+
+Barge-in implementado en `provider-voice` (+ paridad en los dos providers):
+
+- **`SilenceSegmenter.onSpeechStart`**: callback opcional que dispara **una vez por utterance** cuando la voz continua alcanza `minSpeechMs` (default **120 ms**). El contador de habla se resetea con cada frame de silencio, así que un ruido entrecortado (blip) **no** corta al bot.
+- **`bargeIn`** (default **`true`**) y **`bargeInMinSpeechMs`** (default 120) en la config. Con `bargeIn: false` el segmenter no recibe callback y el bot termina su frase (comportamiento anterior).
+- **`playback_interrupted`** `{ callId, from }`: se emite al cortar la reproducción, para que el flujo sepa que la respuesta quedó a medias (importante para la memoria del LLM: no afirmar que se dijo todo).
+- La cancelación usa el `playbackCancel` que ya existía en `pushFramesPaced`; si no hay nada sonando es un **no-op** (no emite evento).
+
+**Limitación honesta**: en el modelo de flujos, `flowDynamic` resuelve al cortarse el audio, así que un flujo que encadena varios `flowDynamic` puede empezar el siguiente mensaje inmediatamente. El evento `playback_interrupted` permite al dev manejarlo; suprimir automáticamente la reproducción restante requeriría coordinación con el motor de flujos (fuera del alcance de A-W2).
+
+**Tests**: +6 en `audio` (dispara al alcanzar el umbral, no con silencio, no con ruido entrecortado, una vez por utterance, vuelve a disparar tras flush, callback opcional) y +4 en el core (wiring por defecto, desactivado con `bargeIn: false`, corta la reproducción y emite el evento, no-op sin reproducción). Mutation-check verificado (sin `playbackCancel()` el test falla).
+
 ## Aceptación live — NV (pendiente)
 
-- [ ] NV1: barge-in en llamada real (hablar encima del bot → se calla y escucha). *(A-W2, no implementado aún)*
+- [ ] NV1: barge-in en llamada real (hablar encima del bot → se calla y escucha). *(implementado; falta validar en vivo)*
 - [ ] NV2: saludo audible al atender (latencia medida).
 - [ ] NV3: spike DTMF in-band (presionar dígitos → ¿llegan en PCM?). *(A-W3, no implementado aún)*
 - [ ] NV4: `call_active` dispara una sola vez en llamada real y `call_ended` al colgar.

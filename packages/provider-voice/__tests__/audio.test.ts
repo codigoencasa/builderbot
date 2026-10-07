@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals'
+import { describe, expect, jest, test } from '@jest/globals'
 
 import { bufferToInt16, chunkPcm, frameRms, int16ToBuffer, pcmToWav, resamplePcm, SilenceSegmenter } from '../src/audio'
 
@@ -179,5 +179,106 @@ describe('#SilenceSegmenter', () => {
         const frames = chunkPcm(samples, 100, false)
         expect(frames.length).toBe(3)
         expect(frames[2].length).toBe(50) // real length, not padded
+    })
+})
+
+describe('#SilenceSegmenter onSpeechStart (barge-in)', () => {
+    const sampleRate = 16000
+
+    test('fires once continuous speech reaches minSpeechMs', () => {
+        const onSpeechStart = jest.fn()
+        const segmenter = new SilenceSegmenter({
+            sampleRate,
+            silenceMs: 5000,
+            silenceThreshold: 0.01,
+            minSpeechMs: 100, // 1600 samples
+            onSpeechStart,
+        })
+
+        // 800 samples (~50 ms) of speech: not enough yet.
+        segmenter.push(tone(800))
+        expect(onSpeechStart).not.toHaveBeenCalled()
+
+        // Another 800 → 1600 samples (~100 ms): fires.
+        segmenter.push(tone(800))
+        expect(onSpeechStart).toHaveBeenCalledTimes(1)
+    })
+
+    test('does not fire for silence', () => {
+        const onSpeechStart = jest.fn()
+        const segmenter = new SilenceSegmenter({
+            sampleRate,
+            silenceMs: 5000,
+            silenceThreshold: 0.01,
+            minSpeechMs: 100,
+            onSpeechStart,
+        })
+
+        segmenter.push(silence(4000))
+        expect(onSpeechStart).not.toHaveBeenCalled()
+    })
+
+    test('does not fire when speech is broken up by silence (noise blips)', () => {
+        const onSpeechStart = jest.fn()
+        const segmenter = new SilenceSegmenter({
+            sampleRate,
+            silenceMs: 5000,
+            silenceThreshold: 0.01,
+            minSpeechMs: 100, // 1600 samples
+            onSpeechStart,
+        })
+
+        segmenter.push(tone(800)) // 800 samples of speech
+        segmenter.push(silence(400)) // gap resets the run
+        segmenter.push(tone(800)) // 800 again — still under the threshold
+
+        expect(onSpeechStart).not.toHaveBeenCalled()
+    })
+
+    test('fires at most once per utterance', () => {
+        const onSpeechStart = jest.fn()
+        const segmenter = new SilenceSegmenter({
+            sampleRate,
+            silenceMs: 5000,
+            silenceThreshold: 0.01,
+            minSpeechMs: 100,
+            onSpeechStart,
+        })
+
+        segmenter.push(tone(800))
+        segmenter.push(tone(800))
+        segmenter.push(tone(800))
+        segmenter.push(tone(800))
+
+        expect(onSpeechStart).toHaveBeenCalledTimes(1)
+    })
+
+    test('can fire again for a new utterance after a flush', () => {
+        const onSpeechStart = jest.fn()
+        const segmenter = new SilenceSegmenter({
+            sampleRate,
+            silenceMs: 100, // 1600 samples of trailing silence closes the utterance
+            silenceThreshold: 0.01,
+            minUtteranceMs: 10,
+            minSpeechMs: 50, // 800 samples
+            onSpeechStart,
+        })
+
+        segmenter.push(tone(1600))
+        segmenter.push(silence(2000)) // closes the utterance → reset
+        expect(onSpeechStart).toHaveBeenCalledTimes(1)
+
+        segmenter.push(tone(1600))
+        expect(onSpeechStart).toHaveBeenCalledTimes(2)
+    })
+
+    test('is optional (no callback, no crash)', () => {
+        const segmenter = new SilenceSegmenter({
+            sampleRate,
+            silenceMs: 100,
+            silenceThreshold: 0.01,
+            minUtteranceMs: 10,
+        })
+        expect(() => segmenter.push(tone(1600))).not.toThrow()
     })
 })

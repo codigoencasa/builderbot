@@ -102,6 +102,14 @@ export interface MetaGlobalVendorArgs extends GlobalVendorArgs {
      * Without it the bot waits for the caller to speak first.
      */
     greetingMessage?: string
+    /**
+     * Interrupt the bot's playback as soon as the caller starts talking
+     * (barge-in). Default `true`; set to `false` to let the bot finish its
+     * sentence. Emits `playback_interrupted` when it cuts the audio.
+     */
+    bargeIn?: boolean
+    /** Milliseconds of continuous speech required before barge-in cuts the playback. Default 120. */
+    bargeInMinSpeechMs?: number
     /** Milliseconds of trailing silence that close an utterance. Default 800. */
     silenceMs?: number
     /** RMS amplitude (0..1) below which a frame is considered silence. Default 0.015. */

@@ -49,4 +49,5 @@ export type {
     CallActiveEvent,
     CallEndedEvent,
     CallStatusEvent,
+    PlaybackInterruptedEvent,
 } from './calls/types'

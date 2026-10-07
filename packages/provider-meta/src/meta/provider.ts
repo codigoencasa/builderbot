@@ -16,6 +16,7 @@ import type {
     ISttAdapter,
     ITtsAdapter,
     MetaCallCoreVendor,
+    PlaybackInterruptedEvent,
 } from '@builderbot/provider-voice'
 import axios from 'axios'
 import FormData from 'form-data'
@@ -163,6 +164,9 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             // first moment the caller can hear audio), `call_ended` on release.
             this.callVendor.on('call_active', (payload: CallActiveEvent) => this.emit('call_active', payload))
             this.callVendor.on('call_ended', (payload: CallEndedEvent) => this.emit('call_ended', payload))
+            this.callVendor.on('playback_interrupted', (payload: PlaybackInterruptedEvent) =>
+                this.emit('playback_interrupted', payload)
+            )
         }
 
         const vendor = new MetaCoreVendor(this.queue, this.callVendor)

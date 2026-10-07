@@ -132,6 +132,18 @@ export interface SilenceSegmenterOptions {
     /** Minimum utterance length (ms) to emit; shorter blips are discarded. */
     minUtteranceMs?: number
     /**
+     * Optional callback fired once per utterance, as soon as continuous speech
+     * reaches {@link minSpeechMs}. Used for barge-in: cut the bot's playback the
+     * moment the caller starts talking.
+     */
+    onSpeechStart?: () => void
+    /**
+     * Milliseconds of continuous non-silent audio required before
+     * {@link onSpeechStart} fires. Guards against noise blips (traffic, clicks)
+     * cutting the bot off. Default 120.
+     */
+    minSpeechMs?: number
+    /**
      * Maximum utterance length (ms) before a force-cut, even without trailing
      * silence. Bounds memory and keeps Whisper uploads under its 25MB limit
      * when a speaker never pauses (continuous speech or noisy line). Default 20000.
@@ -152,11 +164,15 @@ export class SilenceSegmenter {
     private readonly silenceSamples: number
     private readonly minUtteranceSamples: number
     private readonly maxUtteranceSamples: number
+    private readonly minSpeechSamples: number
+    private readonly onSpeechStart?: () => void
 
     private buffered: Int16Array[] = []
     private bufferedSamples = 0
     private trailingSilenceSamples = 0
     private hasSpeech = false
+    private speechRunSamples = 0
+    private speechStartFired = false
 
     constructor(opts: SilenceSegmenterOptions) {
         this.sampleRate = opts.sampleRate
@@ -164,6 +180,8 @@ export class SilenceSegmenter {
         this.silenceSamples = Math.round((opts.silenceMs / 1000) * opts.sampleRate)
         this.minUtteranceSamples = Math.round(((opts.minUtteranceMs ?? 300) / 1000) * opts.sampleRate)
         this.maxUtteranceSamples = Math.round(((opts.maxUtteranceMs ?? 20000) / 1000) * opts.sampleRate)
+        this.minSpeechSamples = Math.round(((opts.minSpeechMs ?? 120) / 1000) * opts.sampleRate)
+        this.onSpeechStart = opts.onSpeechStart
     }
 
     /**
@@ -186,9 +204,20 @@ export class SilenceSegmenter {
 
         if (isSilent) {
             this.trailingSilenceSamples += samples.length
+            this.speechRunSamples = 0
         } else {
             this.hasSpeech = true
             this.trailingSilenceSamples = 0
+
+            // Barge-in: announce the start of speech once it is long enough to
+            // be real talking (not a noise blip). Fires at most once per utterance.
+            if (!this.speechStartFired) {
+                this.speechRunSamples += samples.length
+                if (this.speechRunSamples >= this.minSpeechSamples) {
+                    this.speechStartFired = true
+                    this.onSpeechStart?.()
+                }
+            }
         }
 
         if (this.hasSpeech && this.trailingSilenceSamples >= this.silenceSamples) {
@@ -224,6 +253,8 @@ export class SilenceSegmenter {
         this.bufferedSamples = 0
         this.trailingSilenceSamples = 0
         this.hasSpeech = false
+        this.speechRunSamples = 0
+        this.speechStartFired = false
     }
 }
 

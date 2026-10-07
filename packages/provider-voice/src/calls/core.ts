@@ -30,6 +30,7 @@ import type {
     IMetaCallCoreConfig,
     ISttAdapter,
     ITtsAdapter,
+    PlaybackInterruptedEvent,
     WhatsAppCallEntryEvent,
     WhatsAppVoicePayload,
 } from './types'
@@ -165,6 +166,8 @@ export class MetaCallCoreVendor extends EventEmitter {
             sampleRate: 48000, // wrtc delivers 48kHz; updated on first frame if different
             silenceMs: this.config.silenceMs ?? 800,
             silenceThreshold: this.config.silenceThreshold ?? 0.015,
+            onSpeechStart: this.bargeInHandler(callId),
+            minSpeechMs: this.config.bargeInMinSpeechMs ?? 120,
         })
 
         // Create session in Idle state first, then immediately transition
@@ -579,6 +582,8 @@ export class MetaCallCoreVendor extends EventEmitter {
                     sampleRate: rate,
                     silenceMs: this.config.silenceMs ?? 800,
                     silenceThreshold: this.config.silenceThreshold ?? 0.015,
+                    onSpeechStart: this.bargeInHandler(callId),
+                    minSpeechMs: this.config.bargeInMinSpeechMs ?? 120,
                 })
                 currentSession.segmenter = activeSegmenter
                 segmenterRate = rate
@@ -592,6 +597,43 @@ export class MetaCallCoreVendor extends EventEmitter {
                 this.enqueueUtterance(currentSession, utterance, callId)
             }
         }
+    }
+
+    /**
+     * Build the `onSpeechStart` handler for a call.
+     *
+     * Barge-in is on by default (`config.bargeIn`); when disabled the handler is
+     * `undefined` so the segmenter does no extra work.
+     *
+     * @param callId The call the segmenter belongs to.
+     * @returns A callback that cuts the bot's playback, or `undefined`.
+     */
+    private bargeInHandler(callId: string): (() => void) | undefined {
+        if (this.config.bargeIn === false) return undefined
+        return () => this.interruptPlayback(callId)
+    }
+
+    /**
+     * Cut the bot's current playback because the caller started talking.
+     *
+     * No-op when nothing is playing (e.g. the caller replies after the bot has
+     * finished). Emits `playback_interrupted` so flows can react.
+     *
+     * @param callId The call whose playback should stop.
+     */
+    private interruptPlayback(callId: string): void {
+        const session = this.sessions.get(callId)
+        if (!session?.playbackCancel) return
+
+        session.playbackCancel()
+
+        this.emit('notice', {
+            title: '[BARGE] playback interrupted',
+            instructions: [`call_id: ${callId} | from: ${session.callerPhone}`],
+        })
+
+        const payload: PlaybackInterruptedEvent = { callId, from: session.callerPhone }
+        this.emit('playback_interrupted', payload)
     }
 
     /**

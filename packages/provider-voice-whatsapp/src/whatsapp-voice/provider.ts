@@ -31,6 +31,7 @@ import type {
     IWhatsAppVoiceProviderArgs,
     ISttAdapter,
     ITtsAdapter,
+    PlaybackInterruptedEvent,
     WhatsAppCallWebhookPayload,
     WhatsAppVoicePayload,
 } from '../types'
@@ -177,6 +178,10 @@ class WhatsAppVoiceProvider extends ProviderClass<MetaCallCoreVendor> implements
         {
             event: 'call_status',
             func: (payload: CallStatusEvent) => this.emit('call_status', payload),
+        },
+        {
+            event: 'playback_interrupted',
+            func: (payload: PlaybackInterruptedEvent) => this.emit('playback_interrupted', payload),
         },
     ]
 

@@ -260,6 +260,17 @@ export interface CallEndedEvent {
 }
 
 /**
+ * Payload emitted on the `playback_interrupted` event when barge-in cuts the
+ * bot's audio because the caller started talking.
+ */
+export interface PlaybackInterruptedEvent {
+    /** The WhatsApp call ID. */
+    callId: string
+    /** Caller's WhatsApp phone number (E.164). */
+    from: string
+}
+
+/**
  * Payload emitted on the `call_status` event for business-initiated calls
  * (`RINGING` | `ACCEPTED` | `REJECTED`).
  */
@@ -310,4 +321,18 @@ export interface IMetaCallCoreConfig {
      * them (e.g. `'Hello, how can I help you?'`).
      */
     greetingMessage?: string
+    /**
+     * Interrupt the bot's playback as soon as the caller starts talking
+     * (barge-in). Default `true`. Set to `false` to let the bot finish its
+     * sentence (the previous behaviour).
+     *
+     * When interrupted, the `playback_interrupted` event is emitted so flows can
+     * react (e.g. not claim the full answer was heard).
+     */
+    bargeIn?: boolean
+    /**
+     * Milliseconds of continuous speech required before barge-in cuts the
+     * playback. Guards against noise blips. Default 120.
+     */
+    bargeInMinSpeechMs?: number
 }
