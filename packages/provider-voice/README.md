@@ -55,6 +55,38 @@ drives the flow; the answer is spoken back.
 | `silenceMs` | | `800` | Silence that closes an utterance |
 | `silenceThreshold` | | `0.015` | RMS (0..1) below which a frame is silence |
 
+## WhatsApp Business calls (shared core)
+
+This package also hosts the **shared Meta calling core** consumed by
+`@builderbot/provider-meta` (opt-in through `enableVoiceCalls`) and by the
+deprecated `@builderbot/provider-voice-whatsapp`:
+
+- `MetaCallCoreVendor` — WebRTC/SDP negotiation plus the STT -> `message` -> TTS pipeline.
+- `MetaCallClient` — Graph API `/calls` client (`pre_accept`, `accept`, `reject`, `terminate`, `connect`).
+- `SilenceSegmenter`, SDP helpers and the audio utilities.
+
+Most apps should **not** use it directly: prefer `@builderbot/provider-meta` with
+`enableVoiceCalls: true`, which wires it into the normal provider (see its README
+for the requirements and the ordered Meta setup).
+
+If you do consume the core directly it takes `{ sttAdapter, ttsAdapter, config }`,
+where `config` is an `IMetaCallCoreConfig`:
+
+| Option | Default | Description |
+|---|---|---|
+| `jwtToken`, `numberId`, `version` | — | Meta Graph API credentials |
+| `language` | — | ISO-639-1 STT hint |
+| `greetingMessage` | — | Spoken as soon as the call becomes active |
+| `bargeIn` | `true` | Cut the bot's audio when the caller starts talking |
+| `bargeInMinSpeechMs` | `120` | Continuous speech required before barge-in |
+| `silenceMs` | `800` | Trailing silence that closes an utterance |
+| `silenceThreshold` | `0.015` | RMS below which a frame counts as silence |
+| `iceServers` | Google STUN | ICE servers for the peer connection |
+| `iceGatheringTimeoutMs` | `2000` | Non-trickle ICE gathering timeout |
+
+Events: `message`, `notice`, `call_active`, `call_ended`, `call_status` and
+`playback_interrupted`.
+
 ## Behavior & limitations
 
 - **Replies are broadcast to the whole room.** `sendMessage`'s `userId` does not

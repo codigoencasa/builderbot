@@ -98,6 +98,11 @@ createProvider(WhatsAppVoiceProvider, {
     // Optional — server
     port: 3008,                              // Default: 3000
 
+    // Optional — greeting / barge-in
+    greetingMessage: 'Hola, ¿en qué te ayudo?', // Spoken as soon as the call is active (default: none — the bot waits)
+    bargeIn: true,                           // Stop the bot's audio when the caller talks. Default: true
+    bargeInMinSpeechMs: 120,                 // Continuous speech before barge-in cuts the audio. Default: 120
+
     // Optional — audio tuning
     language: 'es',                          // STT language hint (ISO-639-1). Default: 'en'
     silenceMs: 800,                          // Trailing silence (ms) to close an utterance. Default: 800
@@ -261,6 +266,27 @@ createProvider(WhatsAppVoiceProvider, {
 })
 ```
 
+## Call lifecycle events
+
+On top of `message`, `notice` and `ready`, the provider emits:
+
+| Event | Payload | When |
+|---|---|---|
+| `call_active` | `{ callId, from, to, direction }` | The media path is open — the first moment the caller can hear audio |
+| `call_ended` | `{ callId, from }` | The call was released (hang-up, end, or peer failure) |
+| `call_status` | `{ callId, status, timestamp, recipientId? }` | `RINGING` / `ACCEPTED` / `REJECTED` — business-initiated calls only |
+| `playback_interrupted` | `{ callId, from }` | Barge-in cut the bot's audio |
+
+```ts
+provider.on('call_active', ({ from }) => console.info('[call] active', from))
+provider.on('call_ended', ({ callId }) => console.info('[call] ended', callId))
+provider.on('playback_interrupted', ({ callId }) => console.info('[call] interrupted', callId))
+```
+
+`call_active` fires **once** per call and only after the WebRTC media path is
+open, which is why it is the right hook to greet the caller (either through
+`greetingMessage` or by dispatching a flow).
+
 ## Accessing the audio buffer
 
 Each `message` event includes the raw PCM audio in `ctx.audio`. You can save it as a WAV file:
@@ -364,7 +390,14 @@ WhatsAppVoiceProvider (extends ProviderClass)
 
 ## Limitations (v0.0.1)
 
-- Inbound calls only — outbound calls not supported yet
+- Inbound calls only — outbound (business-initiated) calls not supported yet
 - One audio track per call — no multi-party calls
-- No DTMF support
+- No DTMF support (Meta sends dialpad tones as RFC 4733 events inside the RTP
+  stream, which the WebRTC binding does not expose)
+- No PSTN routing — WhatsApp Calling does not reach mobile/landline numbers
 - Media and image attachments are not supported via `sendMessage` (voice only)
+- Without `greetingMessage` the bot answers after the caller speaks
+- Meta gives a 30–60 s window to answer after the `connect` webhook
+
+> This package is **deprecated** in favor of `@builderbot/provider-meta` with
+> `enableVoiceCalls: true` (same functionality, actively maintained).
