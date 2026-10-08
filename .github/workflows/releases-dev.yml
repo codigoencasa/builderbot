@@ -57,6 +57,11 @@ jobs:
             - name: Run Tests
               run: pnpm test
 
+            # `create-builderbot` bundles dist/starters from starters/apps, so a
+            # stale template set would be published. Fail early if they differ.
+            - name: Templates in sync
+              run: pnpm run generate:check
+
     ############ BUILD ############
     build:
         name: 🔨 Build
