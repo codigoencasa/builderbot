@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/database-json",
-    "version": "1.4.1",
+    "version": "1.4.4",
     "description": "Esto es el conector a json",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
@@ -17,7 +17,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/codigoencasa/bot-whatsapp.git"
+        "url": "git+https://github.com/codigoencasa/builderbot.git"
     },
     "scripts": {
         "build": "rimraf dist && rollup --config",
@@ -26,12 +26,12 @@
         "test:coverage": "npx c8  npm run test"
     },
     "bugs": {
-        "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
+        "url": "https://github.com/codigoencasa/builderbot/issues"
     },
     "dependencies": {
-        "@builderbot/bot": "^1.4.1"
+        "@builderbot/bot": "workspace:*"
     },
-    "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
+    "homepage": "https://github.com/codigoencasa/builderbot#readme",
     "devDependencies": {
         "@rollup/plugin-commonjs": "^29.0.0",
         "@rollup/plugin-node-resolve": "^16.0.3",
@@ -43,5 +43,5 @@
         "tslib": "^2.6.2",
         "tsm": "^2.3.0"
     },
-    "gitHead": "b36178dfb87da8ce270e28b6daaff2c50374b6eb"
+    "gitHead": "4c667603733e1262920fbd919fa388e544f7f707"
 }

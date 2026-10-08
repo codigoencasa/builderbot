@@ -27,6 +27,9 @@ describe('#processIncomingMessage ', () => {
             name: 'John Doe',
             pushName: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'text',
+            raw: params.message,
             timestamp: expect.any(Number),
         }
 
@@ -46,7 +49,7 @@ describe('#processIncomingMessage ', () => {
                 from: 'sender',
                 interactive: {
                     button_reply: { title: 'Button Reply' },
-                    list_reply: { id: 'List Reply' },
+                    list_reply: { id: 'row_id_1', title: 'List Reply' },
                 },
             },
             to: 'receiver',
@@ -58,16 +61,21 @@ describe('#processIncomingMessage ', () => {
         // Act
         const result = await processIncomingMessage(params)
 
-        // Assert
+        // Assert — button_reply takes priority over list_reply when both are present
         expect(result).toEqual({
             type: 'interactive',
             from: 'sender',
             to: 'receiver',
             body: 'Button Reply',
             title_button_reply: 'Button Reply',
+            title_list_reply: 'List Reply',
+            id_list_reply: 'row_id_1',
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'button',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -81,8 +89,11 @@ describe('#processIncomingMessage ', () => {
             message: {
                 type: 'interactive',
                 from: 'sender',
+                // `id` is an internal row identifier (e.g. a random nanoid) unrelated to the
+                // user-visible option text — `body` must resolve to `title`, not `id`, so
+                // keyword/flow matching against the visible option text keeps working.
                 interactive: {
-                    list_reply: { id: 'List Reply' },
+                    list_reply: { id: 'row_id_2', title: 'List Reply' },
                 },
             },
             to: 'receiver',
@@ -101,11 +112,15 @@ describe('#processIncomingMessage ', () => {
             to: 'receiver',
             body: 'List Reply',
             title_button_reply: undefined,
-            title_list_reply: undefined,
+            title_list_reply: 'List Reply',
+            id_list_reply: 'row_id_2',
             pushName: 'John Doe',
             nfm_reply: undefined,
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'list',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -141,6 +156,9 @@ describe('#processIncomingMessage ', () => {
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'button',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -178,6 +196,9 @@ describe('#processIncomingMessage ', () => {
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'image',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -214,6 +235,9 @@ describe('#processIncomingMessage ', () => {
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'document',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -250,6 +274,9 @@ describe('#processIncomingMessage ', () => {
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'video',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -285,6 +312,9 @@ describe('#processIncomingMessage ', () => {
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'location',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -320,12 +350,16 @@ describe('#processIncomingMessage ', () => {
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'audio',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
 
     test('should process sticker message correctly', async () => {
         // Arrange
+        const stickerUrl = 'https://example.com/sticker.webp'
         const params = {
             messageId: '123',
             messageTimestamp: Date.now(),
@@ -341,6 +375,8 @@ describe('#processIncomingMessage ', () => {
             numberId: '987',
         }
 
+        ;(require('../src/utils/mediaUrl').getMediaUrl as jest.Mock).mockImplementation(() => stickerUrl)
+
         // Act
         const result = await processIncomingMessage(params)
 
@@ -350,10 +386,16 @@ describe('#processIncomingMessage ', () => {
             from: 'sender',
             to: 'receiver',
             id: 'stickerId',
+            url: stickerUrl,
+            fileData: undefined,
+            fromMe: undefined,
             body: expect.any(String),
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'sticker',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -393,12 +435,15 @@ describe('#processIncomingMessage ', () => {
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'contact',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
 
     test('should process order message correctly', async () => {
-        // Arrange
+        // Arrange — real Meta Cloud API order payload structure
         const params = {
             messageId: '123',
             messageTimestamp: Date.now(),
@@ -407,8 +452,20 @@ describe('#processIncomingMessage ', () => {
                 type: 'order',
                 from: 'sender',
                 order: {
-                    catalog_id: 'catalogId',
-                    product_items: [{ id: 'productId', quantity: 2 }],
+                    catalog_id: 'catalog_12345',
+                    text: 'Please deliver fast',
+                    product_items: [
+                        {
+                            product_retailer_id: 'sku-abc123',
+                            quantity: 2,
+                            item_price: 19.99,
+                            currency: 'USD',
+                        },
+                        {
+                            product_retailer_id: 'sku-def456',
+                            quantity: 1,
+                        },
+                    ],
                 },
             },
             to: 'receiver',
@@ -426,14 +483,87 @@ describe('#processIncomingMessage ', () => {
             from: 'sender',
             to: 'receiver',
             order: {
-                catalog_id: 'catalogId',
-                product_items: [{ id: 'productId', quantity: 2 }],
+                catalog_id: 'catalog_12345',
+                text: 'Please deliver fast',
+                product_items: [
+                    {
+                        product_retailer_id: 'sku-abc123',
+                        quantity: 2,
+                        item_price: 19.99,
+                        currency: 'USD',
+                    },
+                    {
+                        product_retailer_id: 'sku-def456',
+                        quantity: 1,
+                    },
+                ],
             },
             body: expect.any(String),
             pushName: 'John Doe',
             name: 'John Doe',
             message_id: '123',
+            messageId: '123',
+            contentType: 'order',
+            raw: params.message,
             timestamp: expect.any(Number),
+        })
+    })
+
+    test('should handle order message with minimal fields', async () => {
+        // Arrange — Meta may send order without optional fields
+        const params = {
+            messageId: '456',
+            messageTimestamp: Date.now(),
+            pushName: 'Jane Doe',
+            message: {
+                type: 'order',
+                from: 'sender',
+                order: {
+                    catalog_id: 'catalog_minimal',
+                    product_items: [{ product_retailer_id: 'sku-1', quantity: 1 }],
+                },
+            },
+            to: 'receiver',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+        }
+
+        // Act
+        const result = await processIncomingMessage(params)
+
+        // Assert
+        expect(result.order).toEqual({
+            catalog_id: 'catalog_minimal',
+            product_items: [{ product_retailer_id: 'sku-1', quantity: 1 }],
+            text: undefined,
+        })
+    })
+
+    test('should handle order message with missing order object gracefully', async () => {
+        // Arrange — defensive: malformed webhook without order object
+        const params = {
+            messageId: '789',
+            messageTimestamp: Date.now(),
+            pushName: 'Ghost User',
+            message: {
+                type: 'order',
+                from: 'sender',
+            },
+            to: 'receiver',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+        }
+
+        // Act
+        const result = await processIncomingMessage(params)
+
+        // Assert
+        expect(result.order).toEqual({
+            catalog_id: undefined,
+            product_items: [],
+            text: undefined,
         })
     })
 
@@ -460,6 +590,9 @@ describe('#processIncomingMessage ', () => {
         // Assert
         expect(result).toEqual({
             message_id: '123',
+            messageId: '123',
+            contentType: 'unknown',
+            raw: params.message,
             timestamp: expect.any(Number),
         })
     })
@@ -483,5 +616,89 @@ describe('#processIncomingMessage ', () => {
 
         // Assert
         expect(result.userId).toBe('US.13491208655302741918')
+    })
+
+    test('should keep phone from intact when Meta sends it', async () => {
+        const params = {
+            messageId: '123',
+            messageTimestamp: Date.now(),
+            pushName: 'Jose Santos',
+            message: { type: 'text', from: '573001112233', text: { body: 'ping' } },
+            to: '573133324152',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+            userId: 'CO.2177313826172406',
+        }
+
+        const result = await processIncomingMessage(params)
+
+        expect(result.from).toBe('573001112233')
+    })
+
+    test('should resolve from from from_user_id when phone is omitted', async () => {
+        const params = {
+            messageId: 'wamid.test',
+            messageTimestamp: '1785827662',
+            pushName: 'Jose Santos',
+            message: {
+                type: 'text',
+                from_user_id: 'CO.2177313826172406',
+                text: { body: 'ping' },
+            },
+            to: '573133324152',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+        }
+
+        const result = await processIncomingMessage(params)
+
+        expect(result.from).toBe('CO.2177313826172406')
+    })
+
+    test('should resolve from from userId when phone and from_user_id are omitted (Jose Santos fixture)', async () => {
+        const params = {
+            messageId: 'wamid.HBgTQ08uMjE3NzMxMzgyNjE3MjQwNhUUABIYIEFDQ0FFRDUxNzg0NERENjFBNTY1MEI0MTNCMkQ0MTY5AA==',
+            messageTimestamp: '1785827662',
+            pushName: 'Jose Santos',
+            message: { type: 'text', text: { body: 'ping' } },
+            to: '573133324152',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+            userId: 'CO.2177313826172406',
+            username: 'josesantos',
+        }
+
+        const result = await processIncomingMessage(params)
+
+        expect(result.from).toBe('CO.2177313826172406')
+        expect(result.userId).toBe('CO.2177313826172406')
+        expect(result.username).toBe('josesantos')
+        expect(result.body).toBe('ping')
+    })
+
+    test('should prefer phone over BSUID when both are present', async () => {
+        const params = {
+            messageId: '123',
+            messageTimestamp: Date.now(),
+            pushName: 'Jose Santos',
+            message: {
+                type: 'text',
+                from: '573001112233',
+                from_user_id: 'CO.2177313826172406',
+                text: { body: 'ping' },
+            },
+            to: '573133324152',
+            jwtToken: 'fakeToken',
+            version: '1.0',
+            numberId: '987',
+            userId: 'CO.2177313826172406',
+        }
+
+        const result = await processIncomingMessage(params)
+
+        expect(result.from).toBe('573001112233')
     })
 })

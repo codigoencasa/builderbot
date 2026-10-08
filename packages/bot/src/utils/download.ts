@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: generalDownload / downloadFile — streaming media download to disk
+ * Rules: Wraps http/https and the filesystem. No business rules.
+ * BigO: O(n) score:3
+ * keywords: [generalDownload, downloadFile, fileTypeFromFile]
+ * GOAL: Fetch remote media and persist it safely to a local path.
+ */
 import { randomBytes } from 'crypto'
 import { http, https } from 'follow-redirects'
 import { rename, createWriteStream, existsSync, mkdirSync } from 'fs'

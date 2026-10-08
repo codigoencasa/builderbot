@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: MemoryDB, Connection, OkPacket, RowDataPacket
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [MemoryDB, Connection, OkPacket, RowDataPacket]
+ * GOAL: Own the "mysql adapter" concern of the database-mysql package.
+ */
 import { MemoryDB } from '@builderbot/bot'
 import type { Connection, OkPacket, RowDataPacket } from 'mysql2'
 import mysql from 'mysql2'

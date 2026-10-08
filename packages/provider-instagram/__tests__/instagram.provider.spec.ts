@@ -14,6 +14,7 @@ jest.mock('@builderbot/bot', () => ({
     },
     utils: {
         generalDownload: jest.fn<(url: string) => Promise<string>>().mockResolvedValue('/tmp/downloaded-file.jpg'),
+        setEvent: jest.fn().mockReturnValue('_mock_ig_comment_event_'),
     },
 }))
 
@@ -161,6 +162,49 @@ describe('InstagramProvider', () => {
 
             await expect(provider.sendText('user123', 'Hello')).rejects.toThrow('Failed to send message')
         })
+
+        it('should return null and emit window_expired when 24h window is closed (error code 10)', async () => {
+            const axios = require('axios')
+            axios.post.mockRejectedValue({
+                response: {
+                    data: {
+                        error: {
+                            message: 'This message is sent outside of allowed window.',
+                            type: 'IGApiException',
+                            code: 10,
+                            error_subcode: 2534022,
+                        },
+                    },
+                },
+            })
+
+            const result = await provider.sendText('user123', 'Hello')
+
+            expect(result).toBeNull()
+            expect(provider.emit).toHaveBeenCalledWith('window_expired', { userId: 'user123', message: 'Hello' })
+        })
+
+        it('should return null and emit window_expired when error_subcode is 2534022', async () => {
+            const axios = require('axios')
+            axios.post.mockRejectedValue({
+                response: {
+                    data: {
+                        error: {
+                            code: 10,
+                            error_subcode: 2534022,
+                        },
+                    },
+                },
+            })
+
+            const result = await provider.sendText('user456', 'Test message')
+
+            expect(result).toBeNull()
+            expect(provider.emit).toHaveBeenCalledWith('window_expired', {
+                userId: 'user456',
+                message: 'Test message',
+            })
+        })
     })
 
     describe('sendMessage', () => {
@@ -222,6 +266,67 @@ describe('InstagramProvider', () => {
 
             await expect(provider.sendMessage('user123', 'Hello')).rejects.toThrow('Failed to send message')
         })
+
+        it('should call sendPrivateReply when options.comment.id is provided', async () => {
+            const axios = require('axios')
+            axios.post.mockResolvedValue({
+                status: 200,
+                data: { message_id: 'msg_private' },
+            })
+
+            const result = await provider.sendMessage('user123', 'Hi from bot', { comment: { id: 'comment_abc' } })
+
+            expect(axios.post).toHaveBeenCalledWith(
+                `https://graph.instagram.com/${mockConfig.version}/me/messages`,
+                expect.objectContaining({
+                    recipient: { comment_id: 'comment_abc' },
+                    message: { text: 'Hi from bot' },
+                })
+            )
+            expect(result).toEqual({ message_id: 'msg_private' })
+        })
+
+        it('should auto-route to sendPrivateReply when pendingComments has an entry for the user', async () => {
+            const axios = require('axios')
+            axios.post.mockResolvedValue({
+                status: 200,
+                data: { message_id: 'msg_auto_private' },
+            })
+            ;(provider as any).pendingComments.set('user_commenter', {
+                commentId: 'comment_xyz',
+                timestamp: Date.now(),
+            })
+
+            const result = await provider.sendMessage('user_commenter', 'Thanks for commenting!')
+
+            expect(axios.post).toHaveBeenCalledWith(
+                `https://graph.instagram.com/${mockConfig.version}/me/messages`,
+                expect.objectContaining({
+                    recipient: { comment_id: 'comment_xyz' },
+                    message: { text: 'Thanks for commenting!' },
+                })
+            )
+            expect(result).toEqual({ message_id: 'msg_auto_private' })
+        })
+
+        it('should consume pending comment only once (second send uses sendText)', async () => {
+            const axios = require('axios')
+            axios.post.mockResolvedValue({
+                status: 200,
+                data: { message_id: 'msg_follow_up' },
+            })
+            ;(provider as any).pendingComments.set('user_once', {
+                commentId: 'comment_once',
+                timestamp: Date.now(),
+            })
+
+            await provider.sendMessage('user_once', 'First reply via Private Reply')
+            await provider.sendMessage('user_once', 'Second reply via DM')
+
+            const calls = axios.post.mock.calls
+            expect(calls[0][1]).toMatchObject({ recipient: { comment_id: 'comment_once' } })
+            expect(calls[1][1]).toMatchObject({ recipient: { id: 'user_once' } })
+        })
     })
 
     describe('sendMedia', () => {
@@ -272,6 +377,14 @@ describe('InstagramProvider', () => {
             const result = await provider.sendMedia('user123', '', 'https://example.com/video.mp4')
 
             expect(result).toEqual({ message_id: 'msg_123' })
+            expect(axios.post).toHaveBeenLastCalledWith(
+                expect.stringContaining('/messages'),
+                expect.objectContaining({
+                    message: expect.objectContaining({
+                        attachment: expect.objectContaining({ type: 'video' }),
+                    }),
+                })
+            )
         })
 
         it('should send audio when mime type is audio', async () => {
@@ -293,6 +406,14 @@ describe('InstagramProvider', () => {
             const result = await provider.sendMedia('user123', '', 'https://example.com/audio.mp3')
 
             expect(result).toEqual({ message_id: 'msg_123' })
+            expect(axios.post).toHaveBeenLastCalledWith(
+                expect.stringContaining('/messages'),
+                expect.objectContaining({
+                    message: expect.objectContaining({
+                        attachment: expect.objectContaining({ type: 'audio' }),
+                    }),
+                })
+            )
         })
 
         it('should warn and return when file type is not supported', async () => {
@@ -543,7 +664,7 @@ describe('InstagramProvider', () => {
             const result = await provider.replyComment('comment_456', 'Thanks for your comment!')
 
             expect(axios.post).toHaveBeenCalledWith(
-                `https://graph.facebook.com/${mockConfig.version}/comment_456/replies`,
+                `https://graph.instagram.com/${mockConfig.version}/comment_456/replies`,
                 expect.objectContaining({
                     message: 'Thanks for your comment!',
                     access_token: mockConfig.accessToken,
@@ -617,6 +738,186 @@ describe('InstagramProvider', () => {
 
             const result = await provider.saveFile(mockCtx)
             expect(result).toBe('')
+        })
+    })
+
+    describe('getUserProfile (private) — User Profile API enrichment', () => {
+        let provider: InstagramProvider
+
+        beforeEach(() => {
+            provider = new InstagramProvider(mockConfig)
+        })
+
+        it('should return name and username on success', async () => {
+            const axios = require('axios')
+            axios.get.mockResolvedValueOnce({
+                data: { name: 'John Doe', username: 'johndoe', id: 'igsid_001' },
+            })
+
+            const result = await (provider as any).getUserProfile('igsid_001')
+
+            expect(axios.get).toHaveBeenCalledWith(
+                `https://graph.instagram.com/${mockConfig.version}/igsid_001?fields=name,username&access_token=${mockConfig.accessToken}`,
+                { timeout: 3000 }
+            )
+            expect(result).toEqual({ name: 'John Doe', username: 'johndoe' })
+        })
+
+        it('should fall back to username as name when name field is absent', async () => {
+            const axios = require('axios')
+            axios.get.mockResolvedValueOnce({
+                data: { username: 'noname_user', id: 'igsid_002' },
+            })
+
+            const result = await (provider as any).getUserProfile('igsid_002')
+
+            expect(result).toEqual({ name: 'noname_user', username: 'noname_user' })
+        })
+
+        it('should cache the result and not re-call the API on a second lookup', async () => {
+            const axios = require('axios')
+            axios.get.mockResolvedValue({
+                data: { name: 'Cached User', username: 'cached', id: 'igsid_003' },
+            })
+
+            await (provider as any).getUserProfile('igsid_003')
+            await (provider as any).getUserProfile('igsid_003')
+
+            expect(axios.get).toHaveBeenCalledTimes(1)
+        })
+
+        it('should return null (non-fatal) when API call fails', async () => {
+            const axios = require('axios')
+            axios.get.mockRejectedValueOnce(new Error('Network error'))
+
+            const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+
+            const result = await (provider as any).getUserProfile('igsid_bad')
+
+            expect(result).toBeNull()
+            expect(warnSpy).toHaveBeenCalledWith(
+                '[Instagram] getUserProfile failed (non-fatal):',
+                expect.objectContaining({ igsid: 'igsid_bad' })
+            )
+
+            warnSpy.mockRestore()
+        })
+
+        it('should return null (non-fatal) on consent required error (code 100)', async () => {
+            const axios = require('axios')
+            axios.isAxiosError.mockReturnValue(true)
+            axios.get.mockRejectedValueOnce({
+                isAxiosError: true,
+                response: {
+                    data: {
+                        error: {
+                            message: 'User consent is required to access user profile.',
+                            code: 100,
+                        },
+                    },
+                },
+            })
+
+            const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+
+            const result = await (provider as any).getUserProfile('igsid_consent')
+
+            expect(result).toBeNull()
+            expect(warnSpy).toHaveBeenCalled()
+
+            warnSpy.mockRestore()
+        })
+
+        it('should re-fetch after the TTL has expired', async () => {
+            const axios = require('axios')
+            axios.get.mockResolvedValue({
+                data: { name: 'TTL User', username: 'ttluser', id: 'igsid_ttl' },
+            })
+
+            await (provider as any).getUserProfile('igsid_ttl')
+
+            // Manually expire the cache entry
+            const cache: Map<string, { name: string; username: string; ts: number }> = (provider as any).profileCache
+            cache.set('igsid_ttl', { name: 'TTL User', username: 'ttluser', ts: 0 })
+
+            await (provider as any).getUserProfile('igsid_ttl')
+
+            expect(axios.get).toHaveBeenCalledTimes(2)
+        })
+    })
+
+    describe('busEvents message — DM enrichment', () => {
+        let provider: InstagramProvider
+
+        beforeEach(() => {
+            provider = new InstagramProvider(mockConfig)
+        })
+
+        it('should enrich DM payload with name and username before emitting', async () => {
+            const axios = require('axios')
+            axios.get.mockResolvedValueOnce({
+                data: { name: 'Jane Doe', username: 'janedoe', id: 'igsid_dm' },
+            })
+
+            const messageHandler = provider.busEvents().find((e) => e.event === 'message')
+            const payload = { from: 'igsid_dm', name: '', body: 'Hello' }
+
+            await (messageHandler!.func as (p: typeof payload) => Promise<void>)(payload)
+
+            expect(provider.emit).toHaveBeenCalledWith(
+                'message',
+                expect.objectContaining({ name: 'Jane Doe', username: 'janedoe' })
+            )
+        })
+
+        it('should emit DM without enrichment when getUserProfile fails', async () => {
+            const axios = require('axios')
+            axios.get.mockRejectedValueOnce(new Error('Timeout'))
+
+            const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+
+            const messageHandler = provider.busEvents().find((e) => e.event === 'message')
+            const payload = { from: 'igsid_fail', name: '', body: 'Hi' }
+
+            await (messageHandler!.func as (p: typeof payload) => Promise<void>)(payload)
+
+            // Should still emit the message despite the error
+            expect(provider.emit).toHaveBeenCalledWith('message', expect.objectContaining({ body: 'Hi' }))
+            // name and username remain unset since enrichment failed
+            const emitted = (provider.emit as ReturnType<typeof jest.fn>).mock.calls[0][1]
+            expect(emitted.username).toBeUndefined()
+
+            warnSpy.mockRestore()
+        })
+
+        it('should skip enrichment for comment payloads (username already present)', async () => {
+            const axios = require('axios')
+
+            const messageHandler = provider.busEvents().find((e) => e.event === 'message')
+            const payload = {
+                from: 'igsid_comment',
+                name: 'commenter',
+                username: 'commenter',
+                body: 'Nice!',
+                comment: { id: 'cmt_1', parentId: null, mediaId: 'media_1', username: 'commenter' },
+            }
+
+            await (messageHandler!.func as (p: typeof payload) => Promise<void>)(payload)
+
+            // API should NOT be called for comments (they already have the username)
+            expect(axios.get).not.toHaveBeenCalled()
+            expect(provider.emit).toHaveBeenCalledWith('message', expect.objectContaining({ body: 'Nice!' }))
+        })
+
+        it('should skip enrichment when name is already populated (e.g. second call from cache boundary)', async () => {
+            const axios = require('axios')
+
+            const messageHandler = provider.busEvents().find((e) => e.event === 'message')
+            const payload = { from: 'igsid_named', name: 'Already Set', body: 'Hey' }
+
+            await (messageHandler!.func as (p: typeof payload) => Promise<void>)(payload)
+
+            expect(axios.get).not.toHaveBeenCalled()
         })
     })
 })

@@ -1,10 +1,55 @@
+/**
+ * LAYER: Interface
+ * Contains: MetaCoreVendor — webhook HTTP middleware (verifyToken, incomingMsg) and status/message event emission
+ * Rules: Handles HTTP request/response and event lifting only. No business rules; delegates message processing.
+ * BigO: O(n^3) score:1
+ * keywords: [MetaCoreVendor, MessageStatusEvent, MetaWebhook]
+ * GOAL: Verify Meta webhooks and lift every message_status entry into a structured event. The nested walk follows the bounded webhook shape (entry/changes/statuses), so it is not an avoidable hotspot.
+ */
+import type { CallStatusEvent, MetaCallCoreVendor, WhatsAppCallEntryEvent } from '@builderbot/provider-voice'
 import EventEmitter from 'node:events'
 import type polka from 'polka'
 import type Queue from 'queue-promise'
 
 import { processIncomingMessage } from '../utils/processIncomingMsg'
+import { extractMetaSignature, verifyMetaSignature } from '../utils/webhookSignature'
 
-import type { Message, MetaGlobalVendorArgs, IncomingMessage, ContactMeta } from '~/types'
+import type {
+    ContactMeta,
+    File,
+    IncomingMessage,
+    Message,
+    MessageFromMeta,
+    MessageStatus,
+    MessageStatusEvent,
+    MetaGlobalVendorArgs,
+} from '~/types'
+
+/**
+ * Minimal request shape this vendor's middlewares actually read.
+ *
+ * `@types/polka`'s `Middleware` type is aliased to Express's `RequestHandler`, whose `Request`
+ * carries many properties (and a wider `query`/`headers` shape) that don't reflect polka's actual
+ * runtime request. Handlers below accept the untyped, context-inferred `req`/`res` from
+ * `polka.Middleware` and cast once, at the top, to this precise shape — a single documented
+ * boundary instead of `any` sprinkled through the function body.
+ */
+interface WebhookRequest {
+    headers: Record<string, string | undefined>
+    query?: Record<string, string | string[] | undefined>
+    body: IncomingMessage
+    /** Exact raw request bytes, captured by `ProviderClass.buildHTTPServer()`'s body-parser `verify` hook. */
+    rawBody?: string
+    globalVendorArgs?: MetaGlobalVendorArgs
+}
+
+/** Result of a single O(S) pass over webhook statuses. */
+interface NormalizedStatuses {
+    /** One normalized event per entry in every `value.statuses[]`. */
+    events: MessageStatusEvent[]
+    /** First `failed` event in payload order, if any. */
+    firstFailed: MessageStatusEvent | undefined
+}
 
 /**
  * Class representing MetaCoreVendor, a vendor class for meta core functionality.
@@ -12,14 +57,18 @@ import type { Message, MetaGlobalVendorArgs, IncomingMessage, ContactMeta } from
  */
 export class MetaCoreVendor extends EventEmitter {
     queue: Queue
+    /** Core vendor for WhatsApp Business voice calls — undefined when `enableVoiceCalls` is not set. */
+    callVendor?: MetaCallCoreVendor
 
     /**
      * Create a MetaCoreVendor.
      * @param {Queue} _queue - The queue instance.
+     * @param {MetaCallCoreVendor} [_callVendor] - Optional shared voice call core vendor.
      */
-    constructor(_queue: Queue) {
+    constructor(_queue: Queue, _callVendor?: MetaCallCoreVendor) {
         super()
         this.queue = _queue
+        this.callVendor = _callVendor
     }
 
     /**
@@ -41,108 +90,242 @@ export class MetaCoreVendor extends EventEmitter {
         return mode === 'subscribe' && originToken === token
     }
 
-    private extractStatus(obj: { entry: any }) {
-        const entry = obj.entry || []
-        const statusArray: { status: any; reason: string }[] = []
+    /**
+     * Flatten every `value.statuses[]` entry across all `entry[].changes[]` into normalized
+     * {@link MessageStatusEvent}s, preserving the wamid, recipient, timestamp and errors.
+     *
+     * O(S) where S is the total number of status entries across the whole payload. Every status
+     * is visited exactly once and the payload is never mutated; the first-failed pointer is free
+     * during that walk (no second `.find`).
+     *
+     * Accepts a structural subset of the webhook body (rather than the full `IncomingMessage`)
+     * since this only ever reads `entry[].changes[].value.statuses`.
+     *
+     * @param payload - The raw webhook body, or any object shaped like one.
+     * @returns `{ events, firstFailed }` from a single linear pass.
+     */
+    private normalizeStatuses(payload: {
+        entry?: { changes?: { value?: { statuses?: MessageStatus[] } }[] }[]
+    }): NormalizedStatuses {
+        const events: MessageStatusEvent[] = []
+        let firstFailed: MessageStatusEvent | undefined
 
-        entry.forEach((entryItem: { changes: any[] }) => {
-            const changes = entryItem.changes || []
-            changes.forEach((change) => {
-                const values = change.value || {}
-                const statuses = values.statuses || []
-                statuses.forEach(
-                    (status: {
-                        recipient_id?: string
-                        recipient_user_id?: string
-                        errors: { error_data: { details: string } }[]
-                        status: any
-                    }) => {
-                        const recipient_id = status.recipient_id || status.recipient_user_id || 'N/A'
-                        const errorDetails = status.errors?.[0]?.error_data?.details || 'Unknown'
-                        statusArray.push({
-                            status: status.status || 'Unknown',
-                            reason: `Number(${recipient_id}): ${errorDetails}`,
-                        })
+        for (const entry of payload.entry ?? []) {
+            for (const change of entry.changes ?? []) {
+                for (const status of change.value?.statuses ?? []) {
+                    const event = this.toStatusEvent(status)
+                    events.push(event)
+                    if (!firstFailed && event.status === 'failed') {
+                        firstFailed = event
                     }
-                )
-            })
+                }
+            }
+        }
+
+        return { events, firstFailed }
+    }
+
+    /**
+     * Normalize a single raw Meta status entry into a {@link MessageStatusEvent}. Unknown statuses
+     * and missing fields are preserved (never dropped) so consumers stay forward-compatible.
+     */
+    private toStatusEvent(status: MessageStatus): MessageStatusEvent {
+        return {
+            id: status.id ?? null,
+            recipientId: status.recipient_id ?? status.recipient_user_id ?? null,
+            recipientUserId: status.recipient_user_id ?? null,
+            status: status.status ?? 'unknown',
+            timestamp: status.timestamp ?? null,
+            errors: status.errors ?? [],
+            raw: status,
+        }
+    }
+
+    /** Build the legacy human-readable `notice` string for a failure (backward compatibility). */
+    private statusReason(event: MessageStatusEvent): string {
+        const errorDetails = event.errors?.[0]?.error_data?.details ?? 'Unknown'
+        return `Number(${event.recipientId ?? 'N/A'}): ${errorDetails}`
+    }
+
+    /**
+     * Validate the `X-Hub-Signature-256` HMAC of an incoming webhook request.
+     *
+     * Prefers `req.rawBody` (the exact wire bytes); falls back to re-serializing the parsed
+     * `body` with `JSON.stringify` — and emits a `notice` warning — only for unusual setups that
+     * bypass the standard HTTP server and never populate `rawBody`.
+     *
+     * @param req - The incoming request (headers + optional captured raw body).
+     * @param body - The already-parsed JSON body, used only as a fallback.
+     * @param appSecret - The Meta App Secret configured for the app.
+     * @returns `true` when the signature is present and valid.
+     */
+    private isWebhookSignatureValid(req: WebhookRequest, body: IncomingMessage, appSecret: string): boolean {
+        const signature = extractMetaSignature(req.headers)
+        if (!signature) return false
+
+        if (req.rawBody) {
+            return verifyMetaSignature(req.rawBody, signature, appSecret)
+        }
+
+        this.emit('notice', {
+            title: '⚠️ META WEBHOOK WARNING',
+            instructions: [
+                'req.rawBody is missing — falling back to JSON.stringify(body) to verify the webhook signature.',
+                'This fallback is not guaranteed to match the exact bytes Meta signed and may incorrectly reject valid webhooks.',
+            ],
         })
-        return statusArray
+        return verifyMetaSignature(JSON.stringify(body), signature, appSecret)
     }
 
     /**
      * Middleware function for verifying token.
      * @type {polka.Middleware}
      */
-    public verifyToken: polka.Middleware = async (req: any, res: any) => {
-        const { query } = req
-        const mode: string = query?.['hub.mode']
-        const token: string = query?.['hub.verify_token']
-        const challenge = query?.['hub.challenge']
-        const globalVendorArgs: MetaGlobalVendorArgs = req['globalVendorArgs'] ?? null
+    public verifyToken: polka.Middleware = async (untypedReq, res) => {
+        const req = untypedReq as unknown as WebhookRequest
+        const mode = req.query?.['hub.mode']
+        const token = req.query?.['hub.verify_token']
+        const challenge = req.query?.['hub.challenge']
+        const globalVendorArgs = req.globalVendorArgs
 
-        if (!mode || !token) {
+        if (typeof mode !== 'string' || typeof token !== 'string' || !mode || !token) {
             res.statusCode = 403
             res.end('No token!')
             return
         }
-        if (this.tokenIsValid(mode, token, globalVendorArgs?.verifyToken)) {
-            this.emit('ready')
-            res.statusCode = 200
-            res.end(challenge)
+
+        if (!this.tokenIsValid(mode, token, globalVendorArgs?.verifyToken ?? '')) {
+            res.statusCode = 403
+            res.end('Invalid token!')
             return
         }
 
-        res.statusCode = 403
-        res.end('Invalid token!')
+        this.emit('ready')
+        res.statusCode = 200
+        res.end(typeof challenge === 'string' ? challenge : '')
     }
 
     /**
      * Middleware function for handling incoming messages.
      * @type {polka.Middleware}
      */
-    public incomingMsg: polka.Middleware = async (req: any, res: any) => {
-        const globalVendorArgs: MetaGlobalVendorArgs = req['globalVendorArgs'] ?? null
-        const body = req?.body as IncomingMessage
-        const { jwtToken, numberId, version } = globalVendorArgs
+    public incomingMsg: polka.Middleware = async (untypedReq, res) => {
+        const req = untypedReq as unknown as WebhookRequest
+        const globalVendorArgs = req.globalVendorArgs
+        const body = req.body
 
-        const someErrors = this.extractStatus(body)
-        const findError = someErrors.find((s) => s.status === 'failed')
-
-        if (findError) {
+        // Optional: validate Meta's `X-Hub-Signature-256` HMAC when `appSecret` is configured.
+        // Applies to every webhook payload (messages and calls) before any other processing.
+        if (globalVendorArgs?.appSecret && !this.isWebhookSignatureValid(req, body, globalVendorArgs.appSecret)) {
             this.emit('notice', {
-                title: '🔔  META ALERT  🔔',
-                instructions: [findError.reason],
+                title: '🔒 META WEBHOOK WARNING',
+                instructions: ['Invalid or missing X-Hub-Signature-256 — request rejected'],
             })
-            res.writeHead(400, { 'Content-Type': 'application/json' })
-            return res.end(JSON.stringify(someErrors))
+            res.statusCode = 401
+            res.end(JSON.stringify({ error: 'Invalid webhook signature' }))
+            return
         }
 
-        const messages = body?.entry?.[0]?.changes?.[0]?.value?.messages
-        const contacts = body?.entry?.[0]?.changes?.[0]?.value?.contacts
-        const messageId = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0]?.id
-        const messageTimestamp = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0]?.timestamp
+        // WhatsApp Business voice call events arrive as field: 'calls' — dispatch to the call
+        // core vendor (when enabled via `enableVoiceCalls`) and always respond 200.
+        // NOTE: compares against the raw string values (not the `CallEvent` enum) so this file
+        // never needs a runtime import from `@builderbot/provider-voice` (see provider.ts for why).
+        const callsChange = body?.entry?.[0]?.changes?.find((change) => change.field === 'calls')
+        if (callsChange) {
+            const calls: WhatsAppCallEntryEvent[] = callsChange.value?.calls ?? []
+            if (this.callVendor) {
+                for (const callEvent of calls) {
+                    if (callEvent.event === 'connect') {
+                        void this.callVendor.onConnect(callEvent)
+                    } else if (callEvent.event === 'terminate') {
+                        this.callVendor.onTerminate(callEvent.id)
+                    }
+                }
+            }
+
+            // Business-initiated calls also report RINGING/ACCEPTED/REJECTED here.
+            // Inbound calls only produce connect/terminate entries above.
+            for (const status of callsChange.value?.statuses ?? []) {
+                this.emit('call_status', {
+                    callId: status.id,
+                    status: status.status,
+                    timestamp: status.timestamp,
+                    recipientId: status.recipient_id,
+                } as CallStatusEvent)
+            }
+
+            res.statusCode = 200
+            res.end('OK')
+            return
+        }
+
+        if (!globalVendorArgs) {
+            res.statusCode = 200
+            res.end('empty endpoint')
+            return
+        }
+
+        const { jwtToken, numberId, version } = globalVendorArgs
+
+        // Message-status callbacks: emit a structured `message_status` event for every entry so
+        // consumers can correlate delivery lifecycles by wamid (`sent`/`delivered`/`read`/`failed`).
+        const { events: statusEvents, firstFailed } = this.normalizeStatuses(body)
+
+        if (statusEvents.length > 0) {
+            for (const event of statusEvents) {
+                this.emit('message_status', event)
+            }
+
+            // Backward compatibility: keep the human-readable `notice` on failure.
+            if (firstFailed) {
+                this.emit('notice', {
+                    title: '🔔  META ALERT  🔔',
+                    instructions: [this.statusReason(firstFailed)],
+                })
+            }
+
+            // Respond 200 by default (non-2xx makes Meta retry the same webhook). `legacy-400`
+            // preserves the previous contract for consumers that relied on it.
+            if (firstFailed && globalVendorArgs.statusWebhookRespondOnFailure === 'legacy-400') {
+                res.writeHead(400, { 'Content-Type': 'application/json' })
+                res.end(JSON.stringify(statusEvents.map((e) => ({ status: e.status, reason: this.statusReason(e) }))))
+                return
+            }
+
+            res.statusCode = 200
+            res.end('OK')
+            return
+        }
+
+        const value = body?.entry?.[0]?.changes?.[0]?.value
+        const messages = value?.messages
+        const contacts = value?.contacts
+        const messageId = messages?.[0]?.id
+        const messageTimestamp = messages?.[0]?.timestamp
         if (!messages?.length) {
             res.statusCode = 200
             res.end('empty endpoint')
             return
         }
 
+        // Hoist shared lookups once (O(1)) — Meta sends one contacts[] / metadata block per
+        // change, so re-walking the same path inside the O(M) map is wasted work.
+        const to = value?.metadata?.display_phone_number
+        let contact: ContactMeta | undefined
+        if (Array.isArray(contacts)) [contact] = contacts
+        // Username-only contacts may not send profile.name; fall back to the username
+        // so flows get a usable display name instead of 'Unknown'.
+        const pushName: string | undefined = contact?.profile?.name ?? contact?.profile?.username ?? 'Unknown'
+        const userId: string | undefined = contact?.user_id
+        const username: string | undefined = contact?.profile?.username
+
         try {
+            // O(M) concurrent dispatch, where M is the number of messages in this webhook batch —
+            // each message is downloaded/enriched and enqueued independently and in parallel.
             await Promise.all(
-                messages.map(async (message: any) => {
-                    let contact: ContactMeta
-                    if (Array.isArray(contacts)) [contact] = contacts
-                    const to = body.entry[0].changes[0].value?.metadata?.display_phone_number
-                    const pushName: string | undefined = contact?.profile?.name ?? 'Unknown'
-                    const userId: string | undefined = contact?.user_id
-                    const fileData =
-                        message?.audio ??
-                        message?.image ??
-                        message?.video ??
-                        message?.document ??
-                        message?.sticker ??
-                        (null as File | undefined)
+                messages.map(async (message: MessageFromMeta) => {
+                    const fileData: File | null =
+                        message.audio ?? message.image ?? message.video ?? message.document ?? message.sticker ?? null
 
                     const response: Message = await processIncomingMessage({
                         messageId,
@@ -150,12 +333,13 @@ export class MetaCoreVendor extends EventEmitter {
                         to,
                         pushName,
                         message,
-                        fromMe: message?.fromMe ?? false,
+                        fromMe: message.fromMe ?? false,
                         jwtToken,
                         numberId,
                         version,
                         fileData,
                         userId,
+                        username,
                     })
                     if (response) {
                         await this.queue.enqueue(() => this.processMessage(response))
@@ -164,13 +348,14 @@ export class MetaCoreVendor extends EventEmitter {
             )
             res.statusCode = 200
             res.end('Messages enqueued')
-        } catch (error) {
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'An error occurred while processing messages.'
             this.emit('notice', {
                 title: '🔔  META ALERT  🔔',
-                instructions: [error.message || 'An error occurred while processing messages.'],
+                instructions: [errorMessage],
             })
             res.writeHead(400, { 'Content-Type': 'application/json' })
-            res.end(JSON.stringify({ error: error.message || 'An error occurred while processing messages.' }))
+            res.end(JSON.stringify({ error: errorMessage }))
         }
     }
 
@@ -179,14 +364,7 @@ export class MetaCoreVendor extends EventEmitter {
      * @param {Message} message - The message object.
      * @returns {Promise<void>} Promise that resolves when processing is complete.
      */
-    public processMessage = (message: Message): Promise<void> => {
-        return new Promise((resolve, reject) => {
-            try {
-                this.emit('message', message)
-                resolve()
-            } catch (error) {
-                reject(error)
-            }
-        })
+    public processMessage = async (message: Message): Promise<void> => {
+        this.emit('message', message)
     }
 }

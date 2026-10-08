@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: flatObject — flattens nested flows into a lookup map
+ * Rules: Pure data transformation. No external side effects.
+ * BigO: O(n^2) score:1
+ * keywords: [flatObject, TFlow, FlowClass]
+ * GOAL: Build the flow lookup table the runtime uses to resolve answers. Nested loops cover bounded nested flows.
+ */
 import type { TFlow } from '../types'
 
 /**

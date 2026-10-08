@@ -1,6 +1,6 @@
 {
     "name": "create-builderbot",
-    "version": "1.4.1",
+    "version": "1.4.4",
     "description": "",
     "license": "ISC",
     "main": "dist/index.cjs",
@@ -16,11 +16,12 @@
     ],
     "bin": "./bin/create.cjs",
     "dependencies": {
-        "@builderbot/cli": "^1.4.1"
+        "@builderbot/cli": "workspace:*"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/codigoencasa/bot-whatsapp/tree/main/packages/create-builderbot"
+        "url": "git+https://github.com/codigoencasa/builderbot.git",
+        "directory": "packages/create-builderbot"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^29.0.0",
@@ -30,5 +31,5 @@
         "rimraf": "^6.1.2",
         "rollup-plugin-typescript2": "^0.36.0"
     },
-    "gitHead": "b36178dfb87da8ce270e28b6daaff2c50374b6eb"
+    "gitHead": "4c667603733e1262920fbd919fa388e544f7f707"
 }

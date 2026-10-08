@@ -76,7 +76,10 @@ const main = async () => {
         const githubToken = GITHUB_TOKEN ? GITHUB_TOKEN.split('=').at(1) : null
         const pkgNumber = PKG_ARG ? PKG_ARG.split('=').at(1) : null
 
-        if (pkgNumber) await githubGithubRelease(`v${pkgNumber}`, pkgNumber, githubToken)
+        // lerna crea los tags con prefijo `v` (p. ej. v1.4.3). Usar el mismo tag aquí
+        // evita tags duplicados (1.4.3) y que el Release apunte a un commit equivocado.
+        const tag = `v${pkgNumber}`
+        if (pkgNumber) await githubGithubRelease(tag, tag, githubToken)
     }
 }
 

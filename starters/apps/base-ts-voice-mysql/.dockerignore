@@ -1,0 +1,16 @@
+dist/*
+node_modules
+.env
+.pnpm-store
+*_sessions
+*tokens
+.wwebjs*
+
+.git
+.gitignore
+Dockerfile*
+npm-debug.log*
+pnpm-debug.log*
+tests
+docs
+*.md

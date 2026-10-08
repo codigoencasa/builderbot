@@ -1,3 +1,11 @@
+/**
+ * LAYER: Application
+ * Contains: FlowClass — flow registration and matching orchestration
+ * Rules: Orchestrates Domain flow builders. No provider or HTTP specifics.
+ * BigO: O(n^2) score:1
+ * keywords: [FlowClass, addKeyword, addAnswer]
+ * GOAL: Register flows and resolve the flow that should answer an incoming message. Nested walks follow bounded flow lists.
+ */
 import type { TContext, TFlow } from '../types'
 import { toSerialize } from './methods/toSerialize'
 import flatObject from '../utils/flattener'

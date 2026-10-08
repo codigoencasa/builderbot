@@ -44,9 +44,23 @@ const setup = async (context: { [key: string]: any }): Promise<void> => {
 }
 
 const clear = async (context: any): Promise<void> => {
+    // Teardown best-effort: si el test expuso el bot, usamos CoreClass.stop(); si no,
+    // cerramos el servidor del provider solo cuando está escuchando (evita ERR_SERVER_NOT_RUNNING).
+    try {
+        if (typeof context?.bot?.stop === 'function') {
+            await context.bot.stop()
+        } else {
+            const httpServer = context?.provider?.server?.server
+            if (httpServer?.listening) await context.provider.stop()
+        }
+    } catch {
+        // best-effort: nunca romper el teardown de los tests
+    }
+
     context.provider = null
     context.database = null
     context.flow = null
+    context.bot = null
 }
 
 /**

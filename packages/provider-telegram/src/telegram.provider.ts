@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: TelegramProviderConfig, GlobalVendorArgs, TelegramClient, Api
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^2) score:1
+ * keywords: [TelegramProviderConfig, GlobalVendorArgs, TelegramClient, Api]
+ * GOAL: Own the "telegram provider" concern of the provider-telegram package.
+ */
 import { ProviderClass, utils } from '@builderbot/bot'
 import { BotContext, GlobalVendorArgs, SendOptions } from '@builderbot/bot/dist/types'
 import fs from 'fs'
@@ -169,7 +177,7 @@ class TelegramProvider extends ProviderClass<TelegramEvents> {
         fs.mkdirSync(tmpDir, { recursive: true })
         const fileExtension = mimeType.split('/')[1]
         const fileName: string = `${Date.now().toString()}-${chatId}.${fileExtension}`
-        let filePath = path.join(tmpDir, fileName)
+        const filePath = path.join(tmpDir, fileName)
 
         fs.writeFileSync(filePath, Buffer.from(buffer))
 

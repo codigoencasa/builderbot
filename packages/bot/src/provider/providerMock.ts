@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: TestProvider — mock provider for tests and local runs
+ * Rules: Implements ProviderClass. Test-only adapter, no business rules.
+ * BigO: O(1) score:5
+ * keywords: [TestProvider, ProviderClass, ProviderEventTypes]
+ * GOAL: Provide a minimal in-memory provider to exercise the runtime without a real channel.
+ */
 import type { ProviderEventTypes } from '../types'
 import { delay } from '../utils'
 import { ProviderClass } from './interface/provider'

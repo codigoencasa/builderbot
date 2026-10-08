@@ -1,3 +1,11 @@
+/**
+ * LAYER: Application
+ * Contains: CreateBotInput, UpdateBotInput, SendMessageInput, RestartBotInput
+ * Rules: Orchestrates domain. No frameworks. Defines ports.
+ * BigO: O(n) score:3
+ * keywords: [CreateBotInput, UpdateBotInput, SendMessageInput, RestartBotInput]
+ * GOAL: Own the "schemas" concern of the manager package.
+ */
 import { z } from 'zod'
 
 /**

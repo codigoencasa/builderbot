@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: Tool
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(n) score:3
+ * keywords: [Tool]
+ * GOAL: Own the "tool" concern of the cli package.
+ */
 import spawn from 'cross-spawn'
 import color from 'picocolors'
 

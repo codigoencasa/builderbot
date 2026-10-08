@@ -91,6 +91,16 @@ test('Debere probar las addAnswer', () => {
     assert.is(MAIN_CTX.ctx.options.buttons?.length, 1)
 })
 
+test('addAnswer propaga el timeout por flujo', () => {
+    const MAIN_CTX = addKeyword('hola').addAnswer('etc', { timeout: 1234 })
+    assert.is(MAIN_CTX.ctx.options.timeout, 1234)
+})
+
+test('addAnswer sin timeout no define la opción', () => {
+    const MAIN_CTX = addKeyword('hola').addAnswer('etc')
+    assert.is(MAIN_CTX.ctx.options.timeout, undefined)
+})
+
 test('Obtener toJson', () => {
     const [ctxA, ctxB, ctxC] = addKeyword('hola').addAnswer('pera!').addAnswer('chao').toJson()
 
@@ -141,6 +151,14 @@ test('addAnswer toJson con BUTTONS', () => {
 
     assert.is(btnA.body, 'BTN_1')
     assert.is(btnB.body, 'BTN_2')
+})
+
+test('addKeyword debe rechazar string vacío', () => {
+    assert.throws(() => addKeyword(''), /empty/i)
+})
+
+test('addKeyword debe rechazar array vacío', () => {
+    assert.throws(() => addKeyword([] as any), /empty/i)
 })
 
 test.run()

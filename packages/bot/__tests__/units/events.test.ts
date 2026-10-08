@@ -1,16 +1,17 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
-import { eventMedia, REGEX_EVENT_MEDIA } from '../../src/io/events/eventMedia'
-import { eventLocation, REGEX_EVENT_LOCATION } from '../../src/io/events/eventLocation'
+import { eventAction } from '../../src/io/events/eventAction'
+import { eventCall, REGEX_EVENT_CALL } from '../../src/io/events/eventCall'
+import { eventContacts, REGEX_EVENT_CONTACTS } from '../../src/io/events/eventContacts'
+import { eventCustom, REGEX_EVENT_CUSTOM } from '../../src/io/events/eventCustom'
 import { eventDocument, REGEX_EVENT_DOCUMENT } from '../../src/io/events/eventDocument'
-import { eventVoiceNote, REGEX_EVENT_VOICE_NOTE } from '../../src/io/events/eventVoiceNote'
+import { eventLocation, REGEX_EVENT_LOCATION } from '../../src/io/events/eventLocation'
+import { eventMedia, REGEX_EVENT_MEDIA } from '../../src/io/events/eventMedia'
 import { eventOrder, REGEX_EVENT_ORDER } from '../../src/io/events/eventOrder'
 import { eventTemplate, REGEX_EVENT_TEMPLATE } from '../../src/io/events/eventTemplate'
-import { eventCall, REGEX_EVENT_CALL } from '../../src/io/events/eventCall'
-import { eventAction } from '../../src/io/events/eventAction'
+import { eventVoiceNote, REGEX_EVENT_VOICE_NOTE } from '../../src/io/events/eventVoiceNote'
 import { eventWelcome } from '../../src/io/events/eventWelcome'
-import { eventCustom, REGEX_EVENT_CUSTOM } from '../../src/io/events/eventCustom'
 import { LIST_ALL, LIST_REGEX } from '../../src/io/events/index'
 
 // ===== eventMedia =====
@@ -160,6 +161,29 @@ test('[REGEX_EVENT_CALL] should not match other events', () => {
     assert.not.ok(REGEX_EVENT_CALL.test('hello'))
 })
 
+// ===== eventContacts =====
+
+test('[eventContacts] should return a string with correct prefix', () => {
+    const ref = eventContacts()
+    assert.type(ref, 'string')
+    assert.ok(ref.startsWith('_event_contacts__'))
+})
+
+test('[eventContacts] should return unique values', () => {
+    assert.is.not(eventContacts(), eventContacts())
+})
+
+test('[REGEX_EVENT_CONTACTS] should match valid contacts event refs', () => {
+    const ref = eventContacts()
+    assert.ok(REGEX_EVENT_CONTACTS.test(ref))
+})
+
+test('[REGEX_EVENT_CONTACTS] should not match other events', () => {
+    assert.not.ok(REGEX_EVENT_CONTACTS.test(eventMedia()))
+    assert.not.ok(REGEX_EVENT_CONTACTS.test('_event_contacts_'))
+    assert.not.ok(REGEX_EVENT_CONTACTS.test('hello'))
+})
+
 // ===== eventAction =====
 
 test('[eventAction] should return a string with correct prefix', () => {
@@ -218,6 +242,7 @@ test('[LIST_ALL] should export all event types', () => {
     assert.ok(LIST_ALL.ORDER, 'Should have ORDER')
     assert.ok(LIST_ALL.TEMPLATE, 'Should have TEMPLATE')
     assert.ok(LIST_ALL.CALL, 'Should have CALL')
+    assert.ok(LIST_ALL.CONTACTS, 'Should have CONTACTS')
 })
 
 test('[LIST_ALL] each event should be a unique string', () => {
@@ -237,6 +262,7 @@ test('[LIST_REGEX] should export all regex patterns', () => {
     assert.instance(LIST_REGEX.REGEX_EVENT_TEMPLATE, RegExp)
     assert.instance(LIST_REGEX.REGEX_EVENT_CUSTOM, RegExp)
     assert.instance(LIST_REGEX.REGEX_EVENT_CALL, RegExp)
+    assert.instance(LIST_REGEX.REGEX_EVENT_CONTACTS, RegExp)
 })
 
 // ===== Cross-event regex isolation =====
@@ -251,6 +277,7 @@ test('[Cross-event] each regex should only match its own event type', () => {
         { gen: eventTemplate, regex: REGEX_EVENT_TEMPLATE, name: 'template' },
         { gen: eventCall, regex: REGEX_EVENT_CALL, name: 'call' },
         { gen: eventCustom, regex: REGEX_EVENT_CUSTOM, name: 'custom' },
+        { gen: eventContacts, regex: REGEX_EVENT_CONTACTS, name: 'contacts' },
     ]
 
     for (const pair of eventPairs) {
@@ -261,10 +288,7 @@ test('[Cross-event] each regex should only match its own event type', () => {
         // Should NOT match other regexes
         for (const other of eventPairs) {
             if (other.name !== pair.name) {
-                assert.not.ok(
-                    other.regex.test(ref),
-                    `${pair.name} ref should NOT match ${other.name} regex`
-                )
+                assert.not.ok(other.regex.test(ref), `${pair.name} ref should NOT match ${other.name} regex`)
             }
         }
     }

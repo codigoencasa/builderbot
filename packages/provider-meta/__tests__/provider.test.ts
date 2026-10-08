@@ -12,6 +12,8 @@ jest.mock('axios')
 jest.mock('../src/utils', () => ({
     downloadFile: jest.fn(),
     getProfile: jest.fn(),
+
+    getOrderDetails: jest.fn() as any,
     verifyToken: jest.fn(),
 }))
 
@@ -21,9 +23,17 @@ jest.mock('fs/promises', () => ({
 
 jest.mock('@builderbot/bot')
 
+jest.mock('@builderbot/provider-voice', () => ({
+    MetaCallCoreVendor: jest.fn(),
+    OpenAISTTAdapter: jest.fn(() => ({ transcribe: jest.fn() })),
+    OpenAITTSAdapter: jest.fn(() => ({ synthesize: jest.fn(), sampleRate: 24000 })),
+    pcmToWav: jest.fn(() => Buffer.from('RIFF....WAVEfmt ')),
+}))
+
 describe('#MetaProvider', () => {
     let metaProvider: MetaProvider
     beforeEach(() => {
+        jest.clearAllMocks()
         metaProvider = new MetaProvider({
             name: 'bot',
             jwtToken: 'your_jwt_token',
@@ -70,6 +80,37 @@ describe('#MetaProvider', () => {
 
             // Assert
             expect(mockEventEmitter.emit).toHaveBeenCalledWith('ready')
+            expect(mockEventEmitter.emit).toHaveBeenCalledWith(
+                'notice',
+                expect.objectContaining({ title: '🔗 WEBHOOK REQUIRED' })
+            )
+        })
+
+        test('should emit the webhook notice only once across re-inits', async () => {
+            // Arrange
+            const fakeProfile: WhatsAppProfile = {
+                display_phone_number: '+1234567890',
+                verified_name: '',
+                code_verification_status: '',
+                quality_rating: '',
+                platform_type: '',
+                throughput: { level: '' },
+                id: '',
+            }
+            ;(require('../src/utils').getProfile as jest.Mock).mockImplementation(() => fakeProfile)
+            const mockEmit = jest.fn()
+            metaProvider.vendor = { emit: jest.fn() } as any
+            metaProvider.emit = mockEmit as any
+
+            // Act — two successful inits (e.g. server restart)
+            await metaProvider['afterHttpServerInit']()
+            await metaProvider['afterHttpServerInit']()
+
+            // Assert — 'ready' fires twice, the webhook notice only once
+            const noticeCalls = mockEmit.mock.calls.filter(
+                ([event, payload]: any[]) => event === 'notice' && payload?.title === '🔗 WEBHOOK REQUIRED'
+            )
+            expect(noticeCalls).toHaveLength(1)
         })
 
         test('should emit "notice" event with error message when initialization fails', async () => {
@@ -127,6 +168,39 @@ describe('#MetaProvider', () => {
                 headers: { Authorization: `Bearer ${fakeJwtToken}` },
             })
             expect(responseData).toEqual(fakeResponseData)
+            expect(fakeBody.to).toBe('1234567890')
+            expect(fakeBody).not.toHaveProperty('recipient')
+        })
+
+        test('should rewrite BSUID destination to Graph recipient and omit to (Jose Santos fixture)', async () => {
+            const fakeBody: Record<string, unknown> = {
+                messaging_product: 'whatsapp',
+                recipient_type: 'individual',
+                to: 'CO.2177313826172406',
+                type: 'text',
+                text: {
+                    preview_url: false,
+                    body: 'pong',
+                },
+            }
+            const fakeResponseData = { messageId: '123456' }
+            ;(axios.post as jest.MockedFunction<typeof axios.post>).mockResolvedValue({ data: fakeResponseData })
+
+            await metaProvider.sendMessageToApi(fakeBody as any)
+
+            expect(axios.post).toHaveBeenCalledWith(
+                'https://graph.facebook.com/v18.0/1234567890/messages',
+                expect.objectContaining({
+                    messaging_product: 'whatsapp',
+                    recipient_type: 'individual',
+                    recipient: 'CO.2177313826172406',
+                    type: 'text',
+                }),
+                expect.any(Object)
+            )
+            const sentBody = (axios.post as jest.Mock).mock.calls[0][1] as Record<string, unknown>
+            expect(sentBody.recipient).toBe('CO.2177313826172406')
+            expect(sentBody).not.toHaveProperty('to')
         })
     })
 
@@ -157,8 +231,21 @@ describe('#MetaProvider', () => {
         })
     })
 
+    describe('#fixPrefixMetaNumber', () => {
+        test('should leave a BSUID untouched (no prefix swap applied)', () => {
+            const bsuid = 'US.13491208655302741918'
+            const result = metaProvider['fixPrefixMetaNumber'](bsuid)
+            expect(result).toBe(bsuid)
+        })
+
+        test('should swap AR/MX prefixes for phone numbers', () => {
+            expect(metaProvider['fixPrefixMetaNumber']('5491123456789')).toBe('541123456789')
+            expect(metaProvider['fixPrefixMetaNumber']('5211234567890')).toBe('521234567890')
+        })
+    })
+
     describe('#sendText', () => {
-        test('should send text message to the provided recipient', async () => {
+        test('should send text message without URL — preview_url false', async () => {
             // Arrange
             const fakeRecipient = '1234567890'
             const fakeMessage = 'Hello, World!'
@@ -178,6 +265,181 @@ describe('#MetaProvider', () => {
                     body: fakeMessage,
                 },
             })
+        })
+
+        test('should auto-enable preview_url when message contains an https URL', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Check this out: https://example.com/page'
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendText(fakeRecipient, fakeMessage)
+
+            // Assert
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith({
+                messaging_product: 'whatsapp',
+                recipient_type: 'individual',
+                to: fakeRecipient,
+                type: 'text',
+                text: {
+                    preview_url: true,
+                    body: fakeMessage,
+                },
+            })
+        })
+
+        test('should auto-enable preview_url when message contains an http URL', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Visit http://example.com for more info'
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendText(fakeRecipient, fakeMessage)
+
+            // Assert
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    text: expect.objectContaining({ preview_url: true }),
+                })
+            )
+        })
+
+        test('should respect explicit preview_url=false even when message has a URL', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'See https://example.com'
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendText(fakeRecipient, fakeMessage, null, false)
+
+            // Assert
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    text: expect.objectContaining({ preview_url: false }),
+                })
+            )
+        })
+
+        test('should respect explicit preview_url=true even when message has no URL', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Plain text message'
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendText(fakeRecipient, fakeMessage, null, true)
+
+            // Assert
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    text: expect.objectContaining({ preview_url: true }),
+                })
+            )
+        })
+
+        test('should auto-enable preview_url for URL with query parameters', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Search: https://example.com/search?q=test&lang=en'
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendText(fakeRecipient, fakeMessage)
+
+            // Assert
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    text: expect.objectContaining({ preview_url: true }),
+                })
+            )
+        })
+
+        test('should auto-enable preview_url for URL with fragment/anchor', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Docs: https://example.com/docs#section-2'
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendText(fakeRecipient, fakeMessage)
+
+            // Assert
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    text: expect.objectContaining({ preview_url: true }),
+                })
+            )
+        })
+
+        test('should auto-enable preview_url for URL in parentheses', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Visit (https://example.com) for details'
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendText(fakeRecipient, fakeMessage)
+
+            // Assert
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    text: expect.objectContaining({ preview_url: true }),
+                })
+            )
+        })
+
+        test('should auto-enable preview_url for URL ending with punctuation', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Check https://example.com.'
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendText(fakeRecipient, fakeMessage)
+
+            // Assert
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    text: expect.objectContaining({ preview_url: true }),
+                })
+            )
+        })
+
+        test('should auto-enable preview_url for message with multiple URLs', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'See https://foo.com and https://bar.com'
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendText(fakeRecipient, fakeMessage)
+
+            // Assert
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    text: expect.objectContaining({ preview_url: true }),
+                })
+            )
+        })
+
+        test('should not enable preview_url for text without URL', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Visit our website at example dot com'
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendText(fakeRecipient, fakeMessage)
+
+            // Assert
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    text: expect.objectContaining({ preview_url: false }),
+                })
+            )
         })
     })
 
@@ -271,23 +533,53 @@ describe('#MetaProvider', () => {
     })
 
     describe('#sendAudio', () => {
-        test('should send audio message to the provided recipient', async () => {
+        test('should send audio message to the provided recipient (auto-converts to OGG)', async () => {
             // Arrange
             const fakeRecipient = '1234567890'
             const fakePathVideo: any = 'path/to/audio.mp3'
+            const convertedPath: any = 'path/to/audio.ogg'
 
             metaProvider.sendMessageMeta = jest.fn() as never
+            ;(utils.convertAudio as jest.MockedFunction<typeof utils.convertAudio>).mockResolvedValue(convertedPath)
+            jest.spyOn(mime, 'lookup').mockReturnValue('audio/mpeg')
 
             // Act
             await metaProvider.sendAudio(fakeRecipient, fakePathVideo)
 
             // Assert
+            expect(utils.convertAudio).toHaveBeenCalledWith(fakePathVideo, 'ogg')
             expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith({
                 messaging_product: 'whatsapp',
                 to: fakeRecipient,
                 type: 'audio',
                 audio: {
                     id: undefined,
+                    voice: true,
+                },
+            })
+        })
+
+        test('should send OGG audio directly without conversion', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakePathVideo: any = 'path/to/audio.ogg'
+
+            metaProvider.sendMessageMeta = jest.fn() as never
+            ;(utils.convertAudio as jest.MockedFunction<typeof utils.convertAudio>).mockResolvedValue(fakePathVideo)
+            jest.spyOn(mime, 'lookup').mockReturnValue('audio/ogg')
+
+            // Act
+            await metaProvider.sendAudio(fakeRecipient, fakePathVideo)
+
+            // Assert
+            expect(utils.convertAudio).not.toHaveBeenCalled()
+            expect(metaProvider.sendMessageMeta).toHaveBeenCalledWith({
+                messaging_product: 'whatsapp',
+                to: fakeRecipient,
+                type: 'audio',
+                audio: {
+                    id: undefined,
+                    voice: true,
                 },
             })
         })
@@ -301,23 +593,6 @@ describe('#MetaProvider', () => {
             await expect(metaProvider.sendAudio(fakeRecipient, fakePathVideo)).rejects.toThrow(
                 'MEDIA_INPUT_NULL_: null'
             )
-        })
-
-        test('should log a message for unsupported media types', async () => {
-            // Arrange
-            const fakeRecipient = '1234567890'
-            const fakePathVideo: any = 'path/to/audio.ogg'
-            const consoleSpy = jest.spyOn(console, 'log')
-
-            // Act
-            await metaProvider.sendAudio(fakeRecipient, fakePathVideo)
-
-            // Assert
-            expect(consoleSpy).toHaveBeenCalledWith(
-                `Format (audio/ogg) not supported, you should use\nhttps://developers.facebook.com/docs/whatsapp/cloud-api/reference/media#supported-media-types`
-            )
-
-            consoleSpy.mockRestore()
         })
     })
 
@@ -392,9 +667,39 @@ describe('#MetaProvider', () => {
             await metaProvider.sendMessage(fakeRecipient, fakeMessage, options, context)
 
             // Assert
-            expect(metaProvider.sendText).toHaveBeenCalledWith(fakeRecipient, fakeMessage, context)
+            expect(metaProvider.sendText).toHaveBeenCalledWith(fakeRecipient, fakeMessage, context, undefined)
             expect(metaProvider.sendButtons).not.toHaveBeenCalled()
             expect(metaProvider.sendMedia).not.toHaveBeenCalled()
+        })
+
+        test('should pass preview_url=false from options to sendText', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Check https://example.com'
+            const options = { preview_url: false }
+            jest.spyOn(metaProvider, 'sendText')
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendMessage(fakeRecipient, fakeMessage, options)
+
+            // Assert
+            expect(metaProvider.sendText).toHaveBeenCalledWith(fakeRecipient, fakeMessage, undefined, false)
+        })
+
+        test('should pass preview_url=true from options to sendText', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Plain text message'
+            const options = { preview_url: true }
+            jest.spyOn(metaProvider, 'sendText')
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendMessage(fakeRecipient, fakeMessage, options)
+
+            // Assert
+            expect(metaProvider.sendText).toHaveBeenCalledWith(fakeRecipient, fakeMessage, undefined, true)
         })
 
         test('should parse the recipient number and send message with buttons', async () => {
@@ -443,6 +748,43 @@ describe('#MetaProvider', () => {
             expect(metaProvider.sendMedia).toHaveBeenCalledWith(fakeRecipient, fakeMessage, fakeMedia, context)
             expect(metaProvider.sendText).not.toHaveBeenCalled()
             expect(metaProvider.sendButtons).not.toHaveBeenCalled()
+        })
+
+        test('routes to callVendor.publishAudio when the recipient has an active voice call', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Hello from the flow'
+            const publishAudio = jest.fn().mockImplementation(() => Promise.resolve())
+            metaProvider.callVendor = { hasActiveCall: jest.fn(() => true), publishAudio } as never
+            jest.spyOn(metaProvider, 'sendText')
+            jest.spyOn(metaProvider, 'sendButtons')
+            jest.spyOn(metaProvider, 'sendMedia')
+
+            // Act
+            await metaProvider.sendMessage(fakeRecipient, fakeMessage)
+
+            // Assert
+            expect(publishAudio).toHaveBeenCalledWith(fakeRecipient, fakeMessage)
+            expect(metaProvider.sendText).not.toHaveBeenCalled()
+            expect(metaProvider.sendButtons).not.toHaveBeenCalled()
+            expect(metaProvider.sendMedia).not.toHaveBeenCalled()
+        })
+
+        test('falls back to the regular text route when there is no active voice call', async () => {
+            // Arrange
+            const fakeRecipient = '1234567890'
+            const fakeMessage = 'Hello from the flow'
+            const publishAudio = jest.fn()
+            metaProvider.callVendor = { hasActiveCall: jest.fn(() => false), publishAudio } as never
+            jest.spyOn(metaProvider, 'sendText')
+            metaProvider.sendMessageMeta = jest.fn() as never
+
+            // Act
+            await metaProvider.sendMessage(fakeRecipient, fakeMessage, {})
+
+            // Assert
+            expect(publishAudio).not.toHaveBeenCalled()
+            expect(metaProvider.sendText).toHaveBeenCalledWith(fakeRecipient, fakeMessage, undefined, undefined)
         })
     })
 
@@ -1048,9 +1390,30 @@ describe('#MetaProvider', () => {
             metaProvider.emit = (mockEventEmitter as any).emit.bind(mockEventEmitter)
 
             // Act
-            metaProvider['busEvents']()[4].func(payload)
+            const hostEvent = metaProvider['busEvents']().find((event) => event.event === 'host')
+            hostEvent.func(payload)
             // Assert
             expect(mockEventEmitter.emit).toHaveBeenCalledWith('host', payload)
+        })
+
+        test('#message_status - should emit the correct events with payloads', async () => {
+            // Arrange
+            const payload: any = {
+                id: 'wamid.test',
+                status: 'delivered',
+                timestamp: '1700000000',
+            }
+            const mockEmit = jest.fn()
+            const mockEventEmitter = {
+                emit: mockEmit,
+            }
+            metaProvider.emit = (mockEventEmitter as any).emit.bind(mockEventEmitter)
+
+            // Act
+            const statusEvent = metaProvider['busEvents']().find((event) => event.event === 'message_status')
+            statusEvent.func(payload)
+            // Assert
+            expect(mockEventEmitter.emit).toHaveBeenCalledWith('message_status', payload)
         })
     })
 
@@ -1070,6 +1433,21 @@ describe('#MetaProvider', () => {
             // Assert
             expect(downloadFile).toHaveBeenCalledWith(ctx?.url, 'your_jwt_token')
             expect(result).toContain(extension)
+        })
+
+        test('wraps ctx.audio as a WAV file via pcmToWav instead of downloading a URL', async () => {
+            // Arrange
+            const { pcmToWav } = require('@builderbot/provider-voice')
+            const ctx = { audio: Buffer.alloc(320), sampleRate: 16000, from: '15551234567' }
+            const options = { path: '/tmp' }
+
+            // Act
+            const result = await metaProvider.saveFile(ctx as never, options)
+
+            // Assert
+            expect(pcmToWav).toHaveBeenCalledWith(ctx.audio, ctx.sampleRate)
+            expect(downloadFile).not.toHaveBeenCalled()
+            expect(result).toContain('.wav')
         })
     })
 
@@ -1124,6 +1502,109 @@ describe('#MetaProvider', () => {
             expect(metaProvider.sendPresenceUpdate).toHaveBeenCalledWith(fakeMessageId)
 
             jest.useRealTimers()
+        })
+    })
+
+    describe('#buildCallVendor (enableVoiceCalls)', () => {
+        // `buildCallVendor` is async — it lazily `import()`s `@builderbot/provider-voice`
+        // (and transitively `@roamhq/wrtc`) only when voice calls are actually enabled, so
+        // bots that never opt in never load that native-dependent module graph.
+        test('throws when openaiApiKey is missing and no custom adapters are provided', async () => {
+            // Arrange
+            metaProvider.globalVendorArgs = {
+                ...metaProvider.globalVendorArgs,
+                enableVoiceCalls: true,
+            }
+
+            // Act & Assert
+            await expect(metaProvider['buildCallVendor']()).rejects.toThrow(/openaiApiKey/)
+        })
+
+        test('builds the call vendor with default OpenAI adapters when openaiApiKey is provided', async () => {
+            // Arrange
+            const { MetaCallCoreVendor, OpenAISTTAdapter, OpenAITTSAdapter } = require('@builderbot/provider-voice')
+            metaProvider.globalVendorArgs = {
+                ...metaProvider.globalVendorArgs,
+                enableVoiceCalls: true,
+                openaiApiKey: 'sk-test',
+            }
+
+            // Act
+            await metaProvider['buildCallVendor']()
+
+            // Assert
+            expect(OpenAISTTAdapter).toHaveBeenCalledWith({ apiKey: 'sk-test' })
+            expect(OpenAITTSAdapter).toHaveBeenCalledWith({ apiKey: 'sk-test' })
+            expect(MetaCallCoreVendor).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    config: metaProvider.globalVendorArgs,
+                })
+            )
+        })
+
+        test('uses provided custom sttAdapter/ttsAdapter without requiring openaiApiKey', async () => {
+            // Arrange
+            const { MetaCallCoreVendor, OpenAISTTAdapter, OpenAITTSAdapter } = require('@builderbot/provider-voice')
+            const sttAdapter = { transcribe: jest.fn() } as never
+            const ttsAdapter = { synthesize: jest.fn(), sampleRate: 24000 } as never
+            metaProvider.globalVendorArgs = {
+                ...metaProvider.globalVendorArgs,
+                enableVoiceCalls: true,
+                sttAdapter,
+                ttsAdapter,
+            }
+
+            // Act
+            await metaProvider['buildCallVendor']()
+
+            // Assert
+            expect(OpenAISTTAdapter).not.toHaveBeenCalled()
+            expect(OpenAITTSAdapter).not.toHaveBeenCalled()
+            expect(MetaCallCoreVendor).toHaveBeenCalledWith(expect.objectContaining({ sttAdapter, ttsAdapter }))
+        })
+    })
+
+    describe('#getOrderDetails', () => {
+        const emptyDetails = {
+            catalog_id: '',
+            title: '',
+            text: undefined,
+            price: { currency: '', total: 0 },
+            products: [],
+        }
+
+        test('should return safe empty result when called with a null order (fail-loud guard)', async () => {
+            // Arrange — the guard bypasses the real util; mock returns empty shell
+            const { getOrderDetails: utilMock } = require('../src/utils')
+            utilMock.mockResolvedValue(emptyDetails)
+
+            // Act
+            const result = await metaProvider.getOrderDetails(null as any)
+
+            // Assert — must not throw and must return an empty MetaOrderDetails shape
+            expect(result).toMatchObject({
+                catalog_id: '',
+                title: '',
+                products: [],
+                price: { total: 0 },
+            })
+        })
+
+        test('should return safe empty result when called with a plain string (baileys-style guard)', async () => {
+            // Arrange
+            const { getOrderDetails: utilMock } = require('../src/utils')
+            utilMock.mockResolvedValue(emptyDetails)
+
+            // Act — simulates a caller mistakenly passing orderId as a string
+            const result = await metaProvider.getOrderDetails('some-order-id' as any)
+
+            // Assert
+            expect(result).toMatchObject({
+                catalog_id: '',
+                title: '',
+                products: [],
+                price: { total: 0 },
+            })
         })
     })
 })

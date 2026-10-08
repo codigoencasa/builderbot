@@ -538,81 +538,59 @@ describe('#SherpaProvider', () => {
         })
     })
 
-    describe.skip('#sendPoll', () => {
-        test('should send poll message with correct options', async () => {
+    describe('#sendPoll', () => {
+        test('should return false and emit notice event (not available in whaileys)', async () => {
             // Arrange
-            const numberIn = phoneNumber
-            const text = 'Please vote'
-            const poll = {
+            const mockEmit = jest.fn()
+            provider.emit = mockEmit
+
+            // Act
+            const result = await provider.sendPoll(phoneNumber, 'Please vote', {
                 options: ['Option 1', 'Option 2', 'Option 3'],
                 multiselect: false,
-            }
-
-            const mockSendMessage = mockSendSuccess
-            provider.vendor.sendMessage = mockSendMessage
-
-            // Act
-            const result = await provider.sendPoll(numberIn, text, poll)
+            })
 
             // Assert
-            expect(result).toEqual('success')
-            expect(mockSendMessage).toHaveBeenCalled()
+            expect(result).toBe(false)
+            expect(mockEmit).toHaveBeenCalledWith('notice', {
+                title: 'METHOD NOT AVAILABLE',
+                instructions: [
+                    'sendPoll is not available with whaileys provider',
+                    'This feature is only available with baileys provider',
+                ],
+            })
         })
 
-        test('should send poll message with correct options multiselect undefined', async () => {
+        test('should always return false regardless of options count', async () => {
             // Arrange
-            const numberIn = phoneNumber
-            const text = 'Please vote'
-            const poll = {
-                options: ['Option 1', 'Option 2', 'Option 3'],
-                multiselect: undefined,
-            }
-
-            const mockSendMessage = mockSendSuccess
-            provider.vendor.sendMessage = mockSendMessage
+            const mockEmit = jest.fn()
+            provider.emit = mockEmit
 
             // Act
-            const result = await provider.sendPoll(numberIn, text, poll)
+            const result = await provider.sendPoll(phoneNumber, 'Please vote', {
+                options: ['Only one'],
+                multiselect: false,
+            })
 
             // Assert
-            expect(result).toEqual('success')
-            expect(mockSendMessage).toHaveBeenCalled()
+            expect(result).toBe(false)
+            expect(mockEmit).toHaveBeenCalled()
         })
 
-        test('should send poll message with correct options multiselect true', async () => {
+        test('should always return false regardless of multiselect value', async () => {
             // Arrange
-            const numberIn = phoneNumber
-            const text = 'Please vote'
-            const poll = {
-                options: ['Option 1', 'Option 2', 'Option 3'],
+            const mockEmit = jest.fn()
+            provider.emit = mockEmit
+
+            // Act
+            const result = await provider.sendPoll(phoneNumber, 'Please vote', {
+                options: ['Option 1', 'Option 2'],
                 multiselect: true,
-            }
-
-            const mockSendMessage = mockSendSuccess
-            provider.vendor.sendMessage = mockSendSuccess
-
-            // Act
-            const result = await provider.sendPoll(numberIn, text, poll)
+            })
 
             // Assert
-            expect(result).toEqual('success')
-            expect(mockSendMessage).toHaveBeenCalled()
-        })
-
-        test('should return false if options length is less than 2', async () => {
-            // Arrange
-            const numberIn = phoneNumber
-            const text = 'Please vote'
-            const poll = {
-                options: ['Option 1'],
-                multiselect: false,
-            }
-
-            // Act
-            const result = await provider.sendPoll(numberIn, text, poll)
-
-            // Assert
-            expect(result).toBeFalsy()
+            expect(result).toBe(false)
+            expect(mockEmit).toHaveBeenCalled()
         })
     })
 

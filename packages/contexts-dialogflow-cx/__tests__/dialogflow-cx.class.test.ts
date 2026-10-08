@@ -11,6 +11,14 @@ import { Message } from '../src/types'
 
 const mockProvider = new ProviderClass()
 
+const mockLogger = {
+    log: stub(),
+    error: stub(),
+    warn: stub(),
+    info: stub(),
+    debug: stub(),
+}
+
 const credentialMock = {
     project_id: 'project_id',
     private_key: 'private_key',
@@ -36,7 +44,7 @@ test.before.each(async () => {
 test('init -  should return an error message', () => {
     const messageError = `No se encontró`
     try {
-        const dialogFlowContext = new DialogFlowContextCX(null, mockProvider)
+        const dialogFlowContext = new DialogFlowContextCX(mockLogger as any, mockProvider)
         dialogFlowContext['existsCredential'] = existsCredentialStub.returns(false)
         dialogFlowContext.init()
     } catch (error) {
@@ -50,7 +58,7 @@ test('init - should call initializeDialogFlowClient if credentials are available
         private_key: 'tu_private_key',
         client_email: 'tu_client_email',
     }
-    const dialogFlowContext = new DialogFlowContextCX(null, mockProvider, optionsDX)
+    const dialogFlowContext = new DialogFlowContextCX(mockLogger as any, mockProvider, optionsDX)
     stub(dialogFlowContext, 'loadCredentials').returns(credentials)
     const initializeDialogFlowClientStub = stub(dialogFlowContext as any, 'initializeDialogFlowClient')
     dialogFlowContext.init()
@@ -59,7 +67,7 @@ test('init - should call initializeDialogFlowClient if credentials are available
 })
 
 test('initializeDialogFlowClient should set projectId, configuration, and sessionClient', () => {
-    const dialogFlowContext = new DialogFlowContextCX(null, mockProvider, optionsDX)
+    const dialogFlowContext = new DialogFlowContextCX(mockLogger as any, mockProvider, optionsDX)
     const credentials = {
         project_id: 'test_project',
         private_key: 'private_key',
@@ -70,7 +78,7 @@ test('initializeDialogFlowClient should set projectId, configuration, and sessio
 })
 
 test('createSession should return the correct session path', () => {
-    const dialogFlowContext = new DialogFlowContextCX(null, mockProvider, optionsDX)
+    const dialogFlowContext = new DialogFlowContextCX(mockLogger as any, mockProvider, optionsDX)
     const mockProjectAgentSessionPath = stub(dialogFlowContext.sessionClient as any, 'projectLocationAgentSessionPath')
     mockProjectAgentSessionPath.callsFake((projectId, from) => `${projectId}/sessions/${from}`)
 
@@ -83,7 +91,7 @@ test('createSession should return the correct session path', () => {
 })
 
 test('detectIntent - should return the correct result', async () => {
-    const dialogFlowContext = new DialogFlowContextCX(null, mockProvider, optionsDX)
+    const dialogFlowContext = new DialogFlowContextCX(mockLogger as any, mockProvider, optionsDX)
     const mockDetectIntent = stub(dialogFlowContext.sessionClient as any, 'detectIntent')
     const mockResult = {
         queryResult: {
@@ -110,7 +118,7 @@ test('detectIntent - should return the correct result', async () => {
 })
 
 test('detectIntent - should return null', async () => {
-    const dialogFlowContext = new DialogFlowContextCX(null, mockProvider, optionsDX)
+    const dialogFlowContext = new DialogFlowContextCX(mockLogger as any, mockProvider, optionsDX)
     const mockDetectIntent = stub(dialogFlowContext.sessionClient as any, 'detectIntent')
 
     mockDetectIntent.resolves(null)
@@ -138,7 +146,7 @@ test('handleMsg - You should send the text message', async () => {
         body: 'some_message_body',
     }
 
-    const dialogFlowContext = new DialogFlowContextCX(null, mockProvider, optionsDX)
+    const dialogFlowContext = new DialogFlowContextCX(mockLogger as any, mockProvider, optionsDX)
     dialogFlowContext['createSession'] = stub().resolves('session')
     dialogFlowContext['detectIntent'] = stub().resolves({
         queryResult: {
@@ -160,7 +168,7 @@ test('handleMsg - You should send the payload type message', async () => {
         body: 'some_message_body',
     }
 
-    const dialogFlowContext = new DialogFlowContextCX(null, mockProvider)
+    const dialogFlowContext = new DialogFlowContextCX(mockLogger as any, mockProvider)
     dialogFlowContext['createSession'] = stub().resolves('session')
     dialogFlowContext['detectIntent'] = stub().resolves({
         queryResult: {
@@ -206,7 +214,7 @@ test('handleMsg - You should send the payload type media', async () => {
         body: 'some_message_body',
     }
 
-    const dialogFlowContext = new DialogFlowContextCX(null, mockProvider)
+    const dialogFlowContext = new DialogFlowContextCX(mockLogger as any, mockProvider)
     dialogFlowContext['createSession'] = stub().resolves('session')
     dialogFlowContext['detectIntent'] = stub().resolves({
         queryResult: {
@@ -248,7 +256,7 @@ test('handleMsg - should handle unknown message type with empty answer', async (
         body: 'some_message_body',
     }
 
-    const dialogFlowContext = new DialogFlowContextCX(null, mockProvider, optionsDX)
+    const dialogFlowContext = new DialogFlowContextCX(mockLogger as any, mockProvider, optionsDX)
     dialogFlowContext['createSession'] = stub().resolves('session')
     dialogFlowContext['detectIntent'] = stub().resolves({
         queryResult: {

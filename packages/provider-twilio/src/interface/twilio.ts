@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: TwilioInterface, TwilioRequestBody
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(1) score:5
+ * keywords: [TwilioInterface, TwilioRequestBody]
+ * GOAL: Own the "twilio" concern of the provider-twilio package.
+ */
 import type { SendOptions, BotContext } from '@builderbot/bot/dist/types'
 
 import type { TwilioRequestBody } from '../types'

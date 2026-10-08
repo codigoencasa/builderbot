@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: WebhookVerification
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n) score:3
+ * keywords: [WebhookVerification]
+ * GOAL: Own the "webhook verification" concern of the provider-gohighlevel package.
+ */
 import { createHmac, timingSafeEqual } from 'node:crypto'
 
 /**

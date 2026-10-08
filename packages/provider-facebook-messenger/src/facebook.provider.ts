@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: FacebookMessengerArgs, GlobalVendorArgs, AxiosResponse, Middleware
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n) score:3
+ * keywords: [FacebookMessengerArgs, GlobalVendorArgs, AxiosResponse, Middleware]
+ * GOAL: Own the "facebook provider" concern of the provider-facebook-messenger package.
+ */
 import { ProviderClass } from '@builderbot/bot'
 import type { BotContext, GlobalVendorArgs, SendOptions } from '@builderbot/bot/dist/types'
 import axios, { AxiosResponse } from 'axios'

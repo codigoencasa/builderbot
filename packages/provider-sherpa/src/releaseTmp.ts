@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: ReleaseTmp
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^2) score:1
+ * keywords: [ReleaseTmp]
+ * GOAL: Own the "release tmp" concern of the provider-sherpa package.
+ */
 import { existsSync } from 'fs'
 import { readdir, unlink } from 'fs/promises'
 import { join } from 'path'

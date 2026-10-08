@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: Utils
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [Utils]
+ * GOAL: Own the "utils" concern of the provider-twilio package.
+ */
 const parseNumber = (number: string): string => {
     return number.replace(/(?:whatsapp:|\+\d+)/, '').replace(/\s/g, '')
 }

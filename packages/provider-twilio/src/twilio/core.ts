@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: TwilioCoreVendor, ITwilioProviderARgs, TwilioPayload, TwilioRequestBody
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [TwilioCoreVendor, ITwilioProviderARgs, TwilioPayload, TwilioRequestBody]
+ * GOAL: Own the "core" concern of the provider-twilio package.
+ */
 import { utils } from '@builderbot/bot'
 import mime from 'mime-types'
 import EventEmitter from 'node:events'

@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: Recommended
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(1) score:5
+ * keywords: [Recommended]
+ * GOAL: Own the "recommended" concern of the eslint-plugin-builderbot package.
+ */
 export const rulesRecommended = {
     'builderbot/func-prefix-goto-flow-return': 2,
     'builderbot/func-prefix-end-flow-return': 2,

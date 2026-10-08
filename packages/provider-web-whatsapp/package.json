@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/provider-web-whatsapp",
-    "version": "1.4.1",
+    "version": "1.4.4",
     "description": "Now I’m the model of a modern major general / The venerated Virginian veteran whose men are all / Lining up, to put me up on a pedestal / Writin’ letters to relatives / Embellishin’ my elegance and eloquence / But the elephant is in the room / The truth is in ya face when ya hear the British cannons go / BOOM",
     "keywords": [],
     "author": "Leifer Mendez <leifer33@gmail.com>",
@@ -23,14 +23,14 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/codigoencasa/bot-whatsapp.git"
+        "url": "git+https://github.com/codigoencasa/builderbot.git"
     },
     "bugs": {
-        "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
+        "url": "https://github.com/codigoencasa/builderbot/issues"
     },
-    "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
+    "homepage": "https://github.com/codigoencasa/builderbot#readme",
     "devDependencies": {
-        "@builderbot/bot": "^1.4.1",
+        "@builderbot/bot": "workspace:*",
         "@jest/globals": "^30.2.0",
         "@rollup/plugin-commonjs": "^29.0.0",
         "@rollup/plugin-json": "^6.1.0",
@@ -56,5 +56,8 @@
         "sharp": "0.33.3",
         "whatsapp-web.js": "~1.34.2"
     },
-    "gitHead": "b36178dfb87da8ce270e28b6daaff2c50374b6eb"
+    "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+    },
+    "gitHead": "4c667603733e1262920fbd919fa388e544f7f707"
 }

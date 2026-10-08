@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: _addAnswer — builds a flow answer chain
+ * Rules: Pure flow-data construction. No external side effects.
+ * BigO: O(n) score:3
+ * keywords: [addAnswer, addKeyword, addChild]
+ * GOAL: Turn chained answers into the flow context the runtime consumes.
+ */
 import { addChild } from './addChild'
 import { toJson } from './toJson'
 import type {
@@ -34,6 +42,7 @@ const _addAnswer =
             buttons: Array.isArray(options?.buttons) ? options.buttons : [],
             capture: typeof options?.capture === 'boolean' ? options.capture : false,
             delay: typeof options?.delay === 'number' ? options.delay : 0,
+            timeout: typeof options?.timeout === 'number' ? options.timeout : undefined,
             idle: typeof options?.idle === 'number' ? options.idle : undefined,
             ref: typeof options?.ref === 'string' ? options.ref : undefined,
         })

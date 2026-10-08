@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: InstagramArgs, GlobalVendorArgs, AxiosResponse
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n) score:3
+ * keywords: [InstagramArgs, GlobalVendorArgs, AxiosResponse]
+ * GOAL: Own the "instagram provider" concern of the provider-instagram package.
+ */
 import { ProviderClass, utils } from '@builderbot/bot'
 import type { BotContext, GlobalVendorArgs, SendOptions } from '@builderbot/bot/dist/types'
 import axios, { AxiosResponse } from 'axios'
@@ -11,8 +19,15 @@ import type { Middleware } from 'polka'
 
 import { InstagramEvents, InstagramListenMode } from './instagram.events'
 
+type AuthFailurePayload = {
+    title: string
+    instructions: string[]
+    payload?: { qr?: string; code?: string }
+}
+
 const INSTAGRAM_API_URL = 'https://graph.instagram.com/'
-const FACEBOOK_GRAPH_API_URL = 'https://graph.facebook.com/'
+
+const PROFILE_TTL_MS = 6 * 60 * 60 * 1000
 
 export type InstagramArgs = GlobalVendorArgs & {
     accessToken: string
@@ -21,6 +36,8 @@ export type InstagramArgs = GlobalVendorArgs & {
     verifyToken: string
     listenMode?: InstagramListenMode
 }
+
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000
 
 /**
  * A class representing an InstagramProvider for interacting with Instagram Messaging API.
@@ -37,6 +54,18 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
         listenMode: 'message',
     }
 
+    /**
+     * Tracks the most recent comment.id per userId so that the first outbound
+     * message after a comment event is routed via Private Replies
+     * (recipient: { comment_id }) instead of a regular DM (recipient: { id }).
+     * Only the last comment per user is kept; entries older than 7 days are
+     * purged automatically to avoid memory leaks.
+     */
+    private pendingComments = new Map<string, { commentId: string; timestamp: number }>()
+
+    /** In-memory profile cache: IGSID → { name, username, ts } */
+    private profileCache = new Map<string, { name: string; username: string; ts: number }>()
+
     constructor(args?: InstagramArgs) {
         super()
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
@@ -52,11 +81,31 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
         }
     }
 
-    protected async initVendor(): Promise<any> {
+    protected async initVendor(): Promise<InstagramEvents> {
         const vendor = new InstagramEvents()
         vendor.setListenMode(this.globalVendorArgs.listenMode || 'message')
         this.vendor = vendor
         this.server = this.server.post('/webhook', this.ctrlInMsg).get('/webhook', this.ctrlVerify)
+
+        vendor.on('message', (payload: BotContext) => {
+            if (payload?.comment?.id && payload?.from) {
+                this.pendingComments.set(payload.from, {
+                    commentId: payload.comment.id,
+                    timestamp: Date.now(),
+                })
+            }
+        })
+
+        const cleanupInterval = setInterval(
+            () => {
+                const cutoff = Date.now() - SEVEN_DAYS_MS
+                for (const [userId, entry] of this.pendingComments) {
+                    if (entry.timestamp < cutoff) this.pendingComments.delete(userId)
+                }
+            },
+            60 * 60 * 1000
+        )
+        cleanupInterval.unref()
 
         await this.checkStatus()
         return vendor
@@ -72,7 +121,7 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
     busEvents = () => [
         {
             event: 'auth_failure',
-            func: (payload: any) => this.emit('auth_failure', payload),
+            func: (payload: AuthFailurePayload) => this.emit('auth_failure', payload),
         },
         {
             event: 'ready',
@@ -80,13 +129,22 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
         },
         {
             event: 'message',
-            func: (payload: BotContext) => {
+            func: async (payload: BotContext) => {
+                // Enrich DMs and postbacks (no username in webhook, no comment context).
+                // Comments already carry username from the webhook payload — skip them.
+                if (payload?.from && !payload?.name && !payload?.comment) {
+                    const profile = await this.getUserProfile(payload.from)
+                    if (profile) {
+                        payload.name = profile.name
+                        payload.username = profile.username
+                    }
+                }
                 this.emit('message', payload)
             },
         },
         {
             event: 'host',
-            func: (payload: any) => {
+            func: (payload: BotContext) => {
                 this.emit('host', payload)
             },
         },
@@ -132,6 +190,38 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
             }
         }
         return res.end('ERROR')
+    }
+
+    /**
+     * Resolve an Instagram Scoped ID (IGSID) to { name, username } via the
+     * User Profile API (graph.instagram.com — IGAA tokens only, NOT facebook.com).
+     * Results are cached for PROFILE_TTL_MS (6 h) to avoid redundant API calls.
+     * Any API error (consent required, transient, timeout) is non-fatal: returns null
+     * so the message is emitted without enrichment rather than blocking the flow.
+     */
+    private async getUserProfile(igsid: string): Promise<{ name: string; username: string } | null> {
+        const cached = this.profileCache.get(igsid)
+        if (cached && Date.now() - cached.ts < PROFILE_TTL_MS) {
+            return { name: cached.name, username: cached.username }
+        }
+
+        try {
+            const { version, accessToken } = this.globalVendorArgs
+            const url = `${INSTAGRAM_API_URL}${version}/${igsid}?fields=name,username&access_token=${accessToken}`
+            const response = await axios.get(url, { timeout: 3000 })
+            const username: string = response.data?.username || ''
+            const name: string = response.data?.name || username
+            this.profileCache.set(igsid, { name, username, ts: Date.now() })
+            return { name, username }
+        } catch (err) {
+            const igError = axios.isAxiosError(err) ? err.response?.data?.error : null
+            console.warn('[Instagram] getUserProfile failed (non-fatal):', {
+                igsid,
+                error: igError?.message || (err as Error).message,
+                code: igError?.code,
+            })
+            return null
+        }
     }
 
     async checkStatus(): Promise<void> {
@@ -225,15 +315,28 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
             console.info('[Instagram] Message sent successfully')
             return response.data
         } catch (error) {
-            console.error('[Instagram] Error sending message:', {
-                error: error.response?.data || error.message,
-            })
+            const igError = error.response?.data?.error
+            if (igError?.error_subcode === 2534022 || igError?.code === 10) {
+                console.warn('[Instagram] 24h window closed, skipping message to:', userId)
+                this.emit('window_expired', { userId, message })
+                return null
+            }
+            console.error('[Instagram] Error sending message:', { error: igError || error.message })
             throw new Error('Failed to send message')
         }
     }
 
     sendMessage = async (userId: string, message: string, options?: SendOptions): Promise<any> => {
-        // Check if media is provided in options
+        if (options?.comment?.id) {
+            return this.sendPrivateReply(options.comment.id, message)
+        }
+
+        const pending = this.pendingComments.get(userId)
+        if (pending) {
+            this.pendingComments.delete(userId)
+            return this.sendPrivateReply(pending.commentId, message)
+        }
+
         if (options?.media) {
             return this.sendMedia(userId, message, options.media)
         }
@@ -289,14 +392,18 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
      * @param attachmentId - The attachment_id from uploadAttachment
      * @returns Promise with the API response
      */
-    private sendAttachmentById = async (userId: string, attachmentId: string): Promise<any> => {
+    private sendAttachmentById = async (
+        userId: string,
+        attachmentId: string,
+        type: 'image' | 'video' | 'audio'
+    ): Promise<any> => {
         const url = `${INSTAGRAM_API_URL}${this.globalVendorArgs.version}/${this.globalVendorArgs.igAccountId}/messages`
         try {
             const body = {
                 recipient: { id: userId },
                 message: {
                     attachment: {
-                        type: 'image', // Type is determined by the attachment itself
+                        type,
                         payload: {
                             attachment_id: attachmentId,
                         },
@@ -309,9 +416,13 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
             console.info('[Instagram] Attachment sent successfully')
             return response.data
         } catch (error) {
-            console.error('[Instagram] Error sending attachment:', {
-                error: error.response?.data || error.message,
-            })
+            const igError = error.response?.data?.error
+            if (igError?.error_subcode === 2534022 || igError?.code === 10) {
+                console.warn('[Instagram] 24h window closed, skipping attachment to:', userId)
+                this.emit('window_expired', { userId })
+                return null
+            }
+            console.error('[Instagram] Error sending attachment:', { error: igError || error.message })
             throw new Error('Failed to send attachment')
         }
     }
@@ -324,7 +435,7 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
      */
     sendImageFromFile = async (userId: string, filePath: string): Promise<any> => {
         const attachmentId = await this.uploadAttachment(filePath, 'image')
-        return this.sendAttachmentById(userId, attachmentId)
+        return this.sendAttachmentById(userId, attachmentId, 'image')
     }
 
     /**
@@ -335,7 +446,7 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
      */
     sendVideoFromFile = async (userId: string, filePath: string): Promise<any> => {
         const attachmentId = await this.uploadAttachment(filePath, 'video')
-        return this.sendAttachmentById(userId, attachmentId)
+        return this.sendAttachmentById(userId, attachmentId, 'video')
     }
 
     /**
@@ -346,7 +457,7 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
      */
     sendAudioFromFile = async (userId: string, filePath: string): Promise<any> => {
         const attachmentId = await this.uploadAttachment(filePath, 'audio')
-        return this.sendAttachmentById(userId, attachmentId)
+        return this.sendAttachmentById(userId, attachmentId, 'audio')
     }
 
     /**
@@ -373,7 +484,13 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
             console.info('[Instagram] Image sent successfully')
             return response.data
         } catch (error) {
-            console.error('[Instagram] Error sending image:', { error: error.response?.data || error.message })
+            const igError = error.response?.data?.error
+            if (igError?.error_subcode === 2534022 || igError?.code === 10) {
+                console.warn('[Instagram] 24h window closed, skipping image to:', userId)
+                this.emit('window_expired', { userId })
+                return null
+            }
+            console.error('[Instagram] Error sending image:', { error: igError || error.message })
             throw new Error('Failed to send image')
         }
     }
@@ -402,7 +519,13 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
             console.info('[Instagram] Video sent successfully')
             return response.data
         } catch (error) {
-            console.error('[Instagram] Error sending video:', { error: error.response?.data || error.message })
+            const igError = error.response?.data?.error
+            if (igError?.error_subcode === 2534022 || igError?.code === 10) {
+                console.warn('[Instagram] 24h window closed, skipping video to:', userId)
+                this.emit('window_expired', { userId })
+                return null
+            }
+            console.error('[Instagram] Error sending video:', { error: igError || error.message })
             throw new Error('Failed to send video')
         }
     }
@@ -431,7 +554,13 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
             console.info('[Instagram] Audio sent successfully')
             return response.data
         } catch (error) {
-            console.error('[Instagram] Error sending audio:', { error: error.response?.data || error.message })
+            const igError = error.response?.data?.error
+            if (igError?.error_subcode === 2534022 || igError?.code === 10) {
+                console.warn('[Instagram] 24h window closed, skipping audio to:', userId)
+                this.emit('window_expired', { userId })
+                return null
+            }
+            console.error('[Instagram] Error sending audio:', { error: igError || error.message })
             throw new Error('Failed to send audio')
         }
     }
@@ -460,7 +589,13 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
             console.info('[Instagram] File sent successfully')
             return response.data
         } catch (error) {
-            console.error('[Instagram] Error sending file:', { error: error.response?.data || error.message })
+            const igError = error.response?.data?.error
+            if (igError?.error_subcode === 2534022 || igError?.code === 10) {
+                console.warn('[Instagram] 24h window closed, skipping file to:', userId)
+                this.emit('window_expired', { userId })
+                return null
+            }
+            console.error('[Instagram] Error sending file:', { error: igError || error.message })
             throw new Error('Failed to send file')
         }
     }
@@ -488,21 +623,31 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
             console.info('[Instagram] Quick replies sent successfully')
             return response.data
         } catch (error) {
-            console.error('[Instagram] Error sending quick replies:', {
-                error: error.response?.data || error.message,
-            })
+            const igError = error.response?.data?.error
+            if (igError?.error_subcode === 2534022 || igError?.code === 10) {
+                console.warn('[Instagram] 24h window closed, skipping quick replies to:', userId)
+                this.emit('window_expired', { userId, message: text })
+                return null
+            }
+            console.error('[Instagram] Error sending quick replies:', { error: igError || error.message })
             throw new Error('Failed to send quick replies')
         }
     }
 
     /**
      * Reply to a comment on a media post (public reply visible on the post)
-     * Uses the Facebook Graph API endpoint: POST /{comment-id}/replies
+     * Uses the Instagram Graph API endpoint: POST /{comment-id}/replies
+     *
+     * Must use graph.instagram.com (not graph.facebook.com): this provider is
+     * built for Instagram Login, whose tokens (prefix `IGAA`) only parse on the
+     * Instagram Graph API. Hitting graph.facebook.com returns OAuthException
+     * code 190 ("Cannot parse access token"). This mirrors sendPrivateReply and
+     * every other method in this class.
      * @param commentId - The ID of the comment to reply to
      * @param message - The reply text
      */
     replyComment = async (commentId: string, message: string): Promise<any> => {
-        const url = `${FACEBOOK_GRAPH_API_URL}${this.globalVendorArgs.version}/${commentId}/replies`
+        const url = `${INSTAGRAM_API_URL}${this.globalVendorArgs.version}/${commentId}/replies`
         try {
             const body = {
                 message,
@@ -540,8 +685,13 @@ class InstagramProvider extends ProviderClass<InstagramEvents> {
             console.info('[Instagram] Private reply sent successfully')
             return response.data
         } catch (error) {
+            const igError = error.response?.data?.error
+            if (igError?.error_subcode === 2534022 || igError?.code === 10) {
+                console.warn('[Instagram] Comment window expired, skipping private reply to comment:', commentId)
+                return null
+            }
             console.error('[Instagram] Error sending private reply:', {
-                error: error.response?.data || error.message,
+                error: igError || error.message,
             })
             throw new Error('Failed to send private reply')
         }

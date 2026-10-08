@@ -1,6 +1,23 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: MetaProvider — ProviderClass adapter, busEvents wiring, Meta Graph API client, queueing
+ * Rules: Implements the provider port. Dependencies point inward to Domain via MetaCoreVendor and ~/types.
+ * BigO: O(n^2) score:1
+ * keywords: [MetaProvider, MetaCoreVendor, MessageStatusEvent]
+ * GOAL: Expose the Meta provider (send/receive + message_status bus event) behind the framework ProviderClass contract.
+ */
 import { ProviderClass, utils } from '@builderbot/bot'
 import type { Vendor } from '@builderbot/bot/dist/provider/interface/provider'
 import type { BotContext, Button, SendOptions } from '@builderbot/bot/dist/types'
+import type {
+    CallActiveEvent,
+    CallEndedEvent,
+    CallStatusEvent,
+    ISttAdapter,
+    ITtsAdapter,
+    MetaCallCoreVendor,
+    PlaybackInterruptedEvent,
+} from '@builderbot/provider-voice'
 import axios from 'axios'
 import FormData from 'form-data'
 import { createReadStream } from 'fs'
@@ -11,15 +28,18 @@ import { join, basename, resolve } from 'path'
 import Queue from 'queue-promise'
 
 import { MetaCoreVendor } from './core'
-import { downloadFile, getProfile } from '../utils'
-import { isBSUID, parseMetaNumber } from '../utils/number'
+import { downloadFile, getOrderDetails, getProfile } from '../utils'
+import { isBSUID, parseMetaNumber, resolveOutboundAddress } from '../utils/number'
 
 import type { MetaInterface } from '~/interface/meta'
 import type {
     MetaGlobalVendorArgs,
+    MetaOrderDetails,
     Localization,
     Message,
+    MessageStatusEvent,
     MetaList,
+    Order,
     ParsedContact,
     Reaction,
     SaveFileOptions,
@@ -27,10 +47,15 @@ import type {
 } from '~/types'
 
 const URL = `https://graph.facebook.com`
+const URL_REGEX = /https?:\/\/[^\s]+/
 
 class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface {
     public vendor: Vendor<any>
     public queue: Queue = new Queue()
+    /** Core vendor for WhatsApp Business voice calls — only set when `enableVoiceCalls` is true. */
+    public callVendor?: MetaCallCoreVendor
+    /** W1: emit the webhook-setup notice only once per process, not on every (re)init. */
+    private webhookNoticeEmitted = false
 
     public globalVendorArgs: MetaGlobalVendorArgs = {
         name: 'bot',
@@ -83,6 +108,20 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             }
             this.vendor.emit('host', host)
             this.emit('ready')
+
+            if (!this.webhookNoticeEmitted) {
+                this.webhookNoticeEmitted = true
+                this.emit('notice', {
+                    title: '🔗 WEBHOOK REQUIRED',
+                    instructions: [
+                        'Remember to configure the webhook in your Meta dashboard:',
+                        '- Callback URL: https://<your-domain>/webhook',
+                        '- Verify with your verifyToken',
+                        '- Subscribe to the "messages" field',
+                        'https://builderbot.app/en/providers/meta',
+                    ],
+                })
+            }
         } catch (err) {
             const errorMap = {
                 'Invalid token': { title: '🔑 TOKEN ERROR', msg: 'Check META_ACCESS_TOKEN in .env' },
@@ -114,8 +153,23 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         }
     }
 
-    protected initVendor(): Promise<any> {
-        const vendor = new MetaCoreVendor(this.queue)
+    protected async initVendor(): Promise<any> {
+        if (this.globalVendorArgs.enableVoiceCalls) {
+            this.callVendor = await this.buildCallVendor()
+            this.callVendor.on('message', (payload: BotContext) => this.emit('message', payload))
+            this.callVendor.on('notice', (payload: { title: string; instructions: string[] }) =>
+                this.emit('notice', payload)
+            )
+            // Call lifecycle: `call_active` fires once the media path is open (the
+            // first moment the caller can hear audio), `call_ended` on release.
+            this.callVendor.on('call_active', (payload: CallActiveEvent) => this.emit('call_active', payload))
+            this.callVendor.on('call_ended', (payload: CallEndedEvent) => this.emit('call_ended', payload))
+            this.callVendor.on('playback_interrupted', (payload: PlaybackInterruptedEvent) =>
+                this.emit('playback_interrupted', payload)
+            )
+        }
+
+        const vendor = new MetaCoreVendor(this.queue, this.callVendor)
         this.server = this.server
             .use((req, _, next) => {
                 req['globalVendorArgs'] = this.globalVendorArgs
@@ -126,6 +180,47 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
 
         this.vendor = vendor
         return Promise.resolve(this.vendor)
+    }
+
+    /**
+     * Build the shared call core vendor for WhatsApp Business voice calls.
+     *
+     * `@builderbot/provider-voice` (and its native `@roamhq/wrtc` dependency) is
+     * imported lazily here — via dynamic `import()` — so it is only loaded into
+     * the process when a bot actually opts in with `enableVoiceCalls: true`.
+     * Bots that never enable voice calls never touch that module graph, which
+     * matters because `@roamhq/wrtc` ships prebuilt native binaries for only a
+     * subset of platforms/architectures.
+     *
+     * Resolves STT/TTS adapters (custom or default OpenAI) and validates that
+     * `openaiApiKey` is present unless both adapters are provided.
+     *
+     * @returns The initialized `MetaCallCoreVendor`.
+     * @throws {Error} When `openaiApiKey` is missing and both adapters are not provided.
+     */
+    private async buildCallVendor(): Promise<MetaCallCoreVendor> {
+        const config = this.globalVendorArgs
+        const hasOpenAI = Boolean(config.openaiApiKey)
+        const hasStt = Boolean(config.sttAdapter)
+        const hasTts = Boolean(config.ttsAdapter)
+
+        if (!hasOpenAI && !(hasStt && hasTts)) {
+            throw new Error(
+                '[MetaProvider] "openaiApiKey" is required when "enableVoiceCalls" is true and custom STT/TTS ' +
+                    'adapters are not both provided. Either set openaiApiKey, or provide both sttAdapter and ttsAdapter.'
+            )
+        }
+
+        const { MetaCallCoreVendor, OpenAISTTAdapter, OpenAITTSAdapter } = await import('@builderbot/provider-voice')
+
+        const sttAdapter: ISttAdapter = config.sttAdapter ?? new OpenAISTTAdapter({ apiKey: config.openaiApiKey })
+        const ttsAdapter: ITtsAdapter = config.ttsAdapter ?? new OpenAITTSAdapter({ apiKey: config.openaiApiKey })
+
+        return new MetaCallCoreVendor({
+            sttAdapter,
+            ttsAdapter,
+            config,
+        })
     }
 
     /**
@@ -153,6 +248,16 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
      */
     saveFile = async (ctx: Partial<Message & BotContext>, options: SaveFileOptions = {}): Promise<string> => {
         try {
+            if (ctx.audio) {
+                // Lazily loaded — see `buildCallVendor` for why `@builderbot/provider-voice`
+                // must never be a top-level import in this file.
+                const { pcmToWav } = await import('@builderbot/provider-voice')
+                const wav = pcmToWav(ctx.audio, ctx.sampleRate ?? 16000)
+                const fileName = `voice-call-${ctx.from ?? 'unknown'}-${Date.now()}.wav`
+                const pathFile = join(options?.path ?? tmpdir(), fileName)
+                await writeFile(pathFile, wav)
+                return resolve(pathFile)
+            }
             const url = ctx?.url ?? ctx?.fileData?.url
             const { buffer, extension } = await downloadFile(url, this.globalVendorArgs.jwtToken)
             const fileName = `file-${Date.now()}.${extension}`
@@ -185,6 +290,37 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
     }
 
     /**
+     * Retrieve full order details by querying the Meta Graph API catalog.
+     *
+     * The WhatsApp order webhook only provides `catalog_id`, `product_retailer_id`,
+     * `quantity`, `item_price`, and `currency`. This method enriches that data by
+     * calling the catalog API to resolve product names, images, and the catalog title.
+     *
+     * Requires the access token to have read access to the catalog
+     * (`catalog_management` permission or equivalent).
+     *
+     * @param order - The `order` object from `ctx.order` in an EVENTS.ORDER handler
+     * @returns Enriched order details including title, products with name/imageUrl/price, and total
+     * @example
+     * addKeyword(EVENTS.ORDER).addAction(async (ctx, { provider }) => {
+     *     const details = await provider.getOrderDetails(ctx.order)
+     *     // details.title
+     *     // details.products[].name, .imageUrl, .price, .quantity
+     *     // details.price.total, details.price.currency
+     *     // orderDate -> new Date(ctx.timestamp * 1000)
+     * })
+     */
+    getOrderDetails = async (order: Order): Promise<MetaOrderDetails> => {
+        if (!order || typeof order !== 'object' || !('catalog_id' in order)) {
+            console.log('[MetaProvider.getOrderDetails] called without a valid Order object; returning empty result')
+            const { version, jwtToken } = this.globalVendorArgs
+            return getOrderDetails(version, jwtToken, null)
+        }
+        const { version, jwtToken } = this.globalVendorArgs
+        return getOrderDetails(version, jwtToken, order)
+    }
+
+    /**
      * Get the list of event handlers for the provider bus
      * @returns Array of event handlers for auth_failure, notice, ready, message, and host events
      */
@@ -206,6 +342,14 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             func: (payload: BotContext) => {
                 this.emit('message', payload)
             },
+        },
+        {
+            event: 'message_status',
+            func: (payload: MessageStatusEvent) => this.emit('message_status', payload),
+        },
+        {
+            event: 'call_status',
+            func: (payload: CallStatusEvent) => this.emit('call_status', payload),
         },
         {
             event: 'host',
@@ -381,8 +525,8 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         if (mimeType.includes('image')) return this.sendImage(to, mediaInput, text, context)
         if (mimeType.includes('video')) return this.sendVideo(to, fileDownloaded, text, context)
         if (mimeType.includes('audio')) {
-            const fileOpus = await utils.convertAudio(mediaInput, 'mp3')
-            return this.sendAudio(to, fileOpus, context)
+            // sendAudio handles conversion to OGG/Opus automatically
+            return this.sendAudio(to, mediaInput, context)
         }
 
         return this.sendFile(to, mediaInput, text, context)
@@ -748,7 +892,8 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
      * Send a message with automatic type detection (text, buttons, or media)
      * @param to - Recipient phone number
      * @param message - Message text content
-     * @param options - Optional send options (buttons, media)
+     * @param options - Optional send options (buttons, media, preview_url)
+     * @param options.preview_url - Whether to show URL previews. Auto-detected when omitted (true if message contains a URL).
      * @param context - Optional message ID to reply to
      * @returns Promise with the API response
      * @example
@@ -760,13 +905,21 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
      *
      * // Send with media
      * await provider.sendMessage('1234567890', 'Check this:', { media: 'https://example.com/image.jpg' })
+     *
+     * // Send with link preview enabled
+     * await provider.sendMessage('1234567890', 'Visit https://example.com', { preview_url: true })
+     *
+     * // Send with link preview disabled
+     * await provider.sendMessage('1234567890', 'Visit https://example.com', { preview_url: false })
      */
     sendMessage = async (to: string, message: string, options?: SendOptions, context?: string): Promise<any> => {
         to = parseMetaNumber(to)
+        if (this.callVendor?.hasActiveCall(to)) return this.callVendor.publishAudio(to, message)
         options = { ...options, ...options['options'] }
         if (options?.buttons?.length) return this.sendButtons(to, options.buttons, message)
         if (options?.media) return this.sendMedia(to, message, options.media, context)
-        return this.sendText(to, message, context)
+        const preview_url = options?.preview_url as boolean | undefined
+        return this.sendText(to, message, context, preview_url)
     }
 
     /**
@@ -823,7 +976,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
     /**
      * Send an audio message by uploading a local file
      * @param to - Recipient phone number
-     * @param pathVideo - Local path to the audio file (supports mp3, m4a, aac, amr, ogg with opus codec)
+     * @param pathVideo - Local path to the audio file (supports mp3, m4a, aac, amr, ogg - auto-converts to ogg/opus)
      * @param context - Optional message ID to reply to
      * @returns Promise with the API response
      * @throws Error if pathVideo is null
@@ -834,21 +987,20 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
         to = parseMetaNumber(to)
         if (!pathVideo) throw new Error(`MEDIA_INPUT_NULL_: ${pathVideo}`)
 
-        const formData = new FormData()
+        let audioPath = pathVideo
         const mimeType = mime.lookup(pathVideo)
 
-        if (['audio/ogg'].includes(mimeType)) {
-            console.log(
-                [
-                    `Format (${mimeType}) not supported, you should use`,
-                    `https://developers.facebook.com/docs/whatsapp/cloud-api/reference/media#supported-media-types`,
-                ].join('\n')
-            )
+        // Auto-convert to OGG/Opus if not already in that format (required for voice notes)
+        if (!mimeType?.includes('ogg') && !mimeType?.includes('opus')) {
+            audioPath = await utils.convertAudio(pathVideo, 'ogg')
         }
-        formData.append('file', createReadStream(pathVideo), {
-            contentType: mimeType,
+
+        const formData = new FormData()
+        formData.append('file', createReadStream(audioPath), {
+            contentType: 'audio/ogg',
         })
         formData.append('messaging_product', 'whatsapp')
+
         const {
             data: { id: mediaId },
         } = await axios.post(
@@ -868,6 +1020,7 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             type: 'audio',
             audio: {
                 id: mediaId,
+                voice: true, // Sends as voice note (PTT) instead of audio file
             },
         }
         if (context) body.context = { message_id: context }
@@ -987,23 +1140,30 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
      * @param to - Recipient phone number
      * @param message - Text message content
      * @param context - Optional message ID to reply to
-     * @param preview_url - Whether to show URL previews in the message
+     * @param preview_url - Whether to show URL previews. Auto-detected when omitted (true if message contains a URL).
      * @returns Promise with the API response
      * @example
      * await provider.sendText('1234567890', 'Hello, how can I help you?')
      *
-     * // With URL preview
+     * // Auto-detection: preview_url will be true because message has a URL
+     * await provider.sendText('1234567890', 'Check https://example.com')
+     *
+     * // Explicitly enable preview
      * await provider.sendText('1234567890', 'Check https://example.com', null, true)
+     *
+     * // Explicitly disable preview even with URL
+     * await provider.sendText('1234567890', 'See https://example.com', null, false)
      */
-    sendText = async (to: string, message: string, context = null, preview_url: boolean = false) => {
+    sendText = async (to: string, message: string, context = null, preview_url?: boolean) => {
         to = parseMetaNumber(to)
+        const resolvedPreview = preview_url ?? URL_REGEX.test(message)
         const body: TextMessageBody = {
             messaging_product: 'whatsapp',
             recipient_type: 'individual',
             to,
             type: 'text',
             text: {
-                preview_url,
+                preview_url: resolvedPreview,
                 body: message,
             },
         }
@@ -1101,7 +1261,17 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
      * })
      */
     sendMessageToApi = async (body: TextMessageBody): Promise<any> => {
-        if (body.to) body.to = this.fixPrefixMetaNumber(body.to)
+        const id = body.to ?? body.recipient
+        if (id) {
+            const address = resolveOutboundAddress(id)
+            if ('recipient' in address) {
+                body.recipient = address.recipient
+                delete body.to
+            } else {
+                body.to = this.fixPrefixMetaNumber(address.to)
+                delete body.recipient
+            }
+        }
         try {
             const fullUrl = `${URL}/${this.globalVendorArgs.version}/${this.globalVendorArgs.numberId}/messages`
             const response = await axios.post(fullUrl, body, {

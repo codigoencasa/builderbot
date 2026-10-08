@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: Download, IncomingMessage
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [Download, IncomingMessage]
+ * GOAL: Own the "download" concern of the provider-evolution-api package.
+ */
 import followRedirects from 'follow-redirects'
 import { rename, createWriteStream, existsSync } from 'fs'
 import type { IncomingMessage } from 'http'

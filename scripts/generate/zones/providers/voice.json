@@ -1,0 +1,9 @@
+{
+    "IMPORT": "import { VoiceProvider as Provider } from '@builderbot/provider-voice'\n",
+    "IMPLEMENTATION": "const adapterProvider = createProvider(Provider, {\n    apiKey: process.env.LIVEKIT_API_KEY ?? 'YOUR_LIVEKIT_API_KEY',\n    apiSecret: process.env.LIVEKIT_API_SECRET ?? 'YOUR_LIVEKIT_API_SECRET',\n    wsUrl: process.env.LIVEKIT_WS_URL ?? 'wss://your-project.livekit.cloud',\n    roomName: process.env.LIVEKIT_ROOM ?? 'support',\n    openaiApiKey: process.env.OPENAI_API_KEY ?? 'YOUR_OPENAI_API_KEY',\n    language: 'en',\n})",
+    "DEPENDENCIES": {
+        "@builderbot/bot": "latest",
+        "@builderbot/provider-voice": "latest"
+    },
+    "DEV_DEPENDENCIES": {}
+}

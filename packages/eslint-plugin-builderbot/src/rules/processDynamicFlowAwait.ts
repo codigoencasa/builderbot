@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: Context, INode
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(1) score:5
+ * keywords: [Context, INode]
+ * GOAL: Own the "process dynamic flow await" concern of the eslint-plugin-builderbot package.
+ */
 import type { Context, INode } from '../types'
 import { isInsideAddActionOrAddAnswer } from '../utils'
 

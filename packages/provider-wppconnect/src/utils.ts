@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: Utils, Response
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [Utils, Response]
+ * GOAL: Own the "utils" concern of the provider-wppconnect package.
+ */
 import { utils } from '@builderbot/bot'
 import { writeFile } from 'fs'
 import { emptyDir } from 'fs-extra'

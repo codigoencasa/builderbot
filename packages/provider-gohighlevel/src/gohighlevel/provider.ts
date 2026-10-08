@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: GoHighLevelCoreVendor, ChannelLister
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n) score:3
+ * keywords: [GoHighLevelCoreVendor, ChannelLister]
+ * GOAL: Own the "provider" concern of the provider-gohighlevel package.
+ */
 import { ProviderClass, utils } from '@builderbot/bot'
 import type { Vendor } from '@builderbot/bot/dist/provider/interface/provider'
 import type { BotContext, Button, SendOptions } from '@builderbot/bot/dist/types'

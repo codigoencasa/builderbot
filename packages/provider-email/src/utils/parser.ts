@@ -1,4 +1,12 @@
 /**
+ * LAYER: Infrastructure
+ * Contains: Parser
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^2) score:1
+ * keywords: [Parser]
+ * GOAL: Own the "parser" concern of the provider-email package.
+ */
+/**
  * Email parsing utilities
  */
 

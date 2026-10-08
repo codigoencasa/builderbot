@@ -1,7 +1,7 @@
 {
   "name": "@builderbot/root",
   "version": "1.3.10",
-  "description": "Bot de wahtsapp open source para MVP o pequeños negocios",
+  "description": "Bot de wahtsapp open source para MVP o peque\u00f1os negocios",
   "main": "app.js",
   "private": true,
   "scripts": {
@@ -17,13 +17,15 @@
     "copy.lib": "tsm ./scripts/move.ts",
     "clean.lib": "tsm ./scripts/clean.ts",
     "generate.templates": "tsm ./scripts/generate/index.ts",
-    "test:coverage": "npx lerna run test:coverage",
+    "generate:check": "tsm ./scripts/generate/check.ts",
+    "test:coverage": "npx lerna run test:coverage --concurrency 2",
     "test:coverage:full": "npx lerna-lcov-aggregate && npx lcov-viewer lcov -o ./coverage/ ./coverage/lcov.info",
-    "test": "npx lerna run test",
+    "test": "npx lerna run test --concurrency 2",
     "publish:canary": "npx lerna publish from-package --canary",
     "prepare": "npx husky install",
     "publish:dev": "npx lerna publish from-package --dist-tag dev --yes",
-    "next:version": "npx lerna version --force-publish",
+    "check:workspace-deps": "node ./scripts/check-workspace-deps.js",
+    "next:version": "pnpm run check:workspace-deps && npx lerna version --force-publish",
     "preinstall": "npx only-allow pnpm",
     "release": "standard-version -- --prerelease --global",
     "generate:release-summary": "node ./scripts/generate-release-summary.js --version=$(node -p \"require('./lerna.json').version\")",
@@ -45,6 +47,7 @@
   "repository": "https://github.com/leifermendez/bot-whatsapp",
   "license": "ISC",
   "workspaces": [
+    "packages/plugins/*",
     "packages/bot",
     "packages/cli",
     "packages/create-builderbot",
@@ -60,6 +63,7 @@
     "packages/provider-facebook-messenger",
     "packages/provider-gupshup",
     "packages/provider-instagram",
+    "packages/provider-tiktok",
     "packages/provider-sherpa",
     "packages/provider-twilio",
     "packages/provider-web-whatsapp",
@@ -68,6 +72,9 @@
     "packages/provider-venom",
     "packages/provider-gohighlevel",
     "packages/provider-email",
+    "packages/provider-voice",
+    "packages/provider-voice-sip",
+    "packages/provider-voice-whatsapp",
     "packages/contexts-dialogflow",
     "packages/contexts-dialogflow-cx"
   ],
@@ -105,7 +112,7 @@
   },
   "packageManager": "pnpm@9.0.6",
   "engines": {
-    "node": ">=18",
+    "node": "^18.17.0 || ^20.3.0 || >=21.0.0",
     "npm": "please-use-pnpm",
     "yarn": "please-use-pnpm",
     "pnpm": ">=8.6.12"
