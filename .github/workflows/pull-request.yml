@@ -1,0 +1,84 @@
+name: 'Pull Request'
+
+# Gate for pull requests targeting the default branch. Until this workflow existed,
+# nothing validated a PR into `builderbot`: only PRs to `builderbot-dev`
+# (releases-dev.yml) and changes under packages/provider-venom (venom-node-matrix.yml)
+# triggered any check, so merges into the default branch were unverified.
+on:
+    pull_request:
+        branches:
+            - builderbot
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+env:
+    NODE_VERSION: 22.20.0
+
+jobs:
+    templates:
+        name: 'Templates in sync'
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - name: Checkout
+              uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+              with:
+                  persist-credentials: false
+                  submodules: false
+
+            - name: Set up pnpm
+              uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
+              with:
+                  version: 9.0.6
+                  run_install: false
+
+            - name: Set up Node.js ${{ env.NODE_VERSION }}
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: pnpm
+
+            # --frozen-lockfile also fails when a dependency was bumped without
+            # regenerating pnpm-lock.yaml, which is what breaks installs downstream.
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile --prefer-offline --reporter=append-only
+
+            # starters/apps/** is generated: a stale template would be published to npm.
+            - name: Check generated templates
+              run: pnpm run generate:check
+
+    tests:
+        name: 'Tests'
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        steps:
+            - name: Checkout
+              uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+              with:
+                  persist-credentials: false
+                  submodules: false
+
+            - name: Set up pnpm
+              uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
+              with:
+                  version: 9.0.6
+                  run_install: false
+
+            - name: Set up Node.js ${{ env.NODE_VERSION }}
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile --prefer-offline --reporter=append-only
+
+            # Nx caches task output, so a CI checkout without cache runs every suite.
+            # Measured on the default branch: ~2 minutes uncached.
+            - name: Run package tests
+              run: pnpm test
