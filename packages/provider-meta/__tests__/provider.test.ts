@@ -1564,6 +1564,20 @@ describe('#MetaProvider', () => {
         })
     })
 
+    describe('#shutdownVoiceCalls', () => {
+        test('resolves 0 without touching anything when voice calls are disabled', async () => {
+            metaProvider.callVendor = undefined
+            await expect(metaProvider.shutdownVoiceCalls()).resolves.toBe(0)
+        })
+
+        test('delegates to the call core with the given timeout', async () => {
+            const shutdown = jest.fn(async (_timeoutMs: number) => 2)
+            metaProvider.callVendor = { shutdown } as never
+            await expect(metaProvider.shutdownVoiceCalls(1500)).resolves.toBe(2)
+            expect(shutdown).toHaveBeenCalledWith(1500)
+        })
+    })
+
     describe('#getOrderDetails', () => {
         const emptyDetails = {
             catalog_id: '',
