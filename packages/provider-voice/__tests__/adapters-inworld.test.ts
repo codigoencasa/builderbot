@@ -125,6 +125,20 @@ describe('InworldTTSAdapter (WebSocket streaming)', () => {
         expect(await pending).toEqual([])
     })
 
+    test('a stream that ends after producing audio is reported as truncated', async () => {
+        // Regression: the outcome used to depend on whether `error` or `close` fired first,
+        // which differs between environments (it passed locally and failed in CI).
+        const mock = await start()
+        const adapter = makeTts(mock)
+        const pending = collect(adapter.synthesizeStream('Hola.', {}))
+        await waitFor(() => mock.received().length >= 3, 'client messages')
+        mock.send({ result: { audioChunk: { audioContent: pcmChunk(9) } } })
+        await waitFor(() => true, 'audio delivered')
+        await new Promise((resolve) => setTimeout(resolve, 20))
+        mock.close() // clean close, but no contextClosed
+        await expect(pending).rejects.toThrow(/closed before the synthesis completed/)
+    })
+
     test('a dropped connection is reported instead of silently truncating', async () => {
         const mock = await start()
         const adapter = makeTts(mock)

@@ -291,6 +291,9 @@ export class InworldTTSAdapter implements ITtsAdapter {
         const queue: Buffer[] = []
         let finished = false
         let failure: Error | null = null
+        /** Whether the server told us it finished, and whether any audio was produced. */
+        let contextClosed = false
+        let audioReceived = false
         let wake: (() => void) | null = null
         const notify = () => {
             wake?.()
@@ -374,10 +377,14 @@ export class InworldTTSAdapter implements ITtsAdapter {
             if (audio) {
                 clearConnectTimer()
                 armIdleTimer()
+                audioReceived = true
                 queue.push(Buffer.from(audio, 'base64'))
                 notify()
             }
-            if (result.contextClosed !== undefined) stop()
+            if (result.contextClosed !== undefined) {
+                contextClosed = true
+                stop()
+            }
         }
 
         socket.onerror = () =>
@@ -388,7 +395,16 @@ export class InworldTTSAdapter implements ITtsAdapter {
                         : '[InworldTTSAdapter] could not open the TTS WebSocket'
                 )
             )
-        socket.onclose = () => stop()
+        socket.onclose = () => {
+            // A socket that closes before `contextClosed` ended the synthesis early. If audio
+            // was already produced that is a truncation and must be reported; if nothing was
+            // produced, the result is simply empty. Without this the outcome depended on
+            // whether `error` or `close` fired first, which differs between environments.
+            const truncated = audioReceived && !contextClosed
+            stop(
+                truncated ? new Error('[InworldTTSAdapter] WebSocket closed before the synthesis completed') : undefined
+            )
+        }
 
         try {
             while (true) {
