@@ -17,6 +17,7 @@ import type {
     ITtsAdapter,
     MetaCallCoreVendor,
     PlaybackInterruptedEvent,
+    UserSpeechStartedEvent,
 } from '@builderbot/provider-voice'
 import axios from 'axios'
 import FormData from 'form-data'
@@ -167,6 +168,9 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
             this.callVendor.on('playback_interrupted', (payload: PlaybackInterruptedEvent) =>
                 this.emit('playback_interrupted', payload)
             )
+            this.callVendor.on('user_speech_started', (payload: UserSpeechStartedEvent) =>
+                this.emit('user_speech_started', payload)
+            )
         }
 
         const vendor = new MetaCoreVendor(this.queue, this.callVendor)
@@ -180,6 +184,31 @@ class MetaProvider extends ProviderClass<MetaInterface> implements MetaInterface
 
         this.vendor = vendor
         return Promise.resolve(this.vendor)
+    }
+
+    /**
+     * Gracefully end every active WhatsApp voice call (graceful shutdown).
+     *
+     * Hangs up each call on Meta (best-effort, bounded by `timeoutMs`), cancels
+     * pending speech, releases the WebRTC resources and rejects new calls that
+     * arrive meanwhile. Resolves `0` when voice calls are disabled.
+     *
+     * Call it from your SIGINT/SIGTERM handler and then exit explicitly with
+     * `process.exit()`: the native WebRTC binding can crash while finalizing
+     * objects during a *natural* process exit.
+     *
+     * @example
+     * process.once('SIGTERM', async () => {
+     *     await adapterProvider.shutdownVoiceCalls()
+     *     process.exit(0)
+     * })
+     *
+     * @param timeoutMs Max wait for Meta `terminate` requests. Default 3000.
+     * @returns Number of calls that were active.
+     */
+    async shutdownVoiceCalls(timeoutMs = 3000): Promise<number> {
+        if (!this.callVendor) return 0
+        return this.callVendor.shutdown(timeoutMs)
     }
 
     /**

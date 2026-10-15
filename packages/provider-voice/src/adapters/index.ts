@@ -27,6 +27,14 @@ export interface ISttAdapter {
     transcribe(pcm: Buffer, sampleRate: number, language?: string): Promise<string>
 }
 
+/** Optional per-request context. Existing one-argument adapters remain compatible. */
+export interface TtsSynthesisOptions {
+    /** Abort synthesis when the caller interrupts or the call ends. */
+    signal?: AbortSignal
+    /** Call-scoped cache/context key; never share conversational state across calls. */
+    callId?: string
+}
+
 /**
  * Text-to-speech adapter interface.
  * Implementations return raw 16-bit LE mono PCM suitable for LiveKit AudioFrame.
@@ -43,5 +51,21 @@ export interface ITtsAdapter {
      * @param text The text to convert to speech.
      * @returns Raw 16-bit signed little-endian mono PCM buffer.
      */
-    synthesize(text: string): Promise<Buffer>
+    synthesize(text: string, options?: TtsSynthesisOptions): Promise<Buffer>
+
+    /**
+     * Optional streaming synthesis: yields PCM chunks as they are generated, so the
+     * caller starts hearing audio before the whole sentence is ready.
+     *
+     * Implement it when the backend supports streaming (e.g. a WebSocket API). The
+     * core falls back to {@link synthesize} when it is absent, so one-shot adapters
+     * keep working unchanged.
+     *
+     * Contract:
+     * - Chunks are raw 16-bit LE mono PCM at {@link sampleRate}, in order.
+     * - Chunk sizes are arbitrary: the core re-frames them.
+     * - Honour `options.signal`: abort the request and stop yielding when it fires.
+     * - An empty text yields nothing.
+     */
+    synthesizeStream?(text: string, options?: TtsSynthesisOptions): AsyncIterable<Buffer>
 }

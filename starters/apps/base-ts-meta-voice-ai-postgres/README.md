@@ -18,6 +18,30 @@ Caller speaks -> STT (Whisper) -> catch-all flow -> LLM -> reply -> TTS -> calle
   while the call is active.
 - Tune it with `SYSTEM_PROMPT` and `OPENAI_MODEL`.
 
+## Choosing the speech providers
+
+The starter uses **OpenAI** by default (Whisper for STT, OpenAI TTS for the replies),
+but `@builderbot/provider-voice` also ships adapters for **Deepgram**, **ElevenLabs**,
+**Cartesia** and **Inworld**. Pass your own adapters to the provider:
+
+```ts
+import { InworldSTTAdapter, InworldTTSAdapter } from '@builderbot/provider-voice'
+
+const adapterProvider = createProvider(Provider, {
+    // ...Meta credentials, enableVoiceCalls: true
+    sttAdapter: new InworldSTTAdapter({ apiKey: process.env.INWORLD_API_KEY!, language: 'es' }),
+    ttsAdapter: new InworldTTSAdapter({
+        apiKey: process.env.INWORLD_API_KEY!,
+        voiceId: process.env.INWORLD_VOICE_ID ?? 'Ashley',
+        model: 'inworld-tts-2-flash', // lowest latency
+    }),
+})
+```
+
+When custom adapters are provided, `openaiApiKey` is not required for speech. The
+Inworld TTS adapter also implements `synthesizeStream`, so playback can start with
+the first audio chunk instead of waiting for the whole sentence.
+
 ## Requirements
 
 1. A **WhatsApp Business number on the Cloud API** (not the WhatsApp Business app).
@@ -26,7 +50,8 @@ Caller speaks -> STT (Whisper) -> catch-all flow -> LLM -> reply -> TTS -> calle
    **2,000 business-initiated conversation limit** (sandbox numbers are exempt).
 3. Your Meta app **subscribed to the `calls` webhook field**, pointing at a
    **public HTTPS URL** (`https://<your-host>/webhook`).
-4. An **OpenAI API key** (Whisper for speech-to-text and TTS for the replies).
+4. An **OpenAI API key** (Whisper for speech-to-text and TTS for the replies), or
+   custom STT/TTS adapters such as Inworld's.
 5. Node.js 18+ and pnpm/npm.
 
 ## Setup, in order

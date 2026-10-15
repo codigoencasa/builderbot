@@ -84,8 +84,62 @@ where `config` is an `IMetaCallCoreConfig`:
 | `iceServers` | Google STUN | ICE servers for the peer connection |
 | `iceGatheringTimeoutMs` | `2000` | Non-trickle ICE gathering timeout |
 
-Events: `message`, `notice`, `call_active`, `call_ended`, `call_status` and
-`playback_interrupted`.
+Events: `message`, `notice`, `call_active`, `call_ended`, `call_status`,
+`user_speech_started` and `playback_interrupted`.
+
+### Speech providers
+
+`provider-voice` ships adapters for OpenAI, Deepgram, ElevenLabs, Cartesia and **Inworld**.
+The Inworld adapters cover STT (WAV-wrapped, with a timeout) and TTS (HTTP **and** WebSocket
+streaming). They use native `fetch` and the built-in `WebSocket`: no extra dependencies.
+
+```ts
+import { InworldSTTAdapter, InworldTTSAdapter } from '@builderbot/provider-voice'
+
+const sttAdapter = new InworldSTTAdapter({ apiKey, language: 'es' })
+const ttsAdapter = new InworldTTSAdapter({ apiKey, voiceId: 'Sofia', model: 'inworld-tts-2-flash' })
+```
+
+`InworldTTSAdapter.synthesizeStream(text, { signal, callId })` streams PCM as it is generated
+(sentence per message with `flush_context`, without waiting for the `contextCreated`
+acknowledgement), so playback starts with the first chunk. It has a connect timeout and an idle
+timeout, so a silent socket fails instead of hanging the turn.
+
+Native backends are loaded on demand: using PCM utilities loads neither engine;
+WhatsApp media creation loads `wrtc`, while the LiveKit provider loads `@livekit/rtc-node`.
+This avoids initializing unrelated native engines, but does not guarantee their shutdown
+behavior on every Node/platform combination. Validate full process exit in native tests.
+
+### Graceful shutdown
+
+`MetaCallCoreVendor.shutdown(timeoutMs = 3000)` hangs up every active call on Meta
+(`terminate`, bounded by the timeout), cancels pending output, releases the WebRTC
+resources, emits `call_ended` and rejects calls that arrive meanwhile. Call it from
+SIGINT/SIGTERM handlers and then exit with `process.exit()`: `@roamhq/wrtc` 0.10.0 can
+crash (or never exit) during a *natural* process exit while finalizing native objects
+([node-webrtc#54](https://github.com/WonderInventions/node-webrtc/issues/54)).
+
+### Call-scoped cancellation
+
+`MetaCallCoreVendor.cancelResponse(callIdOrPhone)` cancels queued synthesis and paced
+playback for one call. Output is serialized per call; other calls are unaffected.
+Late synthesis and STT results cannot revive terminated sessions.
+
+TTS adapters may implement `synthesize(text, options?)`, where optional
+`TtsSynthesisOptions` contains `signal?: AbortSignal` and `callId?: string`.
+Existing one-argument adapters remain compatible. Honor the signal in network requests
+to save work; otherwise the core discards late results but remote synthesis may continue.
+Use `callId` to isolate conversational context and caches.
+
+With barge-in enabled, `user_speech_started` fires before transcription, even when no
+output audio exists yet. Applications should abort LLM generation and drop unsent chunks
+on this event, and cancel call-scoped work on `call_ended`. Clear only the affected caller,
+not global application state. `playback_interrupted` also covers pending synthesis.
+Transcribed `message` payloads include `callId` alongside `from`.
+
+Energy-based detection is **not AEC or semantic interruption detection**. It can mistake
+speaker echo or acknowledgements for interruptions. Cancellation alone does not establish
+safe full-duplex. Transport frame completion is not proof of remote audible playout.
 
 ## Behavior & limitations
 

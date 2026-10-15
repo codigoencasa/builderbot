@@ -14,7 +14,7 @@
  * underlying native binding can be swapped in tests without touching core logic.
  */
 
-const wrtc = require('@roamhq/wrtc') as {
+type WrtcBinding = {
     RTCPeerConnection: typeof RTCPeerConnection
     RTCAudioSink: new (track: MediaStreamTrack) => RTCAudioSinkInstance
     RTCAudioSource: new () => RTCAudioSourceInstance
@@ -23,6 +23,10 @@ const wrtc = require('@roamhq/wrtc') as {
         RTCAudioSource: new () => RTCAudioSourceInstance
     }
 }
+
+// Defer native loading until WhatsApp actually creates media resources. Importing
+// the package for LiveKit or shared audio utilities must not initialize any engine.
+const getWrtc = (): WrtcBinding => require('@roamhq/wrtc')
 
 // ── Audio sink / source type definitions ────────────────────────────────────
 
@@ -107,7 +111,8 @@ const DEFAULT_ICE_SERVERS: RTCIceServer[] = [
  * const answer = await pc.createAnswer()
  */
 export const createPeerConnection = (iceServers?: RTCIceServer[]): RTCPeerConnection => {
-    return new wrtc.RTCPeerConnection({
+    const { RTCPeerConnection } = getWrtc()
+    return new RTCPeerConnection({
         iceServers: iceServers ?? DEFAULT_ICE_SERVERS,
     })
 }
@@ -128,7 +133,8 @@ export const createPeerConnection = (iceServers?: RTCIceServer[]): RTCPeerConnec
  * }
  */
 export const createAudioSink = (track: MediaStreamTrack): RTCAudioSinkInstance => {
-    return new wrtc.nonstandard.RTCAudioSink(track)
+    const { RTCAudioSink } = getWrtc().nonstandard
+    return new RTCAudioSink(track)
 }
 
 /**
@@ -172,5 +178,6 @@ export const waitForIceGathering = (pc: RTCPeerConnection, timeoutMs = 2000): Pr
  * pc.addTrack(track)
  */
 export const createAudioSource = (): RTCAudioSourceInstance => {
-    return new wrtc.nonstandard.RTCAudioSource()
+    const { RTCAudioSource } = getWrtc().nonstandard
+    return new RTCAudioSource()
 }

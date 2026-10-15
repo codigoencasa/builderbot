@@ -120,6 +120,10 @@ const injectSession = (
         inboundSampleRate: 48000,
         utteranceQueue: Promise.resolve(),
         callerPhone,
+        playbackTimer: null,
+        playbackCancel: null,
+        outputQueue: Promise.resolve(),
+        outputControllers: new Set<AbortController>(),
     }
 
     ;(core as unknown as { sessions: SessionMap }).sessions.set(callId, session)
@@ -678,15 +682,13 @@ describe('MetaCallCoreVendor', () => {
             jest.useFakeTimers()
             try {
                 const publish = core.publishAudio(CALLER_PHONE, 'hello')
-                await Promise.resolve()
-                await Promise.resolve()
-                jest.advanceTimersByTime(15)
+                await jest.advanceTimersByTimeAsync(15)
                 const framesBeforeSpeech = source.onData.mock.calls.length
 
                 // The caller starts talking → the segmenter reports speech start.
                 segmenterOptions().onSpeechStart?.()
 
-                jest.advanceTimersByTime(1000)
+                await jest.advanceTimersByTimeAsync(1000)
                 await publish
 
                 expect(source.onData.mock.calls.length).toBe(framesBeforeSpeech)
@@ -724,18 +726,14 @@ describe('MetaCallCoreVendor', () => {
             try {
                 const publish = core.publishAudio(CALLER_PHONE, 'hello')
 
-                // Let the TTS promise resolve and the first paced tick run.
-                await Promise.resolve()
-                await Promise.resolve()
-
-                // Advance partway through playback (≈ 3 of 5 frames).
-                jest.advanceTimersByTime(15)
+                // Resolve the queued synthesis and run part of the paced playback.
+                await jest.advanceTimersByTimeAsync(15)
 
                 // Caller hangs up mid-playback → playback must stop.
                 core.onTerminate(CALL_ID)
 
                 // Even after advancing well past the total duration, no more frames go out.
-                jest.advanceTimersByTime(1000)
+                await jest.advanceTimersByTimeAsync(1000)
                 await publish
 
                 expect(source.onData.mock.calls.length).toBeGreaterThan(0)

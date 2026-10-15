@@ -6,19 +6,13 @@
  * keywords: [LiveKitCoreVendor, AccessToken, OpenAISTTAdapter, OpenAITTSAdapter]
  * GOAL: Own the "core" concern of the provider-voice package.
  */
-import {
-    AudioFrame,
+import type {
     AudioSource,
-    AudioStream,
     LocalAudioTrack,
     Room,
-    RoomEvent,
-    TrackKind,
-    TrackPublishOptions,
-    TrackSource,
-    type RemoteParticipant,
-    type RemoteTrack,
-    type RemoteTrackPublication,
+    RemoteParticipant,
+    RemoteTrack,
+    RemoteTrackPublication,
 } from '@livekit/rtc-node'
 import { AccessToken } from 'livekit-server-sdk'
 import { EventEmitter } from 'node:events'
@@ -28,6 +22,10 @@ import { OpenAISTTAdapter } from '../adapters/stt/openai'
 import { OpenAITTSAdapter } from '../adapters/tts/openai'
 import { bufferToInt16, chunkPcm, SilenceSegmenter } from '../audio'
 import type { IVoiceProviderArgs, VoicePayload } from '../types'
+
+// Initialize only the selected native backend. WhatsApp must never initialize
+// LiveKit just to import the package barrel or shared audio helpers.
+const getRtc = (): typeof import('@livekit/rtc-node') => require('@livekit/rtc-node')
 
 /** 10 ms frames for publishing into LiveKit. */
 const PUBLISH_FRAME_MS = 10
@@ -56,6 +54,7 @@ export class LiveKitCoreVendor extends EventEmitter {
     constructor(args: IVoiceProviderArgs) {
         super()
         this.args = args
+        const { Room } = getRtc()
         this.room = new Room()
 
         // Resolve STT adapter: use provided adapter or fall back to OpenAI default.
@@ -85,6 +84,7 @@ export class LiveKitCoreVendor extends EventEmitter {
      * 'host'/'ready'/'auth_failure' events are not lost.
      */
     public async connect(): Promise<void> {
+        const { RoomEvent } = getRtc()
         try {
             const token = await this.buildToken(this.args.identity ?? 'builderbot', this.args.roomName)
 
@@ -123,6 +123,7 @@ export class LiveKitCoreVendor extends EventEmitter {
      * into the room as audio.
      */
     public async publishAudio(text: string): Promise<void> {
+        const { AudioFrame } = getRtc()
         const pcm = await this.ttsAdapter.synthesize(text)
         const ttsRate = this.ttsAdapter.sampleRate
 
@@ -154,6 +155,7 @@ export class LiveKitCoreVendor extends EventEmitter {
     private async ensureAudioSource(): Promise<AudioSource> {
         if (this.audioSource) return this.audioSource
 
+        const { AudioSource, LocalAudioTrack, TrackPublishOptions, TrackSource } = getRtc()
         const source = new AudioSource(this.ttsAdapter.sampleRate, 1)
         const track = LocalAudioTrack.createAudioTrack('voice', source)
         const options = new TrackPublishOptions()
@@ -170,11 +172,13 @@ export class LiveKitCoreVendor extends EventEmitter {
         _publication: RemoteTrackPublication,
         participant: RemoteParticipant
     ): void => {
+        const { TrackKind } = getRtc()
         if (track.kind !== TrackKind.KIND_AUDIO) return
         void this.consumeAudioTrack(track, participant)
     }
 
     private async consumeAudioTrack(track: RemoteTrack, participant: RemoteParticipant): Promise<void> {
+        const { AudioStream } = getRtc()
         const stream = new AudioStream(track)
         let segmenter: SilenceSegmenter | null = null
         let sampleRate = 0

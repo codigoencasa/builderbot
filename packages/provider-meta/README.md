@@ -157,6 +157,32 @@ adapterProvider.on('playback_interrupted', ({ callId }) => console.info('[call] 
 - For free-form conversations (LLM) use a catch-all flow:
   `addKeyword('/.*/', { regex: true })`.
 
+### Voice interruption events
+
+`user_speech_started` is forwarded from the voice core with `{ callId, from }`,
+even if the LLM/TTS is still preparing its first output. Abort application generation
+and pending chunks on this event. `playback_interrupted` reports cancellation of queued
+synthesis/playback; `call_ended` should clean up only that call's work.
+
+`provider.callVendor?.cancelResponse(callIdOrPhone)` also supports explicit per-call
+output cancellation. Custom TTS adapters can accept optional `{ signal, callId }` as a
+second `synthesize` argument. Old one-argument adapters remain compatible.
+This is cancellation control, **not acoustic echo cancellation**.
+
+### Graceful shutdown
+
+Hang up active calls before the process exits, so callers are not left in a dead call:
+
+```ts
+process.once('SIGTERM', async () => {
+    await adapterProvider.shutdownVoiceCalls() // resolves 0 when voice calls are disabled
+    process.exit(0)
+})
+```
+
+Exit explicitly afterwards: the native WebRTC binding (`@roamhq/wrtc` 0.10.0) can crash or
+hang during a *natural* process exit. A `SIGKILL` cannot hang up; Meta expires the call.
+
 ### Limitations
 
 - **Inbound only**: business-initiated (outbound) calls are not implemented yet.
