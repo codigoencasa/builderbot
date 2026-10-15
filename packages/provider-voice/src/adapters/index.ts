@@ -52,4 +52,20 @@ export interface ITtsAdapter {
      * @returns Raw 16-bit signed little-endian mono PCM buffer.
      */
     synthesize(text: string, options?: TtsSynthesisOptions): Promise<Buffer>
+
+    /**
+     * Optional streaming synthesis: yields PCM chunks as they are generated, so the
+     * caller starts hearing audio before the whole sentence is ready.
+     *
+     * Implement it when the backend supports streaming (e.g. a WebSocket API). The
+     * core falls back to {@link synthesize} when it is absent, so one-shot adapters
+     * keep working unchanged.
+     *
+     * Contract:
+     * - Chunks are raw 16-bit LE mono PCM at {@link sampleRate}, in order.
+     * - Chunk sizes are arbitrary: the core re-frames them.
+     * - Honour `options.signal`: abort the request and stop yielding when it fires.
+     * - An empty text yields nothing.
+     */
+    synthesizeStream?(text: string, options?: TtsSynthesisOptions): AsyncIterable<Buffer>
 }

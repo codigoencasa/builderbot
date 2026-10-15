@@ -41,6 +41,18 @@ import type { RTCAudioSinkInstance, RTCAudioSourceInstance } from './webrtc'
 /** Duration of each TTS publish frame in milliseconds. */
 const PUBLISH_FRAME_MS = 10
 
+/** Concatenate Int16 chunks (streamed synthesis arrives in arbitrary sizes). */
+const concatInt16 = (chunks: Int16Array[]): Int16Array => {
+    const total = chunks.reduce((sum, chunk) => sum + chunk.length, 0)
+    const out = new Int16Array(total)
+    let offset = 0
+    for (const chunk of chunks) {
+        out.set(chunk, offset)
+        offset += chunk.length
+    }
+    return out
+}
+
 /**
  * Internal representation of a single active call session.
  */
@@ -111,6 +123,8 @@ export class MetaCallCoreVendor extends EventEmitter {
     private closing = false
     /** Avoids repeating the audio-processor warning on every frame. */
     private audioProcessorWarned = false
+    /** Milisegundos hasta el primer frame enviado (se reinicia en cada publicación). */
+    private firstFrameAt: number | null = null
 
     constructor(args: MetaCallCoreVendorArgs) {
         super()
@@ -595,16 +609,22 @@ export class MetaCallCoreVendor extends EventEmitter {
 
         const controller = new AbortController()
         session.outputControllers.add(controller)
+        this.firstFrameAt = null
         const publish = session.outputQueue.then(async () => {
             if (controller.signal.aborted || this.sessions.get(callId) !== session) return
             try {
-                const pcm = await abortable(
-                    this.ttsAdapter.synthesize(text, { signal: controller.signal, callId }),
-                    controller.signal
-                )
+                const sampleRate = this.ttsAdapter.sampleRate
+                const options = { signal: controller.signal, callId }
+                // Streaming adapter: start playing with the first chunk instead of waiting
+                // for the whole sentence. Playback pacing stays the same either way.
+                if (this.ttsAdapter.synthesizeStream) {
+                    const stream = this.ttsAdapter.synthesizeStream(text, options)
+                    await this.pushStreamPaced(session, stream, sampleRate)
+                    return
+                }
+                const pcm = await abortable(this.ttsAdapter.synthesize(text, options), controller.signal)
                 // A non-cancellable adapter can finish after interruption/hang-up.
                 if (controller.signal.aborted || this.sessions.get(callId) !== session || !pcm.length) return
-                const sampleRate = this.ttsAdapter.sampleRate
                 const samplesPerFrame = Math.round((PUBLISH_FRAME_MS / 1000) * sampleRate)
                 const frames = chunkPcm(bufferToInt16(pcm), samplesPerFrame, true)
                 await this.pushFramesPaced(session, frames, sampleRate)
@@ -866,8 +886,128 @@ export class MetaCallCoreVendor extends EventEmitter {
         })
     }
 
+    /**
+     * Play a streamed synthesis while it is still being generated.
+     *
+     * Chunks are re-framed to PUBLISH_FRAME_MS and emitted at wall-clock cadence, so a
+     * fast producer cannot push audio faster than real time and a slow one simply
+     * underruns (the next tick waits). Resolves when the last frame was sent, the
+     * session ended, or playback was cancelled.
+     */
+    private pushStreamPaced(session: CallSession, chunks: AsyncIterable<Buffer>, sampleRate: number): Promise<void> {
+        const started = Date.now()
+        const samplesPerFrame = Math.max(1, Math.round((PUBLISH_FRAME_MS / 1000) * sampleRate))
+        const queue: Int16Array[] = []
+        let remainder = new Int16Array(0)
+        let producerDone = false
+        let failure: Error | null = null
+        let wake: (() => void) | null = null
+        /** Lo asigna el reproductor: liquida si el productor terminó y no queda nada por sonar. */
+        let settleWhenIdle: (() => void) | null = null
+        const notify = () => {
+            wake?.()
+            wake = null
+        }
+
+        const iterator = chunks[Symbol.asyncIterator]()
+        const producer = (async () => {
+            try {
+                while (true) {
+                    const { value: chunk, done } = await iterator.next()
+                    if (done) break
+                    if (session.state === CallState.Terminated) return
+                    const pcm = bufferToInt16(chunk)
+                    if (!pcm.length) continue
+                    const all = remainder.length ? concatInt16([remainder, pcm]) : pcm
+                    let offset = 0
+                    while (all.length - offset >= samplesPerFrame) {
+                        queue.push(all.slice(offset, offset + samplesPerFrame))
+                        offset += samplesPerFrame
+                    }
+                    remainder = all.slice(offset)
+                    notify()
+                }
+                if (remainder.length) {
+                    const last = new Int16Array(samplesPerFrame)
+                    last.set(remainder)
+                    queue.push(last)
+                    remainder = new Int16Array(0)
+                }
+            } catch (err) {
+                failure = err as Error
+            } finally {
+                producerDone = true
+                notify()
+                // No esperar al siguiente tick si ya no queda audio pendiente: un stream
+                // vacío o que termina justo al vaciarse la cola debe resolver de inmediato.
+                settleWhenIdle?.()
+            }
+        })()
+
+        return new Promise<void>((resolve, reject) => {
+            let settled = false
+            const finish = (err?: Error) => {
+                if (settled) return
+                settled = true
+                if (session.playbackTimer) {
+                    clearTimeout(session.playbackTimer)
+                    session.playbackTimer = null
+                }
+                session.playbackCancel = null
+                // Close the source stream: a cancelled turn must stop generating audio.
+                void iterator.return?.(undefined).catch(() => {})
+                if (err) reject(err)
+                else resolve()
+            }
+            session.playbackCancel = () => finish()
+            settleWhenIdle = () => {
+                if (settled || queue.length) return
+                if (failure) finish(failure)
+                else finish()
+            }
+
+            let deadline = Date.now()
+            const tick = () => {
+                if (settled) return
+                if (!session.source || session.state === CallState.Terminated) return finish()
+                const frame = queue.shift()
+                if (frame) {
+                    if (this.firstFrameAt === null) {
+                        this.firstFrameAt = Date.now() - started
+                        this.emit('notice', {
+                            title: '[TTS ] primer trozo de audio',
+                            instructions: [
+                                `${this.firstFrameAt}ms desde que se pidió la frase (streaming: no espera al audio completo)`,
+                            ],
+                        })
+                    }
+                    try {
+                        session.source.onData({
+                            samples: frame,
+                            sampleRate,
+                            bitsPerSample: 16,
+                            channelCount: 1,
+                            numberOfFrames: frame.length,
+                        })
+                    } catch (err) {
+                        return finish(err as Error)
+                    }
+                } else if (producerDone) {
+                    return failure ? finish(failure) : finish()
+                }
+                // Absolute deadline to avoid drift; if the producer underran, resync to now.
+                deadline += PUBLISH_FRAME_MS
+                if (deadline < Date.now()) deadline = Date.now() + PUBLISH_FRAME_MS
+                session.playbackTimer = setTimeout(tick, Math.max(0, deadline - Date.now()))
+            }
+            tick()
+            void producer
+        })
+    }
+
     private pushFramesPaced(session: CallSession, frames: Int16Array[], sampleRate: number): Promise<void> {
         if (!frames.length) return Promise.resolve()
+        const started = Date.now()
         return new Promise<void>((resolve, reject) => {
             let i = 0
             const startTime = Date.now()
@@ -889,6 +1029,15 @@ export class MetaCallCoreVendor extends EventEmitter {
                     return
                 }
                 const frame = frames[i]
+                if (this.firstFrameAt === null) {
+                    this.firstFrameAt = Date.now() - started
+                    this.emit('notice', {
+                        title: '[TTS ] primer trozo de audio',
+                        instructions: [
+                            `${this.firstFrameAt}ms desde que se pidió la frase (sin streaming: esperó al audio completo)`,
+                        ],
+                    })
+                }
                 this.notifyOutboundFrame(frame, sampleRate)
                 try {
                     session.source.onData({
