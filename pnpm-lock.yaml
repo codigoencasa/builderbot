@@ -4,6 +4,9 @@ settings:
     autoInstallPeers: true
     excludeLinksFromLockfile: false
 
+overrides:
+    handlebars: ^4.7.10
+
 importers:
     .:
         devDependencies:
@@ -567,7 +570,7 @@ importers:
         dependencies:
             '@builderbot/bot':
                 specifier: '>=1.0.0'
-                version: 1.3.14
+                version: link:../bot
             '@ffmpeg-installer/ffmpeg':
                 specifier: ^1.1.0
                 version: 1.1.0
@@ -647,7 +650,7 @@ importers:
         dependencies:
             baileys:
                 specifier: 7.0.0-rc14
-                version: 7.0.0-rc14(bufferutil@4.0.9)(sharp@0.33.3)(utf-8-validate@5.0.10)
+                version: 7.0.0-rc14(bufferutil@4.0.9)(jimp@1.6.1)(sharp@0.33.3)(utf-8-validate@5.0.10)
             fluent-ffmpeg:
                 specifier: ^2.1.2
                 version: 2.1.3
@@ -2455,12 +2458,6 @@ packages:
         resolution:
             {
                 integrity: sha512-wJ8ReQbHxsAfXhrf9ixl0aYbZorRuOWpBNzm8pL8ftmSxQx/wnJD5Eg861NwJU/czy2VXFIebCeZnZrI9rktIQ==,
-            }
-
-    '@builderbot/bot@1.3.14':
-        resolution:
-            {
-                integrity: sha512-QhfcjDgm7p7PdH6jPCDuqwIruLxTcLShiPHMEpBB4p2CykxT5cPnQ0KuHK40ymmcLhSA1R56PlZlA7tez6mhyA==,
             }
 
     '@cacheable/memory@2.0.6':
@@ -7225,25 +7222,6 @@ packages:
         peerDependencies:
             '@babel/core': ^7.11.0 || ^8.0.0-beta.1
 
-    baileys@7.0.0-rc13:
-        resolution:
-            {
-                integrity: sha512-v8k74K8B5R7WNYGa26MyJAYEu3Wc4BSuK01QaK8lr30lhE8Nga31nWNu8KN0NDDt+Fsvkq4SQFFI8Q13ghjKmA==,
-            }
-        engines: { node: '>=20.0.0' }
-        peerDependencies:
-            audio-decode: ^2.1.3
-            jimp: ^1.6.1
-            link-preview-js: ^3.0.0
-            sharp: '*'
-        peerDependenciesMeta:
-            audio-decode:
-                optional: true
-            jimp:
-                optional: true
-            link-preview-js:
-                optional: true
-
     baileys@7.0.0-rc14:
         resolution:
             {
@@ -7412,13 +7390,6 @@ packages:
             {
                 integrity: sha512-cTEHk2jLrPyi+12M3dhpEbnnPOsaZuq7C45ylbbQIiWgDFZq4UVYPEY5mlqjvsj/6gJv9qX5sa+ebDzLXT28Vw==,
             }
-
-    body-parser@1.20.4:
-        resolution:
-            {
-                integrity: sha512-ZTgYYLMOXY9qKU/57FAo8F+HA2dGX7bqGc71txDRC1rS4frdFI5R7NhluHxH6M0YItAP0sHB4uqAOcYKxO6uGA==,
-            }
-        engines: { node: '>= 0.8', npm: 1.2.8000 || >= 1.4.16 }
 
     body-parser@2.2.1:
         resolution:
@@ -8809,13 +8780,6 @@ packages:
                 integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==,
             }
         engines: { node: '>=6' }
-
-    destroy@1.2.0:
-        resolution:
-            {
-                integrity: sha512-2sJGJTaXIIaR1w4iJSNoN0hnMY7Gpc/n8D4qSCJw8QqFWXf7cuAgnEHxBpweaVcPevC2l3KpjYCx3NypQQgaJg==,
-            }
-        engines: { node: '>= 0.8', npm: 1.2.8000 || >= 1.4.16 }
 
     detect-indent@5.0.0:
         resolution:
@@ -10564,10 +10528,10 @@ packages:
             }
         engines: { node: '>=18' }
 
-    handlebars@4.7.8:
+    handlebars@4.7.10:
         resolution:
             {
-                integrity: sha512-vafaFqs8MZkRrSX7sFVUdo3ap/eNiLnb4IakshzvP56X5Nr1iGKAIqdX6tMlm6HcNRIkr6AxO5jFEoJzzpT8aQ==,
+                integrity: sha512-P5VJMVM7qgBn6vjXMw8WG9uVI+ncf2pi72j4de4yz5ZULLj2RGqLYaKOYGsgyrViQ0tePOVlN1tDCCXXtFqXKg==,
             }
         engines: { node: '>=0.4.7' }
         hasBin: true
@@ -10827,13 +10791,6 @@ packages:
                 integrity: sha512-FYz4wlXgkQwIPqhzC5TdNMLSE5+GS1IIDJZY/1ZiEPCT2S3COUVZeT5OW4BmW4r5LHLQuOosSwsvnroG9GR59Q==,
             }
         engines: { node: '>=0.4' }
-
-    iconv-lite@0.4.24:
-        resolution:
-            {
-                integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==,
-            }
-        engines: { node: '>=0.10.0' }
 
     iconv-lite@0.6.3:
         resolution:
@@ -12688,13 +12645,6 @@ packages:
             {
                 integrity: sha512-Lf+9+2r+Tdp5wXDXC4PcIBjTDtq4UKjCPMQhKIuzpJNW0b96kVqSwW0bT7FhRSfmAiFYgP+SCRvdrDozfh0U5w==,
             }
-
-    media-typer@0.3.0:
-        resolution:
-            {
-                integrity: sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==,
-            }
-        engines: { node: '>= 0.6' }
 
     media-typer@1.1.0:
         resolution:
@@ -15045,13 +14995,6 @@ packages:
                 integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==,
             }
 
-    raw-body@2.5.3:
-        resolution:
-            {
-                integrity: sha512-s4VSOf6yN0rvbRZGxs8Om5CWj6seneMwK3oDb4lWDH0UPhWcxwOWw5+qk24bxq87szX1ydrwylIOp2uG1ojUpA==,
-            }
-        engines: { node: '>= 0.8' }
-
     raw-body@3.0.2:
         resolution:
             {
@@ -16805,13 +16748,6 @@ packages:
             }
         engines: { node: '>=16' }
 
-    type-is@1.6.18:
-        resolution:
-            {
-                integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==,
-            }
-        engines: { node: '>= 0.6' }
-
     type-is@2.0.1:
         resolution:
             {
@@ -18451,22 +18387,6 @@ snapshots:
 
     '@bufbuild/protobuf@1.10.1': {}
 
-    '@builderbot/bot@1.3.14':
-        dependencies:
-            '@ffmpeg-installer/ffmpeg': 1.1.0
-            body-parser: 1.20.4
-            cors: 2.8.5
-            fluent-ffmpeg: 2.1.3
-            follow-redirects: 1.15.11(debug@4.4.3)
-            mime-types: 2.1.35
-            picocolors: 1.1.1
-            polka: 0.5.2
-        optionalDependencies:
-            sharp: 0.33.3
-        transitivePeerDependencies:
-            - debug
-            - supports-color
-
     '@cacheable/memory@2.0.6':
         dependencies:
             '@cacheable/utils': 2.3.2
@@ -19414,6 +19334,7 @@ snapshots:
             mime: 3.0.0
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     '@jimp/diff@1.6.0':
         dependencies:
@@ -19430,10 +19351,12 @@ snapshots:
             pixelmatch: 5.3.0
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     '@jimp/file-ops@1.6.0': {}
 
-    '@jimp/file-ops@1.6.1': {}
+    '@jimp/file-ops@1.6.1':
+        optional: true
 
     '@jimp/js-bmp@1.6.0':
         dependencies:
@@ -19450,6 +19373,7 @@ snapshots:
             bmp-ts: 1.0.9
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     '@jimp/js-gif@1.6.0':
         dependencies:
@@ -19466,6 +19390,7 @@ snapshots:
             omggif: 1.0.10
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     '@jimp/js-jpeg@1.6.0':
         dependencies:
@@ -19480,6 +19405,7 @@ snapshots:
             jpeg-js: 0.4.4
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     '@jimp/js-png@1.6.0':
         dependencies:
@@ -19494,6 +19420,7 @@ snapshots:
             pngjs: 7.0.0
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     '@jimp/js-tiff@1.6.0':
         dependencies:
@@ -19508,6 +19435,7 @@ snapshots:
             utif2: 4.1.0
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     '@jimp/plugin-blit@1.6.0':
         dependencies:
@@ -19520,6 +19448,7 @@ snapshots:
             '@jimp/types': 1.6.1
             '@jimp/utils': 1.6.1
             zod: 3.25.76
+        optional: true
 
     '@jimp/plugin-blur@1.6.0':
         dependencies:
@@ -19532,6 +19461,7 @@ snapshots:
             '@jimp/utils': 1.6.1
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     '@jimp/plugin-circle@1.6.0':
         dependencies:
@@ -19542,6 +19472,7 @@ snapshots:
         dependencies:
             '@jimp/types': 1.6.1
             zod: 3.25.76
+        optional: true
 
     '@jimp/plugin-color@1.6.0':
         dependencies:
@@ -19560,6 +19491,7 @@ snapshots:
             zod: 3.25.76
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     '@jimp/plugin-contain@1.6.0':
         dependencies:
@@ -19580,6 +19512,7 @@ snapshots:
             zod: 3.25.76
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     '@jimp/plugin-cover@1.6.0':
         dependencies:
@@ -19598,6 +19531,7 @@ snapshots:
             zod: 3.25.76
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     '@jimp/plugin-crop@1.6.0':
         dependencies:
@@ -19614,6 +19548,7 @@ snapshots:
             zod: 3.25.76
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     '@jimp/plugin-displace@1.6.0':
         dependencies:
@@ -19626,6 +19561,7 @@ snapshots:
             '@jimp/types': 1.6.1
             '@jimp/utils': 1.6.1
             zod: 3.25.76
+        optional: true
 
     '@jimp/plugin-dither@1.6.0':
         dependencies:
@@ -19634,6 +19570,7 @@ snapshots:
     '@jimp/plugin-dither@1.6.1':
         dependencies:
             '@jimp/types': 1.6.1
+        optional: true
 
     '@jimp/plugin-fisheye@1.6.0':
         dependencies:
@@ -19646,6 +19583,7 @@ snapshots:
             '@jimp/types': 1.6.1
             '@jimp/utils': 1.6.1
             zod: 3.25.76
+        optional: true
 
     '@jimp/plugin-flip@1.6.0':
         dependencies:
@@ -19656,6 +19594,7 @@ snapshots:
         dependencies:
             '@jimp/types': 1.6.1
             zod: 3.25.76
+        optional: true
 
     '@jimp/plugin-hash@1.6.0':
         dependencies:
@@ -19684,6 +19623,7 @@ snapshots:
             any-base: 1.1.0
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     '@jimp/plugin-mask@1.6.0':
         dependencies:
@@ -19694,6 +19634,7 @@ snapshots:
         dependencies:
             '@jimp/types': 1.6.1
             zod: 3.25.76
+        optional: true
 
     '@jimp/plugin-print@1.6.0':
         dependencies:
@@ -19722,6 +19663,7 @@ snapshots:
             zod: 3.25.76
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     '@jimp/plugin-quantize@1.6.0':
         dependencies:
@@ -19732,6 +19674,7 @@ snapshots:
         dependencies:
             image-q: 4.0.0
             zod: 3.25.76
+        optional: true
 
     '@jimp/plugin-resize@1.6.0':
         dependencies:
@@ -19746,6 +19689,7 @@ snapshots:
             zod: 3.25.76
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     '@jimp/plugin-rotate@1.6.0':
         dependencies:
@@ -19766,6 +19710,7 @@ snapshots:
             zod: 3.25.76
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     '@jimp/plugin-threshold@1.6.0':
         dependencies:
@@ -19786,6 +19731,7 @@ snapshots:
             zod: 3.25.76
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     '@jimp/types@1.6.0':
         dependencies:
@@ -19794,6 +19740,7 @@ snapshots:
     '@jimp/types@1.6.1':
         dependencies:
             zod: 3.25.76
+        optional: true
 
     '@jimp/utils@1.6.0':
         dependencies:
@@ -19804,6 +19751,7 @@ snapshots:
         dependencies:
             '@jimp/types': 1.6.1
             tinycolor2: 1.6.0
+        optional: true
 
     '@jridgewell/gen-mapping@0.3.13':
         dependencies:
@@ -21989,7 +21937,7 @@ snapshots:
             babel-plugin-jest-hoist: 30.2.0
             babel-preset-current-node-syntax: 1.2.0(@babel/core@7.28.5)
 
-    baileys@7.0.0-rc13(bufferutil@4.0.9)(jimp@1.6.1)(sharp@0.33.3)(utf-8-validate@5.0.10):
+    baileys@7.0.0-rc14(bufferutil@4.0.9)(jimp@1.6.1)(sharp@0.33.3)(utf-8-validate@5.0.10):
         dependencies:
             '@cacheable/node-cache': 1.7.5
             '@hapi/boom': 9.1.4
@@ -22005,62 +21953,6 @@ snapshots:
             ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
         optionalDependencies:
             jimp: 1.6.1
-        transitivePeerDependencies:
-            - bufferutil
-            - supports-color
-            - utf-8-validate
-
-    baileys@7.0.0-rc13(bufferutil@4.0.9)(sharp@0.33.3)(utf-8-validate@5.0.10):
-        dependencies:
-            '@cacheable/node-cache': 1.7.5
-            '@hapi/boom': 9.1.4
-            async-mutex: 0.5.0
-            libsignal: 6.0.0
-            lru-cache: 11.2.4
-            music-metadata: 11.13.0
-            p-queue: 9.0.1
-            pino: 9.14.0
-            protobufjs: 7.6.2
-            sharp: 0.33.3
-            whatsapp-rust-bridge: 0.5.4
-            ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-        transitivePeerDependencies:
-            - bufferutil
-            - supports-color
-            - utf-8-validate
-
-    baileys@7.0.0-rc13(bufferutil@4.0.9)(utf-8-validate@5.0.10):
-        dependencies:
-            '@cacheable/node-cache': 1.7.5
-            '@hapi/boom': 9.1.4
-            async-mutex: 0.5.0
-            libsignal: 6.0.0
-            lru-cache: 11.2.4
-            music-metadata: 11.13.0
-            p-queue: 9.0.1
-            pino: 9.14.0
-            protobufjs: 7.6.2
-            whatsapp-rust-bridge: 0.5.4
-            ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-        transitivePeerDependencies:
-            - bufferutil
-            - supports-color
-            - utf-8-validate
-
-    baileys@7.0.0-rc14(bufferutil@4.0.9)(sharp@0.33.3)(utf-8-validate@5.0.10):
-        dependencies:
-            '@cacheable/node-cache': 1.7.5
-            '@hapi/boom': 9.1.4
-            async-mutex: 0.5.0
-            libsignal: 6.0.0
-            lru-cache: 11.2.4
-            music-metadata: 11.13.0
-            p-queue: 9.0.1
-            pino: 9.14.0
-            protobufjs: 7.6.2
-            sharp: 0.33.3
-            whatsapp-rust-bridge: 0.5.4
-            ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
         transitivePeerDependencies:
             - bufferutil
             - supports-color
@@ -22150,23 +22042,6 @@ snapshots:
     bluebird@3.7.2: {}
 
     bmp-ts@1.0.9: {}
-
-    body-parser@1.20.4:
-        dependencies:
-            bytes: 3.1.2
-            content-type: 1.0.5
-            debug: 2.6.9
-            depd: 2.0.0
-            destroy: 1.2.0
-            http-errors: 2.0.1
-            iconv-lite: 0.4.24
-            on-finished: 2.4.1
-            qs: 6.14.0
-            raw-body: 2.5.3
-            type-is: 1.6.18
-            unpipe: 1.0.0
-        transitivePeerDependencies:
-            - supports-color
 
     body-parser@2.2.1:
         dependencies:
@@ -22806,7 +22681,7 @@ snapshots:
         dependencies:
             conventional-commits-filter: 2.0.7
             dateformat: 3.0.3
-            handlebars: 4.7.8
+            handlebars: 4.7.10
             json-stringify-safe: 5.0.1
             lodash: 4.17.21
             meow: 8.1.2
@@ -22818,7 +22693,7 @@ snapshots:
         dependencies:
             conventional-commits-filter: 3.0.0
             dateformat: 3.0.3
-            handlebars: 4.7.8
+            handlebars: 4.7.10
             json-stringify-safe: 5.0.1
             meow: 8.1.2
             semver: 7.7.3
@@ -23087,8 +22962,6 @@ snapshots:
     deprecation@2.3.1: {}
 
     dequal@2.0.3: {}
-
-    destroy@1.2.0: {}
 
     detect-indent@5.0.0: {}
 
@@ -24262,7 +24135,7 @@ snapshots:
         transitivePeerDependencies:
             - supports-color
 
-    handlebars@4.7.8:
+    handlebars@4.7.10:
         dependencies:
             minimist: 1.2.8
             neo-async: 2.6.2
@@ -24419,10 +24292,6 @@ snapshots:
     husky@9.1.7: {}
 
     i@0.3.7: {}
-
-    iconv-lite@0.4.24:
-        dependencies:
-            safer-buffer: 2.1.2
 
     iconv-lite@0.6.3:
         dependencies:
@@ -25269,6 +25138,7 @@ snapshots:
             '@jimp/utils': 1.6.1
         transitivePeerDependencies:
             - supports-color
+        optional: true
 
     jiti@2.6.1: {}
 
@@ -25905,8 +25775,6 @@ snapshots:
     math-intrinsics@1.1.0: {}
 
     mdurl@2.0.0: {}
-
-    media-typer@0.3.0: {}
 
     media-typer@1.1.0: {}
 
@@ -27649,13 +27517,6 @@ snapshots:
         dependencies:
             safe-buffer: 5.2.1
 
-    raw-body@2.5.3:
-        dependencies:
-            bytes: 3.1.2
-            http-errors: 2.0.1
-            iconv-lite: 0.4.24
-            unpipe: 1.0.0
-
     raw-body@3.0.2:
         dependencies:
             bytes: 3.1.2
@@ -28783,7 +28644,7 @@ snapshots:
         dependencies:
             bs-logger: 0.2.6
             fast-json-stable-stringify: 2.1.0
-            handlebars: 4.7.8
+            handlebars: 4.7.10
             jest: 30.2.0(@types/node@20.19.32)(ts-node@10.9.2(@types/node@20.19.32)(typescript@5.9.3))
             json5: 2.2.3
             lodash.memoize: 4.1.2
@@ -28803,7 +28664,7 @@ snapshots:
         dependencies:
             bs-logger: 0.2.6
             fast-json-stable-stringify: 2.1.0
-            handlebars: 4.7.8
+            handlebars: 4.7.10
             jest: 30.2.0(@types/node@24.10.2)(ts-node@10.9.2(@types/node@24.10.2)(typescript@5.9.3))
             json5: 2.2.3
             lodash.memoize: 4.1.2
@@ -28937,11 +28798,6 @@ snapshots:
     type-fest@2.19.0: {}
 
     type-fest@4.41.0: {}
-
-    type-is@1.6.18:
-        dependencies:
-            media-typer: 0.3.0
-            mime-types: 2.1.35
 
     type-is@2.0.1:
         dependencies:
