@@ -87,6 +87,24 @@ where `config` is an `IMetaCallCoreConfig`:
 Events: `message`, `notice`, `call_active`, `call_ended`, `call_status`,
 `user_speech_started` and `playback_interrupted`.
 
+### Speech providers
+
+`provider-voice` ships adapters for OpenAI, Deepgram, ElevenLabs, Cartesia and **Inworld**.
+The Inworld adapters cover STT (WAV-wrapped, with a timeout) and TTS (HTTP **and** WebSocket
+streaming). They use native `fetch` and the built-in `WebSocket`: no extra dependencies.
+
+```ts
+import { InworldSTTAdapter, InworldTTSAdapter } from '@builderbot/provider-voice'
+
+const sttAdapter = new InworldSTTAdapter({ apiKey, language: 'es' })
+const ttsAdapter = new InworldTTSAdapter({ apiKey, voiceId: 'Sofia', model: 'inworld-tts-2-flash' })
+```
+
+`InworldTTSAdapter.synthesizeStream(text, { signal, callId })` streams PCM as it is generated
+(sentence per message with `flush_context`, without waiting for the `contextCreated`
+acknowledgement), so playback starts with the first chunk. It has a connect timeout and an idle
+timeout, so a silent socket fails instead of hanging the turn.
+
 Native backends are loaded on demand: using PCM utilities loads neither engine;
 WhatsApp media creation loads `wrtc`, while the LiveKit provider loads `@livekit/rtc-node`.
 This avoids initializing unrelated native engines, but does not guarantee their shutdown

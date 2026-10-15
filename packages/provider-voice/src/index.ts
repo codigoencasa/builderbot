@@ -13,12 +13,16 @@ export type { IVoiceProviderArgs, VoicePayload } from './types'
 // STT adapters
 export { OpenAISTTAdapter } from './adapters/stt/openai'
 export { DeepgramSTTAdapter, DeepgramSTTModel } from './adapters/stt/deepgram'
+export { InworldSTTAdapter, InworldSTTModel } from './adapters/stt/inworld'
+export type { InworldSTTAdapterOptions } from './adapters/stt/inworld'
 
 // TTS adapters
 export { OpenAITTSAdapter } from './adapters/tts/openai'
 export { ElevenLabsTTSAdapter, ElevenLabsModel } from './adapters/tts/elevenlabs'
 export { DeepgramTTSAdapter, DeepgramTTSModel } from './adapters/tts/deepgram'
 export { CartesiaTTSAdapter, CartesiaModel } from './adapters/tts/cartesia'
+export { InworldTTSAdapter, InworldTTSModel, InworldRegion, splitSentences } from './adapters/tts/inworld'
+export type { InworldTTSAdapterOptions, InworldTextNormalization, InworldDeliveryMode } from './adapters/tts/inworld'
 
 // Adapter interfaces
 export type { ISttAdapter, ITtsAdapter, TtsSynthesisOptions } from './adapters/index'
