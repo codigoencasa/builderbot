@@ -291,6 +291,8 @@ export class InworldTTSAdapter implements ITtsAdapter {
         const queue: Buffer[] = []
         let finished = false
         let failure: Error | null = null
+        /** Whether the server confirmed completion (`contextClosed` or `done`). */
+        let completed = false
         let wake: (() => void) | null = null
         const notify = () => {
             wake?.()
@@ -367,7 +369,10 @@ export class InworldTTSAdapter implements ITtsAdapter {
             }
             const result = data.result
             if (!result) {
-                if (data.done) stop()
+                if (data.done) {
+                    completed = true
+                    stop()
+                }
                 return
             }
             const audio = result.audioChunk?.audioContent
@@ -377,7 +382,10 @@ export class InworldTTSAdapter implements ITtsAdapter {
                 queue.push(Buffer.from(audio, 'base64'))
                 notify()
             }
-            if (result.contextClosed !== undefined) stop()
+            if (result.contextClosed !== undefined) {
+                completed = true
+                stop()
+            }
         }
 
         socket.onerror = () =>
@@ -388,7 +396,14 @@ export class InworldTTSAdapter implements ITtsAdapter {
                         : '[InworldTTSAdapter] could not open the TTS WebSocket'
                 )
             )
-        socket.onclose = () => stop()
+        socket.onclose = () => {
+            // The server must confirm completion. Anything else (drop, clean close without the
+            // completion signal, timeout) is an incomplete synthesis and is reported. Deciding
+            // this from which event fired first made the outcome environment-dependent.
+            stop(
+                completed ? undefined : new Error('[InworldTTSAdapter] WebSocket closed before the synthesis completed')
+            )
+        }
 
         try {
             while (true) {
