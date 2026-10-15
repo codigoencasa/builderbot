@@ -192,6 +192,25 @@ describe('streamed TTS playback', () => {
         expect(jest.getTimerCount()).toBe(0)
     })
 
+    test('el streaming también alimenta la referencia del cancelador de eco', async () => {
+        // Regresión: al añadir el streaming, el AEC dejó de recibir la referencia
+        // (retardo nunca encontrado en una llamada real). Ambos caminos deben notificarla.
+        const outbound: Int16Array[] = []
+        const tts = new StreamingTts([{ samples: FRAME }, { samples: FRAME }])
+        const core = new MetaCallCoreVendor({
+            sttAdapter: { transcribe: async () => '' },
+            ttsAdapter: tts,
+            config: { ...config, audioProcessor: { onOutboundFrame: (frame) => outbound.push(frame) } },
+        })
+        cores.push(core)
+        await core.onConnect(event('a'))
+        const publishing = core.publishAudio('a', 'hola')
+        await jest.advanceTimersByTimeAsync(100)
+        await publishing
+        expect(outbound.length).toBe(2)
+        expect(outbound[0].length).toBe(FRAME)
+    })
+
     test('sin synthesizeStream sigue usando el camino de Buffer', async () => {
         const calls: string[] = []
         const core = await setup({

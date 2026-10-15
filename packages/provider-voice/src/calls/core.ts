@@ -972,6 +972,9 @@ export class MetaCallCoreVendor extends EventEmitter {
                 if (!session.source || session.state === CallState.Terminated) return finish()
                 const frame = queue.shift()
                 if (frame) {
+                    // El cancelador de eco necesita la referencia en AMBOS caminos: sin esto,
+                    // activar el streaming dejaba el AEC a ciegas (retardo nunca encontrado).
+                    this.notifyOutboundFrame(frame, sampleRate)
                     if (this.firstFrameAt === null) {
                         this.firstFrameAt = Date.now() - started
                         this.emit('notice', {
