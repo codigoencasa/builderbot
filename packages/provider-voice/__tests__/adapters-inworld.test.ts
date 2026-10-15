@@ -116,37 +116,26 @@ describe('InworldTTSAdapter (WebSocket streaming)', () => {
         expect((await iterator.next()).done).toBe(true)
     })
 
-    test('a clean close without audio ends the stream empty', async () => {
+    test('a close without the completion signal is reported', async () => {
         const mock = await start()
         const adapter = makeTts(mock)
         const pending = collect(adapter.synthesizeStream('Hola.', {}))
         await waitFor(() => mock.received().length >= 3, 'client messages')
         mock.close()
-        expect(await pending).toEqual([])
-    })
-
-    test('a stream that ends after producing audio is reported as truncated', async () => {
-        // Regression: the outcome used to depend on whether `error` or `close` fired first,
-        // which differs between environments (it passed locally and failed in CI).
-        const mock = await start()
-        const adapter = makeTts(mock)
-        const pending = collect(adapter.synthesizeStream('Hola.', {}))
-        await waitFor(() => mock.received().length >= 3, 'client messages')
-        mock.send({ result: { audioChunk: { audioContent: pcmChunk(9) } } })
-        await waitFor(() => true, 'audio delivered')
-        await new Promise((resolve) => setTimeout(resolve, 20))
-        mock.close() // clean close, but no contextClosed
         await expect(pending).rejects.toThrow(/closed before the synthesis completed/)
     })
 
     test('a dropped connection is reported instead of silently truncating', async () => {
+        // Regression: the outcome used to depend on whether `error` or `close` fired first,
+        // which differs between environments (it passed locally and failed in CI). Any end
+        // without the completion signal is now an error, whatever the event order.
         const mock = await start()
         const adapter = makeTts(mock)
         const pending = collect(adapter.synthesizeStream('Hola.', {}))
         await waitFor(() => mock.received().length >= 3, 'client messages')
         mock.send({ result: { audioChunk: { audioContent: pcmChunk(5) } } })
         mock.destroy()
-        await expect(pending).rejects.toThrow(/interrupted|could not open/)
+        await expect(pending).rejects.toThrow(/interrupted|could not open|closed before/)
     })
 
     test('empty text opens no connection', async () => {

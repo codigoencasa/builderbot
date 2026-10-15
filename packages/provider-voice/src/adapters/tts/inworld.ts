@@ -291,9 +291,8 @@ export class InworldTTSAdapter implements ITtsAdapter {
         const queue: Buffer[] = []
         let finished = false
         let failure: Error | null = null
-        /** Whether the server told us it finished, and whether any audio was produced. */
-        let contextClosed = false
-        let audioReceived = false
+        /** Whether the server confirmed completion (`contextClosed` or `done`). */
+        let completed = false
         let wake: (() => void) | null = null
         const notify = () => {
             wake?.()
@@ -370,19 +369,21 @@ export class InworldTTSAdapter implements ITtsAdapter {
             }
             const result = data.result
             if (!result) {
-                if (data.done) stop()
+                if (data.done) {
+                    completed = true
+                    stop()
+                }
                 return
             }
             const audio = result.audioChunk?.audioContent
             if (audio) {
                 clearConnectTimer()
                 armIdleTimer()
-                audioReceived = true
                 queue.push(Buffer.from(audio, 'base64'))
                 notify()
             }
             if (result.contextClosed !== undefined) {
-                contextClosed = true
+                completed = true
                 stop()
             }
         }
@@ -396,13 +397,11 @@ export class InworldTTSAdapter implements ITtsAdapter {
                 )
             )
         socket.onclose = () => {
-            // A socket that closes before `contextClosed` ended the synthesis early. If audio
-            // was already produced that is a truncation and must be reported; if nothing was
-            // produced, the result is simply empty. Without this the outcome depended on
-            // whether `error` or `close` fired first, which differs between environments.
-            const truncated = audioReceived && !contextClosed
+            // The server must confirm completion. Anything else (drop, clean close without the
+            // completion signal, timeout) is an incomplete synthesis and is reported. Deciding
+            // this from which event fired first made the outcome environment-dependent.
             stop(
-                truncated ? new Error('[InworldTTSAdapter] WebSocket closed before the synthesis completed') : undefined
+                completed ? undefined : new Error('[InworldTTSAdapter] WebSocket closed before the synthesis completed')
             )
         }
 
