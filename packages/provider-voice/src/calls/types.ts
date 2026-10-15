@@ -366,4 +366,10 @@ export interface IMetaCallCoreConfig {
      * {@link IAudioProcessor}. When absent, inbound audio is used unchanged.
      */
     audioProcessor?: IAudioProcessor
+    /**
+     * Milliseconds allowed per transcription before the utterance is abandoned.
+     * Utterances are processed in order, so an STT call that never returns would leave
+     * the caller unheard for the rest of the call with nothing in the logs. Default 10000.
+     */
+    sttTimeoutMs?: number
 }

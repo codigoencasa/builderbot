@@ -77,6 +77,9 @@ interface CallSession {
     callerPhone: string
     /** Timer for the paced TTS frame emitter. Null when no playback is active. */
     playbackTimer: ReturnType<typeof setTimeout> | null
+    /** Diagnóstico: tramas entrantes y utterances transcritas (se informan al colgar). */
+    inboundFrames: number
+    utterances: number
     /** Cancels the in-progress playback and resolves its promise (called on hang-up). */
     playbackCancel: (() => void) | null
     /** Serialize output for this call; never overwrite another publisher's timer. */
@@ -221,6 +224,8 @@ export class MetaCallCoreVendor extends EventEmitter {
             callerPhone: event.from,
             playbackTimer: null,
             playbackCancel: null,
+            inboundFrames: 0,
+            utterances: 0,
             outputQueue: Promise.resolve(),
             outputControllers: new Set(),
         }
@@ -454,7 +459,10 @@ export class MetaCallCoreVendor extends EventEmitter {
 
         this.emit('notice', {
             title: 'WhatsApp Voice: call terminated',
-            instructions: [`call_id "${callId}" has ended and resources have been released.`],
+            instructions: [
+                `call_id "${callId}" has ended and resources have been released.`,
+                `audio entrante: ${session.inboundFrames} tramas | utterances: ${session.utterances}`,
+            ],
         })
 
         this.emit('call_ended', endedEvent)
@@ -700,6 +708,7 @@ export class MetaCallCoreVendor extends EventEmitter {
             }
 
             currentSession.inboundSampleRate = rate
+            currentSession.inboundFrames++
 
             const mono = this.toMono(samples, channels)
             // Echo control runs before speech detection so the bot does not cut itself off.
@@ -771,6 +780,7 @@ export class MetaCallCoreVendor extends EventEmitter {
      * @param callId    The call identifier (for the emitted payload).
      */
     private enqueueUtterance(session: CallSession, pcm: Buffer, callId: string): void {
+        session.utterances++
         // Capture the rate now: queued PCM must not inherit a later rate change.
         const sampleRate = session.inboundSampleRate
         session.utteranceQueue = session.utteranceQueue.then(async () => {
@@ -790,7 +800,13 @@ export class MetaCallCoreVendor extends EventEmitter {
         const session = this.sessions.get(callId)
         if (!session) return
         try {
-            const body = await this.sttAdapter.transcribe(pcm, sampleRate, this.config.language)
+            // Con timeout: las utterances se procesan en orden, así que una llamada de STT
+            // que no vuelve deja al cliente sin ser oído el resto de la llamada.
+            const body = await this.withTimeout(
+                this.sttAdapter.transcribe(pcm, sampleRate, this.config.language),
+                this.config.sttTimeoutMs ?? 10000,
+                'STT'
+            )
             if (this.sessions.get(callId) !== session || !body || body.trim() === '') return
 
             const callerPhone = session.callerPhone
@@ -851,6 +867,17 @@ export class MetaCallCoreVendor extends EventEmitter {
      * prevent accumulated drift. Resolves when all frames have been sent or the
      * session is cancelled / terminated.
      */
+    /** Await `promise` but give up after `timeoutMs`, so one slow call cannot stall a queue. */
+    private withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+        let timer: ReturnType<typeof setTimeout> | undefined
+        const timeout = new Promise<never>((_, reject) => {
+            timer = setTimeout(() => reject(new Error(`${label} timeout after ${timeoutMs}ms`)), timeoutMs)
+        })
+        return Promise.race([promise, timeout]).finally(() => {
+            if (timer) clearTimeout(timer)
+        })
+    }
+
     /** Feed the echo reference. Never lets a failing processor break playback. */
     private notifyOutboundFrame(frame: Int16Array, sampleRate: number): void {
         try {

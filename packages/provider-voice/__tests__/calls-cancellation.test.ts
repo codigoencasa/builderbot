@@ -273,6 +273,39 @@ describe('call-scoped cancellation with real PCM segmentation', () => {
         expect(transcribe).toHaveBeenCalledTimes(1)
     })
 
+    test('un STT que no responde no deja la cola bloqueada para siempre', async () => {
+        const core = new MetaCallCoreVendor({
+            sttAdapter: { transcribe: () => new Promise<string>(() => {}) }, // nunca resuelve
+            ttsAdapter: { sampleRate: 48000, synthesize: async () => pcm() },
+            config: { ...config, sttTimeoutMs: 500 },
+        })
+        cores.push(core)
+        await core.onConnect(event('a'))
+        const notices: Array<{ title: string; instructions: string[] }> = []
+        core.on('notice', (notice) => notices.push(notice))
+        const session = (core as any).sessions.get('a')
+        ;(core as any).enqueueUtterance(session, pcm(), 'a')
+        ;(core as any).enqueueUtterance(session, pcm(), 'a')
+        // Dos utterances encoladas, cada una con 500 ms de timeout.
+        await jest.advanceTimersByTimeAsync(1500)
+        await session.utteranceQueue
+        const timeouts = notices.filter((n) => n.instructions.join(' ').includes('STT timeout'))
+        expect(timeouts.length).toBeGreaterThan(0)
+        expect((core as any).sessions.has('a')).toBe(true)
+    })
+
+    test('informa del audio entrante y las utterances al colgar', async () => {
+        const core = await setup({ sampleRate: 48000, synthesize: async () => pcm() })
+        const notices: Array<{ title: string; instructions: string[] }> = []
+        core.on('notice', (notice) => notices.push(notice))
+        const session = (core as any).sessions.get('a')
+        session.inboundFrames = 42
+        session.utterances = 3
+        core.onTerminate('a')
+        const terminated = notices.find((n) => n.title.includes('terminated'))
+        expect(terminated?.instructions.join(' ')).toContain('42 tramas')
+    })
+
     test('release stops the outbound track and detaches native callbacks', async () => {
         const stop = jest.fn()
         jest.mocked(createAudioSource).mockReturnValueOnce({
