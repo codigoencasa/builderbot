@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: EmailCoreVendor, IEmailProviderArgs, EmailBotContext, EmailSendOptions
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n) score:3
+ * keywords: [EmailCoreVendor, IEmailProviderArgs, EmailBotContext, EmailSendOptions]
+ * GOAL: Own the "provider" concern of the provider-email package.
+ */
 import { ProviderClass } from '@builderbot/bot'
 import type { BotContext, SendOptions } from '@builderbot/bot/dist/types'
 import { writeFile } from 'fs/promises'

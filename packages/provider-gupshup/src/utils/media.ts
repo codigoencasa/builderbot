@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: GupshupCloudMedia, GupshupCloudMessage, GupshupSessionMediaType
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n) score:3
+ * keywords: [GupshupCloudMedia, GupshupCloudMessage, GupshupSessionMediaType]
+ * GOAL: Own the "media" concern of the provider-gupshup package.
+ */
 import mime from 'mime-types'
 import { basename } from 'path'
 

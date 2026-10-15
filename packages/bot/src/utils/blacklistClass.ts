@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: BlackList — in-memory blacklist of senders
+ * Rules: No external dependencies. Pure data membership logic.
+ * BigO: O(n) score:3
+ * keywords: [BlackList, CoreClass]
+ * GOAL: Decide whether a sender is blocked before the runtime processes a message.
+ */
 class BlackList {
     private blacklist: Set<string> = new Set()
 

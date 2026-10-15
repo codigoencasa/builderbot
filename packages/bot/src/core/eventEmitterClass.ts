@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: EventEmitterClass — typed wrapper over node:events
+ * Rules: Wraps a platform primitive. No business rules.
+ * BigO: O(1) score:5
+ * keywords: [EventEmitterClass, HostEventTypes, CoreClass]
+ * GOAL: Provide a typed event-emitter base for core and providers.
+ */
 import { EventEmitter } from 'node:events'
 
 import type { TContext } from '../types'

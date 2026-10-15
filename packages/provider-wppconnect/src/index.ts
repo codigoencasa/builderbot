@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: GlobalVendorArgs, Message, Whatsapp
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n) score:3
+ * keywords: [GlobalVendorArgs, Message, Whatsapp]
+ * GOAL: Own the "src" concern of the provider-wppconnect package.
+ */
 import { ProviderClass, utils } from '@builderbot/bot'
 import type { BotContext, GlobalVendorArgs, SendOptions } from '@builderbot/bot/dist/types'
 import type { Message, Whatsapp } from '@wppconnect-team/wppconnect'

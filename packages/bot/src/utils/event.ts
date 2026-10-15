@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: getEventName / setEvent / removePlus — event-name registry and phone helpers
+ * Rules: Uses crypto utilities. Technical helpers, no business rules.
+ * BigO: O(1) score:5
+ * keywords: [getEventName, setEvent, removePlus]
+ * GOAL: Map hashed context references to event names and normalize phone strings.
+ */
 import { decryptData, encryptData } from './hash'
 /**
  *

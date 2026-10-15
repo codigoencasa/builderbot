@@ -1,5 +1,14 @@
+/**
+ * LAYER: Domain
+ * Contains: LIST_ALL / LIST_REGEX — event marker registries
+ * Rules: Pure constant registries. No side effects.
+ * BigO: O(1) score:5
+ * keywords: [LIST_ALL, LIST_REGEX, FlowClass]
+ * GOAL: Centralize the event markers and their matchers used by the flow engine.
+ */
 import { eventAction } from './eventAction'
 import { eventCall, REGEX_EVENT_CALL } from './eventCall'
+import { eventContacts, REGEX_EVENT_CONTACTS } from './eventContacts'
 import { REGEX_EVENT_CUSTOM } from './eventCustom'
 import { eventDocument, REGEX_EVENT_DOCUMENT } from './eventDocument'
 import { eventLocation, REGEX_EVENT_LOCATION } from './eventLocation'
@@ -23,6 +32,7 @@ const LIST_ALL = {
     ORDER: eventOrder(),
     TEMPLATE: eventTemplate(),
     CALL: eventCall(),
+    CONTACTS: eventContacts(),
 }
 
 const LIST_REGEX: EventFunctionRegex = {
@@ -34,6 +44,7 @@ const LIST_REGEX: EventFunctionRegex = {
     REGEX_EVENT_TEMPLATE,
     REGEX_EVENT_CUSTOM,
     REGEX_EVENT_CALL,
+    REGEX_EVENT_CONTACTS,
 }
 
 export { LIST_ALL, LIST_REGEX }

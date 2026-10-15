@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: IdleState — idle timers and callback queues
+ * Rules: No external dependencies. Pure scheduling logic.
+ * BigO: O(n) score:3
+ * keywords: [IdleState, CoreClass]
+ * GOAL: Coordinate idle-time callbacks and their queue for the runtime.
+ */
 type Callback = (context: { next: boolean; inRef: any }) => void
 
 interface SetIdleTimeParams {

@@ -1,4 +1,12 @@
 /**
+ * LAYER: Application
+ * Contains: FlowDefinition, RateLimiterConfig
+ * Rules: Orchestrates domain. No frameworks. Defines ports.
+ * BigO: O(1) score:5
+ * keywords: [FlowDefinition, RateLimiterConfig]
+ * GOAL: Own the "src" concern of the manager package.
+ */
+/**
  * @builderbot/manager
  * Multi-tenant bot manager for BuilderBot
  */

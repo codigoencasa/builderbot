@@ -2,6 +2,12 @@ name: 🚀 (DEV) Liberando versiones
 
 on:
     workflow_dispatch:
+        inputs:
+            dry_run:
+                description: 'Dry run: valida auth y muestra qué se publicaría, sin versionar ni publicar'
+                required: false
+                default: false
+                type: boolean
     pull_request:
         branches:
             - builderbot-dev
@@ -51,6 +57,11 @@ jobs:
             - name: Run Tests
               run: pnpm test
 
+            # `create-builderbot` bundles dist/starters from starters/apps, so a
+            # stale template set would be published. Fail early if they differ.
+            - name: Templates in sync
+              run: pnpm run generate:check
+
     ############ BUILD ############
     build:
         name: 🔨 Build
@@ -90,11 +101,26 @@ jobs:
                   path: packages/*/dist
                   retention-days: 1
 
+    ############ FORK NOTICE ############
+    # GitHub no comparte los secrets con los PRs de forks, así que publicar una
+    # alpha es imposible en ese caso. En lugar de fallar en rojo, lo omitimos y
+    # lo explicamos (el resto del pipeline — tests y build — sí corre).
+    fork-notice:
+        name: ℹ️ Fork sin secrets
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: Explain why the alpha release is skipped
+              run: |
+                  echo "::notice::PR desde un fork: se omite la publicación de la alpha porque GitHub no expone los secrets (NPM_TOKEN) a los forks. Los tests y el build sí se ejecutan."
+
     ############ RELEASE ############
     release:
         name: 📦 Release Alpha
         runs-on: ubuntu-latest
         needs: [test, build]
+        # Los PRs de forks no reciben secrets → no se puede autenticar ni publicar.
+        if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork }}
         permissions:
             contents: write
             packages: write
@@ -135,16 +161,44 @@ jobs:
                   path: packages
 
             - name: Verify npm authentication
-              run: npm whoami
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: |
+                  if [ -z "$NODE_AUTH_TOKEN" ]; then
+                      echo "::error::Falta el secret NPM_TOKEN. Añádelo en Settings → Secrets and variables → Actions."
+                      exit 1
+                  fi
+                  if ! npm whoami >/dev/null 2>&1; then
+                      echo "::error::NPM_TOKEN inválido o expirado (401 Unauthorized)."
+                      echo "::error::Genera un token nuevo en https://www.npmjs.com/settings/~/tokens (tipo 'Automation', que omite el 2FA) y actualiza el secret NPM_TOKEN."
+                      exit 1
+                  fi
+                  echo "✅ Autenticado en npm como: $(npm whoami)"
 
             - name: Configure Git
               run: |
                   git config user.name "github-actions[bot]"
                   git config user.email "github-actions[bot]@users.noreply.github.com"
 
+            - name: Dry run — reportar la versión y qué se publicaría
+              if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: |
+                  BASE_VERSION=$(node -p "require('./lerna.json').version.replace(/-alpha.*/, '')")
+                  NEW_VERSION="${BASE_VERSION}-alpha.${{ github.run_number }}"
+                  echo "DRY RUN — no se versionará ni publicará nada"
+                  echo "📦 Versión que se publicaría: ${NEW_VERSION} (dist-tag: alpha)"
+                  echo "📋 Paquetes (versión actual → versión de la alpha):"
+                  NEW_VERSION="$NEW_VERSION" node - <<'NODE'
+                  const { execSync } = require('node:child_process')
+                  const pkgs = JSON.parse(execSync('npx lerna ls --json', { encoding: 'utf8' }))
+                  for (const p of pkgs) console.log(`   - ${p.name}: ${p.version} → ${process.env.NEW_VERSION}`)
+                  console.log(`\nTotal: ${pkgs.length} paquetes se publicarían como ${process.env.NEW_VERSION}`)
+                  NODE
+
             - name: Release Alpha
+              if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
               run: |
                   # Obtener versión base sin sufijo alpha
                   BASE_VERSION=$(node -p "require('./lerna.json').version.replace(/-alpha.*/, '')")
@@ -164,6 +218,7 @@ jobs:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
             - name: 📋 Log Deployed Version
+              if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
               run: |
                   echo "=========================================="
                   echo "🚀 VERSIÓN DESPLEGADA (ALPHA)"

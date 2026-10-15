@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: PathString, CleanSessionFunction
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(n) score:3
+ * keywords: [PathString, CleanSessionFunction]
+ * GOAL: Own the "clean" concern of the cli package.
+ */
 import { join } from 'path'
 import color from 'picocolors'
 import { rimraf } from 'rimraf'

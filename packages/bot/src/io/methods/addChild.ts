@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: addChild — serializes a nested flow into context
+ * Rules: Pure flow-data construction. No external side effects.
+ * BigO: O(1) score:5
+ * keywords: [addChild, addAnswer, TFlow]
+ * GOAL: Convert a nested flow definition into a flat context list.
+ */
 import { toSerialize } from './toSerialize'
 import type { TContext, TFlow } from '../../types'
 

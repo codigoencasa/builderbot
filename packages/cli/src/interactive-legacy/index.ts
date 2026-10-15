@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: InteractiveLegacy
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(n) score:3
+ * keywords: [InteractiveLegacy]
+ * GOAL: Own the "interactive legacy" concern of the cli package.
+ */
 import { existsSync } from 'fs'
 import { join } from 'path'
 import color from 'picocolors'

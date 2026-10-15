@@ -1,3 +1,11 @@
+/**
+ * LAYER: Application
+ * Contains: FlowDefinition, FlowRegistry, CreateFlowInput, UpdateFlowInput
+ * Rules: Orchestrates domain. No frameworks. Defines ports.
+ * BigO: O(n) score:3
+ * keywords: [FlowDefinition, FlowRegistry, CreateFlowInput, UpdateFlowInput]
+ * GOAL: Own the "flow registry" concern of the manager package.
+ */
 import { addKeyword } from '@builderbot/bot'
 
 import type { CreateFlowInput, UpdateFlowInput, FlowStep } from './schemas'

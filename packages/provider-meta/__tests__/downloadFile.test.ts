@@ -76,10 +76,9 @@ describe('#downloadFile', () => {
 
         jest.spyOn(mime, 'extension').mockReturnValue(false)
         const consoleErrorSpy = jest.spyOn(console, 'error')
-        // Act
-        await downloadFile(url, token)
+        // Act & Assert
+        await expect(downloadFile(url, token)).rejects.toThrow('Unable to determine file extension')
 
-        // Assert
         expect(consoleErrorSpy).toHaveBeenCalledWith('Unable to determine file extension')
         expect(axios.get).toHaveBeenCalledWith(url, {
             headers: { Authorization: `Bearer ${token}` },
@@ -96,10 +95,9 @@ describe('#downloadFile', () => {
 
         ;(axios.get as jest.MockedFunction<typeof axios.get>).mockRejectedValueOnce(new Error(errorMessage))
         const consoleErrorSpy = jest.spyOn(console, 'error')
-        // Act
-        await downloadFile(url, token)
+        // Act & Assert
+        await expect(downloadFile(url, token)).rejects.toThrow(errorMessage)
 
-        //Assert
         expect(consoleErrorSpy).toHaveBeenCalledWith(errorMessage)
         expect(axios.get).toHaveBeenCalledWith(url, {
             headers: { Authorization: `Bearer ${token}` },

@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: printer — colored console output
+ * Rules: Presentation only. No business rules.
+ * BigO: O(1) score:5
+ * keywords: [printer]
+ * GOAL: Render formatted messages to the console for operators.
+ */
 import color from 'picocolors'
 
 type PrinterFunction = (message: string | string[], title: string, cName?: 'bgMagenta' | 'bgRed' | 'bgCyan') => void

@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: Install
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(n) score:3
+ * keywords: [Install]
+ * GOAL: Own the "install" concern of the cli package.
+ */
 import { readFileSync, existsSync } from 'fs'
 import { join } from 'path'
 

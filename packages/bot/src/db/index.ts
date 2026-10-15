@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: MemoryDB — in-memory persistence adapter
+ * Rules: Implements the persistence contract. No business rules.
+ * BigO: O(n) score:3
+ * keywords: [MemoryDB, CoreClass]
+ * GOAL: Persist conversation state in memory as the default storage adapter.
+ */
 class MemoryDB {
     public listHistory: any[] = []
 

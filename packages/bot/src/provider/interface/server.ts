@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: ProviderHttpServer / PolkaRes — HTTP server contract types
+ * Rules: Type-level contract only. No runtime logic.
+ * BigO: O(1) score:5
+ * keywords: [ProviderHttpServer, PolkaRes, ProviderClass]
+ * GOAL: Describe the HTTP server surface a provider exposes to the framework.
+ */
 import type { Polka } from 'polka'
 
 import type { BotCtxMiddleware } from '../../types'

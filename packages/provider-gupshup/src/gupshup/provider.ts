@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: GupshupProvider, AxiosInstance
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^2) score:1
+ * keywords: [GupshupProvider, AxiosInstance]
+ * GOAL: Own the "provider" concern of the provider-gupshup package.
+ */
 import { ProviderClass, utils } from '@builderbot/bot'
 import { Vendor } from '@builderbot/bot/dist/provider/interface/provider'
 import { BotContext, Button, SendOptions } from '@builderbot/bot/dist/types'

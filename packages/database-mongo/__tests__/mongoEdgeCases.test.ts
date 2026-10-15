@@ -10,7 +10,9 @@ let mongoServer: MongoMemoryServer
 let mongoAdapter: MongoAdapter
 
 test.before(async () => {
-    mongoServer = await MongoMemoryServer.create()
+    // Generous startup timeout: under parallel test load (lerna) mongod can take
+    // well over the 10s default to boot, which otherwise makes this task flaky.
+    mongoServer = await MongoMemoryServer.create({ instance: { startTimeout: 60_000 } })
     const uri = mongoServer.getUri()
     mongoAdapter = new MongoAdapter({
         dbUri: uri,
@@ -158,8 +160,8 @@ test('[MongoAdapter] - listHistory should accumulate all saved items', () => {
 })
 
 test.after(async () => {
-    await mongoAdapter.close()
-    await mongoServer.stop()
+    await mongoAdapter?.close()
+    await mongoServer?.stop()
 })
 
 test.run()

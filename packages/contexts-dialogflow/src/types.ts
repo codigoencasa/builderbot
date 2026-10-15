@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: DialogFlowContextOptions, MessageContextIncoming, Message, ParamsDialogFlow
+ * Rules: No external dependencies. Pure business logic.
+ * BigO: O(1) score:5
+ * keywords: [DialogFlowContextOptions, MessageContextIncoming, Message, ParamsDialogFlow]
+ * GOAL: Own the "types" concern of the contexts-dialogflow package.
+ */
 export interface DialogFlowContextOptions {
     language?: string
 }

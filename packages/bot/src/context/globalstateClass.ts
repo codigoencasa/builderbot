@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: GlobalState — shared global state store
+ * Rules: No external dependencies. Pure state container.
+ * BigO: O(n) score:3
+ * keywords: [GlobalState, CoreClass]
+ * GOAL: Store and expose shared bot state across the runtime.
+ */
 type GlobalStateType = Record<string, any>
 
 class GlobalState {

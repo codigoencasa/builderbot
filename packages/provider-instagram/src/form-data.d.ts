@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: FormDataD, ReadStream
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [FormDataD, ReadStream]
+ * GOAL: Own the "form data d" concern of the provider-instagram package.
+ */
 declare module 'form-data' {
     import { ReadStream } from 'fs'
     class FormData {

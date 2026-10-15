@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: EmailCoreVendor, ImapFlow, ParsedMail, AddressObject
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^2) score:1
+ * keywords: [EmailCoreVendor, ImapFlow, ParsedMail, AddressObject]
+ * GOAL: Own the "core" concern of the provider-email package.
+ */
 import { utils } from '@builderbot/bot'
 import { ImapFlow } from 'imapflow'
 import { simpleParser, type ParsedMail, type AddressObject } from 'mailparser'

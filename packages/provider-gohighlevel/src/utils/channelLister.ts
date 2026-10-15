@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: ChannelLister, GHLChannelInfo, GHLChannelType, GHLEmailAccount
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n) score:3
+ * keywords: [ChannelLister, GHLChannelInfo, GHLChannelType, GHLEmailAccount]
+ * GOAL: Own the "channel lister" concern of the provider-gohighlevel package.
+ */
 import axios from 'axios'
 import EventEmitter from 'node:events'
 

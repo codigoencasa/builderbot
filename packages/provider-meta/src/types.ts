@@ -1,4 +1,13 @@
+/**
+ * LAYER: Domain
+ * Contains: Meta payload types and value objects (MessageStatus, MessageStatusEvent, Contact, File, orders)
+ * Rules: No external dependencies. Pure structural types.
+ * BigO: O(1) score:5
+ * keywords: [MessageStatus, MessageStatusEvent, MetaGlobalVendorArgs]
+ * GOAL: Describe the raw Meta webhook/API shapes, keeping status entries fully typed and forward-compatible.
+ */
 import type { GlobalVendorArgs } from '@builderbot/bot/dist/types'
+import type { ISttAdapter, ITtsAdapter, WhatsAppCallEntryEvent } from '@builderbot/provider-voice'
 
 interface Image {
     id?: string
@@ -77,17 +86,100 @@ export interface MetaGlobalVendorArgs extends GlobalVendorArgs {
     numberId: string
     verifyToken: string
     version: string
+    // ── WhatsApp Business voice calls (opt-in) ──────────────────────────────
+    /** Enable inbound WhatsApp Business voice call handling (WebRTC/SDP + STT/TTS). Default: false. */
+    enableVoiceCalls?: boolean
+    /** OpenAI API key used for the default STT (Whisper) and TTS adapters when voice calls are enabled. */
+    openaiApiKey?: string
+    /** Custom STT adapter. When provided, overrides the built-in OpenAI Whisper transcription. */
+    sttAdapter?: ISttAdapter
+    /** Custom TTS adapter. When provided, overrides the built-in OpenAI TTS synthesis. */
+    ttsAdapter?: ITtsAdapter
+    /** Language hint (ISO-639-1) for STT transcription, e.g. 'es'. */
+    language?: string
+    /**
+     * Optional message spoken to the caller as soon as the call becomes active.
+     * Without it the bot waits for the caller to speak first.
+     */
+    greetingMessage?: string
+    /**
+     * Interrupt the bot's playback as soon as the caller starts talking
+     * (barge-in). Default `true`; set to `false` to let the bot finish its
+     * sentence. Emits `playback_interrupted` when it cuts the audio.
+     */
+    bargeIn?: boolean
+    /** Milliseconds of continuous speech required before barge-in cuts the playback. Default 120. */
+    bargeInMinSpeechMs?: number
+    /** Milliseconds of trailing silence that close an utterance. Default 800. */
+    silenceMs?: number
+    /** RMS amplitude (0..1) below which a frame is considered silence. Default 0.015. */
+    silenceThreshold?: number
+    /** ICE server configuration for the WebRTC peer connection used in voice calls. */
+    iceServers?: RTCIceServer[]
+    /**
+     * Maximum time in milliseconds to wait for ICE gathering to complete before
+     * sending the SDP to Meta via `pre_accept`. WhatsApp Calling uses non-trickle
+     * ICE, so all candidates must be embedded in the SDP. Default: 2000.
+     */
+    iceGatheringTimeoutMs?: number
+    // ── Webhook security (optional) ─────────────────────────────────────────
+    /**
+     * Meta App Secret used to validate the `X-Hub-Signature-256` header on
+     * incoming webhook `POST` requests (HMAC-SHA256 over the raw body).
+     * When set, requests with a missing or invalid signature are rejected
+     * with `401`. Applies to both `messages` and `calls` webhook events.
+     */
+    appSecret?: string
+    // ── Message-status webhook response (optional) ──────────────────────────
+    /**
+     * HTTP response for message-status webhook callbacks.
+     * - `'ok'` (default): always respond `200`. Correct per Meta — non-2xx responses trigger retries.
+     * - `'legacy-400'`: preserve the pre-1.4.x behaviour of responding `400` on `failed` statuses.
+     */
+    statusWebhookRespondOnFailure?: 'ok' | 'legacy-400'
+}
+
+export interface ProductItem {
+    product_retailer_id: string
+    quantity: number
+    item_price?: number
+    currency?: string
 }
 
 export interface Order {
     catalog_id: string
-    product_items: string[]
+    product_items: ProductItem[]
+    text?: string
+}
+
+export interface MetaOrderProduct {
+    id?: string
+    retailer_id: string
+    name: string
+    imageUrl: string
+    price: number
+    currency: string
+    quantity: number
+}
+
+export interface MetaOrderPrice {
+    currency: string
+    total: number
+}
+
+export interface MetaOrderDetails {
+    catalog_id: string
+    title: string
+    text?: string
+    price: MetaOrderPrice
+    products: MetaOrderProduct[]
 }
 
 export interface Contact {
     profile: Profile
-    wa_id: string
+    wa_id?: string
     user_id?: string
+    parent_user_id?: string
     name: string
     phones: string[]
 }
@@ -102,11 +194,14 @@ export interface Message {
     pushName: string
     name: string
     userId?: string
+    /** WhatsApp username from contact.profile.username when present. */
+    username?: string
     url?: string
     fileData?: File | null
     payload?: string
     title_button_reply?: string
     title_list_reply?: string
+    id_list_reply?: string
     latitude?: number
     longitude?: number
     contacts?: Contact[]
@@ -115,6 +210,16 @@ export interface Message {
     id?: string
     caption?: string
     fromMe?: boolean
+    /** Raw PCM (16-bit LE mono) of a transcribed voice call utterance. Present only for voice call messages. */
+    audio?: Buffer
+    /** Sample rate (Hz) of `audio`, when present. */
+    sampleRate?: number
+    /** Canonical id, alias of `message_id` (RFC 0003). */
+    messageId?: string
+    /** Canonical content classification (RFC 0003); legacy `type` is untouched. */
+    contentType?: string
+    /** Raw Meta webhook message, untransformed (RFC 0003). */
+    raw?: unknown
 }
 
 export interface ParamsIncomingMessage {
@@ -129,12 +234,14 @@ export interface ParamsIncomingMessage {
     fileData?: File | null
     fromMe?: boolean
     userId?: string
+    username?: string
 }
 
 export type TextGenericParams = {
     messaging_product: 'whatsapp'
     recipient_type: string
-    to: string
+    to?: string
+    recipient?: string
     type: string
     [key: string]: any
 }
@@ -156,6 +263,8 @@ export interface ParsedContact {
 export interface TextMessageBody {
     messaging_product: string
     to?: string
+    /** BSUID destination — Meta requires `recipient` instead of `to` for Business-Scoped User IDs. */
+    recipient?: string
     type?: string
     recipient_type?: string
     text?: {
@@ -225,9 +334,69 @@ export interface Change {
 export interface Value {
     messaging_product: string
     metadata: Metadata
-    contacts: ContactMeta[]
-    messages: MessageFromMeta[]
+    // Meta sends one of these per change: messages (+contacts), statuses, or calls — never mixed.
+    contacts?: ContactMeta[]
+    messages?: MessageFromMeta[]
+    statuses?: MessageStatus[]
+    calls?: WhatsAppCallEntryEvent[]
 }
+
+/** Known WhatsApp Cloud API delivery lifecycle states (open union — future values are accepted). */
+export type WhatsAppMessageStatus = 'sent' | 'delivered' | 'read' | 'failed' | (string & {})
+
+/** A single `errors[]` entry on a Meta message status update. */
+export interface MessageStatusError {
+    code?: number
+    title?: string
+    message?: string
+    error_data?: { details?: string; [key: string]: unknown }
+}
+
+/** A single entry in `value.statuses[]` on a message-status webhook change. */
+export interface MessageStatus {
+    /** Meta message id (wamid) of the outbound message this status refers to — correlation key. */
+    id?: string
+    recipient_id?: string
+    recipient_user_id?: string
+    status?: WhatsAppMessageStatus
+    /** Unix timestamp (seconds), string-encoded, as sent by Meta. */
+    timestamp?: string
+    errors?: MessageStatusError[]
+    conversation?: { id?: string; origin?: { type?: string; [key: string]: unknown } }
+    pricing?: { billable?: boolean; pricing_model?: string; category?: string; [key: string]: unknown }
+}
+
+/**
+ * Normalized, forward-compatible payload emitted as the `message_status` event for each
+ * entry in `value.statuses[]`.
+ */
+export interface MessageStatusEvent {
+    /** wamid; `null` when Meta omitted it. */
+    id: string | null
+    /** `recipient_id` or, for BSUID-only users, `recipient_user_id`. */
+    recipientId: string | null
+    /** BSUID (`recipient_user_id`) when present. */
+    recipientUserId: string | null
+    status: WhatsAppMessageStatus
+    timestamp: string | null
+    errors: MessageStatusError[]
+    /** Raw status entry — escape hatch for future Meta fields without a breaking type change. */
+    raw: MessageStatus
+}
+
+/**
+ * Monotonic delivery progression. Consumers can ignore out-of-order events by ranking:
+ * a status is only applied when its rank is >= the last seen rank (failed is terminal-lowest).
+ */
+export const MESSAGE_STATUS_RANK: Record<string, number> = {
+    failed: 0,
+    sent: 1,
+    delivered: 2,
+    read: 3,
+}
+
+/** Returns the rank of a status, or `-1` for unknown statuses. */
+export const statusRank = (status: string): number => MESSAGE_STATUS_RANK[status] ?? -1
 
 export interface Metadata {
     display_phone_number: string
@@ -236,22 +405,32 @@ export interface Metadata {
 
 export interface ContactMeta {
     profile: Profile
-    wa_id: string
+    wa_id?: string
     user_id?: string
+    parent_user_id?: string
     name: string
     phones: string[]
 }
 
 export interface Profile {
     name: string
+    username?: string
 }
 
 export interface MessageFromMeta {
-    from: string
+    from?: string
+    /** BSUID when Meta omits the phone (`from`) for username-adopted users. */
+    from_user_id?: string
     id: string
     timestamp: string
-    text: Text
+    text?: Text
     type: string
+    fromMe?: boolean
+    audio?: File | null
+    image?: File | null
+    video?: File | null
+    document?: File | null
+    sticker?: File | null
 }
 
 export interface Text {

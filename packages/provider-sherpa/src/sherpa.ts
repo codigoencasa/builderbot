@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: Boom, PathOrFileDescriptor
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^2) score:1
+ * keywords: [Boom, PathOrFileDescriptor]
+ * GOAL: Own the "sherpa" concern of the provider-sherpa package.
+ */
 import { ProviderClass, utils } from '@builderbot/bot'
 import type { BotContext, Button, SendOptions } from '@builderbot/bot/dist/types'
 import type { Boom } from '@hapi/boom'

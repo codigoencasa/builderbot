@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: getProfile — WhatsApp profile fetch via Meta Graph API
+ * Rules: External HTTP client. No business rules.
+ * BigO: O(1) score:5
+ * keywords: [getProfile, WhatsAppProfile, MetaProvider]
+ * GOAL: Fetch a WhatsApp user profile from the Graph API.
+ */
 import axios from 'axios'
 import type { AxiosResponse } from 'axios'
 

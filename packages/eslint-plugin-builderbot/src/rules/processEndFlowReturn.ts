@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: INode, Context
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(1) score:5
+ * keywords: [INode, Context]
+ * GOAL: Own the "process end flow return" concern of the eslint-plugin-builderbot package.
+ */
 import type { INode, Context } from '../types'
 import { isInsideAddActionOrAddAnswer } from '../utils'
 

@@ -1,0 +1,28 @@
+{
+  "name": "base-js-tiktok-postgres",
+  "version": "1.0.0",
+  "description": "TikTok organic comments example (poll + public reply)",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint . --no-ignore",
+    "dev": "npm run lint && nodemon --signal SIGKILL ./src/app.js",
+    "start": "node ./src/app.js"
+  },
+  "keywords": [
+    "tiktok",
+    "builderbot"
+  ],
+  "dependencies": {
+    "@builderbot/bot": "latest",
+    "@builderbot/provider-tiktok": "latest",
+    "@builderbot/database-postgres": "latest"
+  },
+  "devDependencies": {
+    "eslint-plugin-builderbot": "latest",
+    "eslint": "^9.39.1",
+    "nodemon": "^3.1.11"
+  },
+  "author": "",
+  "license": "ISC"
+}

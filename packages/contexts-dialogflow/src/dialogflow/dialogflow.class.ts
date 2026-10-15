@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: DialogFlowContext, CoreClass, SessionsClient, Credential
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n) score:3
+ * keywords: [DialogFlowContext, CoreClass, SessionsClient, Credential]
+ * GOAL: Own the "dialogflow class" concern of the contexts-dialogflow package.
+ */
 import { CoreClass } from '@builderbot/bot'
 import { SessionsClient } from '@google-cloud/dialogflow'
 import { existsSync, readFileSync } from 'fs'

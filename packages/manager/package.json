@@ -1,9 +1,9 @@
 {
     "name": "@builderbot/manager",
-    "version": "1.4.1",
+    "version": "1.4.4",
     "description": "Multi-tenant bot manager for BuilderBot",
     "author": "Leifer Mendez <leifer33@gmail.com>",
-    "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
+    "homepage": "https://github.com/codigoencasa/builderbot#readme",
     "license": "ISC",
     "main": "dist/index.cjs",
     "types": "dist/index.d.ts",
@@ -21,10 +21,10 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/codigoencasa/bot-whatsapp.git"
+        "url": "git+https://github.com/codigoencasa/builderbot.git"
     },
     "bugs": {
-        "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
+        "url": "https://github.com/codigoencasa/builderbot/issues"
     },
     "keywords": [
         "builderbot",
@@ -68,5 +68,5 @@
             "optional": true
         }
     },
-    "gitHead": "b36178dfb87da8ce270e28b6daaff2c50374b6eb"
+    "gitHead": "4c667603733e1262920fbd919fa388e544f7f707"
 }

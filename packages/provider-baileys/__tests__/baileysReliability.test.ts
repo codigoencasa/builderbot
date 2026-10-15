@@ -38,9 +38,13 @@ jest.mock('baileys', () => ({
     },
     isJidGroup: jest.fn().mockReturnValue(false),
     isJidBroadcast: jest.fn().mockReturnValue(false),
+    Browsers: {
+        appropriate: jest.fn().mockReturnValue(['Chrome', 'Mac', '']),
+    },
 }))
 
 jest.mock('fs/promises', () => ({
+    ...jest.requireActual<typeof import('fs/promises')>('fs/promises'),
     writeFile: jest.fn(),
 }))
 
@@ -75,8 +79,10 @@ describe('#BaileysProvider - Reliability', () => {
         })
     })
 
-    afterEach(() => {
+    afterEach(async () => {
+        await provider.destroy()
         jest.useRealTimers()
+        jest.restoreAllMocks()
     })
 
     // ===== Reconnection Logic =====
@@ -117,6 +123,11 @@ describe('#BaileysProvider - Reliability', () => {
             expect(result).toBe(true)
         })
 
+        test('should return false for connectionReplaced (440) — no tug-of-war (T8)', () => {
+            const result = provider['shouldReconnect'](440)
+            expect(result).toBe(false)
+        })
+
         test('should return false for unknown status codes', () => {
             const result = provider['shouldReconnect'](999)
             expect(result).toBe(false)
@@ -155,9 +166,10 @@ describe('#BaileysProvider - Reliability', () => {
 
             await provider['delayedReconnect']()
 
-            expect(emitSpy).toHaveBeenCalledWith('auth_failure', expect.arrayContaining([
-                expect.stringContaining('Maximum reconnection attempts reached'),
-            ]))
+            expect(emitSpy).toHaveBeenCalledWith(
+                'auth_failure',
+                expect.arrayContaining([expect.stringContaining('Maximum reconnection attempts reached')])
+            )
         })
 
         test('should not increment attempts when max is reached', async () => {
@@ -172,31 +184,60 @@ describe('#BaileysProvider - Reliability', () => {
         test('should use exponential backoff for delay', async () => {
             provider['reconnectAttempts'] = 0
             provider['reconnectDelay'] = 1000
+            // T8: pin jitter to factor 1.0 so base delays stay deterministic
+            const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.5)
             const setTimeoutSpy = jest.spyOn(global, 'setTimeout')
-            provider['initVendor'] = jest.fn().mockReturnValue({ then: jest.fn() }) as any
+            provider['initVendor'] = jest.fn(async () => undefined) as any
 
             // First attempt: delay should be 1000ms * 2^0 = 1000ms
             await provider['delayedReconnect']()
             expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 1000)
 
+            // Finish the pending attempt before scheduling another one.
+            await jest.advanceTimersByTimeAsync(1000)
             // Second attempt: delay should be 1000ms * 2^1 = 2000ms
             await provider['delayedReconnect']()
             expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 2000)
 
+            await jest.advanceTimersByTimeAsync(2000)
             // Third attempt: delay should be 1000ms * 2^2 = 4000ms
             await provider['delayedReconnect']()
             expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 4000)
+            randomSpy.mockRestore()
         })
 
         test('should cap delay at 30000ms', async () => {
             provider['reconnectAttempts'] = 8 // 1000 * 2^8 = 256000 > 30000
             provider['reconnectDelay'] = 1000
+            const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.5)
             const setTimeoutSpy = jest.spyOn(global, 'setTimeout')
             provider['initVendor'] = jest.fn().mockReturnValue({ then: jest.fn() }) as any
 
             await provider['delayedReconnect']()
 
             expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 30000)
+            randomSpy.mockRestore()
+        })
+
+        test('should apply jitter within ±20% of the base delay (T8)', async () => {
+            provider['reconnectAttempts'] = 0
+            provider['reconnectDelay'] = 1000
+            const setTimeoutSpy = jest.spyOn(global, 'setTimeout')
+            const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0)
+            provider['initVendor'] = jest.fn(async () => undefined) as any
+
+            await provider['delayedReconnect']()
+            expect(setTimeoutSpy).toHaveBeenLastCalledWith(expect.any(Function), 800)
+
+            await jest.advanceTimersByTimeAsync(800)
+            randomSpy.mockReturnValue(0.999)
+            await provider['delayedReconnect']()
+            // base 2000 * ~1.2 → just under 2400
+            const calls = setTimeoutSpy.mock.calls
+            const lastDelay = calls[calls.length - 1]?.[1] as number
+            expect(lastDelay).toBeGreaterThan(2300)
+            expect(lastDelay).toBeLessThanOrEqual(2400)
+            randomSpy.mockRestore()
         })
     })
 
@@ -230,12 +271,13 @@ describe('#BaileysProvider - Reliability', () => {
             expect(provider['mapSet'].size).toBe(0)
         })
 
-        test('should clear idsDuplicates', () => {
-            provider['idsDuplicates'].push('dup1', 'dup2')
+        test('should clear idsDuplicates', async () => {
+            provider['idsDuplicates'].set('dup1', Date.now() + 1000)
+            provider['idsDuplicates'].set('dup2', Date.now() + 1000)
 
-            provider['cleanup']()
+            await provider['cleanup']()
 
-            expect(provider['idsDuplicates'].length).toBe(0)
+            expect(provider['idsDuplicates'].size).toBe(0)
         })
 
         test('should handle cleanup when caches are already undefined', () => {
@@ -246,29 +288,129 @@ describe('#BaileysProvider - Reliability', () => {
         })
     })
 
+    // ===== Process signal handling (Phase 1) =====
+
+    describe('#setupCleanupHandlers', () => {
+        test('should not register process signal handlers by default', async () => {
+            const onSpy = jest.spyOn(process, 'on')
+            const p = new BaileysProvider({ name: 'sig-default', port: 3990 })
+
+            const signals = onSpy.mock.calls
+                .map(([event]) => event)
+                .filter((event) => ['SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2'].includes(event as string))
+
+            expect(signals).toHaveLength(0)
+
+            await p.destroy()
+            onSpy.mockRestore()
+        })
+
+        test('should never call process.removeAllListeners', async () => {
+            const wipeSpy = jest.spyOn(process, 'removeAllListeners')
+            const p = new BaileysProvider({ name: 'sig-no-wipe', port: 3991 })
+
+            expect(wipeSpy).not.toHaveBeenCalled()
+
+            await p.destroy()
+            wipeSpy.mockRestore()
+        })
+
+        test('should register and then detach its own handlers when captureProcessSignals is true', async () => {
+            const onSpy = jest.spyOn(process, 'on')
+            const removeSpy = jest.spyOn(process, 'removeListener')
+            const signals = ['SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2']
+
+            const p = new BaileysProvider({ name: 'sig-on', port: 3992, captureProcessSignals: true })
+            for (const signal of signals) {
+                expect(onSpy).toHaveBeenCalledWith(signal, expect.any(Function))
+            }
+
+            await p.destroy()
+
+            for (const signal of signals) {
+                expect(removeSpy).toHaveBeenCalledWith(signal, expect.any(Function))
+            }
+            onSpy.mockRestore()
+            removeSpy.mockRestore()
+        })
+    })
+
+    // ===== Idempotent teardown (Phase 1) =====
+
+    describe('#destroy', () => {
+        test('should be idempotent', async () => {
+            await provider.destroy()
+            expect(provider.msgRetryCounterCache).toBeUndefined()
+
+            await expect(provider.destroy()).resolves.toBeUndefined()
+        })
+
+        test('should clear the periodic cleanup interval', async () => {
+            expect(provider['cleanupInterval']).toBeDefined()
+
+            await provider.destroy()
+
+            expect(provider['cleanupInterval']).toBeUndefined()
+        })
+    })
+
+    // ===== initVendor double-socket regression (Phase 1) =====
+
+    describe('#initVendor', () => {
+        test('should not recursively re-enter initVendor when releaseTmp fails', async () => {
+            const releaseTmpModule = require('../src/releaseTmp')
+            const releaseSpy = jest
+                .spyOn(releaseTmpModule, 'releaseTmp')
+                .mockRejectedValueOnce(new Error('releaseTmp boom'))
+
+            const initSpy = jest.spyOn(provider as any, 'initVendor')
+
+            provider.globalVendorArgs.useBaileysStore = true
+            provider.globalVendorArgs.timeRelease = 1000
+
+            await provider['initVendor']()
+
+            expect(initSpy).toHaveBeenCalledTimes(1)
+
+            releaseSpy.mockRestore()
+            initSpy.mockRestore()
+        })
+    })
+
     // ===== Periodic Cleanup (setupPeriodicCleanup) =====
 
     describe('#setupPeriodicCleanup', () => {
         test('should trim idsDuplicates when over 1000 items', () => {
-            // Fill with 1500 items
+            // Fake timers also advance Date.now; keep entries alive past one sweep.
+            const future = Date.now() + 2 * 600000
             for (let i = 0; i < 1500; i++) {
-                provider['idsDuplicates'].push(`id_${i}`)
+                provider['idsDuplicates'].set(`id_${i}`, future)
             }
 
-            // Advance timer by 10 minutes
             jest.advanceTimersByTime(600000)
 
-            expect(provider['idsDuplicates'].length).toBe(1000)
+            expect(provider['idsDuplicates'].size).toBe(1000)
         })
 
         test('should not trim idsDuplicates when under 1000 items', () => {
+            const future = Date.now() + 2 * 600000
             for (let i = 0; i < 500; i++) {
-                provider['idsDuplicates'].push(`id_${i}`)
+                provider['idsDuplicates'].set(`id_${i}`, future)
             }
 
             jest.advanceTimersByTime(600000)
 
-            expect(provider['idsDuplicates'].length).toBe(500)
+            expect(provider['idsDuplicates'].size).toBe(500)
+        })
+
+        test('should expire idsDuplicates entries after the TTL', () => {
+            provider['idsDuplicates'].set('old', Date.now() - 1)
+            provider['idsDuplicates'].set('fresh', Date.now() + 2 * 600000)
+
+            jest.advanceTimersByTime(600000)
+
+            expect(provider['idsDuplicates'].has('old')).toBe(false)
+            expect(provider['idsDuplicates'].has('fresh')).toBe(true)
         })
 
         test('should clear mapSet when over 1000 entries', () => {
@@ -296,7 +438,7 @@ describe('#BaileysProvider - Reliability', () => {
 
     describe('Duplicate message detection', () => {
         test('idsDuplicates should start empty', () => {
-            expect(provider['idsDuplicates'].length).toBe(0)
+            expect(provider['idsDuplicates'].size).toBe(0)
         })
 
         test('mapSet should start empty', () => {
@@ -383,7 +525,7 @@ describe('#BaileysProvider - Reliability', () => {
                 },
             } as any
 
-            const result = await provider.getPNForLID('lid:abc')
+            const result = await provider.getPNForLID('123456789@lid')
             expect(result).toBe('1234567890@s.whatsapp.net')
         })
     })
@@ -416,14 +558,8 @@ describe('#BaileysProvider - Reliability', () => {
     // ===== releaseSessionFiles =====
 
     describe('#releaseSessionFiles', () => {
-        test('should call releaseTmp and clearInterval', async () => {
-            // This test verifies the method doesn't throw
-            // releaseTmp is imported from a separate module
-            try {
-                await provider.releaseSessionFiles()
-            } catch {
-                // Expected to potentially fail in test env since releaseTmp may need filesystem
-            }
+        test('should resolve without throwing', async () => {
+            await expect(provider.releaseSessionFiles()).resolves.toBeUndefined()
         })
     })
 })

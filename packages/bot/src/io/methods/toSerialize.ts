@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: toSerialize — normalizes flow input into a context array
+ * Rules: Pure data normalization. No external side effects.
+ * BigO: O(n) score:3
+ * keywords: [toSerialize, TContext, addChild]
+ * GOAL: Normalize single or nested flow definitions into a flat context list.
+ */
 import type { TContext } from '../../types'
 import { generateRefSerialize } from '../../utils/hash'
 

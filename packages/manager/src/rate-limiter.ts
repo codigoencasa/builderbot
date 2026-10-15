@@ -1,3 +1,11 @@
+/**
+ * LAYER: Application
+ * Contains: RateLimiterConfig, RateLimiter, IncomingMessage, ServerResponse
+ * Rules: Orchestrates domain. No frameworks. Defines ports.
+ * BigO: O(n) score:3
+ * keywords: [RateLimiterConfig, RateLimiter, IncomingMessage, ServerResponse]
+ * GOAL: Own the "rate limiter" concern of the manager package.
+ */
 import type { IncomingMessage, ServerResponse } from 'http'
 
 /**

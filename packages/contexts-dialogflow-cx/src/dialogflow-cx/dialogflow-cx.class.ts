@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: DialogFlowContextCX, CoreClass, SessionsClient, DialogFlowContextOptions
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^2) score:1
+ * keywords: [DialogFlowContextCX, CoreClass, SessionsClient, DialogFlowContextOptions]
+ * GOAL: Own the "dialogflow cx class" concern of the contexts-dialogflow-cx package.
+ */
 import { CoreClass } from '@builderbot/bot'
 import { SessionsClient } from '@google-cloud/dialogflow-cx'
 import { existsSync, readFileSync } from 'fs'

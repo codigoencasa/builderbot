@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: addKeyword — builds the entry flow context for a keyword trigger
+ * Rules: Pure flow-data construction. No external side effects.
+ * BigO: O(1) score:5
+ * keywords: [addKeyword, addAnswer, TContext]
+ * GOAL: Register a keyword trigger and its answer chain as flow context.
+ */
 import { addAnswer } from './addAnswer'
 import { toJson } from './toJson'
 import type { ActionPropertiesKeyword, CallbackFunction, TContext, TFlow } from '../../types'
@@ -15,6 +23,13 @@ const addKeyword = <P = any, B = any>(
 ): TFlow<P, B> => {
     if (typeof keyword !== 'string' && !Array.isArray(keyword)) {
         throw new Error('DEBE_SER_STRING_ARRAY_REGEX')
+    }
+
+    // Un keyword vacío nunca puede matchear nada: casi siempre es un error de
+    // configuración (p. ej. una env var sin definir). Fallamos rápido en lugar
+    // de registrar un flow muerto que nunca se dispara.
+    if (keyword.length === 0) {
+        throw new Error('KEYWORD_CANNOT_BE_EMPTY')
     }
 
     const parseOptions = (): ActionPropertiesKeyword => {

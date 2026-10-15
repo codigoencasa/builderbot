@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: Core, GupshupCoreVendor
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^2) score:1
+ * keywords: [Core, GupshupCoreVendor]
+ * GOAL: Own the "core" concern of the provider-gupshup package.
+ */
 import EventEmitter from 'node:events'
 import type polka from 'polka'
 

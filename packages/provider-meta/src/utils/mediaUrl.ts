@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: getMediaUrl — Meta Graph API media URL resolver
+ * Rules: External HTTP client. Returns a Domain media descriptor.
+ * BigO: O(1) score:5
+ * keywords: [getMediaUrl, MediaResponse, processIncomingMessage]
+ * GOAL: Resolve the download URL for a Meta media id via the Graph API.
+ */
 import axios from 'axios'
 import type { AxiosResponse } from 'axios'
 

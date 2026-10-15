@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals'
 
-import { isBSUID, parseMetaNumber } from '../src/utils'
+import { isBSUID, parseMetaNumber, resolveOutboundAddress } from '../src/utils'
 
 describe('#parseMetaNumber ', () => {
     test('should parse a meta number correctly', () => {
@@ -84,5 +84,18 @@ describe('#isBSUID ', () => {
         expect(isBSUID('USA.13491208655302741918')).toBe(false) // 3-letter country code
         expect(isBSUID('US13491208655302741918')).toBe(false) // missing period
         expect(isBSUID('US.')).toBe(false) // empty identifier
+    })
+})
+
+describe('#resolveOutboundAddress ', () => {
+    test('should map a phone number to Graph `to`', () => {
+        expect(resolveOutboundAddress('+57 300 111 2233')).toEqual({ to: '573001112233' })
+        expect(resolveOutboundAddress('573001112233')).toEqual({ to: '573001112233' })
+    })
+
+    test('should map a BSUID to Graph `recipient` (Jose Santos fixture)', () => {
+        expect(resolveOutboundAddress('CO.2177313826172406')).toEqual({
+            recipient: 'CO.2177313826172406',
+        })
     })
 })

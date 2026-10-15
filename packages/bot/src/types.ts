@@ -1,5 +1,10 @@
 /**
- * @fileoverview Este archivo contiene las definiciones de tipos utilizadas en el proyecto.
+ * LAYER: Domain
+ * Contains: Shared type contracts (GlobalVendorArgs, ProviderEventTypes, BotContext, message DTOs)
+ * Rules: No external dependencies. Pure type declarations only, no runtime logic.
+ * BigO: O(1) score:5
+ * keywords: [ProviderEventTypes, MessageStatusEvent, BotContext]
+ * GOAL: Define the framework-wide contracts (including the message_status event) that core and providers share.
  */
 
 import type { IdleState } from './context'
@@ -23,6 +28,17 @@ export type ProviderEventTypes = {
     ready: any
     auth_failure: any
     host: any
+    message_status: [
+        arg1: {
+            id: string | null
+            recipientId: string | null
+            recipientUserId: string | null
+            status: string
+            timestamp: string | null
+            errors: any[]
+            raw: any
+        },
+    ]
     [key: string]: any
 }
 
@@ -65,6 +81,11 @@ export type ActionPropertiesKeyword = {
     media?: string
     capture?: boolean
     delay?: number
+    /**
+     * Override del timeout de la cola (ms) para este mensaje. Si se omite, se usa el
+     * timeout global de `queue.timeout`.
+     */
+    timeout?: number
     regex?: boolean
     sensitive?: boolean
 }
@@ -89,6 +110,54 @@ export type BotContext = {
     body: string
     from: string
     [key: string]: any
+}
+
+/**
+ * Canonical content classification shared by all providers (RFC 0003).
+ * Providers may keep their legacy `type` field untouched; this is the
+ * cross-provider vocabulary.
+ */
+export type ProviderContentType =
+    | 'text'
+    | 'image'
+    | 'video'
+    | 'audio'
+    | 'document'
+    | 'sticker'
+    | 'location'
+    | 'contact'
+    | 'order'
+    | 'poll'
+    | 'button'
+    | 'list'
+    | 'reaction'
+    | 'unknown'
+
+/**
+ * Standard inbound message envelope (RFC 0003). Every field is optional
+ * except the ones already required by BotContext (`body`, `from`), so this
+ * is purely additive over the legacy payloads.
+ */
+export type ProviderMessage = BotContext & {
+    /** Canonical content classification (provider-agnostic). */
+    contentType?: ProviderContentType
+    /** Message id (canonical; Meta also keeps legacy `message_id`). */
+    messageId?: string
+    /** Unix seconds. */
+    timestamp?: number
+    /** Destination/business number when the provider knows it. */
+    to?: string
+    /** Opaque extra identity: BSUID (Meta) or LID (Baileys). */
+    userId?: string
+    /** WhatsApp username when the platform sends one. */
+    username?: string
+    /** True for messages sent by the bot account itself. */
+    fromMe?: boolean
+    /** Provider-native payload, untransformed (forward-compat). */
+    raw?: unknown
+    /** Group author (groups only). */
+    participant?: string
+    participantUsername?: string
 }
 
 export type MessageContextIncoming = {
@@ -260,6 +329,8 @@ export interface TFlow<P = any, B = any> {
 export interface SendOptions {
     buttons?: Button[]
     media?: string
+    /** Whether to show a link preview when the message contains a URL. Auto-detected if omitted. */
+    preview_url?: boolean
     [key: string]: any
 }
 

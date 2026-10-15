@@ -6,9 +6,12 @@
 import type { Config } from 'jest'
 
 const config: Config = {
-    preset: 'ts-jest',
+    maxWorkers: 2,
     verbose: true,
     cache: true,
+    transform: {
+        '^.+\\.tsx?$': ['ts-jest', { diagnostics: false }],
+    },
 }
 
 export default config

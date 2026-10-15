@@ -1,3 +1,11 @@
+/**
+ * LAYER: Application
+ * Contains: BotManagerApi, IncomingMessage, ServerResponse, BotManager
+ * Rules: Orchestrates domain. No frameworks. Defines ports.
+ * BigO: O(n) score:3
+ * keywords: [BotManagerApi, IncomingMessage, ServerResponse, BotManager]
+ * GOAL: Own the "api" concern of the manager package.
+ */
 import type { IncomingMessage, ServerResponse } from 'http'
 import polka from 'polka'
 

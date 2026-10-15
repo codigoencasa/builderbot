@@ -65,6 +65,9 @@ const main = async () => {
         numberId: 'numberId',
         verifyToken: 'verifyToken',
         version: 'v18.0'
+        // Optional: enable inbound WhatsApp Business voice calls (WebRTC/SDP + STT/TTS)
+        // enableVoiceCalls: true,
+        // openaiApiKey: process.env.OPENAI_API_KEY ?? 'YOUR_OPENAI_API_KEY',
     })
     
     const adapterDB = new Database({ filename: 'db.json' })

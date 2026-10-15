@@ -1,12 +1,14 @@
 import { utils } from '@builderbot/bot'
-import { beforeEach, describe, expect, jest, test } from '@jest/globals'
+import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals'
 import { useMultiFileAuthState } from 'baileys'
+import { EventEmitter } from 'events'
 import fs from 'fs'
 import mime from 'mime-types'
 import path from 'path'
 import { IStickerOptions } from 'wa-sticker-formatter'
 
 import { BaileysProvider } from '../src'
+import * as baileysUtils from '../src/utils'
 
 const phoneNumber = '+123456789'
 
@@ -35,9 +37,14 @@ jest.mock('baileys', () => ({
         requestPairingCode: jest.fn(),
     })),
     getAggregateVotesInPollMessage: jest.fn().mockReturnValue([{ name: 'Option 1', voters: ['voter1'] }]),
+    Browsers: {
+        appropriate: jest.fn().mockReturnValue(['Windows', 'Chrome', 'Chrome 114.0.5735.198']),
+    },
 }))
 
 jest.mock('fs/promises', () => ({
+    ...jest.requireActual<typeof import('fs/promises')>('fs/promises'),
+    readFile: jest.fn().mockImplementation(() => Promise.resolve(Buffer.from('audio-buffer') as any)),
     writeFile: jest.fn(),
 }))
 
@@ -50,7 +57,16 @@ jest.mock('wa-sticker-formatter', () => {
 })
 
 jest.mock('../src/utils', () => ({
-    baileyCleanNumber: jest.fn().mockImplementation(() => phoneNumber),
+    // Spread the real module so new pure helpers (e.g. baileyContentType) stay
+    // available; only the functions below are stubbed.
+    ...(jest.requireActual('../src/utils') as object),
+    // Real group/broadcast JIDs must pass through so T15 routing can be asserted;
+    // everything else keeps the legacy stubbed phone number.
+    baileyCleanNumber: jest
+        .fn()
+        .mockImplementation((number: string) =>
+            number?.includes('@g.us') || number?.includes('broadcast') ? number : phoneNumber
+        ),
     baileyIsValidNumber: jest.fn((number: string) => {
         if (!number || number.trim() === '') return false
         return !number.includes('@g.us')
@@ -101,7 +117,12 @@ describe('#BaileysProvider', () => {
         provider.vendor = jest.fn() as any
     })
 
-    test('should initialize BaileysProvider correctly with default arguments', () => {
+    afterEach(async () => {
+        await provider.destroy()
+        jest.restoreAllMocks()
+    })
+
+    test('should initialize BaileysProvider correctly with default arguments', async () => {
         // Arrange
         const defaultArgs = {
             name: 'bot',
@@ -112,18 +133,22 @@ describe('#BaileysProvider', () => {
             phoneNumber: null,
             useBaileysStore: true,
             groupsIgnore: true,
+            allowGroups: false,
             readStatus: false,
             port: 3000,
             autoRefresh: 0,
             writeMyself: 'none',
             experimentalStore: false,
             experimentalSyncMessage: undefined,
+            fallBackAction: undefined,
+            captureProcessSignals: false,
         }
         // Act
         const baileysProvider = new BaileysProvider({})
 
         // Assert
         expect(baileysProvider.globalVendorArgs).toEqual(defaultArgs)
+        await baileysProvider.destroy()
     })
 
     describe('#beforeHttpServerInit', () => {
@@ -152,15 +177,32 @@ describe('#BaileysProvider', () => {
     })
 
     describe('#getMessage', () => {
-        test('should return empty message object', async () => {
-            // Arrange
-            const mockedKey = { remoteJid: 'exampleRemoteJid', id: 'exampleId' }
+        // H3 fixed in Phase 2: Baileys expects `undefined` on a cache miss
+        // (`getMessage: (key) => Promise<proto.IMessage | undefined>`); a truthy
+        // `{}` made Baileys believe the message was found.
+        test('should return undefined on cache miss', async () => {
+            const result = await provider['getMessage']({ remoteJid: 'exampleRemoteJid', id: 'exampleId' })
+            expect(result).toBeUndefined()
+        })
 
-            // Act
-            const result = await provider['getMessage'](mockedKey)
+        test('should return undefined when key has no id', async () => {
+            const result = await provider['getMessage']({ remoteJid: 'exampleRemoteJid', id: '' })
+            expect(result).toBeUndefined()
+        })
 
-            // Assert
-            expect(result).toEqual({})
+        test('should return the cached message on hit', async () => {
+            const message = { conversation: 'cached' } as any
+            provider.messageCache?.set('msg:hit-id', message)
+            const result = await provider['getMessage']({ remoteJid: 'exampleRemoteJid', id: 'hit-id' })
+            expect(result).toBe(message)
+        })
+
+        test('should cache outgoing messages so retries can find them', async () => {
+            const sent = { key: { id: 'out-1' }, message: { conversation: 'hello' } }
+            provider.vendor = { sendMessage: (jest.fn() as any).mockResolvedValue(sent) } as any
+            await provider.sendText('123@s.whatsapp.net', 'hello')
+            const result = await provider['getMessage']({ remoteJid: '123@s.whatsapp.net', id: 'out-1' })
+            expect(result).toEqual({ conversation: 'hello' })
         })
     })
 
@@ -204,6 +246,22 @@ describe('#BaileysProvider', () => {
             expect(generateFileNameSpy).toHaveBeenCalled()
             expect(filePath).toContain('mock-file.jpeg')
             expect(path.isAbsolute(filePath)).toBe(true)
+        })
+
+        test('should pass reuploadRequest ctx to downloadMediaMessage (T5, upstream #2767)', async () => {
+            const { downloadMediaMessage } = jest.mocked(await import('baileys'))
+            const ctx: any = { key: { id: 'media-1' }, message: { imageMessage: { mimetype: 'image/jpeg' } } }
+            provider.vendor = { updateMediaMessage: jest.fn() } as any
+            jest.spyOn(provider, 'generateFileName' as any).mockReturnValue('file.jpeg')
+
+            await provider.saveFile(ctx, { path: '/tmp' })
+
+            expect(downloadMediaMessage).toHaveBeenCalledWith(
+                ctx,
+                'buffer',
+                {},
+                expect.objectContaining({ reuploadRequest: expect.any(Function) })
+            )
         })
 
         test('should throw an error when MIME type is not found', async () => {
@@ -295,6 +353,45 @@ describe('#BaileysProvider', () => {
         })
     })
 
+    describe('#send* destination normalization (T16)', () => {
+        test('sendImage normalizes a bare phone number into a JID', async () => {
+            const mockSendMessage = jest.fn() as any
+            provider.vendor.sendMessage = mockSendMessage
+            const cleanSpy = jest.mocked(baileysUtils.baileyCleanNumber)
+            cleanSpy.mockClear()
+
+            await provider.sendImage('15551230000', '/tmp/pic.png', 'caption')
+
+            // A bare number must be converted before Baileys calls jidDecode()
+            expect(cleanSpy).toHaveBeenCalledWith('15551230000')
+            expect(mockSendMessage).toHaveBeenCalledWith(
+                phoneNumber,
+                expect.objectContaining({ image: { url: '/tmp/pic.png' }, caption: 'caption' })
+            )
+        })
+
+        test('sendText normalizes a bare phone number into a JID', async () => {
+            const mockSendMessage = jest.fn() as any
+            provider.vendor.sendMessage = mockSendMessage
+
+            await provider.sendText('15551230000', 'hola')
+
+            expect(mockSendMessage).toHaveBeenCalledWith(phoneNumber, { text: 'hola' })
+        })
+
+        test('sendFile normalizes a bare phone number into a JID', async () => {
+            const mockSendMessage = jest.fn() as any
+            provider.vendor.sendMessage = mockSendMessage
+
+            await provider.sendFile('15551230000', '/tmp/doc.pdf', 'caption')
+
+            expect(mockSendMessage).toHaveBeenCalledWith(
+                phoneNumber,
+                expect.objectContaining({ document: { url: '/tmp/doc.pdf' }, caption: 'caption' })
+            )
+        })
+    })
+
     describe('#sendSticker', () => {
         test('should send a sticker message', async () => {
             // Arrange
@@ -302,13 +399,17 @@ describe('#BaileysProvider', () => {
             const stickerUrl = 'https://example.com/sticker.png'
             const stickerOptions: Partial<IStickerOptions> = {}
             const messages = 'Hello Word!'
-            const mockSendMessage = jest.fn() as any
+            const sentMessage = { key: { id: 'sticker-1' }, message: { stickerMessage: {} } }
+            const mockSendMessage = (jest.fn() as any).mockResolvedValue(sentMessage)
             provider.vendor.sendMessage = mockSendMessage
             // Act
-            await provider.sendSticker(remoteJid, stickerUrl, stickerOptions, messages)
+            const sent = await provider.sendSticker(remoteJid, stickerUrl, stickerOptions, messages)
 
-            // Assert
-            expect(mockSendMessage).toHaveBeenCalledWith(remoteJid, expect.any(Buffer), { quoted: messages })
+            // Assert — the destination is normalized before hitting Baileys
+            expect(mockSendMessage).toHaveBeenCalledWith(phoneNumber, expect.any(Buffer), { quoted: messages })
+            // T16: stickers now return the sent message and cache it for getMessage retries
+            expect(sent).toBe(sentMessage)
+            expect(await provider['getMessage']({ remoteJid, id: 'sticker-1' })).toBe(sentMessage.message)
         })
 
         test('should send a sticker message null', async () => {
@@ -321,8 +422,8 @@ describe('#BaileysProvider', () => {
             // Act
             await provider.sendSticker(remoteJid, stickerUrl, stickerOptions)
 
-            // Assert
-            expect(mockSendMessage).toHaveBeenCalledWith(remoteJid, expect.any(Buffer), { quoted: null })
+            // Assert — the destination is normalized before hitting Baileys
+            expect(mockSendMessage).toHaveBeenCalledWith(phoneNumber, expect.any(Buffer), { quoted: null })
         })
     })
 
@@ -337,8 +438,8 @@ describe('#BaileysProvider', () => {
             // Act
             await provider.sendPresenceUpdate(remoteJid, WAPresence)
 
-            // Assert
-            expect(mockSendPresenceUpdate).toHaveBeenCalledWith(WAPresence, remoteJid)
+            // Assert — the destination is normalized before hitting Baileys
+            expect(mockSendPresenceUpdate).toHaveBeenCalledWith(WAPresence, phoneNumber)
         })
     })
 
@@ -365,7 +466,7 @@ describe('#BaileysProvider', () => {
             // Assert
             expect(result).toEqual({ status: 'success' })
             expect(mockSendMessage).toHaveBeenCalledWith(
-                remoteJid,
+                phoneNumber,
                 {
                     contacts: {
                         displayName: '.',
@@ -403,7 +504,7 @@ describe('#BaileysProvider', () => {
             // Assert
             expect(result).toEqual({ status: 'success' })
             expect(mockSendMessage).toHaveBeenCalledWith(
-                remoteJid,
+                phoneNumber,
                 {
                     contacts: {
                         displayName: '.',
@@ -439,7 +540,7 @@ describe('#BaileysProvider', () => {
             // Assert
             expect(result).toEqual({ status: 'success' })
             expect(mockSendMessage).toHaveBeenCalledWith(
-                remoteJid,
+                phoneNumber,
                 {
                     location: {
                         degreesLatitude: latitude,
@@ -465,7 +566,7 @@ describe('#BaileysProvider', () => {
             // Assert
             expect(result).toEqual({ status: 'success' })
             expect(mockSendMessage).toHaveBeenCalledWith(
-                remoteJid,
+                phoneNumber,
                 {
                     location: {
                         degreesLatitude: latitude,
@@ -493,6 +594,16 @@ describe('#BaileysProvider', () => {
             // Assert
             expect(result).toEqual('success')
             expect(mockSendText).toHaveBeenCalledWith(numberIn, message)
+        })
+
+        test('should send text message when options is undefined (T4)', async () => {
+            const mockSendText = mockSendSuccess
+            provider.sendText = mockSendText
+
+            const result = await provider.sendMessage(phoneNumber, 'Hello, world!')
+
+            expect(result).toEqual('success')
+            expect(mockSendText).toHaveBeenCalledWith(phoneNumber, 'Hello, world!')
         })
 
         test('should send buttons if options contain buttons', async () => {
@@ -535,8 +646,8 @@ describe('#BaileysProvider', () => {
         })
     })
 
-    describe.skip('#sendPoll', () => {
-        test('should send poll message with correct options', async () => {
+    describe('#sendPoll', () => {
+        test('should send poll message with multiselect false (selectableCount 0)', async () => {
             // Arrange
             const numberIn = phoneNumber
             const text = 'Please vote'
@@ -553,10 +664,12 @@ describe('#BaileysProvider', () => {
 
             // Assert
             expect(result).toEqual('success')
-            expect(mockSendMessage).toHaveBeenCalled()
+            expect(mockSendMessage).toHaveBeenCalledWith(phoneNumber, {
+                poll: { name: text, values: poll.options, selectableCount: 0 },
+            })
         })
 
-        test('should send poll message with correct options multiselect undefined', async () => {
+        test('should send poll message with multiselect undefined (selectableCount 1)', async () => {
             // Arrange
             const numberIn = phoneNumber
             const text = 'Please vote'
@@ -573,10 +686,12 @@ describe('#BaileysProvider', () => {
 
             // Assert
             expect(result).toEqual('success')
-            expect(mockSendMessage).toHaveBeenCalled()
+            expect(mockSendMessage).toHaveBeenCalledWith(phoneNumber, {
+                poll: { name: text, values: poll.options, selectableCount: 1 },
+            })
         })
 
-        test('should send poll message with correct options multiselect true', async () => {
+        test('should send poll message with multiselect true (selectableCount 1)', async () => {
             // Arrange
             const numberIn = phoneNumber
             const text = 'Please vote'
@@ -586,14 +701,16 @@ describe('#BaileysProvider', () => {
             }
 
             const mockSendMessage = mockSendSuccess
-            provider.vendor.sendMessage = mockSendSuccess
+            provider.vendor.sendMessage = mockSendMessage
 
             // Act
             const result = await provider.sendPoll(numberIn, text, poll)
 
             // Assert
             expect(result).toEqual('success')
-            expect(mockSendMessage).toHaveBeenCalled()
+            expect(mockSendMessage).toHaveBeenCalledWith(phoneNumber, {
+                poll: { name: text, values: poll.options, selectableCount: 1 },
+            })
         })
 
         test('should return false if options length is less than 2', async () => {
@@ -706,21 +823,41 @@ describe('#BaileysProvider', () => {
     })
 
     describe('#sendAudio ', () => {
-        test('should send audio message with correct URL', async () => {
+        test('should send audio message as buffer with ptt=true by default', async () => {
             // Arrange
             const number = phoneNumber
-            const audioUrl = 'http://example.com/audio.mp3'
+            const audioPath = '/tmp/audio.opus'
             const mockSendMessage = mockSendSuccess
             provider.vendor.sendMessage = mockSendMessage
 
             // Act
-            const result = await provider.sendAudio(number, audioUrl)
+            const result = await provider.sendAudio(number, audioPath)
 
             // Assert
             expect(result).toEqual('success')
             expect(mockSendMessage).toHaveBeenCalledWith(number, {
-                audio: { url: audioUrl },
+                audio: Buffer.from('audio-buffer'),
                 ptt: true,
+                mimetype: 'audio/ogg; codecs=opus',
+            })
+        })
+
+        test('should send audio message with isPTT=false when specified', async () => {
+            // Arrange
+            const number = phoneNumber
+            const audioPath = '/tmp/audio.opus'
+            const mockSendMessage = mockSendSuccess
+            provider.vendor.sendMessage = mockSendMessage
+
+            // Act
+            const result = await provider.sendAudio(number, audioPath, false)
+
+            // Assert
+            expect(result).toEqual('success')
+            expect(mockSendMessage).toHaveBeenCalledWith(number, {
+                audio: Buffer.from('audio-buffer'),
+                ptt: false,
+                mimetype: 'audio/ogg; codecs=opus',
             })
         })
     })
@@ -1002,6 +1139,319 @@ describe('#BaileysProvider', () => {
             expect(provider.emit).toHaveBeenCalled()
         })
 
+        test('Detect orderMessage with standard JID', async () => {
+            // Arrange
+            jest.mocked(utils.generateRefProvider).mockReturnValue('_event_order___mock-uuid')
+
+            const mockMessage = {
+                message: {
+                    orderMessage: { orderId: 'order-123', token: 'token-abc' },
+                },
+                pushName: 'Buyer Name',
+                key: {
+                    remoteJid: '5491112223344@s.whatsapp.net',
+                    id: 'msg-order-001',
+                },
+            }
+
+            // Act
+            await provider['busEvents']()[0].func({ messages: [mockMessage], type: 'notify' })
+
+            // Assert
+            expect(provider.emit).toHaveBeenCalledWith(
+                'message',
+                expect.objectContaining({ body: '_event_order___mock-uuid' })
+            )
+        })
+
+        test('Detect orderMessage with @lid JID and no remoteJidAlt', async () => {
+            // Arrange — escenario del bug: @lid sin remoteJidAlt crasheaba baileyCleanNumber(undefined)
+            jest.mocked(utils.generateRefProvider).mockReturnValue('_event_order___mock-uuid')
+
+            const mockMessage = {
+                message: {
+                    orderMessage: { orderId: 'order-456', token: 'token-xyz' },
+                },
+                pushName: 'Buyer Name',
+                key: {
+                    remoteJid: '5491112223344@lid',
+                    remoteJidAlt: undefined,
+                    id: 'msg-order-002',
+                },
+            }
+
+            // Act
+            await provider['busEvents']()[0].func({ messages: [mockMessage], type: 'notify' })
+
+            // Assert
+            expect(provider.emit).toHaveBeenCalledWith(
+                'message',
+                expect.objectContaining({ body: '_event_order___mock-uuid' })
+            )
+        })
+
+        test('LID without remoteJidAlt keeps the @lid JID instead of fabricating a PN (T3)', async () => {
+            const cleanSpy = jest.mocked(baileysUtils.baileyCleanNumber)
+            cleanSpy.mockClear()
+
+            const mockMessage = {
+                message: { conversation: 'hola' },
+                pushName: 'LID User',
+                key: { remoteJid: '999000123456789@lid', remoteJidAlt: undefined, id: 'lid-msg-1' },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [mockMessage], type: 'notify' })
+
+            // First normalization call must receive the raw @lid JID, never the
+            // fabricated numeric prefix '999000123456789'.
+            expect(cleanSpy).toHaveBeenCalledWith('999000123456789@lid')
+            expect(cleanSpy).not.toHaveBeenCalledWith('999000123456789')
+        })
+
+        test('three identical messages emit exactly one event (T2)', async () => {
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const build = () => ({
+                message: { conversation: 'duplicated' },
+                pushName: 'User',
+                key: { remoteJid: '15550000001@s.whatsapp.net', id: 'dup-id-1', fromMe: false },
+            })
+
+            const upsert = provider['busEvents']()[0].func
+            await upsert({ messages: [build()], type: 'notify' })
+            await upsert({ messages: [build()], type: 'notify' })
+            await upsert({ messages: [build()], type: 'notify' })
+
+            const messageEvents = emitSpy.mock.calls.filter(
+                ([event, payload]: any[]) => event === 'message' && payload?.key?.id === 'dup-id-1'
+            )
+            expect(messageEvents).toHaveLength(1)
+        })
+
+        test('a repeated message is accepted again after the dedupe TTL expires (T2)', async () => {
+            jest.useFakeTimers()
+            try {
+                const emitSpy = jest.spyOn(provider, 'emit')
+                const build = () => ({
+                    message: { conversation: 'later' },
+                    pushName: 'User',
+                    key: { remoteJid: '15550000002@s.whatsapp.net', id: 'dup-id-2', fromMe: false },
+                })
+                const upsert = provider['busEvents']()[0].func
+                await upsert({ messages: [build()], type: 'notify' })
+                jest.advanceTimersByTime(5 * 60 * 1000 + 1)
+                await upsert({ messages: [build()], type: 'notify' })
+
+                const messageEvents = emitSpy.mock.calls.filter(
+                    ([event, payload]: any[]) => event === 'message' && payload?.key?.id === 'dup-id-2'
+                )
+                expect(messageEvents).toHaveLength(2)
+            } finally {
+                jest.useRealTimers()
+            }
+        })
+
+        test('group message is discarded when allowGroups is false (default, T15)', async () => {
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const groupMessage = {
+                message: { conversation: 'hola grupo' },
+                pushName: 'Member',
+                key: { remoteJid: '120363000000000000@g.us', id: 'grp-off-1', fromMe: false, participant: '1@lid' },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [groupMessage], type: 'notify' })
+
+            const events = emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === 'grp-off-1')
+            expect(events).toHaveLength(0)
+        })
+
+        test('group message is delivered with from=group JID and participant when allowGroups is true (T15)', async () => {
+            provider.globalVendorArgs.allowGroups = true
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const groupMessage = {
+                message: { conversation: 'hola grupo' },
+                pushName: 'Member',
+                key: {
+                    remoteJid: '120363000000000000@g.us',
+                    id: 'grp-on-1',
+                    fromMe: false,
+                    participant: '15551230000@s.whatsapp.net',
+                },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [groupMessage], type: 'notify' })
+
+            const events = emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === 'grp-on-1')
+            expect(events).toHaveLength(1)
+            expect(events[0][1]).toEqual(
+                expect.objectContaining({
+                    from: '120363000000000000@g.us',
+                    participant: '15551230000@s.whatsapp.net',
+                    sender: '15551230000@s.whatsapp.net',
+                })
+            )
+        })
+
+        test('exposes the chat counterpart username when WhatsApp sends one', async () => {
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const message = {
+                message: { conversation: 'hola' },
+                pushName: 'Tia',
+                key: {
+                    remoteJid: '122299361538159@lid',
+                    remoteJidAlt: undefined,
+                    remoteJidUsername: 'meow1222',
+                    id: 'uname-1',
+                    fromMe: false,
+                },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [message], type: 'notify' })
+
+            const events = emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === 'uname-1')
+            expect(events).toHaveLength(1)
+            // `from` is normalized by baileyCleanNumber (mocked here); the username
+            // must survive untouched regardless of the JID form.
+            expect(events[0][1].username).toBe('meow1222')
+        })
+
+        test('exposes the participant username in group messages (allowGroups)', async () => {
+            provider.globalVendorArgs.allowGroups = true
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const message = {
+                message: { conversation: '.info' },
+                pushName: 'Tia',
+                key: {
+                    remoteJid: '120363410123779747@g.us',
+                    remoteJidAlt: undefined,
+                    fromMe: false,
+                    participant: '122299361538159@lid',
+                    participantAlt: undefined,
+                    participantUsername: 'meow1222',
+                    id: 'uname-grp-1',
+                },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [message], type: 'notify' })
+
+            const events = emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === 'uname-grp-1')
+            expect(events).toHaveLength(1)
+            expect(events[0][1]).toEqual(
+                expect.objectContaining({
+                    from: '120363410123779747@g.us',
+                    participant: '122299361538159@lid',
+                    participantUsername: 'meow1222',
+                })
+            )
+        })
+
+        test('leaves username undefined when WhatsApp does not send one', async () => {
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const message = {
+                message: { conversation: 'sin username' },
+                key: { remoteJid: '15550000003@s.whatsapp.net', id: 'uname-none-1', fromMe: false },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [message], type: 'notify' })
+
+            const events = emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === 'uname-none-1')
+            expect(events).toHaveLength(1)
+            expect(events[0][1].username).toBeUndefined()
+            expect(events[0][1].participantUsername).toBeUndefined()
+        })
+
+        test('exposes fromMe at the payload root', async () => {
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const incoming = {
+                message: { conversation: 'de otro' },
+                key: { remoteJid: '15550000004@s.whatsapp.net', id: 'fromme-0', fromMe: false },
+            }
+            const own = {
+                message: { conversation: 'propio' },
+                key: { remoteJid: '15550000005@s.whatsapp.net', id: 'fromme-1', fromMe: true },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [incoming], type: 'notify' })
+            provider.globalVendorArgs.writeMyself = 'both'
+            await provider['busEvents']()[0].func({ messages: [own], type: 'notify' })
+
+            const byId = (id: string) => emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === id)
+            expect(byId('fromme-0')).toHaveLength(1)
+            expect(byId('fromme-0')[0][1].fromMe).toBe(false)
+            expect(byId('fromme-1')).toHaveLength(1)
+            expect(byId('fromme-1')[0][1].fromMe).toBe(true)
+        })
+
+        test('emits _event_contacts_ ref for contact cards (W2)', async () => {
+            // Note: '@builderbot/bot' is automocked in this suite, so
+            // utils.generateRefProvider returns undefined; assert the call instead.
+            const { utils } = jest.requireMock('@builderbot/bot') as any
+            utils.generateRefProvider.mockClear()
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const single = {
+                message: { contactMessage: { displayName: 'Bob', vcard: 'BEGIN:VCARD' } },
+                key: { remoteJid: '15550000006@s.whatsapp.net', id: 'contact-1', fromMe: false },
+            }
+            const multiple = {
+                message: { contactsArrayMessage: { displayName: '2 contactos', contacts: [] } },
+                key: { remoteJid: '15550000006@s.whatsapp.net', id: 'contact-2', fromMe: false },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [single, multiple], type: 'notify' })
+
+            const byId = (id: string) => emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === id)
+            expect(byId('contact-1')).toHaveLength(1)
+            expect(byId('contact-2')).toHaveLength(1)
+            const refCalls = utils.generateRefProvider.mock.calls.map(([prefix]: any[]) => prefix)
+            expect(refCalls.filter((p: string) => p === '_event_contacts_')).toHaveLength(2)
+        })
+
+        test('exposes canonical envelope fields (W3)', async () => {
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const image = {
+                message: { imageMessage: { mimetype: 'image/jpeg' } },
+                messageTimestamp: 1750000000,
+                pushName: 'Tia',
+                key: { remoteJid: '15550000007@s.whatsapp.net', id: 'env-1', fromMe: false },
+            }
+            const lidText = {
+                message: { conversation: 'hola' },
+                messageTimestamp: 1750000001,
+                pushName: 'Tia',
+                key: { remoteJid: '122299361538159@lid', id: 'env-2', fromMe: false },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [image, lidText], type: 'notify' })
+
+            const byId = (id: string) => emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === id)
+            expect(byId('env-1')).toHaveLength(1)
+            const p1 = byId('env-1')[0][1]
+            expect(p1.contentType).toBe('image')
+            expect(p1.messageId).toBe('env-1')
+            expect(p1.timestamp).toBe(1750000000)
+            expect(p1.userId).toBeUndefined()
+            expect(p1.raw).toBe(image)
+
+            expect(byId('env-2')).toHaveLength(1)
+            const p2 = byId('env-2')[0][1]
+            expect(p2.contentType).toBe('text')
+            expect(p2.userId).toBe('122299361538159@lid')
+            expect(p2.messageId).toBe('env-2')
+        })
+
+        test('allowGroups does not enable broadcasts (T15)', async () => {
+            provider.globalVendorArgs.allowGroups = true
+            const emitSpy = jest.spyOn(provider, 'emit')
+            const broadcast = {
+                message: { conversation: 'status' },
+                key: { remoteJid: 'status@broadcast', id: 'bcast-1', fromMe: false },
+            }
+
+            await provider['busEvents']()[0].func({ messages: [broadcast], type: 'notify' })
+
+            const events = emitSpy.mock.calls.filter(([, p]: any[]) => p?.key?.id === 'bcast-1')
+            expect(events).toHaveLength(0)
+        })
+
         test('Detect broadcast in a message', async () => {
             // Arrange
             const mockMessage = {
@@ -1214,20 +1664,39 @@ describe('#BaileysProvider', () => {
     describe('#indexHome', () => {
         test('should send the correct image file', () => {
             // Arrange
-            const mockedReadStream = jest.fn()
-            const mockedFileStream = { pipe: jest.fn() }
-            mockedReadStream.mockReturnValueOnce(mockedFileStream)
-            require('fs').createReadStream = mockedReadStream
+            const mockedFileStream = Object.assign(new EventEmitter(), { pipe: jest.fn(), destroy: jest.fn() })
+            jest.spyOn(fs, 'createReadStream').mockReturnValue(mockedFileStream as any)
             const req = { params: { idBotName: 'bot123' } }
-            const res = { writeHead: jest.fn(), end: jest.fn() }
+            const res = { writeHead: jest.fn(), end: jest.fn(), once: jest.fn() }
             const expectedImagePath = 'ruta/esperada/bot123.qr.png'
             const mockedJoin = jest.spyOn(path, 'join')
             mockedJoin.mockReturnValueOnce(expectedImagePath)
 
             // Act
             provider['indexHome'](req as any, res as any, mockNext)
+            mockedFileStream.emit('open', 1)
             // Assert
             expect(res.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'image/png' })
+
+            mockedJoin.mockRestore()
+        })
+
+        // BUG(H4): a missing QR file used to crash the process because
+        // createReadStream fails asynchronously and had no error listener.
+        test('should return the 404 page when the QR file does not exist', () => {
+            // Arrange
+            const fileStream = Object.assign(new EventEmitter(), { pipe: jest.fn(), destroy: jest.fn() })
+            jest.spyOn(fs, 'createReadStream').mockReturnValue(fileStream as any)
+            const req = { params: { idBotName: 'bot123' } }
+            const res = { writeHead: jest.fn(), end: jest.fn(), headersSent: false, once: jest.fn() }
+
+            // Act
+            provider['indexHome'](req as any, res as any, mockNext)
+            fileStream.emit('error', new Error('ENOENT'))
+
+            // Assert
+            expect(res.writeHead).toHaveBeenCalledWith(404, { 'Content-Type': 'text/html' })
+            expect(res.end).toHaveBeenCalled()
         })
     })
 

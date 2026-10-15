@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: JsonFileAdapterOptions, HistoryEntry
+ * Rules: No external dependencies. Pure business logic.
+ * BigO: O(1) score:5
+ * keywords: [JsonFileAdapterOptions, HistoryEntry]
+ * GOAL: Own the "types" concern of the database-json package.
+ */
 export interface JsonFileAdapterOptions {
     filename: string
     /**

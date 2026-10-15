@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: EvolutionInterface, SaveFileOptions
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(1) score:5
+ * keywords: [EvolutionInterface, SaveFileOptions]
+ * GOAL: Own the "evolution" concern of the provider-evolution-api package.
+ */
 import type { BotContext } from '@builderbot/bot/dist/types'
 import type polka from 'polka'
 

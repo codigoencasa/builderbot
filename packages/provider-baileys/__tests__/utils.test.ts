@@ -5,7 +5,13 @@ import fsExtra from 'fs-extra'
 import { join } from 'path'
 import * as qr from 'qr-image'
 
-import { baileyCleanNumber, baileyGenerateImage, baileyIsValidNumber, emptyDirSessions } from '../src/utils'
+import {
+    baileyCleanNumber,
+    baileyContentType,
+    baileyGenerateImage,
+    baileyIsValidNumber,
+    emptyDirSessions,
+} from '../src/utils'
 
 jest.mock('qr-image', () => ({
     image: jest.fn(() => ({
@@ -112,6 +118,41 @@ describe('#baileyGenerateImage', () => {
             expect(createWriteStream).toHaveBeenCalledWith(imagePath)
             expect(mockWriteStream.on).toHaveBeenCalledWith('finish', expect.any(Function))
         })
+    })
+})
+
+describe('#baileyContentType', () => {
+    const cases: [string, any, string][] = [
+        ['text (conversation)', { conversation: 'hola' }, 'text'],
+        ['text (extendedTextMessage)', { extendedTextMessage: { text: 'hola' } }, 'text'],
+        ['image', { imageMessage: {} }, 'image'],
+        ['video', { videoMessage: {} }, 'video'],
+        ['audio', { audioMessage: {} }, 'audio'],
+        ['document', { documentMessage: {} }, 'document'],
+        ['documentWithCaption', { documentWithCaptionMessage: {} }, 'document'],
+        ['sticker', { stickerMessage: {} }, 'sticker'],
+        ['location', { locationMessage: {} }, 'location'],
+        ['liveLocation', { liveLocationMessage: {} }, 'location'],
+        ['contact', { contactMessage: {} }, 'contact'],
+        ['contactsArray', { contactsArrayMessage: {} }, 'contact'],
+        ['order', { orderMessage: {} }, 'order'],
+        ['poll', { pollCreationMessage: {} }, 'poll'],
+        ['poll v3', { pollCreationMessageV3: {} }, 'poll'],
+        ['button reply', { buttonsResponseMessage: {} }, 'button'],
+        ['list reply', { listResponseMessage: {} }, 'list'],
+        ['reaction', { reactionMessage: {} }, 'reaction'],
+        ['unknown key', { protocolMessage: {} }, 'unknown'],
+        ['empty object', {}, 'unknown'],
+    ]
+    for (const [name, message, expected] of cases) {
+        test(`maps ${name} to ${expected}`, () => {
+            expect(baileyContentType(message)).toBe(expected)
+        })
+    }
+    test('returns unknown for undefined/null/non-object', () => {
+        expect(baileyContentType(undefined)).toBe('unknown')
+        expect(baileyContentType(null)).toBe('unknown')
+        expect(baileyContentType('text')).toBe('unknown')
     })
 })
 

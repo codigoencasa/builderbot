@@ -1,3 +1,11 @@
+/**
+ * LAYER: Application
+ * Contains: SerializableBotConfig, PersistenceConfig, PersistenceManager
+ * Rules: Orchestrates domain. No frameworks. Defines ports.
+ * BigO: O(1) score:5
+ * keywords: [SerializableBotConfig, PersistenceConfig, PersistenceManager]
+ * GOAL: Own the "persistence" concern of the manager package.
+ */
 import { writeFileSync, readFileSync, existsSync, mkdirSync, unlinkSync } from 'fs'
 import { join, dirname } from 'path'
 

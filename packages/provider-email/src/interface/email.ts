@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: EmailInterface, EmailBotContext, EmailSendOptions
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(1) score:5
+ * keywords: [EmailInterface, EmailBotContext, EmailSendOptions]
+ * GOAL: Own the "email" concern of the provider-email package.
+ */
 import type { SendOptions, BotContext } from '@builderbot/bot/dist/types'
 
 import type { EmailBotContext, EmailSendOptions } from '../types'

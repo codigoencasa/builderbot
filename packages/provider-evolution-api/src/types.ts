@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: File, SaveFileOptions, MediaType, TextMessage
+ * Rules: No external dependencies. Pure business logic.
+ * BigO: O(1) score:5
+ * keywords: [File, SaveFileOptions, MediaType, TextMessage]
+ * GOAL: Own the "types" concern of the provider-evolution-api package.
+ */
 import type { GlobalVendorArgs } from '@builderbot/bot/dist/types'
 
 // Core file type used by the provider

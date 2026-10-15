@@ -1,3 +1,11 @@
+/**
+ * LAYER: Application
+ * Contains: BotManager, MemoryDB
+ * Rules: Orchestrates domain. No frameworks. Defines ports.
+ * BigO: O(n) score:3
+ * keywords: [BotManager, MemoryDB]
+ * GOAL: Own the "bot manager" concern of the manager package.
+ */
 import { createBot, createProvider, createFlow, MemoryDB } from '@builderbot/bot'
 import { join } from 'path'
 

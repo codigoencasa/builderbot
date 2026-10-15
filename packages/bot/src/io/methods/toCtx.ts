@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: toCtx — maps an incoming message to a TContext
+ * Rules: Pure mapping. No external side effects.
+ * BigO: O(1) score:5
+ * keywords: [toCtx, TContext, ActionPropertiesKeyword]
+ * GOAL: Build the flow context for a message using its keyword and options.
+ */
 import type { ActionPropertiesKeyword, TContext } from '../../types'
 import { generateRef, generateRefSerialize } from '../../utils/hash'
 

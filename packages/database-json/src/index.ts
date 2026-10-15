@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: MemoryDB, HistoryEntry, JsonFileAdapterOptions
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n) score:3
+ * keywords: [MemoryDB, HistoryEntry, JsonFileAdapterOptions]
+ * GOAL: Own the "src" concern of the database-json package.
+ */
 import { MemoryDB } from '@builderbot/bot'
 import { existsSync, promises as fsPromises } from 'fs'
 import { join } from 'path'

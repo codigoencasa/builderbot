@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: GoHighLevelCoreVendor, TokenManager, GHLGlobalVendorArgs, GHLIncomingWebhook
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [GoHighLevelCoreVendor, TokenManager, GHLGlobalVendorArgs, GHLIncomingWebhook]
+ * GOAL: Own the "core" concern of the provider-gohighlevel package.
+ */
 import EventEmitter from 'node:events'
 import type polka from 'polka'
 import type Queue from 'queue-promise'

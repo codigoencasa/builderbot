@@ -1,5 +1,15 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: InstagramListenMode, InstagramCommentValue, InstagramMessage, InstagramEvents
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^2) score:1
+ * keywords: [InstagramListenMode, InstagramCommentValue, InstagramMessage, InstagramEvents]
+ * GOAL: Own the "instagram events" concern of the provider-instagram package.
+ */
 import { EventEmitterClass, utils } from '@builderbot/bot'
-import { ProviderEventTypes } from '@builderbot/bot/dist/types'
+import type { BotContext, ProviderEventTypes } from '@builderbot/bot/dist/types'
+
+import { instagramEvents } from './instagram.events.constants'
 
 export type InstagramListenMode = 'message' | 'comment' | 'both'
 
@@ -90,9 +100,13 @@ export class InstagramEvents extends EventEmitterClass<ProviderEventTypes> {
         if (!messagingEvent.message) return
 
         const isEcho = messagingEvent.message?.is_echo || messagingEvent.message?.is_self
-        if (isEcho) return
+        if (isEcho) {
+            this.handleEcho(messagingEvent)
+            return
+        }
 
-        const sendObj = {
+        const attachment = messagingEvent.message?.attachments?.[0]
+        const sendObj: BotContext = {
             body: messagingEvent.message?.text || '',
             from: messagingEvent.sender.id,
             name: '',
@@ -104,8 +118,7 @@ export class InstagramEvents extends EventEmitterClass<ProviderEventTypes> {
             messageId: messagingEvent.message?.mid || '',
         }
 
-        if (messagingEvent.message?.attachments && messagingEvent.message.attachments.length > 0) {
-            const attachment = messagingEvent.message.attachments[0]
+        if (attachment) {
             switch (attachment.type) {
                 case 'image':
                     sendObj.body = utils.generateRefProvider('_event_media_')
@@ -120,9 +133,47 @@ export class InstagramEvents extends EventEmitterClass<ProviderEventTypes> {
                     sendObj.body = utils.generateRefProvider('_event_document_')
                     break
             }
+            sendObj.data = { media: { url: attachment.payload?.url || '' } }
         }
 
         this.emit('message', sendObj)
+    }
+
+    private handleEcho = (messagingEvent: NonNullable<InstagramMessage['entry'][0]['messaging']>[0]) => {
+        if (!messagingEvent.message) return
+
+        const attachment = messagingEvent.message?.attachments?.[0]
+        let body = messagingEvent.message?.text || ''
+
+        if (attachment) {
+            switch (attachment.type) {
+                case 'image':
+                case 'video':
+                    body = utils.generateRefProvider('_event_media_')
+                    break
+                case 'audio':
+                    body = utils.generateRefProvider('_event_voice_note_')
+                    break
+                case 'file':
+                    body = utils.generateRefProvider('_event_document_')
+                    break
+            }
+        }
+
+        const sendObj: BotContext = {
+            body,
+            from: messagingEvent.recipient.id,
+            name: '',
+            fromMe: true,
+            timestamp: messagingEvent.timestamp,
+            messageId: messagingEvent.message?.mid || '',
+        }
+
+        if (attachment) {
+            sendObj.data = { media: { url: attachment.payload?.url || '' } }
+        }
+
+        this.emit('host', sendObj)
     }
 
     private handlePostback = (messagingEvent: NonNullable<InstagramMessage['entry'][0]['messaging']>[0]) => {
@@ -144,12 +195,19 @@ export class InstagramEvents extends EventEmitterClass<ProviderEventTypes> {
     }
 
     private handleComment = (commentValue: InstagramCommentValue, pageId: string) => {
+        // Skip comments authored by the bot's own account. Public replies sent via
+        // add_ig_comment_reply create a new comment on the same media, which Meta
+        // re-delivers as a "comments" webhook — without this guard the flow
+        // re-triggers on its own reply, causing an infinite reply loop.
+        if (commentValue.from.id === pageId) return
+
         const timestamp = new Date(commentValue.timestamp).getTime() || Date.now()
 
         const sendObj = {
-            body: commentValue.text,
+            body: instagramEvents.IG_COMMENT,
             from: commentValue.from.id,
             name: commentValue.from.username || '',
+            username: commentValue.from.username || '',
             host: {
                 id: pageId,
                 phone: 'instagram',
@@ -161,6 +219,7 @@ export class InstagramEvents extends EventEmitterClass<ProviderEventTypes> {
                 parentId: commentValue.parent_id || null,
                 mediaId: commentValue.media.id,
                 username: commentValue.from.username || '',
+                text: commentValue.text,
             },
         }
 

@@ -6,10 +6,15 @@
 import type { Config } from 'jest'
 
 const config: Config = {
-    preset: 'ts-jest',
+    maxWorkers: 2,
+    transform: {
+        '^.+\\.tsx?$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.json' }],
+    },
     verbose: true,
     cache: true,
-    testEnvironment: 'node',
+    // Each suite owns a temporary cwd. Never scan application directories to
+    // guess which sessions/logs are test artifacts.
+    testEnvironment: '<rootDir>/jest.environment.cjs',
 }
 
 export default config

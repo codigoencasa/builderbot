@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: GupshupStatusLogMode, GupshupLogsConfig, GupshupLocalMediaConfig, GupshupGlobalVendorArgs
+ * Rules: No external dependencies. Pure business logic.
+ * BigO: O(1) score:5
+ * keywords: [GupshupStatusLogMode, GupshupLogsConfig, GupshupLocalMediaConfig, GupshupGlobalVendorArgs]
+ * GOAL: Own the "types" concern of the provider-gupshup package.
+ */
 import { GlobalVendorArgs } from '@builderbot/bot/dist/types'
 
 export type GupshupStatusLogMode = 'off' | 'failed' | 'all'

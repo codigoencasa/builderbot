@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: Interactive
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(n) score:3
+ * keywords: [Interactive]
+ * GOAL: Own the "interactive" concern of the cli package.
+ */
 import { intro, outro, confirm, select, spinner, isCancel, cancel, note } from '@clack/prompts'
 import { existsSync } from 'fs'
 import { readFile, rename, writeFile } from 'fs/promises'

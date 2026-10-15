@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: generateRef / generateRegex / encryptData / decryptData — hashing and crypto helpers
+ * Rules: Wraps node:crypto. No business rules.
+ * BigO: O(1) score:5
+ * keywords: [generateRef, generateRegex, encryptData]
+ * GOAL: Generate stable references and encrypt/decrypt serialized context payloads.
+ */
 import { randomUUID, createHash, createCipheriv, createDecipheriv } from 'crypto'
 
 const SALT_KEY = `sal-key-${Date.now()}`

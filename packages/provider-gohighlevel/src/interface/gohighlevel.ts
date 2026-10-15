@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: GoHighLevelInterface, GHLMessage, GHLSendMessageBody, SaveFileOptions
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(1) score:5
+ * keywords: [GoHighLevelInterface, GHLMessage, GHLSendMessageBody, SaveFileOptions]
+ * GOAL: Own the "gohighlevel" concern of the provider-gohighlevel package.
+ */
 import type { SendOptions, BotContext, Button } from '@builderbot/bot/dist/types'
 
 import type { GHLMessage, GHLSendMessageBody, SaveFileOptions } from '~/types'

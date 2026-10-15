@@ -1,5 +1,5 @@
 {
-  "version": "1.4.1",
+  "version": "1.4.4",
   "packages": [
     "packages/bot",
     "packages/cli",
@@ -16,6 +16,7 @@
     "packages/provider-facebook-messenger",
     "packages/provider-gupshup",
     "packages/provider-instagram",
+    "packages/provider-tiktok",
     "packages/provider-sherpa",
     "packages/provider-twilio",
     "packages/provider-web-whatsapp",
@@ -24,8 +25,12 @@
     "packages/provider-venom",
     "packages/provider-gohighlevel",
     "packages/provider-email",
+    "packages/provider-voice",
+    "packages/provider-voice-sip",
+    "packages/provider-voice-whatsapp",
     "packages/contexts-dialogflow",
-    "packages/contexts-dialogflow-cx"
+    "packages/contexts-dialogflow-cx",
+    "packages/plugins/chatwoot"
   ],
   "command": {
     "version": {
@@ -34,7 +39,7 @@
         "**/*"
       ],
       "noVerifyAccess": true,
-      "syncWorkspaceLockfile": false
+      "workspaceProtocol": "noop"
     }
   },
   "npmClient": "pnpm",

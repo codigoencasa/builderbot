@@ -1,16 +1,25 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: Boom, PathOrFileDescriptor
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n^2) score:1
+ * keywords: [Boom, PathOrFileDescriptor]
+ * GOAL: Own the "bailey" concern of the provider-baileys package.
+ */
 import { ProviderClass, utils } from '@builderbot/bot'
 import type { BotContext, Button, SendOptions } from '@builderbot/bot/dist/types'
 import type { Boom } from '@hapi/boom'
 import { Console } from 'console'
 import type { PathOrFileDescriptor } from 'fs'
 import { createReadStream, createWriteStream, readFileSync } from 'fs'
-import { writeFile } from 'fs/promises'
+import { readFile, writeFile } from 'fs/promises'
 import mime from 'mime-types'
 import NodeCache from 'node-cache'
 import { tmpdir } from 'os'
 import { join, basename, resolve } from 'path'
 import pino from 'pino'
 import type polka from 'polka'
+import { finished } from 'stream/promises'
 import type { IStickerOptions } from 'wa-sticker-formatter'
 import { Sticker } from 'wa-sticker-formatter'
 
@@ -18,14 +27,16 @@ import {
     AnyMediaMessageContent,
     AnyMessageContent,
     BaileysEventMap,
+    Browsers,
     WAMessage,
     WASocket,
     MessageUpsertType,
     isJidGroup,
     isJidBroadcast,
-    isLidUser,
     DisconnectReason,
     downloadMediaMessage,
+    fetchLatestBaileysVersion,
+    fetchLatestWaWebVersion,
     getAggregateVotesInPollMessage,
     makeCacheableSignalKeyStore,
     makeWASocketOther,
@@ -35,27 +46,45 @@ import {
     WAVersion,
     WABrowserDescription,
 } from './baileyWrapper'
-import { releaseTmp } from './releaseTmp'
+import {
+    createLidCache,
+    extractAndCacheLidFromMessage,
+    resolveLidToPn,
+    asLidJid,
+    isMessageContext,
+    type LidCache,
+    type MessageContext,
+    type LidJid,
+} from './lidCache'
+import { cleanSessionFiles, releaseTmp } from './releaseTmp'
 import type { BaileyGlobalVendorArgs } from './type'
-import { baileyGenerateImage, baileyCleanNumber, baileyIsValidNumber, emptyDirSessions } from './utils'
+import {
+    baileyGenerateImage,
+    baileyCleanNumber,
+    baileyContentType,
+    baileyIsValidNumber,
+    emptyDirSessions,
+} from './utils'
 
 class BaileysProvider extends ProviderClass<WASocket> {
     public globalVendorArgs: BaileyGlobalVendorArgs = {
         name: `bot`,
         gifPlayback: false,
         usePairingCode: false,
-        browser: ['Windows', 'Chrome', 'Chrome 114.0.5735.198'] as WABrowserDescription,
+        browser: Browsers.appropriate('Chrome') as WABrowserDescription,
         phoneNumber: null,
         useBaileysStore: true,
         port: 3000,
         timeRelease: 0, //21600000
         writeMyself: 'none',
         groupsIgnore: true,
+        allowGroups: false,
         readStatus: false,
         experimentalStore: false,
         autoRefresh: 0,
         experimentalSyncMessage: undefined,
         fallBackAction: undefined,
+        captureProcessSignals: false,
     }
 
     private reconnectAttempts = 0
@@ -69,8 +98,30 @@ class BaileysProvider extends ProviderClass<WASocket> {
     private logger: Console
     private logStream: NodeJS.WritableStream
 
-    private idsDuplicates = []
+    /** Dedupe window: messageId__from → expiry timestamp (T2, RFC 0002) */
+    private idsDuplicates = new Map<string, number>()
     private mapSet = new Set()
+
+    private static readonly DEDUPE_TTL_MS = 5 * 60 * 1000
+    private static readonly DEDUPE_MAX_ENTRIES = 5000
+
+    /** LID → Phone Number cache for privacy-preserving identifier resolution */
+    private lidCache: LidCache
+
+    /** Prevent new work as soon as shutdown starts. */
+    private isCleaned = false
+    private cleanupPromise?: Promise<void>
+    private initPromise?: Promise<WASocket['ev'] | undefined>
+    private reconnectTimer?: NodeJS.Timeout
+    private reconnectTask?: Promise<void>
+    private reconnectInProgress = false
+    private sessionCleanupTimer?: NodeJS.Timeout
+
+    /** Handle for the periodic housekeeping interval */
+    private cleanupInterval?: NodeJS.Timeout
+
+    /** Process signal handlers registered by this instance (opt-in) */
+    private signalHandlers: Array<{ event: NodeJS.Signals; handler: (...args: any[]) => void }> = []
 
     constructor(args: Partial<BaileyGlobalVendorArgs>) {
         super()
@@ -119,61 +170,53 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
         this.globalVendorArgs = { ...this.globalVendorArgs, ...args }
 
+        // Initialize LID cache (hybrid file+memory or memory-only based on config)
+        this.lidCache = this.initializeLidCache()
+
         this.setupCleanupHandlers()
         this.setupPeriodicCleanup()
     }
 
-    /**
-     * Setup cleanup handlers
-     * @description
-     * - Remove existing listeners to prevent duplicates
-     * - Add new listeners
-     * - Add cleanup function to all listeners
-     * - Add cleanup function to uncaughtException and unhandledRejection
-     * - Add cleanup function to SIGINT, SIGTERM, SIGUSR1, SIGUSR2
-     * - Add cleanup function to process.exit
-     */
+    /** Register only this instance's opt-in shutdown handlers. */
     private setupCleanupHandlers() {
-        const cleanup = () => {
-            this.logger.log(`[${new Date().toISOString()}] Iniciando limpieza de recursos...`)
-            this.cleanup()
+        // Opt-in only: by default the provider never touches the host's process
+        // lifecycle. `removeAllListeners` is deliberately avoided so we never
+        // clobber handlers registered by the app or by other providers.
+        if (!this.globalVendorArgs.captureProcessSignals) return
+
+        const signals: NodeJS.Signals[] = ['SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2']
+
+        for (const signal of signals) {
+            const handler = () => {
+                this.logger.log(`[${new Date().toISOString()}] Received ${signal}, shutting down...`)
+                this.cleanup()
+                    .catch((error) => console.error('Error durante cleanup:', error))
+                    .finally(() => process.exit(0))
+            }
+            process.on(signal, handler)
+            this.signalHandlers.push({ event: signal, handler })
         }
-
-        // Remove existing listeners to prevent duplicates
-        process.removeAllListeners('SIGINT')
-        process.removeAllListeners('SIGTERM')
-        process.removeAllListeners('SIGUSR1')
-        process.removeAllListeners('SIGUSR2')
-        process.removeAllListeners('uncaughtException')
-        process.removeAllListeners('unhandledRejection')
-
-        process.on('SIGINT', cleanup)
-        process.on('SIGTERM', cleanup)
-        process.on('SIGUSR1', cleanup)
-        process.on('SIGUSR2', cleanup)
-
-        process.on('uncaughtException', (error) => {
-            this.logger.log(`[${new Date().toISOString()}] Uncaught Exception:`, error)
-            this.cleanup()
-            process.exit(1)
-        })
-
-        process.on('unhandledRejection', (reason, promise) => {
-            this.logger.log(`[${new Date().toISOString()}] Unhandled Rejection at:`, promise, 'reason:', reason)
-        })
     }
 
     private setupPeriodicCleanup() {
         // Limpiar duplicados cada 10 minutos para evitar memory leaks
-        setInterval(() => {
+        this.cleanupInterval = setInterval(() => {
             const maxSize = 1000
-            if (this.idsDuplicates.length > maxSize) {
+            const now = Date.now()
+            for (const [key, expiresAt] of this.idsDuplicates) {
+                if (expiresAt <= now) this.idsDuplicates.delete(key)
+            }
+            if (this.idsDuplicates.size > maxSize) {
+                const excess = this.idsDuplicates.size - maxSize
+                let removed = 0
+                for (const key of this.idsDuplicates.keys()) {
+                    if (removed >= excess) break
+                    this.idsDuplicates.delete(key)
+                    removed++
+                }
                 this.logger.log(
-                    `[${new Date().toISOString()}] Cleaning duplicates array: ${
-                        this.idsDuplicates.length
-                    } -> ${maxSize}`
+                    `[${new Date().toISOString()}] Cleaning duplicates map: ${this.idsDuplicates.size + removed} -> ${this.idsDuplicates.size}`
                 )
-                this.idsDuplicates = this.idsDuplicates.slice(-maxSize) // Mantener solo los últimos 1000
             }
 
             // Limpiar mapSet si tiene demasiadas entradas
@@ -182,42 +225,105 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 this.mapSet.clear()
             }
         }, 600000) // 10 minutos
+
+        // Never keep the event loop alive because of a housekeeping timer
+        if (typeof this.cleanupInterval.unref === 'function') {
+            this.cleanupInterval.unref()
+        }
     }
 
-    private cleanup() {
+    private cleanup(): Promise<void> {
+        if (this.cleanupPromise) return this.cleanupPromise
+        this.isCleaned = true
+
+        if (this.cleanupInterval) clearInterval(this.cleanupInterval)
+        if (this.reconnectTimer) clearTimeout(this.reconnectTimer)
+        if (this.sessionCleanupTimer) clearInterval(this.sessionCleanupTimer)
+        this.cleanupInterval = undefined
+        this.reconnectTimer = undefined
+        this.sessionCleanupTimer = undefined
+        this.reconnectInProgress = false
+
+        for (const { event, handler } of this.signalHandlers) process.removeListener(event, handler)
+        this.signalHandlers = []
+
+        // Every concurrent caller waits for the same complete teardown.
+        this.cleanupPromise = this.performCleanup()
+        return this.cleanupPromise
+    }
+
+    private async performCleanup(): Promise<void> {
         try {
-            if (this.msgRetryCounterCache) {
-                this.msgRetryCounterCache.close()
-                this.msgRetryCounterCache = undefined
+            // Initialization may be suspended in auth/version/pairing I/O. Its
+            // stopping guards prevent a late socket; keep logs open until it settles.
+            if (this.reconnectTask) await this.reconnectTask
+            if (this.initPromise) await this.initPromise.catch((error) => this.logger.error(error))
+
+            if (this.vendor) {
+                try {
+                    // Baileys end() owns WebSocket closure and is async at runtime.
+                    // Do not close twice, and ignore its connection.update during shutdown.
+                    await this.vendor.end?.(undefined)
+                } catch (error) {
+                    this.logger.error('[Baileys] Socket shutdown failed:', error)
+                }
             }
 
-            if (this.userDevicesCache) {
-                this.userDevicesCache.close()
-                this.userDevicesCache = undefined
-            }
-
-            if (this.messageCache) {
-                this.messageCache.close()
-                this.messageCache = undefined
-            }
-
+            this.msgRetryCounterCache?.close()
+            this.msgRetryCounterCache = undefined
+            this.userDevicesCache?.close()
+            this.userDevicesCache = undefined
+            this.messageCache?.close()
+            this.messageCache = undefined
             this.mapSet.clear()
-            this.idsDuplicates.length = 0
+            this.idsDuplicates.clear()
 
-            if (this.logStream && typeof this.logStream.end === 'function') {
-                this.logStream.end()
+            if (this.lidCache?.close) {
+                await this.lidCache.close().catch((error) => this.logger.error('[Baileys] LID flush failed:', error))
             }
 
+            const server = this.server?.server
+            if (server?.listening) {
+                await new Promise<void>((resolve, reject) => {
+                    server.close((error) => (error ? reject(error) : resolve()))
+                    server.closeIdleConnections?.()
+                }).catch((error) => this.logger.error('[Baileys] HTTP shutdown failed:', error))
+            }
             this.logger.log(`[${new Date().toISOString()}] Recursos limpiados correctamente`)
         } catch (error) {
             console.error('Error durante cleanup:', error)
+        } finally {
+            // Await the actual flush/close, not just the call to end().
+            if (this.logStream && typeof this.logStream.end === 'function') {
+                const flushed = finished(this.logStream)
+                this.logStream.end()
+                await flushed.catch((error) => console.error('[Baileys] Log shutdown failed:', error))
+            }
         }
+    }
+
+    /**
+     * Releases every resource held by the provider: socket, caches, timers,
+     * LID cache flush and log stream. Idempotent.
+     *
+     * Hosts that embed the provider should call this from their own shutdown
+     * path, since the provider does not capture process signals by default.
+     */
+    public destroy(): Promise<void> {
+        return this.cleanup()
+    }
+
+    public start(...args: Parameters<ProviderClass['start']>): void {
+        if (!this.isCleaned) super.start(...args)
+    }
+
+    protected listenOnEvents(vendor: any): void {
+        if (!this.isCleaned) super.listenOnEvents(vendor)
     }
 
     public async releaseSessionFiles() {
         const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
-        const idTimer = await releaseTmp(NAME_DIR_SESSION, 0)
-        clearInterval(idTimer)
+        await cleanSessionFiles(NAME_DIR_SESSION)
     }
 
     protected beforeHttpServerInit(): void {
@@ -232,13 +338,11 @@ class BaileysProvider extends ProviderClass<WASocket> {
     protected afterHttpServerInit(): void {}
 
     public indexHome: polka.Middleware = (req, res) => {
-        try {
-            const botName = req[this.idBotName]
-            const qrPath = join(process.cwd(), `${botName}.qr.png`)
-            const fileStream = createReadStream(qrPath)
-            res.writeHead(200, { 'Content-Type': 'image/png' })
-            fileStream.pipe(res)
-        } catch (e) {
+        const notReady = () => {
+            if (res.headersSent) {
+                res.destroy()
+                return
+            }
             res.writeHead(404, { 'Content-Type': 'text/html' })
             res.end(`
                 <!DOCTYPE html>
@@ -253,18 +357,39 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 </html>
             `)
         }
+
+        try {
+            const botName = req[this.idBotName]
+            const qrPath = join(process.cwd(), `${botName}.qr.png`)
+
+            const fileStream = createReadStream(qrPath)
+            fileStream.once('error', notReady)
+            // Delay headers until the file is open so ENOENT/EACCES can return 404.
+            fileStream.once('open', () => {
+                if (res.destroyed) return fileStream.destroy()
+                res.writeHead(200, { 'Content-Type': 'image/png' })
+                fileStream.pipe(res)
+            })
+            res.once('close', () => fileStream.destroy())
+        } catch (e) {
+            notReady()
+        }
     }
 
     protected getMessage = async (key: { remoteJid: string; id: string }): Promise<proto.IMessage | undefined> => {
-        if (!key.id) return {}
+        if (!key.id) return undefined
 
-        // Intentar recuperar el mensaje del cache
-        const cachedMessage = this.messageCache?.get<proto.IMessage>(`msg:${key.id}`)
-        if (cachedMessage) {
-            return cachedMessage
+        // Baileys contract: `undefined` on miss so it can trigger a retry.
+        // Returning `{}` makes Baileys believe the message was found (H3).
+        return this.messageCache?.get<proto.IMessage>(`msg:${key.id}`)
+    }
+
+    /** Cache outgoing messages so getMessage can answer retry/poll lookups (T1). */
+    private cacheOutgoingMessage(sent: any): any {
+        if (sent?.key?.id && sent?.message) {
+            this.messageCache?.set(`msg:${sent.key.id}`, sent.message)
         }
-
-        return {}
+        return sent
     }
 
     protected saveCredsGlobal: (() => Promise<void>) | null = null
@@ -272,28 +397,63 @@ class BaileysProvider extends ProviderClass<WASocket> {
     /**
      * Iniciar todo Bailey
      */
-    protected initVendor = async () => {
+    protected initVendor = (): Promise<WASocket['ev'] | undefined> => {
+        if (this.isCleaned) return Promise.resolve(undefined)
+        if (this.initPromise) return this.initPromise
+        this.initPromise = this.createVendor().finally(() => {
+            this.initPromise = undefined
+        })
+        return this.initPromise
+    }
+
+    private createVendor = async (): Promise<WASocket['ev'] | undefined> => {
         const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
         const { state, saveCreds } = await useMultiFileAuthState(NAME_DIR_SESSION)
-        const loggerBaileys = pino({ level: 'fatal' })
+        if (this.isCleaned) return
+        // T10: configurable; default 'error' so decrypt failures (Bad MAC, No
+        // session) are visible instead of hidden by 'fatal'.
+        const loggerBaileys = pino({ level: this.globalVendorArgs.baileysLogLevel ?? 'error' })
 
         this.saveCredsGlobal = saveCreds
 
         try {
             if (this.globalVendorArgs.useBaileysStore) {
-                if (this.globalVendorArgs.timeRelease > 0) {
-                    await releaseTmp(NAME_DIR_SESSION, this.globalVendorArgs.timeRelease)
+                if (this.globalVendorArgs.timeRelease > 0 && !this.sessionCleanupTimer) {
+                    const timer = await releaseTmp(NAME_DIR_SESSION, this.globalVendorArgs.timeRelease)
+                    if (this.isCleaned) {
+                        if (timer) clearInterval(timer)
+                        return
+                    }
+                    this.sessionCleanupTimer = timer
                 }
             }
         } catch (e) {
+            // Best-effort cleanup: never spawn a second socket from here
             this.logger.log(e)
-            this.initVendor().then((v) => this.listenOnEvents(v))
         }
 
         try {
+            let version: WAVersion
+            try {
+                const waVersion = await fetchLatestWaWebVersion({})
+                version = waVersion.version
+                this.logger.log(`[Baileys] Using live WA Web version: ${version.join('.')}`)
+            } catch (err) {
+                try {
+                    const baileysVersion = await fetchLatestBaileysVersion()
+                    version = baileysVersion.version
+                    this.logger.log(`[Baileys] Fallback to Baileys repo WA version: ${version.join('.')}`)
+                } catch (e) {
+                    // T9: keep in sync with the WA Web version shipped by the
+                    // pinned Baileys release (rc14 default).
+                    version = [2, 3000, 1043857760] as WAVersion
+                    this.logger.log(`[Baileys] Fallback to hardcoded WA version: ${version.join('.')}`)
+                }
+            }
+            if (this.isCleaned) return
             const sock = makeWASocketOther({
                 logger: loggerBaileys,
-                version: [2, 3000, 1025190524] as WAVersion,
+                version,
                 printQRInTerminal: false,
                 auth: {
                     creds: state.creds,
@@ -313,20 +473,30 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 defaultQueryTimeoutMs: 60_000, // 1 minuto para queries
                 emitOwnEvents: false, // No emitir eventos propios
                 shouldIgnoreJid: (jid: string) => {
-                    if (this.globalVendorArgs.groupsIgnore) {
-                        return isJidGroup(jid) || isJidBroadcast(jid)
-                    }
+                    // T15 option C: `allowGroups` takes precedence over the legacy
+                    // `groupsIgnore` for group chats only; broadcasts keep the old rule.
+                    if (isJidGroup(jid))
+                        return this.globalVendorArgs.allowGroups ? false : this.globalVendorArgs.groupsIgnore
+                    if (isJidBroadcast(jid)) return this.globalVendorArgs.groupsIgnore
                     return false
                 },
                 ...this.globalVendorArgs,
             })
 
             this.vendor = sock
+
+            // T6: register listeners BEFORE any await (pairing can take seconds
+            // and events arriving meanwhile would be lost).
+            this.attachSocketListeners(sock, saveCreds)
+
             if (this.globalVendorArgs.usePairingCode && !sock.authState.creds.registered) {
                 if (this.globalVendorArgs.phoneNumber) {
-                    const phoneNumberClean = utils.removePlus(this.globalVendorArgs.phoneNumber)
-                    const code = await sock.requestPairingCode(this.globalVendorArgs.phoneNumber)
+                    // T6: request the code with the cleaned E.164 number, not the raw input
+                    const phoneNumberClean = utils.removePlus(this.globalVendorArgs.phoneNumber).replace(/\D/g, '')
+                    const code = await sock.requestPairingCode(phoneNumberClean)
+                    if (this.isCleaned) return
                     await utils.delay(2000)
+                    if (this.isCleaned) return
                     this.emit('require_action', {
                         title: '⚡⚡ ACTION REQUIRED ⚡⚡',
                         instructions: [
@@ -346,7 +516,22 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 }
             }
 
+            return sock.ev
+        } catch (e) {
+            this.logger.log(e)
+            this.emit('auth_failure', [
+                `Something unexpected has occurred, do not panic`,
+                `Restart the BOT`,
+                `You can also check a log that has been created baileys.log`,
+                `Need help: https://link.codigoencasa.com/DISCORD`,
+            ])
+        }
+    }
+
+    private attachSocketListeners(sock: WASocket, saveCreds: () => Promise<void>): void {
+        {
             sock.ev.on('connection.update', async (update: { connection: any; lastDisconnect: any; qr: any }) => {
+                if (this.isCleaned || this.vendor !== sock) return
                 const { connection, lastDisconnect, qr } = update
 
                 this.logger.log(`[${new Date().toISOString()}] Connection update: ${connection}`)
@@ -360,13 +545,37 @@ class BaileysProvider extends ProviderClass<WASocket> {
                         `[${new Date().toISOString()}] Connection closed. Status: ${statusCode}, Reason: ${reason}`
                     )
 
-                    // Casos donde NO debemos reconectar
+                    // T7: never delete auth material automatically. The host
+                    // decides; opt-in via `clearAuthOnLogout` restores old behavior.
                     if (statusCode === DisconnectReason.loggedOut) {
-                        this.logger.log(`[${new Date().toISOString()}] Logged out, clearing session and restarting...`)
-                        const PATH_BASE = join(process.cwd(), `${this.globalVendorArgs.name}_sessions`)
-                        await emptyDirSessions(PATH_BASE)
-                        this.reconnectAttempts = 0
-                        await this.delayedReconnect()
+                        this.logger.log(`[${new Date().toISOString()}] Logged out by WhatsApp; session preserved`)
+                        if (this.globalVendorArgs.clearAuthOnLogout) {
+                            const PATH_BASE = join(process.cwd(), `${this.globalVendorArgs.name}_sessions`)
+                            await emptyDirSessions(PATH_BASE)
+                            this.reconnectAttempts = 0
+                            await this.delayedReconnect()
+                            return
+                        }
+                        this.emit('auth_failure', [
+                            `WhatsApp logged this session out (401)`,
+                            `Auth files were preserved in ${this.globalVendorArgs.name}_sessions`,
+                            `Unlink the device manually or set clearAuthOnLogout: true to auto-reset`,
+                            `Need help: https://link.codigoencasa.com/DISCORD`,
+                        ])
+                        return
+                    }
+
+                    // T8: a replaced connection means another live socket owns the
+                    // session; reconnecting starts a tug-of-war and risks a ban.
+                    if (statusCode === DisconnectReason.connectionReplaced) {
+                        this.logger.log(
+                            `[${new Date().toISOString()}] Connection replaced by another socket; not reconnecting`
+                        )
+                        this.emit('auth_failure', [
+                            `Connection replaced (440): another instance opened this session`,
+                            `Stop the other instance before restarting this one`,
+                            `Check baileys.log for details`,
+                        ])
                         return
                     }
 
@@ -417,18 +626,8 @@ class BaileysProvider extends ProviderClass<WASocket> {
             })
 
             sock.ev.on('creds.update', async () => {
-                await saveCreds()
+                if (!this.isCleaned) await saveCreds()
             })
-
-            return sock.ev
-        } catch (e) {
-            this.logger.log(e)
-            this.emit('auth_failure', [
-                `Something unexpected has occurred, do not panic`,
-                `Restart the BOT`,
-                `You can also check a log that has been created baileys.log`,
-                `Need help: https://link.codigoencasa.com/DISCORD`,
-            ])
         }
     }
 
@@ -471,6 +670,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     if (messageCtx?.key?.id && messageCtx?.message) {
                         this.messageCache?.set(`msg:${messageCtx.key.id}`, messageCtx.message)
                     }
+
+                    // Aprender mapeo LID→PN desde mensaje entrante (async, no bloqueante)
+                    this.cacheLidFromMessage(messageCtx).catch(() => {})
 
                     if (
                         messageCtx?.messageStubParameters?.length &&
@@ -561,15 +763,47 @@ class BaileysProvider extends ProviderClass<WASocket> {
                         }
                     }
 
-                    // Preferir @s.whatsapp.net (remoteJidAlt) sobre @lid cuando esté disponible
-                    const { remoteJid, remoteJidAlt } = (messageCtx?.key ?? {}) as any
+                    // Buscar siempre el que tenga formato @s.whatsapp.net (puede estar en remoteJid o remoteJidAlt)
+                    const remoteJid = (messageCtx?.key as any)?.remoteJid
+                    const remoteJidAlt = (messageCtx?.key as any)?.remoteJidAlt
+                    // Never fabricate a PN from a LID: keep the @lid JID and let
+                    // resolveNumber/lidCache resolve it later (T3, RFC 0002 §9.3).
                     const fromParse = remoteJid?.includes('@lid') ? remoteJidAlt || remoteJid : remoteJid
+
+                    const isGroupMessage = `${remoteJid ?? ''}`.includes('@g.us')
+
+                    const messageKey = (messageCtx?.key ?? {}) as any
 
                     let payload = {
                         ...messageCtx,
                         body: textToBody,
                         name: messageCtx?.pushName,
                         from: baileyCleanNumber(fromParse),
+                        // WhatsApp usernames (Baileys >= rc13, upstream PR #2480).
+                        // A user with a username is addressed by @lid, so `from`
+                        // may be a LID: treat it as the stable key and read the
+                        // username from here instead of parsing the JID.
+                        username: messageKey.remoteJidUsername,
+                        // W1: expose fromMe at the root so consumers can filter
+                        // self-messages without reaching into `key` (matches Meta).
+                        fromMe: Boolean(messageKey.fromMe),
+                        // W3 (RFC 0003): canonical envelope fields, additive over the
+                        // legacy WAMessage spread.
+                        contentType: baileyContentType(messageCtx?.message),
+                        messageId: messageKey.id,
+                        timestamp: Number(messageCtx?.messageTimestamp) || undefined,
+                        to: this.globalVendorArgs.host?.phone,
+                        userId: remoteJid?.includes('@lid') ? remoteJid : undefined,
+                        raw: messageCtx,
+                        // T15 option C: for groups, `from` is the group JID and the
+                        // author travels in `participant`/`sender`.
+                        ...(isGroupMessage
+                            ? {
+                                  participant: messageKey.participant,
+                                  sender: messageKey.participant,
+                                  participantUsername: messageKey.participantUsername,
+                              }
+                            : {}),
                     }
 
                     if (messageCtx.message?.locationMessage) {
@@ -624,6 +858,16 @@ class BaileysProvider extends ProviderClass<WASocket> {
                         }
                     }
 
+                    // W2: contact cards previously emitted with body undefined, so no
+                    // flow could match them. `_event_contacts_` matches Meta and the
+                    // core CONTACTS event.
+                    if (messageCtx.message?.contactMessage || messageCtx.message?.contactsArrayMessage) {
+                        payload = {
+                            ...payload,
+                            body: utils.generateRefProvider('_event_contacts_'),
+                        }
+                    }
+
                     if (payload.from === 'status@broadcast') continue
                     payload.from = baileyCleanNumber(payload.from, true)
 
@@ -640,7 +884,9 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     )
                         continue
 
-                    if (!baileyIsValidNumber(payload.from)) {
+                    // T15 option C: groups only pass when explicitly enabled.
+                    const isAllowedGroup = this.globalVendorArgs.allowGroups && isGroupMessage
+                    if (!isAllowedGroup && !baileyIsValidNumber(payload.from)) {
                         continue
                     }
 
@@ -653,15 +899,14 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     const processDuplicate = () => {
                         if (messageCtx?.key?.id) {
                             const idWs = `${messageCtx.key.id}__${payload.from}`
-                            const isDuplicate = this.idsDuplicates.includes(idWs)
-                            if (isDuplicate) {
-                                this.idsDuplicates = []
-                                return false
+                            const now = Date.now()
+                            const expiresAt = this.idsDuplicates.get(idWs)
+                            if (expiresAt !== undefined && expiresAt > now) return false
+                            if (this.idsDuplicates.size >= BaileysProvider.DEDUPE_MAX_ENTRIES) {
+                                const oldest = this.idsDuplicates.keys().next().value
+                                if (oldest !== undefined) this.idsDuplicates.delete(oldest)
                             }
-                            if (this.idsDuplicates.length > 10) {
-                                this.idsDuplicates = []
-                            }
-                            this.idsDuplicates.push(idWs)
+                            this.idsDuplicates.set(idWs, now + BaileysProvider.DEDUPE_TTL_MS)
                         }
                         return true
                     }
@@ -700,6 +945,10 @@ class BaileysProvider extends ProviderClass<WASocket> {
                                 from: baileyCleanNumber(key.remoteJid, true),
                                 voters: pollCreation,
                                 type: 'poll',
+                                // W3 (RFC 0003): canonical fields alongside legacy `type`.
+                                contentType: 'poll',
+                                messageId: key?.id,
+                                raw: messageCtx,
                             }
                             this.emit('message', payload)
                         }
@@ -759,6 +1008,37 @@ class BaileysProvider extends ProviderClass<WASocket> {
         return orderDetails
     }
 
+    // =============================================================================
+    // LID CACHE INTEGRATION
+    // =============================================================================
+
+    /**
+     * Inicializa el caché LID/PN usando el factory.
+     * @returns Instancia de LidCache configurada según globalVendorArgs
+     */
+    private initializeLidCache(): LidCache {
+        return createLidCache({
+            strategy: this.globalVendorArgs.lidCache,
+            sessionName: this.globalVendorArgs.name,
+            ttlSeconds: this.globalVendorArgs.lidCacheTtl,
+            logger: this.logger,
+        })
+    }
+
+    /**
+     * Delegates to the standalone utility for caching LID→PN from messages.
+     * This wrapper maintains the method signature for internal use while
+     * leveraging the exported function for reusability.
+     */
+    private async cacheLidFromMessage(messageCtx: MessageContext | unknown): Promise<void> {
+        // Type guard: ensure the message context has the expected structure
+        if (!isMessageContext(messageCtx)) {
+            this.logger.debug?.('Invalid message context for LID caching')
+            return
+        }
+        return extractAndCacheLidFromMessage(this.lidCache, messageCtx)
+    }
+
     /**
      * Accede al lidMapping del signalRepository de Baileys.
      */
@@ -780,16 +1060,23 @@ class BaileysProvider extends ProviderClass<WASocket> {
     }
 
     /**
-     * Obtener número de teléfono (PN) para un LID (Local Identifier)
+     * Obtener número de teléfono (PN) para un LID (Local Identifier).
+     * Delegates to the standalone utility with Baileys lidMapping as fallback.
+     *
      * @param lid - JID con formato '16424005304394@lid'
+     * @returns Phone number en formato '1234567890@s.whatsapp.net', o null si no se resuelve
      */
-    getPNForLID = async (lid: string): Promise<string | null> => {
-        try {
-            return (await this.lidMapping?.getPNForLID?.(lid)) ?? null
-        } catch (e) {
-            this.logger.log(`[${new Date().toISOString()}] Error getting PN for LID:`, e)
-            return null
-        }
+    getPNForLID = async (lid: string | LidJid): Promise<string | null> => {
+        // Normalize to branded type if valid
+        const lidJid = typeof lid === 'string' ? asLidJid(lid) : lid
+        if (!lidJid) return null
+
+        return resolveLidToPn(
+            this.lidCache,
+            (id) => this.lidMapping?.getPNForLID?.(id) ?? Promise.resolve(null),
+            this.logger,
+            lidJid
+        )
     }
 
     /**
@@ -840,7 +1127,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             image: { url: filePath },
             caption: text,
         }
-        return this.vendor.sendMessage(number, payload)
+        return this.cacheOutgoingMessage(await this.vendor.sendMessage(await this.resolveNumber(number), payload))
     }
 
     /**
@@ -856,7 +1143,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             caption: text,
             gifPlayback: this.globalVendorArgs.gifPlayback,
         }
-        return this.vendor.sendMessage(number, payload)
+        return this.cacheOutgoingMessage(await this.vendor.sendMessage(await this.resolveNumber(number), payload))
     }
 
     /**
@@ -868,12 +1155,13 @@ class BaileysProvider extends ProviderClass<WASocket> {
      * @example await sendMessage('+XXXXXXXXXXX', 'audio.mp3')
      */
 
-    sendAudio = async (number: string, audioUrl: string) => {
+    sendAudio = async (number: string, audioPath: string, isPTT = true) => {
         const payload: AnyMediaMessageContent = {
-            audio: { url: audioUrl },
-            ptt: true,
+            audio: await readFile(audioPath),
+            ptt: isPTT,
+            mimetype: 'audio/ogg; codecs=opus',
         }
-        return this.vendor.sendMessage(number, payload)
+        return this.cacheOutgoingMessage(await this.vendor.sendMessage(await this.resolveNumber(number), payload))
     }
 
     /**
@@ -884,7 +1172,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
      */
     sendText = async (number: string, message: string) => {
         const payload: AnyMessageContent = { text: message }
-        return this.vendor.sendMessage(number, payload)
+        return this.cacheOutgoingMessage(await this.vendor.sendMessage(await this.resolveNumber(number), payload))
     }
 
     /**
@@ -905,7 +1193,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             caption: text,
         }
 
-        return this.vendor.sendMessage(number, payload)
+        return this.cacheOutgoingMessage(await this.vendor.sendMessage(await this.resolveNumber(number), payload))
     }
 
     /**
@@ -940,7 +1228,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             headerType: 1,
         }
 
-        return this.vendor.sendMessage(numberClean, buttonMessage)
+        return this.vendor.sendMessage(await this.resolveNumber(numberClean), buttonMessage)
     }
 
     /**
@@ -952,7 +1240,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
      */
 
     sendMessage = async (numberIn: string, message: string, options?: SendOptions): Promise<any> => {
-        options = { ...options, ...options['options'] }
+        options = { ...(options ?? {}), ...(options?.['options'] ?? {}) }
         const number = await this.resolveNumber(numberIn)
 
         if (options.buttons?.length) return this.sendButtons(number, message, options.buttons)
@@ -970,7 +1258,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
     sendLocation = async (remoteJid: string, latitude: any, longitude: any, messages: any = null) => {
         await this.vendor.sendMessage(
-            remoteJid,
+            await this.resolveNumber(remoteJid),
             {
                 location: {
                     degreesLatitude: latitude,
@@ -1011,7 +1299,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
             'END:VCARD'
 
         await this.vendor.sendMessage(
-            remoteJid,
+            await this.resolveNumber(remoteJid),
             {
                 contacts: {
                     displayName: '.',
@@ -1030,7 +1318,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
      * @example await sendPresenceUpdate("xxxxxxxxxxx@c.us" || "xxxxxxxxxxxxxxxxxx@g.us", "recording")
      */
     sendPresenceUpdate = async (remoteJid: any, WAPresence: any) => {
-        await this.vendor.sendPresenceUpdate(WAPresence, remoteJid)
+        await this.vendor.sendPresenceUpdate(WAPresence, await this.resolveNumber(remoteJid))
     }
 
     /**
@@ -1055,7 +1343,11 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
         const buffer = await sticker.toMessage()
 
-        await this.vendor.sendMessage(remoteJid, buffer, { quoted: messages })
+        // Return + cache like every other sender so callers get the key and
+        // getMessage can answer a retry (T16 finding).
+        return this.cacheOutgoingMessage(
+            await this.vendor.sendMessage(await this.resolveNumber(remoteJid), buffer, { quoted: messages })
+        )
     }
 
     private getMimeType = (ctx: WAMessage): string | undefined => {
@@ -1084,7 +1376,11 @@ class BaileysProvider extends ProviderClass<WASocket> {
         const mimeType = this.getMimeType(ctx as WAMessage)
         if (!mimeType) throw new Error('MIME type not found')
         const extension = mime.extension(mimeType) as string
-        const buffer = await downloadMediaMessage(ctx as WAMessage, 'buffer', {})
+        // Pass ctx so Baileys can request a reupload on 410/404 (T5, upstream #2767)
+        const buffer = await downloadMediaMessage(ctx as WAMessage, 'buffer', {}, {
+            reuploadRequest: (msg: WAMessage) => this.vendor.updateMediaMessage(msg),
+            logger: this.logger,
+        } as any)
         const fileName = this.generateFileName(extension)
 
         const pathFile = join(options?.path ?? tmpdir(), fileName)
@@ -1094,10 +1390,10 @@ class BaileysProvider extends ProviderClass<WASocket> {
 
     private shouldReconnect(statusCode: number): boolean {
         // Lista de códigos donde SÍ debemos reconectar
+        // T8: connectionReplaced (440) excluded — handled as auth_failure above
         const reconnectableCodes = [
             DisconnectReason.connectionClosed,
             DisconnectReason.connectionLost,
-            DisconnectReason.connectionReplaced,
             DisconnectReason.timedOut,
             DisconnectReason.badSession,
             DisconnectReason.restartRequired,
@@ -1108,10 +1404,15 @@ class BaileysProvider extends ProviderClass<WASocket> {
             504, // Gateway timeout
         ]
 
-        return reconnectableCodes.includes(statusCode) && this.reconnectAttempts < this.maxReconnectAttempts
+        return (
+            !this.isCleaned &&
+            reconnectableCodes.includes(statusCode) &&
+            this.reconnectAttempts < this.maxReconnectAttempts
+        )
     }
 
     private async delayedReconnect(): Promise<void> {
+        if (this.isCleaned || this.reconnectInProgress) return
         if (this.reconnectAttempts >= this.maxReconnectAttempts) {
             this.logger.log(
                 `[${new Date().toISOString()}] Max reconnection attempts reached (${this.maxReconnectAttempts})`
@@ -1120,13 +1421,20 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 `Maximum reconnection attempts reached`,
                 `Please check your internet connection`,
                 `Check baileys.log for details`,
+                // T18: each reconnect creates a socket whose AsyncLocalStorage is
+                // never released upstream (#2806); long-running hosts should recycle
+                // the process after repeated reconnects.
+                `After many reconnects, consider restarting the process (upstream memory leak #2806)`,
                 `Need help: https://link.codigoencasa.com/DISCORD`,
             ])
             return
         }
 
+        this.reconnectInProgress = true
         this.reconnectAttempts++
-        const delay = Math.min(this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1), 30000) // Max 30 segundos
+        // T8: exponential backoff with ±20% jitter to avoid thundering-herd retries
+        const base = Math.min(this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1), 30000)
+        const delay = Math.round(base * (0.8 + Math.random() * 0.4))
 
         this.logger.log(
             `[${new Date().toISOString()}] Reconnection attempt ${this.reconnectAttempts}/${
@@ -1134,22 +1442,28 @@ class BaileysProvider extends ProviderClass<WASocket> {
             } in ${delay}ms`
         )
 
-        setTimeout(async () => {
-            try {
-                // Cerrar el socket anterior para evitar conflictos de conexión (xml-not-well-formed)
-                if (this.vendor) {
-                    try {
-                        this.vendor.ws?.close()
-                        this.vendor.end(new Error('Reconnecting'))
-                    } catch (e) {
-                        this.logger.log(`[${new Date().toISOString()}] Error closing previous socket:`, e)
-                    }
-                }
-                this.initVendor().then((v) => this.listenOnEvents(v))
-            } catch (error) {
-                this.logger.log(`[${new Date().toISOString()}] Reconnection failed:`, error)
-            }
+        this.reconnectTimer = setTimeout(() => {
+            this.reconnectTimer = undefined
+            if (this.isCleaned) return
+            this.reconnectTask = this.reconnectVendor().finally(() => {
+                this.reconnectTask = undefined
+            })
         }, delay)
+        this.reconnectTimer.unref?.()
+    }
+
+    private async reconnectVendor(): Promise<void> {
+        try {
+            if (this.isCleaned) return
+            if (this.vendor) await this.vendor.end(undefined)
+            if (this.isCleaned) return
+            const events = await this.initVendor()
+            if (events && !this.isCleaned) this.listenOnEvents(events)
+        } catch (error) {
+            if (!this.isCleaned) this.logger.error('[Baileys] Reconnection failed:', error)
+        } finally {
+            this.reconnectInProgress = false
+        }
     }
 }
 

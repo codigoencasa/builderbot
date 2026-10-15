@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: AxiosError, AxiosResponse
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(1) score:5
+ * keywords: [AxiosError, AxiosResponse]
+ * GOAL: Own the "provider" concern of the provider-evolution-api package.
+ */
 import { ProviderClass } from '@builderbot/bot'
 import type { Vendor } from '@builderbot/bot/dist/provider/interface/provider'
 import type { BotContext, SendOptions } from '@builderbot/bot/dist/types'

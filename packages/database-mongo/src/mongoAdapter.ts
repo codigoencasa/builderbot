@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: MemoryDB, MongoClient, History, MongoAdapterCredentials
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n log n) score:2
+ * keywords: [MemoryDB, MongoClient, History, MongoAdapterCredentials]
+ * GOAL: Own the "mongo adapter" concern of the database-mongo package.
+ */
 import { MemoryDB } from '@builderbot/bot'
 import type { Db } from 'mongodb'
 import { MongoClient } from 'mongodb'

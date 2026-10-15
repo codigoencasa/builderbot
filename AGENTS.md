@@ -14,6 +14,20 @@ Guide for agentic coding tools working in this repository.
 - Build artifacts: `packages/**/dist` (Rollup output).
 - Package manager is enforced: `only-allow pnpm`.
 
+## Templates / starters — MANDATORY RULE
+
+`starters/apps/**` is **GENERATED**, never edited by hand:
+
+- Source of truth: `scripts/generate/` (`template/{ts,js}` + `zones/{providers,databases,docker,extras}`).
+- After **any** change under `scripts/generate/**`, you MUST run `pnpm run generate.templates`
+  and commit the resulting `starters/apps/**` in the same change.
+- Why: `create-builderbot` bundles `dist/starters` copied from `starters/apps` at build
+  time, so forgetting the regeneration **publishes stale templates to npm**.
+- Verify with `pnpm run generate:check` (regenerates and fails when `starters/apps`
+  differs from what is committed). CI runs it on every alpha release.
+- Curated examples must live in a zone (see `zones/providers/tiktok.json` +
+  `zones/extras/tiktok/`), otherwise the generator overwrites them.
+
 ## Runtime Expectations
 - Root engines: Node `>=18`, pnpm `>=8.6.12`.
 - `CONTRIBUTING.md` recommends Node 20+.
@@ -80,9 +94,9 @@ UVU gotcha:
 - Prefer narrowed directory + anchored regex for true single-file runs.
 
 ## Test Runner Map
-- Jest packages: `@builderbot/provider-baileys`, `@builderbot/provider-evolution-api`, `@builderbot/provider-facebook-messenger`, `@builderbot/provider-gupshup`, `@builderbot/provider-instagram`, `@builderbot/provider-meta`, `@builderbot/provider-sherpa`, `@builderbot/provider-twilio`, `@builderbot/provider-venom`, `@builderbot/provider-web-whatsapp`, `@builderbot/provider-wppconnect`.
+- Jest packages: `@builderbot/provider-baileys`, `@builderbot/provider-email`, `@builderbot/provider-evolution-api`, `@builderbot/provider-facebook-messenger`, `@builderbot/provider-gohighlevel`, `@builderbot/provider-gupshup`, `@builderbot/provider-instagram`, `@builderbot/provider-meta`, `@builderbot/provider-sherpa`, `@builderbot/provider-telegram`, `@builderbot/provider-tiktok`, `@builderbot/provider-twilio`, `@builderbot/provider-venom`, `@builderbot/provider-voice`, `@builderbot/provider-voice-sip`, `@builderbot/provider-voice-whatsapp`, `@builderbot/provider-web-whatsapp`, `@builderbot/provider-wppconnect`.
 - UVU packages: `@builderbot/bot`, `@builderbot/cli`, `@builderbot/manager`, `@builderbot/contexts-dialogflow`, `@builderbot/contexts-dialogflow-cx`, `@builderbot/database-json`, `@builderbot/database-mongo`, `@builderbot/database-mysql`, `@builderbot/database-postgres`, `eslint-plugin-builderbot`.
-- No `test` script currently: `create-builderbot`, `@builderbot/provider-telegram`.
+- No `test` script currently: `create-builderbot`.
 
 ## Code Style: Formatting and Imports
 Source of truth: root `eslint.config.js` and `.prettierrc.json`.
@@ -141,6 +155,7 @@ When touching flow callbacks (or `eslint-plugin-builderbot` behavior), preserve 
 ## Agent Workflow
 1. Identify affected package(s) and runner (Jest or UVU).
 2. Edit `src/**`; avoid hand-editing generated `dist/**`.
+2b. If you touched `scripts/generate/**`, run `pnpm run generate.templates` and commit `starters/apps/**`.
 3. Run single-file tests first, then package-level tests.
 4. Run lint/format checks for broad or cross-package changes.
 5. Run `pnpm run build` for release-sensitive changes.

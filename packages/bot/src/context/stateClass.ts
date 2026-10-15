@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: SingleState — per-user state container
+ * Rules: No external dependencies. Pure state logic.
+ * BigO: O(n) score:3
+ * keywords: [SingleState, CoreClass]
+ * GOAL: Track and expose a single conversation user's state.
+ */
 type Context = {
     from: string
 }

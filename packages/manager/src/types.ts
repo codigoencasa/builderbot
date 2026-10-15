@@ -1,3 +1,11 @@
+/**
+ * LAYER: Domain
+ * Contains: Flow, DatabaseClass, ProviderFactory, DatabaseFactory
+ * Rules: No external dependencies. Pure business logic.
+ * BigO: O(1) score:5
+ * keywords: [Flow, DatabaseClass, ProviderFactory, DatabaseFactory]
+ * GOAL: Own the "types" concern of the manager package.
+ */
 import type { MemoryDB } from '@builderbot/bot'
 
 /** Flow type - using ReturnType to infer from addKeyword */

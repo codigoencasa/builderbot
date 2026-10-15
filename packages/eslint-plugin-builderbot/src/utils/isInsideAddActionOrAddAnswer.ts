@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: IsInsideAddActionOrAddAnswer, INode
+ * Rules: Implements ports from Application. Can use any framework.
+ * BigO: O(n) score:3
+ * keywords: [IsInsideAddActionOrAddAnswer, INode]
+ * GOAL: Own the "is inside add action or add answer" concern of the eslint-plugin-builderbot package.
+ */
 import type { INode } from '../types'
 
 function isInsideAddActionOrAddAnswer(node: INode) {

@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: downloadFile / fileTypeFromFile — Meta media download + mime detection
+ * Rules: External HTTP + fs/mime. No business rules.
+ * BigO: O(1) score:5
+ * keywords: [downloadFile, fileTypeFromFile, processIncomingMessage]
+ * GOAL: Download a Meta media resource and derive its mime type and extension.
+ */
 import axios from 'axios'
 import type { AxiosResponse } from 'axios'
 import mimeTypes from 'mime-types'
@@ -33,6 +41,7 @@ async function downloadFile(url: string, Token: string): Promise<{ buffer: Buffe
         }
     } catch (error) {
         console.error(error.message)
+        throw error
     }
 }
 

@@ -1,3 +1,11 @@
+/**
+ * LAYER: Interface
+ * Contains: ProviderWithHint, ProviderWithoutHint, Provider, ValueLabel
+ * Rules: Handles HTTP/CLI. Calls use cases only. No direct domain/infrastructure access.
+ * BigO: O(n) score:3
+ * keywords: [ProviderWithHint, ProviderWithoutHint, Provider, ValueLabel]
+ * GOAL: Own the "configuration" concern of the cli package.
+ */
 export interface ProviderWithHint {
     value: string
     label: string
@@ -35,12 +43,17 @@ export const PROVIDER_LIST: Provider[] = [
     { value: 'wppconnect', label: 'WPPConnect', hint: 'opensource' },
     // { value: 'wweb', label: 'Whatsapp-web.js', hint: 'opensource' },
     { value: 'twilio', label: 'Twilio' },
-    { value: 'meta', label: 'Meta' },
+    { value: 'meta', label: 'Meta', hint: 'optional voice calls' },
     { value: 'facebook-messenger', label: 'Facebook Messenger' },
     { value: 'instagram', label: 'Instagram' },
+    { value: 'tiktok', label: 'TikTok', hint: 'organic comments only' },
     { value: 'gupshup', label: 'Gupshup' },
     { value: 'gohighlevel', label: 'GoHighLevel' },
     { value: 'email', label: 'Email', hint: 'IMAP/SMTP' },
+    { value: 'voice', label: 'Voice', hint: 'LiveKit + OpenAI' },
+    { value: 'voice-sip', label: 'Voice SIP (PSTN)', hint: 'LiveKit SIP + OpenAI' },
+    { value: 'voice-whatsapp', label: 'Voice WhatsApp', hint: 'Meta calls, flow-based' },
+    { value: 'meta-voice-ai', label: 'Meta + Voice AI', hint: 'Meta calls + LLM' },
 ]
 
 export const PROVIDER_DATA: ValueLabel[] = [

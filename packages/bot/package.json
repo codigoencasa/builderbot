@@ -1,9 +1,9 @@
 {
     "name": "@builderbot/bot",
-    "version": "1.4.1",
+    "version": "1.4.4",
     "description": "core typescript",
     "author": "Leifer Mendez <leifer33@gmail.com>",
-    "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
+    "homepage": "https://github.com/codigoencasa/builderbot#readme",
     "license": "ISC",
     "main": "dist/index.cjs",
     "types": "dist/index.d.ts",
@@ -22,10 +22,10 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/codigoencasa/bot-whatsapp.git"
+        "url": "git+https://github.com/codigoencasa/builderbot.git"
     },
     "bugs": {
-        "url": "https://github.com/codigoencasa/bot-whatsapp/issues"
+        "url": "https://github.com/codigoencasa/builderbot/issues"
     },
     "devDependencies": {
         "@microsoft/api-extractor": "^7.55.2",
@@ -62,5 +62,8 @@
     "optionalDependencies": {
         "sharp": "0.33.3"
     },
-    "gitHead": "b36178dfb87da8ce270e28b6daaff2c50374b6eb"
+    "engines": {
+        "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+    },
+    "gitHead": "4c667603733e1262920fbd919fa388e544f7f707"
 }
