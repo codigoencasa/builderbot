@@ -27,6 +27,14 @@ export interface ISttAdapter {
     transcribe(pcm: Buffer, sampleRate: number, language?: string): Promise<string>
 }
 
+/** Optional per-request context. Existing one-argument adapters remain compatible. */
+export interface TtsSynthesisOptions {
+    /** Abort synthesis when the caller interrupts or the call ends. */
+    signal?: AbortSignal
+    /** Call-scoped cache/context key; never share conversational state across calls. */
+    callId?: string
+}
+
 /**
  * Text-to-speech adapter interface.
  * Implementations return raw 16-bit LE mono PCM suitable for LiveKit AudioFrame.
@@ -43,5 +51,5 @@ export interface ITtsAdapter {
      * @param text The text to convert to speech.
      * @returns Raw 16-bit signed little-endian mono PCM buffer.
      */
-    synthesize(text: string): Promise<Buffer>
+    synthesize(text: string, options?: TtsSynthesisOptions): Promise<Buffer>
 }

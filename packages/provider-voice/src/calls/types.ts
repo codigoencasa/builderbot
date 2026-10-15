@@ -217,6 +217,8 @@ export interface CallActionBody {
  * Conforms to BuilderBot's BotContext shape.
  */
 export interface WhatsAppVoicePayload {
+    /** Session identity, so late events cannot cancel a newer call from the same phone. */
+    callId?: string
     /** Transcribed text from the caller. */
     body: string
     /** Caller's WhatsApp phone number (E.164). */
@@ -259,9 +261,15 @@ export interface CallEndedEvent {
     from: string
 }
 
+/** Speech detected before STT completes, including while the LLM/TTS is still preparing. */
+export interface UserSpeechStartedEvent {
+    callId: string
+    from: string
+}
+
 /**
- * Payload emitted on the `playback_interrupted` event when barge-in cuts the
- * bot's audio because the caller started talking.
+ * Payload emitted on the `playback_interrupted` event when barge-in cancels
+ * queued synthesis or playback because the caller started talking.
  */
 export interface PlaybackInterruptedEvent {
     /** The WhatsApp call ID. */
@@ -283,6 +291,24 @@ export interface CallStatusEvent {
     timestamp: string
     /** The WhatsApp user's phone number (callee), when present. */
     recipientId?: string
+}
+
+/**
+ * Optional audio hook for echo control.
+ *
+ * The core owns both directions, so an application can cancel its own playback
+ * out of the microphone signal: `onOutboundFrame` receives the exact PCM sent to
+ * the caller (the echo reference) and `processInboundFrame` returns the cleaned
+ * microphone frame used for speech detection and STT.
+ */
+export interface IAudioProcessor {
+    /** Called with every frame handed to the caller. Reference signal, not microphone audio. */
+    onOutboundFrame?(frame: Int16Array, sampleRate: number): void
+    /**
+     * Clean one inbound mono frame before barge-in detection and transcription.
+     * Must return a frame of the same length. Throwing falls back to the raw frame.
+     */
+    processInboundFrame?(frame: Int16Array, sampleRate: number): Int16Array
 }
 
 // ── Call core configuration ──────────────────────────────────────────────────
@@ -335,4 +361,9 @@ export interface IMetaCallCoreConfig {
      * playback. Guards against noise blips. Default 120.
      */
     bargeInMinSpeechMs?: number
+    /**
+     * Echo-control hook (reference in, cleaned microphone out). See
+     * {@link IAudioProcessor}. When absent, inbound audio is used unchanged.
+     */
+    audioProcessor?: IAudioProcessor
 }

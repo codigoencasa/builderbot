@@ -21,6 +21,7 @@
 import { EventEmitter } from 'node:events'
 
 import { bufferToInt16, chunkPcm, SilenceSegmenter } from '../audio'
+import { abortable } from './abortable'
 import { MetaCallClient } from './meta-call-client'
 import { assertOpus, transformAnswer } from './sdp'
 import { CallState } from './types'
@@ -52,6 +53,8 @@ interface CallSession {
     sink: RTCAudioSinkInstance | null
     /** Audio source for pushing TTS frames to the remote peer. */
     source: RTCAudioSourceInstance | null
+    /** Explicitly stopped on release; closing a peer alone need not stop its local track. */
+    outboundTrack?: MediaStreamTrack
     /** Silence segmenter that detects utterance boundaries. */
     segmenter: SilenceSegmenter
     /** Sample rate negotiated for inbound audio. */
@@ -64,6 +67,10 @@ interface CallSession {
     playbackTimer: ReturnType<typeof setTimeout> | null
     /** Cancels the in-progress playback and resolves its promise (called on hang-up). */
     playbackCancel: (() => void) | null
+    /** Serialize output for this call; never overwrite another publisher's timer. */
+    outputQueue: Promise<void>
+    /** Includes queued requests and synthesis, not only audio already playing. */
+    outputControllers: Set<AbortController>
 }
 
 /**
@@ -100,6 +107,10 @@ export class MetaCallCoreVendor extends EventEmitter {
     private readonly sttAdapter: ISttAdapter
     private readonly ttsAdapter: ITtsAdapter
     private readonly config: IMetaCallCoreConfig
+    /** Set by {@link shutdown}: new inbound calls are rejected instead of accepted. */
+    private closing = false
+    /** Avoids repeating the audio-processor warning on every frame. */
+    private audioProcessorWarned = false
 
     constructor(args: MetaCallCoreVendorArgs) {
         super()
@@ -136,6 +147,20 @@ export class MetaCallCoreVendor extends EventEmitter {
      */
     public async onConnect(event: WhatsAppCallEntryEvent): Promise<void> {
         const callId = event.id
+
+        // Guard: never accept a call while shutting down; reject it so the caller is not left ringing.
+        if (this.closing) {
+            this.emit('notice', {
+                title: 'WhatsApp Voice: rejecting call during shutdown',
+                instructions: [`call_id "${callId}"`],
+            })
+            try {
+                await this.metaClient.reject(callId)
+            } catch {
+                // best-effort
+            }
+            return
+        }
 
         // Guard: reject duplicate sessions
         if (this.sessions.has(callId)) {
@@ -182,6 +207,8 @@ export class MetaCallCoreVendor extends EventEmitter {
             callerPhone: event.from,
             playbackTimer: null,
             playbackCancel: null,
+            outputQueue: Promise.resolve(),
+            outputControllers: new Set(),
         }
         this.sessions.set(callId, session)
         this.phoneToCallId.set(event.from, callId)
@@ -254,6 +281,7 @@ export class MetaCallCoreVendor extends EventEmitter {
             // (so the m-line is included in the answer)
             const audioSource = createAudioSource()
             const outboundTrack = audioSource.createTrack()
+            session.outboundTrack = outboundTrack
             session.pc.addTrack(outboundTrack)
             session.source = audioSource
 
@@ -361,6 +389,8 @@ export class MetaCallCoreVendor extends EventEmitter {
                 return
             }
 
+            if (this.sessions.get(callId) !== session) return
+
             this.emit('notice', {
                 title: '[API ] accept OK — call ready',
                 instructions: [`call_id: ${callId} | from: ${event.from}`],
@@ -401,11 +431,8 @@ export class MetaCallCoreVendor extends EventEmitter {
             return
         }
 
-        // Flush any partial utterance
-        const partial = session.segmenter.flush()
-        if (partial) {
-            this.enqueueUtterance(session, partial, callId)
-        }
+        // Discard partial audio: hang-up must not start new STT/flow work.
+        session.segmenter.flush()
 
         const endedEvent: CallEndedEvent = { callId, from: session.callerPhone }
 
@@ -417,6 +444,49 @@ export class MetaCallCoreVendor extends EventEmitter {
         })
 
         this.emit('call_ended', endedEvent)
+    }
+
+    /**
+     * Hang up every call and release all native resources (graceful shutdown).
+     *
+     * For each session: cancel pending output, ask Meta to `terminate` the call
+     * (best-effort, bounded by `timeoutMs` so a slow Graph API cannot block the
+     * shutdown), then release it exactly like a `terminate` webhook, emitting
+     * `call_ended`. Sessions are released even if Meta rejects or times out.
+     *
+     * Call this from SIGINT/SIGTERM handlers before exiting. Exit with
+     * `process.exit()` afterwards: `@roamhq/wrtc` 0.10.0 can crash during a
+     * *natural* process exit while finalizing native objects
+     * (WonderInventions/node-webrtc#54); an explicit exit skips that path.
+     *
+     * @param timeoutMs Max wait for Meta `terminate` requests. Default 3000.
+     * @returns Number of calls that were active when shutdown started.
+     */
+    public async shutdown(timeoutMs = 3000): Promise<number> {
+        this.closing = true
+        const callIds = [...this.sessions.keys()]
+        for (const callId of callIds) this.cancelResponse(callId)
+        const hangups = callIds.map(async (callId) => {
+            try {
+                await this.metaClient.end(callId)
+            } catch (err) {
+                this.emit('notice', {
+                    title: 'WhatsApp Voice: terminate on shutdown failed',
+                    instructions: [`call_id "${callId}": ${(err as Error).message}`],
+                })
+            }
+        })
+        let timer: ReturnType<typeof setTimeout> | undefined
+        const timeout = new Promise<void>((resolve) => {
+            timer = setTimeout(resolve, timeoutMs)
+        })
+        try {
+            await Promise.race([Promise.all(hangups), timeout])
+        } finally {
+            clearTimeout(timer)
+        }
+        for (const callId of callIds) this.onTerminate(callId)
+        return callIds.length
     }
 
     /**
@@ -523,12 +593,32 @@ export class MetaCallCoreVendor extends EventEmitter {
             instructions: [`"${text.length > 80 ? text.slice(0, 80) + '…' : text}" → call_id: ${callId}`],
         })
 
-        const pcm = await this.ttsAdapter.synthesize(text)
-        const sampleRate = this.ttsAdapter.sampleRate
-        const samplesPerFrame = Math.round((PUBLISH_FRAME_MS / 1000) * sampleRate)
-        const frames = chunkPcm(bufferToInt16(pcm), samplesPerFrame, true)
-
-        await this.pushFramesPaced(session, frames, sampleRate)
+        const controller = new AbortController()
+        session.outputControllers.add(controller)
+        const publish = session.outputQueue.then(async () => {
+            if (controller.signal.aborted || this.sessions.get(callId) !== session) return
+            try {
+                const pcm = await abortable(
+                    this.ttsAdapter.synthesize(text, { signal: controller.signal, callId }),
+                    controller.signal
+                )
+                // A non-cancellable adapter can finish after interruption/hang-up.
+                if (controller.signal.aborted || this.sessions.get(callId) !== session || !pcm.length) return
+                const sampleRate = this.ttsAdapter.sampleRate
+                const samplesPerFrame = Math.round((PUBLISH_FRAME_MS / 1000) * sampleRate)
+                const frames = chunkPcm(bufferToInt16(pcm), samplesPerFrame, true)
+                await this.pushFramesPaced(session, frames, sampleRate)
+            } catch (err) {
+                if (!controller.signal.aborted) throw err
+            }
+        })
+        // A failed synthesis must not poison the next response in this call.
+        session.outputQueue = publish.catch(() => {})
+        try {
+            await publish
+        } finally {
+            session.outputControllers.delete(controller)
+        }
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────
@@ -592,7 +682,9 @@ export class MetaCallCoreVendor extends EventEmitter {
             currentSession.inboundSampleRate = rate
 
             const mono = this.toMono(samples, channels)
-            const utterance = activeSegmenter.push(mono)
+            // Echo control runs before speech detection so the bot does not cut itself off.
+            const clean = this.cleanInboundFrame(mono, rate)
+            const utterance = activeSegmenter.push(clean)
             if (utterance) {
                 this.enqueueUtterance(currentSession, utterance, callId)
             }
@@ -610,7 +702,13 @@ export class MetaCallCoreVendor extends EventEmitter {
      */
     private bargeInHandler(callId: string): (() => void) | undefined {
         if (this.config.bargeIn === false) return undefined
-        return () => this.interruptPlayback(callId)
+        return () => {
+            const session = this.sessions.get(callId)
+            if (!session) return
+            // Flows must also cancel a response still waiting for its first LLM token.
+            this.emit('user_speech_started', { callId, from: session.callerPhone })
+            this.interruptPlayback(callId)
+        }
     }
 
     /**
@@ -623,9 +721,9 @@ export class MetaCallCoreVendor extends EventEmitter {
      */
     private interruptPlayback(callId: string): void {
         const session = this.sessions.get(callId)
-        if (!session?.playbackCancel) return
+        if (!session?.outputControllers.size) return
 
-        session.playbackCancel()
+        this.cancelResponse(callId)
 
         this.emit('notice', {
             title: '[BARGE] playback interrupted',
@@ -636,17 +734,29 @@ export class MetaCallCoreVendor extends EventEmitter {
         this.emit('playback_interrupted', payload)
     }
 
+    /** Cancel queued synthesis and playback for one call. Safe to call repeatedly. */
+    public cancelResponse(callIdOrPhone: string): void {
+        const callId = this.getActiveCallId(callIdOrPhone)
+        const session = callId && this.sessions.get(callId)
+        if (!session) return
+        for (const controller of session.outputControllers) controller.abort()
+        session.playbackCancel?.()
+    }
+
     /**
-     * Queue an utterance for transcription in order, serializing concurrent calls.
+     * Queue an utterance for transcription in order, independently for each call.
      *
      * @param session   The call session that produced the utterance.
      * @param pcm       Raw 16-bit LE mono PCM buffer.
      * @param callId    The call identifier (for the emitted payload).
      */
     private enqueueUtterance(session: CallSession, pcm: Buffer, callId: string): void {
-        session.utteranceQueue = session.utteranceQueue.then(() =>
-            this.handleUtterance(pcm, session.inboundSampleRate, callId)
-        )
+        // Capture the rate now: queued PCM must not inherit a later rate change.
+        const sampleRate = session.inboundSampleRate
+        session.utteranceQueue = session.utteranceQueue.then(async () => {
+            if (this.sessions.get(callId) !== session) return
+            await this.handleUtterance(pcm, sampleRate, callId)
+        })
     }
 
     /**
@@ -657,12 +767,13 @@ export class MetaCallCoreVendor extends EventEmitter {
      * @param callId     Call identifier used as the `from` field in the payload.
      */
     private async handleUtterance(pcm: Buffer, sampleRate: number, callId: string): Promise<void> {
+        const session = this.sessions.get(callId)
+        if (!session) return
         try {
             const body = await this.sttAdapter.transcribe(pcm, sampleRate, this.config.language)
-            if (!body || body.trim() === '') return
+            if (this.sessions.get(callId) !== session || !body || body.trim() === '') return
 
-            const session = this.sessions.get(callId)
-            const callerPhone = session?.callerPhone ?? callId
+            const callerPhone = session.callerPhone
 
             this.emit('notice', {
                 title: '[STT ] Utterance transcribed',
@@ -670,6 +781,7 @@ export class MetaCallCoreVendor extends EventEmitter {
             })
 
             const payload: WhatsAppVoicePayload = {
+                callId,
                 body: body.trim(),
                 from: callerPhone,
                 name: callerPhone,
@@ -719,8 +831,44 @@ export class MetaCallCoreVendor extends EventEmitter {
      * prevent accumulated drift. Resolves when all frames have been sent or the
      * session is cancelled / terminated.
      */
+    /** Feed the echo reference. Never lets a failing processor break playback. */
+    private notifyOutboundFrame(frame: Int16Array, sampleRate: number): void {
+        try {
+            this.config.audioProcessor?.onOutboundFrame?.(frame, sampleRate)
+        } catch (err) {
+            this.warnAudioProcessor(err)
+        }
+    }
+
+    /** Cleaned microphone frame, or the raw frame if the processor is missing or fails. */
+    private cleanInboundFrame(frame: Int16Array, sampleRate: number): Int16Array {
+        const processor = this.config.audioProcessor
+        if (!processor?.processInboundFrame) return frame
+        try {
+            const clean = processor.processInboundFrame(frame, sampleRate)
+            return clean?.length === frame.length ? clean : frame
+        } catch (err) {
+            this.warnAudioProcessor(err)
+            return frame
+        }
+    }
+
+    /** One warning per call: a broken processor must not flood the logs frame by frame. */
+    private warnAudioProcessor(err: unknown): void {
+        if (this.audioProcessorWarned) return
+        this.audioProcessorWarned = true
+        this.emit('notice', {
+            title: 'WhatsApp Voice: audio processor error',
+            instructions: [
+                `${(err as Error).message}`,
+                'Echo control disabled for this process; inbound audio is used unchanged.',
+            ],
+        })
+    }
+
     private pushFramesPaced(session: CallSession, frames: Int16Array[], sampleRate: number): Promise<void> {
-        return new Promise<void>((resolve) => {
+        if (!frames.length) return Promise.resolve()
+        return new Promise<void>((resolve, reject) => {
             let i = 0
             const startTime = Date.now()
 
@@ -736,23 +884,26 @@ export class MetaCallCoreVendor extends EventEmitter {
             session.playbackCancel = finish
 
             const tick = () => {
-                if (!session.source || session.state === CallState.Terminated) {
+                if (!session.source || session.state === CallState.Terminated || i >= frames.length) {
                     finish()
                     return
                 }
                 const frame = frames[i]
-                session.source.onData({
-                    samples: frame,
-                    sampleRate,
-                    bitsPerSample: 16,
-                    channelCount: 1,
-                    numberOfFrames: frame.length,
-                })
-                i++
-                if (i >= frames.length) {
+                this.notifyOutboundFrame(frame, sampleRate)
+                try {
+                    session.source.onData({
+                        samples: frame,
+                        sampleRate,
+                        bitsPerSample: 16,
+                        channelCount: 1,
+                        numberOfFrames: frame.length,
+                    })
+                } catch (err) {
+                    reject(err)
                     finish()
                     return
                 }
+                i++
                 // Absolute deadline for the next frame — self-corrects for drift.
                 const nextDeadline = startTime + i * PUBLISH_FRAME_MS
                 const delay = Math.max(0, nextDeadline - Date.now())
@@ -775,27 +926,39 @@ export class MetaCallCoreVendor extends EventEmitter {
         const session = this.sessions.get(callId)
         if (!session) return
 
-        if (session.playbackCancel) {
-            session.playbackCancel()
-        }
+        this.cancelResponse(callId)
+        // Remove first: pc.close() may synchronously re-enter the state handler.
+        session.state = CallState.Terminated
+        this.sessions.delete(callId)
+        if (this.phoneToCallId.get(session.callerPhone) === callId) this.phoneToCallId.delete(session.callerPhone)
 
+        // Break JS/native callback cycles as part of disposal, not at process exit.
+        session.pc.onconnectionstatechange = null
+        session.pc.oniceconnectionstatechange = null
+        session.pc.onicecandidate = null
+        session.pc.ontrack = null
         try {
             if (session.sink) {
+                session.sink.ondata = null
                 session.sink.stop()
             }
         } catch {
             // ignore sink stop errors
         }
+        session.sink = null
 
+        try {
+            session.outboundTrack?.stop()
+        } catch {
+            // ignore track stop errors
+        }
+        session.outboundTrack = undefined
+        session.source = null
         try {
             session.pc.close()
         } catch {
             // ignore PC close errors
         }
-
-        session.state = CallState.Terminated
-        this.phoneToCallId.delete(session.callerPhone)
-        this.sessions.delete(callId)
     }
 
     /**
