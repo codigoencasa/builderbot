@@ -53,7 +53,7 @@
     "dependencies": {
         "body-parser": "^2.2.1",
         "polka": "^0.5.2",
-        "sharp": "0.33.3",
+        "sharp": "0.35.5",
         "whatsapp-web.js": "~1.34.2"
     },
     "engines": {
