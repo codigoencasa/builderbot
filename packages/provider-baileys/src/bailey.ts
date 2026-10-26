@@ -621,7 +621,16 @@ class BaileysProvider extends ProviderClass<WASocket> {
                         ],
                         payload: { qr },
                     })
-                    await baileyGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)
+                    try {
+                        await baileyGenerateImage(qr, `${this.globalVendorArgs.name}.qr.png`)
+                    } catch (error) {
+                        const reason = error instanceof Error ? error.message : String(error)
+                        this.logger.log(`[Baileys] QR image generation failed: ${reason}`)
+                        this.emit('notice', {
+                            title: 'QR CODE ERROR',
+                            instructions: ['The QR code image could not be generated.', reason],
+                        })
+                    }
                 }
             })
 

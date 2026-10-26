@@ -331,6 +331,23 @@ describe('lifecycle review regressions', () => {
         qrSpy.mockRestore()
     })
 
+    test('QR image generation failures emit a notice without rejecting the connection handler', async () => {
+        const utilsModule = require('../src/utils')
+        const error = new Error('QR write failed')
+        jest.spyOn(utilsModule, 'baileyGenerateImage').mockRejectedValue(error)
+        const emitSpy = jest.spyOn(provider, 'emit')
+        await provider['initVendor']()
+        const [onConnectionUpdate] = socket.ev.listeners('connection.update')
+
+        await expect(onConnectionUpdate({ qr: '2@fake-qr-data' })).resolves.toBeUndefined()
+        expect(emitSpy).toHaveBeenCalledWith(
+            'notice',
+            expect.objectContaining({
+                instructions: expect.arrayContaining([expect.stringContaining('QR write failed')]),
+            })
+        )
+    })
+
     test('missing QR returns 404 and destroy closes a real HTTP listener and the log stream', async () => {
         provider['beforeHttpServerInit']()
         await new Promise<void>((resolve) => provider.server.listen(0, resolve))
