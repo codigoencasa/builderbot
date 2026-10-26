@@ -238,12 +238,19 @@ testSuite('Debe de continuar el el encadenamiento con procesos async', async ({ 
 
 //Issue https://github.com/codigoencasa/bot-whatsapp/issues/877
 testSuite('Debe respectar el delay del node previo', async ({ database, provider }) => {
+    const sentAt: number[] = []
+    provider.sendMessage = async () => {
+        sentAt.push(Date.now())
+    }
+
     const flowPing = addKeyword(['hi']).addAction(async (_, { flowDynamic, gotoFlow }) => {
         await flowDynamic('Buenas ping debe espera 1segundo')
         return gotoFlow(flowBye)
     })
 
-    const flowBye = addKeyword('ping').addAnswer(`Pong con delay 1 segundo`, { delay: 1000 })
+    const flowBye = addKeyword('ping')
+        .addAnswer(`Pong con delay 1 segundo`, { delay: 1000 })
+        .addAnswer(`Segundo pong con delay 1 segundo`, { delay: 1000 })
 
     await createBot({
         database,
@@ -256,11 +263,14 @@ testSuite('Debe respectar el delay del node previo', async ({ database, provider
         body: 'hi',
     })
 
-    await delay(2000)
+    await delay(3000)
     const history = parseAnswers(database.listHistory).map((item) => item.answer)
     assert.is('Buenas ping debe espera 1segundo', history[0])
     assert.is('Pong con delay 1 segundo', history[1])
-    assert.is(undefined, history[2])
+    assert.is('Segundo pong con delay 1 segundo', history[2])
+    assert.is(undefined, history[3])
+    assert.ok(sentAt[1] - sentAt[0] >= 800, 'gotoFlow debe esperar el delay de la primera respuesta')
+    assert.ok(sentAt[2] - sentAt[1] >= 800, 'gotoFlow debe esperar el delay entre respuestas')
 })
 
 testSuite.run()
