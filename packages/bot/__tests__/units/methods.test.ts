@@ -161,4 +161,9 @@ test('addKeyword debe rechazar array vacío', () => {
     assert.throws(() => addKeyword([] as any), /empty/i)
 })
 
+test('addKeyword debe rechazar strings vacíos dentro del array', () => {
+    assert.throws(() => addKeyword(['']), /empty/i)
+    assert.throws(() => addKeyword(['hola', '']), /empty/i)
+})
+
 test.run()
