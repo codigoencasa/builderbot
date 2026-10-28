@@ -434,8 +434,6 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                     return
                 }
 
-                await delay(flowInstance?.ctx?.options?.delay ?? 0)
-
                 const flowTree = flowInstance.toJson()
 
                 const flowParentId = flowTree[step]
@@ -446,6 +444,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                     const msgParse = this.flowClass.findSerializeByRef(msg?.ref)
 
                     const ctxMessage: TContext = { ...msgParse, ...msg }
+                    const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
+                    await delay(delayMs)
                     await this.sendProviderAndSave(from, ctxMessage).then(() => promises.push(ctxMessage))
                 }
 
