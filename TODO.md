@@ -92,4 +92,4 @@
 - [ ] try catch error http
 - [ ] test twilio
 - [ ] meta recuerda activar los dos webhooks
-- [ ] cambiar el CONTRIBUTING.md
+- [x] cambiar el CONTRIBUTING.md
