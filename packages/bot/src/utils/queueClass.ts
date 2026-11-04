@@ -20,6 +20,12 @@ interface QueueTaskSignal {
     readonly cancelled: boolean
 }
 
+/** Contexto async del item en vuelo: `from` para detectar re-entrada y la señal de cancelación del item. */
+interface QueueStore {
+    from: string
+    signal: QueueTaskSignal
+}
+
 interface QueueItem<T> {
     promiseFunc: (item: QueueItem<T>) => PromiseFunctionWrapper<T>
     fingerIdRef: string
@@ -51,7 +57,7 @@ class Queue<T> {
     private workingOnPromise: Map<string, boolean>
     private wakeups: Map<string, () => void>
     /** Contexto async para detectar enqueues re-entrantes del mismo `from`. */
-    private readonly als: AsyncLocalStorage<string>
+    private readonly als: AsyncLocalStorage<QueueStore>
     private logger: Logger
     private timeout: number
     private concurrencyLimit: number
@@ -108,16 +114,25 @@ class Queue<T> {
                     return item.cancelled
                 },
             }
+            const workPromise = this.als.run<Promise<T>>({ from, signal }, () =>
+                refToPromise.promiseInFunc(signal).then(() => {
+                    refToPromise.cancel()
+                    return 'success' as unknown as T // Assuming 'success' is a valid T
+                })
+            )
+            /*
+             * Cuando el temporizador gana la carrera, el trabajo sigue en vuelo y puede
+             * rechazar después (la cadena del flujo propaga el rechazo del item). Sin un
+             * manejador, ese rechazo tardío mata el proceso como `unhandledRejection`.
+             * La carrera de abajo sigue observando las promesas originales.
+             */
+            workPromise.catch(() => {})
+            refToPromise.timerPromise.catch(() => {})
             const value = await Promise.race([
                 refToPromise.timerPromise,
                 // Ejecutar el trabajo dentro del contexto `from`: cualquier `enqueue` que
                 // ocurra en su cadena async se marcará como re-entrante.
-                this.als.run(from, () =>
-                    refToPromise.promiseInFunc(signal).then(() => {
-                        refToPromise.cancel()
-                        return 'success' as unknown as T // Assuming 'success' is a valid T
-                    })
-                ),
+                workPromise,
             ])
             item.resolve(value)
         } catch (err) {
@@ -165,7 +180,7 @@ class Queue<T> {
                 setTimeout(() => {
                     // Cancelación cooperativa: que el trabajo en curso pueda abortar su cadena
                     item.cancelled = true
-                    reject(new Error(`Queue item timeout after ${itemTimeout}ms`) as unknown as T)
+                    reject(new QueueTimeoutError(itemTimeout) as unknown as T)
                 }, itemTimeout)
 
             const timerPromise = new Promise<T>((resolve, reject) => {
@@ -197,7 +212,7 @@ class Queue<T> {
                 promiseFunc,
                 fingerIdRef,
                 cancelled: false,
-                reentrant: this.als.getStore() === from,
+                reentrant: this.als.getStore()?.from === from,
                 timeout,
                 resolve,
                 reject,
@@ -314,6 +329,15 @@ class Queue<T> {
         this.idsCallbacks.set(from, ids)
     }
 
+    /**
+     * Señal de cancelación del item en vuelo (dentro de la cadena async del
+     * callback del flujo). Permite al trabajo cooperativo —por ejemplo, los
+     * envíos con delay de un `gotoFlow`— abortar cuando el item expiró.
+     */
+    currentSignal(): QueueTaskSignal | undefined {
+        return this.als.getStore()?.signal
+    }
+
     getIdsCallback(from: string): string[] {
         return this.idsCallbacks.get(from) || []
     }
@@ -336,5 +360,13 @@ class Queue<T> {
     }
 }
 
-export { Queue }
+/** Error de item expirado: el trabajo superó el timeout de la cola y fue cancelado. */
+class QueueTimeoutError extends Error {
+    constructor(itemTimeout: number) {
+        super(`Queue item timeout after ${itemTimeout}ms`)
+        this.name = 'QueueTimeoutError'
+    }
+}
+
+export { Queue, QueueTimeoutError }
 export type { QueueTaskSignal }

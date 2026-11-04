@@ -28,7 +28,7 @@ import type FlowClass from '../io/flowClass'
 import { toCtx } from '../io/methods'
 import type { ProviderClass } from '../provider/interface/provider'
 import type { FlowDynamicMessage, GeneralArgs, MessageContextIncoming } from '../types'
-import { BlackList, Queue } from '../utils'
+import { BlackList, Queue, QueueTimeoutError } from '../utils'
 import { delay } from '../utils/delay'
 import { printer } from '../utils/interactive'
 
@@ -355,6 +355,10 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                 )
             } catch (error) {
                 logger.error(`Error al encolar (ID ${ctxMessage.ref}):`, error)
+                // El item expiró por el timeout de la cola: ya se canceló y registró,
+                // y el flujo detiene el resto de sus envíos. Propagarlo terminaría en
+                // un `unhandledRejection` en el listener del provider.
+                if (error instanceof QueueTimeoutError) return
                 throw error
             }
         }
@@ -441,11 +445,22 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                 const parseListMsg = this.flowClass.find(flowParentId?.ref, true, flowTree)
 
                 for (const msg of parseListMsg) {
+                    // Cancelación cooperativa: si el item de la cola expiró durante los
+                    // delays, no seguir enviando el resto del flujo destino.
+                    if (this.queuePrincipal.currentSignal()?.cancelled) {
+                        break
+                    }
+
                     const msgParse = this.flowClass.findSerializeByRef(msg?.ref)
 
                     const ctxMessage: TContext = { ...msgParse, ...msg }
                     const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
                     await delay(delayMs)
+
+                    if (this.queuePrincipal.currentSignal()?.cancelled) {
+                        break
+                    }
+
                     await this.sendProviderAndSave(from, ctxMessage).then(() => promises.push(ctxMessage))
                 }
 
