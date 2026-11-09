@@ -21,7 +21,7 @@ import type {
 } from './../types'
 import type { HostEventTypes } from './eventEmitterClass'
 import { EventEmitterClass } from './eventEmitterClass'
-import { GlobalState, IdleState, SingleState } from '../context'
+import { GlobalState, IdleState, SingleState, RedisState } from '../context'
 import type { MemoryDB } from '../db'
 import { LIST_REGEX } from '../io/events'
 import type FlowClass from '../io/flowClass'
@@ -46,7 +46,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     database: D
     provider: P
     queuePrincipal: Queue<unknown>
-    stateHandler = new SingleState()
+    stateHandler: SingleState | RedisState
     globalStateHandler = new GlobalState()
     dynamicBlacklist = new BlackList()
     generalArgs: GeneralArgs & { host?: string } = {
@@ -98,6 +98,9 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         this.globalStateHandler.updateState()(this.generalArgs.globalState)
 
         if (this.generalArgs.extensions) this.globalStateHandler.RAW = this.generalArgs.extensions
+        this.stateHandler = this.generalArgs.RedisOptions
+            ? new RedisState(this.generalArgs.RedisOptions.connection, this.generalArgs.RedisOptions.options)
+            : new SingleState()
 
         for (const { event, func } of this.listenerBusEvents()) {
             this.provider.on(event, func)
@@ -151,8 +154,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         logger.log(`[handleMsg]: `, messageCtxInComing)
         idleForCallback.stop(messageCtxInComing)
         const { body, from } = messageCtxInComing
-        let msgToSend = []
-        let endFlowFlag = this.stateHandler.get(from)('__end_flow__') || false
+        let msgToSend: any[] = []
+        let endFlowFlag = (await this.stateHandler.get(from)('__end_flow__')) || false
         const fallBackFlag = false
 
         if (this.dynamicBlacklist.checkIf(from)) return
@@ -400,7 +403,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         // 📄 [options: fallBack]: esta funcion se encarga de repetir el ultimo mensaje
         const fallBack =
             (flag: FlagsRuntime) =>
-            async (message = null) => {
+            async (message: Record<string, any> | null = null) => {
                 this.queuePrincipal.clearQueue(from)
                 flag.fallBack = true
                 await this.sendProviderAndSave(from, {
@@ -655,7 +658,11 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             }))
 
             msgToSend = this.flowClass.find(body, false, flowStandalone) || []
-            return exportFunctionsSend(() => sendFlow(msgToSend, from))
+            if (msgToSend.length) return exportFunctionsSend(() => sendFlow(msgToSend, from))
+
+            // si no hubo match en nested pero el previo pedía capture,
+            // procesar como captura libre sin buscar keywords globales
+            if (prevMsg?.options?.capture) return exportFunctionsSend(() => sendFlow([], from))
         }
 
         // 📄🤘(tiene return) Si el mensaje previo implementa capture
@@ -663,8 +670,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             const typeCapture = typeof prevMsg?.options?.capture
 
             if (typeCapture === 'boolean' && fallBackFlag) {
-                msgToSend = this.flowClass.find(refToContinue?.ref, true) || []
-                return exportFunctionsSend(() => sendFlow(msgToSend, from, { forceQueue: true }))
+                msgToSend = this.flowClass.find(refToContinue?.ref ?? '', true) || []
+                if (msgToSend.length) return exportFunctionsSend(() => sendFlow(msgToSend, from, { forceQueue: true }))
             }
         }
 
@@ -675,39 +682,39 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         }
 
         if (!prevMsg?.options?.capture) {
-            msgToSend = this.flowClass.find(this.generalArgs.listEvents.WELCOME) || []
-
             if (LIST_REGEX.REGEX_EVENT_LOCATION.test(body)) {
-                msgToSend = this.flowClass.find(this.generalArgs.listEvents.LOCATION) || []
+                msgToSend = this.flowClass.find(this.generalArgs.listEvents!.LOCATION) || []
             }
 
             if (LIST_REGEX.REGEX_EVENT_MEDIA.test(body)) {
-                msgToSend = this.flowClass.find(this.generalArgs.listEvents.MEDIA) || []
+                msgToSend = this.flowClass.find(this.generalArgs.listEvents!.MEDIA) || []
             }
 
             if (LIST_REGEX.REGEX_EVENT_DOCUMENT.test(body)) {
-                msgToSend = this.flowClass.find(this.generalArgs.listEvents.DOCUMENT) || []
+                msgToSend = this.flowClass.find(this.generalArgs.listEvents!.DOCUMENT) || []
             }
 
             if (LIST_REGEX.REGEX_EVENT_VOICE_NOTE.test(body)) {
-                msgToSend = this.flowClass.find(this.generalArgs.listEvents.VOICE_NOTE) || []
+                msgToSend = this.flowClass.find(this.generalArgs.listEvents!.VOICE_NOTE) || []
             }
 
             if (LIST_REGEX.REGEX_EVENT_ORDER.test(body)) {
-                msgToSend = this.flowClass.find(this.generalArgs.listEvents.ORDER) || []
+                msgToSend = this.flowClass.find(this.generalArgs.listEvents!.ORDER) || []
             }
 
             if (LIST_REGEX.REGEX_EVENT_TEMPLATE.test(body)) {
-                msgToSend = this.flowClass.find(this.generalArgs.listEvents.TEMPLATE) || []
+                msgToSend = this.flowClass.find(this.generalArgs.listEvents!.TEMPLATE) || []
             }
 
             if (LIST_REGEX.REGEX_EVENT_CALL.test(body)) {
-                msgToSend = this.flowClass.find(this.generalArgs.listEvents.CALL) || []
+                msgToSend = this.flowClass.find(this.generalArgs.listEvents!.CALL) || []
             }
 
             if (LIST_REGEX.REGEX_EVENT_CONTACTS.test(body)) {
-                msgToSend = this.flowClass.find(this.generalArgs.listEvents.CONTACTS) || []
+                msgToSend = this.flowClass.find(this.generalArgs.listEvents!.CONTACTS) || []
             }
+
+            if (!msgToSend.length) msgToSend = this.flowClass.find(this.generalArgs.listEvents!.WELCOME) || []
         }
 
         await this.stateHandler.updateState({ from })({ __end_flow__: false })
@@ -780,12 +787,13 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     httpServer = (port: number) => {
         this.provider.initAll(port, {
             blacklist: this.dynamicBlacklist,
-            state: (number: string): BotStateStandAlone => ({
-                getMyState: this.stateHandler.getMyState(number),
-                get: this.stateHandler.get(number),
-                update: this.stateHandler.updateState({ from: number }),
-                clear: this.stateHandler.clear(number),
-            }),
+            state: (number: string): BotStateStandAlone =>
+                ({
+                    getMyState: this.stateHandler.getMyState(number),
+                    get: this.stateHandler.get(number),
+                    update: this.stateHandler.updateState({ from: number }),
+                    clear: this.stateHandler.clear(number),
+                }) as BotStateStandAlone,
             emit: (eventName: 'send_message' | 'notice', args: Record<string, any> & { from: string }) => {
                 if (eventName === 'send_message') {
                     this.emit('send_message', {
@@ -841,8 +849,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
      */
     private buildCtxMethods = (): BotCtxMethods => ({
         endFlow: async (from: string) => {
-            this.queuePrincipal.clearQueue(from)
-            this.stateHandler.updateState({ from })({ __end_flow__: true })
+            await this.queuePrincipal.clearQueue(from)
+            await this.stateHandler.updateState({ from })({ __end_flow__: true })
         },
     })
 

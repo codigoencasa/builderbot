@@ -118,6 +118,9 @@ importers:
             follow-redirects:
                 specifier: ^1.15.11
                 version: 1.15.11(debug@4.4.3)
+            ioredis:
+                specifier: ^5.9.3
+                version: 5.11.1
             mime-types:
                 specifier: ^3.0.2
                 version: 3.0.2
@@ -159,6 +162,9 @@ importers:
             '@types/follow-redirects':
                 specifier: ^1.14.4
                 version: 1.14.4
+            '@types/ioredis-mock':
+                specifier: ^8.2.6
+                version: 8.2.8(ioredis@5.11.1)
             '@types/mime-types':
                 specifier: ^2.1.4
                 version: 2.1.4
@@ -174,6 +180,9 @@ importers:
             '@types/sinon':
                 specifier: ^17.0.4
                 version: 17.0.4
+            ioredis-mock:
+                specifier: ^8.13.1
+                version: 8.13.1(@types/ioredis-mock@8.2.8(ioredis@5.11.1))(ioredis@5.11.1)
             proxyquire:
                 specifier: ^2.1.3
                 version: 2.1.3
@@ -526,6 +535,58 @@ importers:
             tsm:
                 specifier: ^2.3.0
                 version: 2.3.0
+
+    packages/database-redis:
+        dependencies:
+            '@builderbot/bot':
+                specifier: workspace:*
+                version: link:../bot
+            ioredis:
+                specifier: ^5.9.3
+                version: 5.11.1
+        devDependencies:
+            '@rollup/plugin-commonjs':
+                specifier: ^29.0.0
+                version: 29.0.0(rollup@4.53.3)
+            '@rollup/plugin-node-resolve':
+                specifier: ^16.0.3
+                version: 16.0.3(rollup@4.53.3)
+            '@rollup/plugin-terser':
+                specifier: ^0.4.4
+                version: 0.4.4(rollup@4.53.3)
+            '@types/ioredis-mock':
+                specifier: ^8.2.6
+                version: 8.2.8(ioredis@5.11.1)
+            '@types/node':
+                specifier: ^24.10.2
+                version: 24.10.2
+            '@types/sinon':
+                specifier: ^21.0.0
+                version: 21.0.1
+            ioredis-mock:
+                specifier: ^8.13.1
+                version: 8.13.1(@types/ioredis-mock@8.2.8(ioredis@5.11.1))(ioredis@5.11.1)
+            kleur:
+                specifier: ^4.1.5
+                version: 4.1.5
+            rimraf:
+                specifier: ^6.1.2
+                version: 6.1.2
+            rollup-plugin-typescript2:
+                specifier: ^0.36.0
+                version: 0.36.0(rollup@4.53.3)(typescript@5.9.3)
+            sinon:
+                specifier: ^17.0.1
+                version: 17.0.2
+            tslib:
+                specifier: ^2.6.2
+                version: 2.8.1
+            tsm:
+                specifier: ^2.3.0
+                version: 2.3.0
+            uvu:
+                specifier: ^0.5.6
+                version: 0.5.6
 
     packages/eslint-plugin-builderbot:
         devDependencies:
@@ -3649,6 +3710,24 @@ packages:
             '@types/node':
                 optional: true
 
+    '@ioredis/as-callback@3.0.0':
+        resolution:
+            {
+                integrity: sha512-Kqv1rZ3WbgOrS+hgzJ5xG5WQuhvzzSTRYvNeyPMLOAM78MHSnuKI20JeJGbpuAt//LCuP0vsexZcorqW7kWhJg==,
+            }
+
+    '@ioredis/commands@1.10.0':
+        resolution:
+            {
+                integrity: sha512-UmeW7z4LfctwoQ5wkhVzgq8tXkreED2xZGpX+Bg+zA+WJFZCT6c062AfCK/Dfk81xZnnwdhJCUMkitihRaoC2Q==,
+            }
+
+    '@ioredis/commands@1.11.0':
+        resolution:
+            {
+                integrity: sha512-tuMmOu6dtyGFv/fzCjtapCJj/zgoHaFsqs3wKsroJSRXtlLmyL/t+B7uaQiavGk1F3WWFQcUqZwk92bpp9jKcA==,
+            }
+
     '@isaacs/balanced-match@4.0.1':
         resolution:
             {
@@ -5768,6 +5847,9 @@ packages:
                 integrity: sha512-Jaoz4Jw1QYHc1EFww/E6gVtNjhoDU+gwRKqXP6C3LKYqqH2UQhP8tMP3+t/ePrhaze7fhLE8vS2q6vVxBANFTQ==,
             }
         engines: { node: '>=18.0.0' }
+        deprecated: |-
+            Deprecated due to a bug in custom logger data redaction. Upgrade to the latest version. If you used a custom logger with
+              this version, review your logs and rotate any credentials or other secrets. See https://github.com/aws/aws-sdk-js-v3/issues/8393.
 
     '@smithy/types@4.9.0':
         resolution:
@@ -6139,6 +6221,14 @@ packages:
                 integrity: sha512-r8Tayk8HJnX0FztbZN7oVqGccWgw98T/0neJphO91KkmOzug1KkofZURD4UaD5uH8AqcFLfdPErnBod0u71/qg==,
             }
 
+    '@types/ioredis-mock@8.2.8':
+        resolution:
+            {
+                integrity: sha512-Nxr1CXk8NtGVzWQ8WoGCOyo+HARd4CFc/Nt2+ITt3WWLNlj1InW38SzZwOJNqzA38iplrpBFp6Ny4KjPfeI+bA==,
+            }
+        peerDependencies:
+            ioredis: ^5
+
     '@types/istanbul-lib-coverage@2.0.6':
         resolution:
             {
@@ -6347,6 +6437,12 @@ packages:
         resolution:
             {
                 integrity: sha512-RHnIrhfPO3+tJT0s7cFaXGZvsL4bbR3/k7z3P312qMS4JaS2Tk+KiwiLx1S0rQ56ERj00u1/BtdyVd0FY+Pdew==,
+            }
+
+    '@types/sinon@21.0.1':
+        resolution:
+            {
+                integrity: sha512-5yoJSqLbjH8T9V2bksgRayuhpZy+723/z6wBOR+Soe4ZlXC0eW8Na71TeaZPUWDQvM7LYKa9UGFc6LRqxiR5fQ==,
             }
 
     '@types/sinonjs__fake-timers@15.0.1':
@@ -7962,6 +8058,13 @@ packages:
             }
         engines: { node: '>=0.8' }
 
+    cluster-key-slot@1.1.1:
+        resolution:
+            {
+                integrity: sha512-rwHwUfXL40Chm1r08yrhU3qpUvdVlgkKNeyeGPOxnW8/SyVDvgRaed/Uz54AqWNaTCAThlj6QAs3TZcKI0xDEw==,
+            }
+        engines: { node: '>=0.10.0' }
+
     cmd-shim@6.0.3:
         resolution:
             {
@@ -9525,6 +9628,7 @@ packages:
                 integrity: sha512-BhHmn2yNOFA9H9JmmIVKJmd288g9hrVRDkdoIgRCRuSySRUHH7r/DI6aAXW9T1WwUuY3DFgrcaqB+deURBLR5g==,
             }
         engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
+        deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
         hasBin: true
         peerDependencies:
             jiti: '*'
@@ -9823,6 +9927,20 @@ packages:
         resolution:
             {
                 integrity: sha512-OP2IUU6HeYKJi3i0z4A19kHMQoLVs4Hc+DPqqxI2h/DPZHTm/vjsfC6P0b4jCMy14XizLBqvndQ+UilD7707Jw==,
+            }
+
+    fengari-interop@0.1.4:
+        resolution:
+            {
+                integrity: sha512-4/CW/3PJUo3ebD4ACgE1g/3NGEYSq7OQAyETyypsAl/WeySDBbxExikkayNkZzbpgyC9GyJp8v1DU2VOXxNq7Q==,
+            }
+        peerDependencies:
+            fengari: ^0.1.0
+
+    fengari@0.1.5:
+        resolution:
+            {
+                integrity: sha512-0DS4Nn4rV8qyFlQCpKK8brT61EUtswynrpfFTcgLErcilBIBskSMQ86fO2WVuybr14ywyKdRjv91FiRZwnEuvQ==,
             }
 
     fetch-blob@3.2.0:
@@ -11002,6 +11120,23 @@ packages:
                 integrity: sha512-4gd7VpWNQNB4UKKCFFVcp1AVv+FMOgs9NKzjHKusc8jTMhd5eL1NqQqOpE0KzMds804/yHlglp3uxgluOqAPLw==,
             }
         engines: { node: '>= 0.4' }
+
+    ioredis-mock@8.13.1:
+        resolution:
+            {
+                integrity: sha512-Wsi50AU+cMiI32nAgfwpUaJVBtb4iQdVsOHl9M6R3tePCO/8vGsToCVIG82XWAxN4Se55TZoOzVseu+QngFLyw==,
+            }
+        engines: { node: '>=12.22' }
+        peerDependencies:
+            '@types/ioredis-mock': ^8
+            ioredis: ^5
+
+    ioredis@5.11.1:
+        resolution:
+            {
+                integrity: sha512-ehuGcf94bQXhfagULNXrJdfnWO38v070jxSx/qE87Kjzmu2fU7ro5EFAb+OPituLqgfyuQaym5DlrNydW2sJ9A==,
+            }
+        engines: { node: '>=12.22.0' }
 
     ip-address@10.1.0:
         resolution:
@@ -14484,6 +14619,7 @@ packages:
                 integrity: sha512-8Mf2cbV7x1cXPUILADGI3wuhfqWvtiLA1iclTDbFRZkgRQS0NqsPZphna9V+HyTEadheuPmjaJMsbzKQFOzLug==,
             }
         engines: { node: '>=10' }
+        deprecated: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
         hasBin: true
 
     prelude-ls@1.1.2:
@@ -15118,6 +15254,13 @@ packages:
                 integrity: sha512-v05I2k7xN8zXvPD9N+z/uhXPaj0sUFCe2rcWZIpBsqxfP7xXFQ0tipAd/wjj1YxWyWtUS5IDJpOG82JKt2EAVA==,
             }
 
+    readline-sync@1.4.10:
+        resolution:
+            {
+                integrity: sha512-gNva8/6UAe8QYepIQH/jQ2qn91Qj0B9sYjMBBs3QOB8F2CXcKgLxQaJRP76sWVRQt+QU+8fAkCbCvjjMFu7Ycw==,
+            }
+        engines: { node: '>= 0.8.0' }
+
     real-cancellable-promise@1.2.3:
         resolution:
             {
@@ -15144,6 +15287,20 @@ packages:
                 integrity: sha512-6tDA8g98We0zd0GvVeMT9arEOnTw9qM03L9cJXaCjrip1OO764RDBLBfrB4cwzNGDj5OA5ioymC9GkizgWJDUg==,
             }
         engines: { node: '>=8' }
+
+    redis-errors@1.2.0:
+        resolution:
+            {
+                integrity: sha512-1qny3OExCf0UvUV/5wpYKf2YwPcOqXzkwKKSmKHiE6ZMQs5heeE/c8eXK+PNllPvmjgAbfnsbpkGZWy8cBpn9w==,
+            }
+        engines: { node: '>=4' }
+
+    redis-parser@3.0.0:
+        resolution:
+            {
+                integrity: sha512-DJnGAeenTdpMEH6uAJRK/uiyEIH9WVsUmoLwzudwGJUwZPp80PDBWPHXSAGNPwNvIXAbe7MSUB1zQFugFml66A==,
+            }
+        engines: { node: '>=4' }
 
     reflect-metadata@0.2.2:
         resolution:
@@ -15461,6 +15618,7 @@ packages:
             {
                 integrity: sha512-o/mRQGk9Rcer/jEEw/yw4mwo3EU/NvYvp577/Btqrym9Qy5/MdWGBqipbALgd2lrdWTJ5/gqDusxfnQBxOxT2Q==,
             }
+        deprecated: Just use Node.js's crypto.timingSafeEqual()
 
     secure-json-parse@4.1.0:
         resolution:
@@ -15885,6 +16043,12 @@ packages:
                 integrity: sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==,
             }
 
+    sprintf-js@1.1.3:
+        resolution:
+            {
+                integrity: sha512-Oo+0REFV59/rz3gfJNKQiBlwfHaSESl1pcGyABQsnnIfWOFt6JNj5gCog2U6MLZ//IGYD+nA8nI+mTShREReaA==,
+            }
+
     sqlstring@2.3.3:
         resolution:
             {
@@ -15932,6 +16096,12 @@ packages:
                 integrity: sha512-XlkWvfIm6RmsWtNJx+uqtKLS8eqFbxUg0ZzLXqY0caEy9l7hruX8IpiDnjsLavoBgqCCR71TqWO8MaXYheJ3RQ==,
             }
         engines: { node: '>=10' }
+
+    standard-as-callback@2.1.0:
+        resolution:
+            {
+                integrity: sha512-qoRRSyROncaz1z0mvYqIE4lCd9p2R90i6GxW3uZv5ucSu8tU7B5HXUP1gG8pVZsYNVaXjk8ClXHPttLyxAL48A==,
+            }
 
     standard-version@9.5.0:
         resolution:
@@ -16258,6 +16428,7 @@ packages:
                 integrity: sha512-DZ4yORTwrbTj/7MZYq2w+/ZFdI6OZ/f9SFHR+71gIVUZhOQPHzVCLpvRnPgyaMpfWxxk/4ONva3GQSyNIKRv6A==,
             }
         engines: { node: '>=10' }
+        deprecated: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
     tar@7.5.2:
         resolution:
@@ -16265,6 +16436,7 @@ packages:
                 integrity: sha512-7NyxrTE4Anh8km8iEy7o0QYPs+0JKBTj5ZaqHg6B39erLg0qYXN3BijtShwbsNSvQ+LN75+KV+C4QR/f6Gwnpg==,
             }
         engines: { node: '>=18' }
+        deprecated: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
     teeny-request@10.1.0:
         resolution:
@@ -19067,6 +19239,12 @@ snapshots:
         optionalDependencies:
             '@types/node': 24.10.2
 
+    '@ioredis/as-callback@3.0.0': {}
+
+    '@ioredis/commands@1.10.0': {}
+
+    '@ioredis/commands@1.11.0': {}
+
     '@isaacs/balanced-match@4.0.1': {}
 
     '@isaacs/brace-expansion@5.0.0':
@@ -21223,6 +21401,10 @@ snapshots:
 
     '@types/http-errors@2.0.5': {}
 
+    '@types/ioredis-mock@8.2.8(ioredis@5.11.1)':
+        dependencies:
+            ioredis: 5.11.1
+
     '@types/istanbul-lib-coverage@2.0.6': {}
 
     '@types/istanbul-lib-report@3.0.3':
@@ -21333,6 +21515,10 @@ snapshots:
             '@types/node': 24.10.2
 
     '@types/sinon@17.0.4':
+        dependencies:
+            '@types/sinonjs__fake-timers': 15.0.1
+
+    '@types/sinon@21.0.1':
         dependencies:
             '@types/sinonjs__fake-timers': 15.0.1
 
@@ -22472,6 +22658,8 @@ snapshots:
     clone@1.0.4: {}
 
     clone@2.1.2: {}
+
+    cluster-key-slot@1.1.1: {}
 
     cmd-shim@6.0.3: {}
 
@@ -23616,6 +23804,16 @@ snapshots:
 
     fecha@4.2.3: {}
 
+    fengari-interop@0.1.4(fengari@0.1.5):
+        dependencies:
+            fengari: 0.1.5
+
+    fengari@0.1.5:
+        dependencies:
+            readline-sync: 1.4.10
+            sprintf-js: 1.1.3
+            tmp: 0.2.5
+
     fetch-blob@3.2.0:
         dependencies:
             node-domexception: 1.0.0
@@ -24410,6 +24608,28 @@ snapshots:
             es-errors: 1.3.0
             hasown: 2.0.2
             side-channel: 1.1.0
+
+    ioredis-mock@8.13.1(@types/ioredis-mock@8.2.8(ioredis@5.11.1))(ioredis@5.11.1):
+        dependencies:
+            '@ioredis/as-callback': 3.0.0
+            '@ioredis/commands': 1.11.0
+            '@types/ioredis-mock': 8.2.8(ioredis@5.11.1)
+            fengari: 0.1.5
+            fengari-interop: 0.1.4(fengari@0.1.5)
+            ioredis: 5.11.1
+            semver: 7.7.3
+
+    ioredis@5.11.1:
+        dependencies:
+            '@ioredis/commands': 1.10.0
+            cluster-key-slot: 1.1.1
+            debug: 4.4.3
+            denque: 2.1.0
+            redis-errors: 1.2.0
+            redis-parser: 3.0.0
+            standard-as-callback: 2.1.0
+        transitivePeerDependencies:
+            - supports-color
 
     ip-address@10.1.0: {}
 
@@ -27619,6 +27839,8 @@ snapshots:
             minimatch: 5.1.6
         optional: true
 
+    readline-sync@1.4.10: {}
+
     real-cancellable-promise@1.2.3: {}
 
     real-require@0.1.0: {}
@@ -27629,6 +27851,12 @@ snapshots:
         dependencies:
             indent-string: 4.0.0
             strip-indent: 3.0.0
+
+    redis-errors@1.2.0: {}
+
+    redis-parser@3.0.0:
+        dependencies:
+            redis-errors: 1.2.0
 
     reflect-metadata@0.2.2: {}
 
@@ -28186,6 +28414,8 @@ snapshots:
 
     sprintf-js@1.0.3: {}
 
+    sprintf-js@1.1.3: {}
+
     sqlstring@2.3.3: {}
 
     ssri@10.0.6:
@@ -28209,6 +28439,8 @@ snapshots:
     stack-utils@2.0.6:
         dependencies:
             escape-string-regexp: 2.0.0
+
+    standard-as-callback@2.1.0: {}
 
     standard-version@9.5.0:
         dependencies:

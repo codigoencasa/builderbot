@@ -7,6 +7,8 @@
  * GOAL: Define the framework-wide contracts (including the message_status event) that core and providers share.
  */
 
+import type Redis from 'ioredis'
+
 import type { IdleState } from './context'
 import type { ProviderClass } from './provider/interface/provider'
 import type { Queue } from './utils'
@@ -56,6 +58,14 @@ export type GeneralArgs = {
         concurrencyLimit: number
     }
     host?: string
+    RedisOptions?: {
+        connection: Redis
+        options: {
+            prefix?: string | null
+            /** TTL en segundos del estado de cada usuario. `null` o `0` = sin expiración. Por defecto 24h. */
+            expire?: number | null
+        }
+    }
 }
 
 export type FlagsRuntime = { endFlow: any; fallBack?: boolean; flowDynamic?: boolean; gotoFlow?: boolean }
@@ -181,24 +191,35 @@ export type FlowDynamicMessage = {
 }
 
 /**
+ * Estado por usuario. Los métodos de lectura son asíncronos porque el estado puede vivir
+ * en un backend externo (ej. Redis con `RedisOptions`): usa siempre `await`.
+ * Con el estado en memoria (por defecto) los valores llegan síncronos y `await` también funciona.
  * @typedef BotState
  * @property {(props: any) => Promise<void>} update - Actualiza el estado del bot.
- * @property {<K>() => { [key: string]: any | K }} getMyState - Obtiene el estado actual del bot.
- * @property {(prop: string) => any} get - Obtiene una propiedad del estado del bot.
- * @property {() => { [key: string]: any }} getAllState - Obtiene todo el estado del bot.
- * @property {() => void} clear - Limpia el estado del bot.
+ * @property {<K>() => Promise<{ [key: string]: K }>} getMyState - Obtiene el estado actual del bot.
+ * @property {<K>(prop: string) => Promise<K>} get - Obtiene una propiedad del estado del bot.
+ * @property {() => Promise<{ [key: string]: any }>} getAllState - Obtiene todo el estado del bot.
+ * @property {() => Promise<unknown>} clear - Limpia el estado del bot.
  */
 export type BotState = {
     update: (props: { [key: string]: any }) => Promise<void>
-    getMyState: <K = any>() => { [key: string]: K }
-    get: <K = any>(prop: string) => K
-    getAllState: () => { [key: string]: any }
-    clear: () => void
+    getMyState: <K = any>() => Promise<{ [key: string]: K }>
+    get: <K = any>(prop: string) => Promise<K>
+    getAllState: () => Promise<{ [key: string]: any }>
+    clear: () => Promise<unknown>
 }
 
 export type BotStateStandAlone = Omit<BotState, 'getAllState'>
 
-export type BotStateGlobal = Omit<BotState, 'getMyState'>
+/**
+ * Estado global: siempre en memoria y síncrono.
+ */
+export type BotStateGlobal = {
+    update: (props: { [key: string]: any }) => Promise<void>
+    get: <K = any>(prop: string) => K
+    getAllState: () => { [key: string]: any }
+    clear: () => void
+}
 
 export type DynamicBlacklist = {
     add: (phoneNumbers: string | string[]) => string[]

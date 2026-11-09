@@ -12,7 +12,7 @@ const SYSTEM_PROMPT =
     'You are a helpful phone assistant. Answer in one or two short sentences, in the caller language.'
 
 const aiFlow = addKeyword<Provider, Database>('/.*/', { regex: true }).addAction(async (ctx, { flowDynamic, state }) => {
-    const history = state.get('history') ?? [{ role: 'system', content: SYSTEM_PROMPT }]
+    const history = (await state.get('history')) ?? [{ role: 'system', content: SYSTEM_PROMPT }]
     history.push({ role: 'user', content: ctx.body })
 
     const completion = await openai.chat.completions.create({
