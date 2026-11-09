@@ -6,7 +6,6 @@ import { FacebookMessengerProvider as Provider } from '@builderbot/provider-face
 
 const PORT = process.env.PORT ?? 3008
 
-/** flows-default **/
 const discordFlow = addKeyword<Provider, Database>('doc').addAnswer(
     ['You can see the documentation here', '📄 https://builderbot.app/docs \n', 'Do you want to continue? *yes*'].join(
         '\n'
@@ -46,7 +45,9 @@ const registerFlow = addKeyword<Provider, Database>(utils.setEvent('REGISTER_FLO
         await state.update({ age: ctx.body })
     })
     .addAction(async (_, { flowDynamic, state }) => {
-        await flowDynamic(`${state.get('name')}, thanks for your information!: Your age: ${state.get('age')}`)
+        const name = await state.get('name')
+        const age = await state.get('age')
+        await flowDynamic(`${name}, thanks for your information!: Your age: ${age}`)
     })
 
 const fullSamplesFlow = addKeyword<Provider, Database>(['samples', utils.setEvent('SAMPLES')])
@@ -60,10 +61,7 @@ const fullSamplesFlow = addKeyword<Provider, Database>(['samples', utils.setEven
         media: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
     })
 
-/** flows-default-end **/
-
 const main = async () => {
-    /** flow-list-replace **/
     const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])
     const adapterProvider = createProvider(Provider, {
         accessToken: 'accessToken',
@@ -71,9 +69,9 @@ const main = async () => {
         verifyToken: 'verifyToken',
         version: 'v19.0'
     })
-    const redis_conn = new Redis(process.env.REDIS_URL)
+    const redis = new Redis(process.env.REDIS_URL)
     const adapterDB = new Database(
-        redis_conn,
+        redis,
         {
             prefix: 'prefix'
         }
@@ -85,7 +83,6 @@ const main = async () => {
         database: adapterDB,
     })
 
-    /** endpoints-default **/
     adapterProvider.server.post(
         '/v1/messages',
         handleCtx(async (bot, req, res) => {
@@ -134,7 +131,6 @@ const main = async () => {
         })
     )
 
-    /** endpoints-default-end **/
     httpServer(+PORT)
 }
 

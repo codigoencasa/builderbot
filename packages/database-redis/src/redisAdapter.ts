@@ -1,5 +1,5 @@
 import { MemoryDB } from '@builderbot/bot'
-import Redis from 'ioredis'
+import type Redis from 'ioredis'
 
 import type { History, RedisAdapterCredentials } from './types'
 

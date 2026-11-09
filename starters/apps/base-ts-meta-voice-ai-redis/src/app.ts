@@ -1,4 +1,3 @@
-import { join } from 'path'
 import { createBot, createProvider, createFlow, addKeyword } from '@builderbot/bot'
 import Redis from 'ioredis'
 import { RedisAdapter as Database } from '@builderbot/database-redis'
@@ -14,7 +13,7 @@ const SYSTEM_PROMPT =
     'You are a helpful phone assistant. Answer in one or two short sentences, in the caller language.'
 
 const aiFlow = addKeyword<Provider, Database>('/.*/', { regex: true }).addAction(async (ctx, { flowDynamic, state }) => {
-    const history = state.get('history') ?? [{ role: 'system', content: SYSTEM_PROMPT }]
+    const history = (await state.get('history')) ?? [{ role: 'system', content: SYSTEM_PROMPT }]
     history.push({ role: 'user', content: ctx.body })
 
     const completion = await openai.chat.completions.create({
@@ -30,7 +29,6 @@ const aiFlow = addKeyword<Provider, Database>('/.*/', { regex: true }).addAction
 })
 
 const main = async () => {
-    /** flow-list-replace **/
     const adapterFlow = createFlow([aiFlow])
     const adapterProvider = createProvider(Provider, {
         jwtToken: process.env.META_JWT_TOKEN ?? 'YOUR_META_JWT_TOKEN',
@@ -44,9 +42,9 @@ const main = async () => {
         language: process.env.STT_LANGUAGE ?? 'en',
 })
 
-    const redis_conn = new Redis(process.env.REDIS_URL)
+    const redis = new Redis(process.env.REDIS_URL)
     const adapterDB = new Database(
-        redis_conn,
+        redis,
         {
             prefix: 'prefix'
         }
@@ -58,7 +56,6 @@ const main = async () => {
         database: adapterDB,
     })
 
-    /** endpoints-default **/
     adapterProvider.server.post(
         '/v1/messages',
         handleCtx(async (bot, req, res) => {
@@ -107,7 +104,6 @@ const main = async () => {
         })
     )
 
-    /** endpoints-default-end **/
     httpServer(+PORT)
 }
 

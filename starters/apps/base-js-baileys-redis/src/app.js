@@ -6,7 +6,6 @@ import { BaileysProvider as Provider } from '@builderbot/provider-baileys'
 
 const PORT = process.env.PORT ?? 3008
 
-/** flows-default **/
 const discordFlow = addKeyword('doc').addAnswer(
     ['You can see the documentation here', '📄 https://builderbot.app/docs \n', 'Do you want to continue? *yes*'].join(
         '\n'
@@ -46,7 +45,9 @@ const registerFlow = addKeyword(utils.setEvent('REGISTER_FLOW'))
         await state.update({ age: ctx.body })
     })
     .addAction(async (_, { flowDynamic, state }) => {
-        await flowDynamic(`${state.get('name')}, thanks for your information!: Your age: ${state.get('age')}`)
+        const name = await state.get('name')
+        const age = await state.get('age')
+        await flowDynamic(`${name}, thanks for your information!: Your age: ${age}`)
     })
 
 const fullSamplesFlow = addKeyword(['samples', utils.setEvent('SAMPLES')])
@@ -60,10 +61,7 @@ const fullSamplesFlow = addKeyword(['samples', utils.setEvent('SAMPLES')])
         media: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
     })
 
-/** flows-default-end **/
-
 const main = async () => {
-    /** flow-list-replace **/
     const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])
     
     // If you experience ERRO AUTH issues, check the latest WhatsApp version at:
@@ -72,9 +70,9 @@ const main = async () => {
     const adapterProvider = createProvider(Provider, 
 		{ version: [2, 3000, 1035824857] } 
 	)
-    const redis_conn = new Redis(process.env.REDIS_URL)
+    const redis = new Redis(process.env.REDIS_URL)
     const adapterDB = new Database(
-        redis_conn,
+        redis,
         {
             prefix: 'prefix'
         }
@@ -86,7 +84,6 @@ const main = async () => {
         database: adapterDB,
     })
 
-    /** endpoints-default **/
     adapterProvider.server.post(
         '/v1/messages',
         handleCtx(async (bot, req, res) => {
@@ -135,7 +132,6 @@ const main = async () => {
         })
     )
 
-    /** endpoints-default-end **/
     httpServer(+PORT)
 }
 

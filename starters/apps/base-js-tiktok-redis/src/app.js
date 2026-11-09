@@ -1,4 +1,3 @@
-import { join } from 'path'
 import { createBot, createProvider, createFlow, addKeyword } from '@builderbot/bot'
 import Redis from 'ioredis'
 import { RedisAdapter as Database } from '@builderbot/database-redis'
@@ -55,7 +54,6 @@ const commentFlow = addKeyword(tiktokEvents.TT_COMMENT).addAction(
 )
 
 const main = async () => {
-    /** flow-list-replace **/
     const adapterFlow = createFlow([commentFlow])
     const videoIds = (process.env.TIKTOK_VIDEO_IDS ?? '')
         .split(',')
@@ -70,9 +68,9 @@ const main = async () => {
         port: Number(PORT),
     })
 
-    const redis_conn = new Redis(process.env.REDIS_URL)
+    const redis = new Redis(process.env.REDIS_URL)
     const adapterDB = new Database(
-        redis_conn,
+        redis,
         {
             prefix: 'prefix'
         }

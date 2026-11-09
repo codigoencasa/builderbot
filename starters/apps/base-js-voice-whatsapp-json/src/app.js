@@ -1,4 +1,3 @@
-import { join } from 'path'
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@builderbot/bot'
 import { JsonFileDB as Database } from '@builderbot/database-json'
 import { MetaProvider as Provider } from '@builderbot/provider-meta'
@@ -36,11 +35,12 @@ const registerFlow = addKeyword(utils.setEvent('REGISTER_FLOW'))
         await state.update({ age: ctx.body })
     })
     .addAction(async (_, { flowDynamic, state }) => {
-        await flowDynamic(`${state.get('name')}, thanks for your information. Your age: ${state.get('age')}`)
+        const name = await state.get('name')
+        const age = await state.get('age')
+        await flowDynamic(`${name}, thanks for your information. Your age: ${age}`)
     })
 
 const main = async () => {
-    /** flow-list-replace **/
     const adapterFlow = createFlow([welcomeFlow, docFlow, agentFlow, registerFlow])
     const adapterProvider = createProvider(Provider, {
         jwtToken: process.env.META_JWT_TOKEN ?? 'YOUR_META_JWT_TOKEN',
@@ -63,7 +63,6 @@ const main = async () => {
         database: adapterDB,
     })
 
-    /** endpoints-default **/
     adapterProvider.server.post(
         '/v1/messages',
         handleCtx(async (bot, req, res) => {
@@ -112,7 +111,6 @@ const main = async () => {
         })
     )
 
-    /** endpoints-default-end **/
     httpServer(+PORT)
 }
 

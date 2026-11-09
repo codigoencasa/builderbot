@@ -1,4 +1,3 @@
-import { join } from 'path'
 import { createBot, createProvider, createFlow, addKeyword } from '@builderbot/bot'
 import { PostgreSQLAdapter as Database } from '@builderbot/database-postgres'
 import { TikTokProvider as Provider, tiktokEvents } from '@builderbot/provider-tiktok'
@@ -54,7 +53,6 @@ const commentFlow = addKeyword(tiktokEvents.TT_COMMENT).addAction(
 )
 
 const main = async () => {
-    /** flow-list-replace **/
     const adapterFlow = createFlow([commentFlow])
     const videoIds = (process.env.TIKTOK_VIDEO_IDS ?? '')
         .split(',')
