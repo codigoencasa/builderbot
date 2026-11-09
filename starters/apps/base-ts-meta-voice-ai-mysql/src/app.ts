@@ -1,3 +1,4 @@
+import { join } from 'path'
 import { createBot, createProvider, createFlow, addKeyword } from '@builderbot/bot'
 import { MysqlAdapter as Database } from '@builderbot/database-mysql'
 import { MetaProvider as Provider } from '@builderbot/provider-meta'
@@ -28,6 +29,7 @@ const aiFlow = addKeyword<Provider, Database>('/.*/', { regex: true }).addAction
 })
 
 const main = async () => {
+    /** flow-list-replace **/
     const adapterFlow = createFlow([aiFlow])
     const adapterProvider = createProvider(Provider, {
         jwtToken: process.env.META_JWT_TOKEN ?? 'YOUR_META_JWT_TOKEN',
@@ -54,6 +56,7 @@ const main = async () => {
         database: adapterDB,
     })
 
+    /** endpoints-default **/
     adapterProvider.server.post(
         '/v1/messages',
         handleCtx(async (bot, req, res) => {
@@ -102,6 +105,7 @@ const main = async () => {
         })
     )
 
+    /** endpoints-default-end **/
     httpServer(+PORT)
 }
 

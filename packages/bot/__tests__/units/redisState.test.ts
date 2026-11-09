@@ -30,6 +30,17 @@ test('RedisState - updateState debe hacer merge de valores', async () => {
     assert.equal(state, { name: 'Leifer', age: 30 })
 })
 
+test('RedisState - updates concurrentes no se pisan entre sí', async () => {
+    const ctx = { from: 'concurrent' }
+    await Promise.all([
+        stateManager.updateState(ctx)({ name: 'Leifer' }),
+        stateManager.updateState(ctx)({ __end_flow__: false }),
+        stateManager.updateState(ctx)({ age: 30 }),
+    ])
+
+    assert.equal(await stateManager.getMyState(ctx.from)(), { name: 'Leifer', __end_flow__: false, age: 30 })
+})
+
 test('RedisState - get debe obtener propiedades anidadas (dot notation)', async () => {
     const ctx = { from: 'user_2' }
     const update = stateManager.updateState(ctx)

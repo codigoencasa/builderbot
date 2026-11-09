@@ -3,6 +3,7 @@ import * as sinon from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
+import { RedisState, SingleState } from '../../src/context'
 import { CoreClass } from '../../src/core/coreClass'
 import FlowClass from '../../src/io/flowClass'
 import { addKeyword } from '../../src/io/methods'
@@ -33,15 +34,19 @@ const createMockDeps = (flows = [addKeyword('hello').addAnswer('Hi there!')]) =>
         globalState: {},
         extensions: undefined,
         queue: { timeout: 20000, concurrencyLimit: 15 },
-        RedisOptions: {
-            connection: new RedisMock(),
-            options: {
-                prefix: 'test',
-            },
-        },
     }
 
     return { flowClass, database, provider, args }
+}
+
+/**
+ * Same deps but with the per-user state stored in Redis (ioredis-mock)
+ */
+const createRedisMockDeps = (flows?: Parameters<typeof createMockDeps>[0]) => {
+    const deps = createMockDeps(flows)
+    const connection = new RedisMock()
+    const args = { ...deps.args, RedisOptions: { connection, options: { prefix: 'test' } } }
+    return { ...deps, args, connection }
 }
 
 // ===== Constructor Tests =====
@@ -465,6 +470,49 @@ test('[CoreClass] stateHandler should be isolated per user', async () => {
 
     assert.equal(state1.name, 'Alice')
     assert.equal(state2.name, 'Bob')
+})
+
+test('[CoreClass] uses in-memory SingleState by default', () => {
+    const { flowClass, database, provider, args } = createMockDeps()
+    const core = new CoreClass(flowClass, database as any, provider as any, args)
+    assert.instance(core.stateHandler, SingleState)
+})
+
+// ===== State handler (Redis) =====
+
+test('[CoreClass][Redis] uses RedisState when RedisOptions is set', () => {
+    const { flowClass, database, provider, args } = createRedisMockDeps()
+    const core = new CoreClass(flowClass, database as any, provider as any, args)
+    assert.instance(core.stateHandler, RedisState)
+})
+
+test('[CoreClass][Redis] stateHandler should be isolated per user', async () => {
+    const { flowClass, database, provider, args } = createRedisMockDeps()
+    const core = new CoreClass(flowClass, database as any, provider as any, args)
+
+    await core.stateHandler.updateState({ from: 'user1' })({ name: 'Alice' })
+    await core.stateHandler.updateState({ from: 'user2' })({ name: 'Bob' })
+
+    const state1 = await core.stateHandler.getMyState('user1')()
+    const state2 = await core.stateHandler.getMyState('user2')()
+
+    assert.equal(state1.name, 'Alice')
+    assert.equal(state2.name, 'Bob')
+})
+
+test('[CoreClass][Redis] handleMsg should read and reset __end_flow__ in Redis', async () => {
+    const { flowClass, database, provider, args, connection } = createRedisMockDeps()
+    const core = new CoreClass(flowClass, database as any, provider as any, args)
+
+    const result = await core.handleMsg({
+        body: 'no keyword matches this',
+        from: 'user123',
+        name: 'Test',
+        host: '',
+    } as any)
+
+    assert.ok(result, 'Should return flow functions')
+    assert.is(await connection.hget('bot:state:test:user123', '__end_flow__'), 'false')
 })
 
 // ===== Dynamic blacklist =====

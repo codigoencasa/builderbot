@@ -787,12 +787,13 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     httpServer = (port: number) => {
         this.provider.initAll(port, {
             blacklist: this.dynamicBlacklist,
-            state: (number: string): BotStateStandAlone => ({
-                getMyState: this.stateHandler.getMyState(number),
-                get: this.stateHandler.get(number),
-                update: this.stateHandler.updateState({ from: number }),
-                clear: this.stateHandler.clear(number),
-            }),
+            state: (number: string): BotStateStandAlone =>
+                ({
+                    getMyState: this.stateHandler.getMyState(number),
+                    get: this.stateHandler.get(number),
+                    update: this.stateHandler.updateState({ from: number }),
+                    clear: this.stateHandler.clear(number),
+                }) as BotStateStandAlone,
             emit: (eventName: 'send_message' | 'notice', args: Record<string, any> & { from: string }) => {
                 if (eventName === 'send_message') {
                     this.emit('send_message', {

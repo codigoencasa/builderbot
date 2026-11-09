@@ -200,10 +200,21 @@ export type FlowDynamicMessage = {
  */
 export type BotState = {
     update: (props: { [key: string]: any }) => Promise<void>
-    getMyState: <K = any>() => Promise<{ [key: string]: K }> | { [key: string]: K }
-    get: <K = any>(prop: string) => Promise<K> | K
-    getAllState: () => Promise<{ [key: string]: any }> | { [key: string]: any }
-    clear: () => Promise<number> | void | boolean
+    getMyState: <K = any>() => { [key: string]: K }
+    get: <K = any>(prop: string) => K
+    getAllState: () => { [key: string]: any }
+    clear: () => void
+}
+
+/**
+ * Estado por usuario cuando se usa `RedisOptions` en createBot: todos los métodos son asíncronos.
+ * Uso: `const redisState = state as unknown as BotStateAsync`
+ */
+export type BotStateAsync = {
+    update: (props: { [key: string]: any }) => Promise<void>
+    getMyState: <K = any>() => Promise<{ [key: string]: K } | undefined>
+    get: <K = any>(prop: string) => Promise<K | undefined>
+    clear: () => Promise<number>
 }
 
 export type BotStateStandAlone = Omit<BotState, 'getAllState'>

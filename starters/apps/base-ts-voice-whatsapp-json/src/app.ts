@@ -1,3 +1,4 @@
+import { join } from 'path'
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@builderbot/bot'
 import { JsonFileDB as Database } from '@builderbot/database-json'
 import { MetaProvider as Provider } from '@builderbot/provider-meta'
@@ -39,6 +40,7 @@ const registerFlow = addKeyword<Provider, Database>(utils.setEvent('REGISTER_FLO
     })
 
 const main = async () => {
+    /** flow-list-replace **/
     const adapterFlow = createFlow([welcomeFlow, docFlow, agentFlow, registerFlow])
     const adapterProvider = createProvider(Provider, {
         jwtToken: process.env.META_JWT_TOKEN ?? 'YOUR_META_JWT_TOKEN',
@@ -61,6 +63,7 @@ const main = async () => {
         database: adapterDB,
     })
 
+    /** endpoints-default **/
     adapterProvider.server.post(
         '/v1/messages',
         handleCtx(async (bot, req, res) => {
@@ -109,6 +112,7 @@ const main = async () => {
         })
     )
 
+    /** endpoints-default-end **/
     httpServer(+PORT)
 }
 

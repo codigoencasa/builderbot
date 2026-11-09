@@ -5,6 +5,7 @@ import { FacebookMessengerProvider as Provider } from '@builderbot/provider-face
 
 const PORT = process.env.PORT ?? 3008
 
+/** flows-default **/
 const discordFlow = addKeyword('doc').addAnswer(
     ['You can see the documentation here', '📄 https://builderbot.app/docs \n', 'Do you want to continue? *yes*'].join(
         '\n'
@@ -58,7 +59,10 @@ const fullSamplesFlow = addKeyword(['samples', utils.setEvent('SAMPLES')])
         media: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
     })
 
+/** flows-default-end **/
+
 const main = async () => {
+    /** flow-list-replace **/
     const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])
     const adapterProvider = createProvider(Provider, {
         accessToken: 'accessToken',
@@ -79,6 +83,7 @@ const main = async () => {
         database: adapterDB,
     })
 
+    /** endpoints-default **/
     adapterProvider.server.post(
         '/v1/messages',
         handleCtx(async (bot, req, res) => {
@@ -127,6 +132,7 @@ const main = async () => {
         })
     )
 
+    /** endpoints-default-end **/
     httpServer(+PORT)
 }
 

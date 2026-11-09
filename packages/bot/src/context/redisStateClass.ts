@@ -33,22 +33,24 @@ class RedisState {
 
     getKey = (ctx: Context) => `${this.keyBase}${ctx.from}`
 
+    private parse = (raw: string | null): any => (raw === null ? undefined : JSON.parse(raw))
+
     /**
-     * Actualiza el estado en Redis (Merge de objetos)
+     * Actualiza el estado en Redis (merge de propiedades de primer nivel, atómico)
      */
     updateState = (ctx: Context): ((keyValue: StateValue) => Promise<void>) => {
         return async (keyValue: StateValue) => {
-            const key = this.getKey(ctx)
-            const currentData = await this.client.get(key)
-            const currentState = currentData ? JSON.parse(currentData) : {}
+            const entries = Object.entries(keyValue)
+            if (!entries.length) return
 
-            const updatedState = { ...currentState, ...keyValue }
+            const key = this.getKey(ctx)
+            const fields: Record<string, string> = {}
+            for (const [field, value] of entries) fields[field] = JSON.stringify(value)
+
+            const tx = this.client.multi().hset(key, fields)
             // TTL configurable (por defecto 24h) para no llenar el Redis para siempre
-            if (this.EXPIRE) {
-                await this.client.set(key, JSON.stringify(updatedState), 'EX', this.EXPIRE)
-                return
-            }
-            await this.client.set(key, JSON.stringify(updatedState))
+            if (this.EXPIRE) tx.expire(key, this.EXPIRE)
+            await tx.exec()
         }
     }
 
@@ -57,9 +59,13 @@ class RedisState {
      */
     getMyState = (from: string): (() => Promise<StateValue | undefined>) => {
         return async () => {
-            const key = this.getKey({ from })
-            const data = await this.client.get(key)
-            return data ? JSON.parse(data) : undefined
+            const data = await this.client.hgetall(this.getKey({ from }))
+            const fields = Object.keys(data)
+            if (!fields.length) return undefined
+
+            const state: StateValue = {}
+            for (const field of fields) state[field] = this.parse(data[field])
+            return state
         }
     }
 
@@ -68,15 +74,10 @@ class RedisState {
      */
     get = (from: string): ((prop: string) => Promise<any>) => {
         return async (prop: string) => {
-            const key = this.getKey({ from })
-            const data = await this.client.get(key)
-            if (!data) return undefined
+            const [field, ...path] = prop.split('.')
+            let result = this.parse(await this.client.hget(this.getKey({ from }), field))
 
-            const state = JSON.parse(data)
-            const properties = prop.split('.')
-            let result = state
-
-            for (const property of properties) {
+            for (const property of path) {
                 result = result?.[property]
                 if (result === undefined) return undefined
             }
