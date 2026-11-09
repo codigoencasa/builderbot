@@ -1,3 +1,4 @@
+import RedisMock from 'ioredis-mock'
 import * as sinon from 'sinon'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
@@ -32,6 +33,12 @@ const createMockDeps = (flows = [addKeyword('hello').addAnswer('Hi there!')]) =>
         globalState: {},
         extensions: undefined,
         queue: { timeout: 20000, concurrencyLimit: 15 },
+        RedisOptions: {
+            connection: new RedisMock(),
+            options: {
+                prefix: 'test',
+            },
+        },
     }
 
     return { flowClass, database, provider, args }
@@ -453,8 +460,8 @@ test('[CoreClass] stateHandler should be isolated per user', async () => {
     await core.stateHandler.updateState({ from: 'user1' })({ name: 'Alice' })
     await core.stateHandler.updateState({ from: 'user2' })({ name: 'Bob' })
 
-    const state1 = core.stateHandler.getMyState('user1')()
-    const state2 = core.stateHandler.getMyState('user2')()
+    const state1 = await core.stateHandler.getMyState('user1')()
+    const state2 = await core.stateHandler.getMyState('user2')()
 
     assert.equal(state1.name, 'Alice')
     assert.equal(state2.name, 'Bob')

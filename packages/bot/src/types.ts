@@ -7,6 +7,8 @@
  * GOAL: Define the framework-wide contracts (including the message_status event) that core and providers share.
  */
 
+import Redis from 'ioredis'
+
 import type { IdleState } from './context'
 import type { ProviderClass } from './provider/interface/provider'
 import type { Queue } from './utils'
@@ -56,6 +58,14 @@ export type GeneralArgs = {
         concurrencyLimit: number
     }
     host?: string
+    RedisOptions?: {
+        connection: Redis
+        options: {
+            prefix?: string | null
+            /** TTL en segundos del estado de cada usuario. `null` o `0` = sin expiración. Por defecto 24h. */
+            expire?: number | null
+        }
+    }
 }
 
 export type FlagsRuntime = { endFlow: any; fallBack?: boolean; flowDynamic?: boolean; gotoFlow?: boolean }
@@ -190,10 +200,10 @@ export type FlowDynamicMessage = {
  */
 export type BotState = {
     update: (props: { [key: string]: any }) => Promise<void>
-    getMyState: <K = any>() => { [key: string]: K }
-    get: <K = any>(prop: string) => K
-    getAllState: () => { [key: string]: any }
-    clear: () => void
+    getMyState: <K = any>() => Promise<{ [key: string]: K }> | { [key: string]: K }
+    get: <K = any>(prop: string) => Promise<K> | K
+    getAllState: () => Promise<{ [key: string]: any }> | { [key: string]: any }
+    clear: () => Promise<number> | void | boolean
 }
 
 export type BotStateStandAlone = Omit<BotState, 'getAllState'>
