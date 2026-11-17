@@ -510,6 +510,8 @@ export const openApiSpec = {
                     id: { type: 'string', pattern: '^[a-zA-Z0-9-_]+$', maxLength: 50 },
                     name: { type: 'string', maxLength: 100 },
                     keyword: {
+                        description:
+                            'Valid case-insensitive regular expression; array entries are joined with |. Invalid patterns return 400 without changing the flow.',
                         oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' }, minItems: 1 }],
                     },
                     steps: {
@@ -524,6 +526,8 @@ export const openApiSpec = {
                 properties: {
                     name: { type: 'string', maxLength: 100 },
                     keyword: {
+                        description:
+                            'Valid case-insensitive regular expression; array entries are joined with |. Invalid patterns return 400 without changing the flow.',
                         oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' }, minItems: 1 }],
                     },
                     steps: {
