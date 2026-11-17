@@ -54,6 +54,11 @@ export type GeneralArgs = {
     queue?: {
         timeout: number
         concurrencyLimit: number
+        /**
+         * One turn at a time per contact: a message that arrives while another message from the same `from`
+         * is still being processed waits for it to finish. Default `false` (turns run concurrently).
+         */
+        serializeByContact?: boolean
     }
     host?: string
 }
