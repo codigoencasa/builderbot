@@ -1,4 +1,12 @@
 /**
+ * LAYER: Application
+ * Contains: Chatwoot configuration and webhook contracts
+ * Rules: Defines integration data without framework behavior.
+ * BigO: O(1) score:5
+ * keywords: [ChatwootPluginConfig, ChatwootWebhookVerification, ChatwootBotRef]
+ * GOAL: Describe the payloads and signing material required by the Chatwoot integration.
+ */
+/**
  * Configuración principal del plugin de Chatwoot.
  * Solo necesitas `token`, `url` y `accountId` para empezar.
  */
@@ -17,6 +25,15 @@ export interface ChatwootPluginConfig {
      * Ej: 'https://mi-bot.example.com/v1/chatwoot'
      */
     webhookUrl?: string
+    /** Chatwoot webhook signing secret; required for automatic or manual inbound webhooks. */
+    webhookSecret?: string
+}
+
+/** Original request bytes and signing headers; never reserialize the body to verify a webhook. */
+export interface ChatwootWebhookVerification {
+    rawBody: string | Buffer
+    signature?: string
+    timestamp?: string
 }
 
 export interface ChatwootContact {

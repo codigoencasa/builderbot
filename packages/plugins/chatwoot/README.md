@@ -52,6 +52,7 @@ const chatwoot = createChatwootPlugin({
     accountId: 1,
     // Optional but recommended: enables agent → WhatsApp replies
     webhookUrl: 'https://your-bot.example.com/v1/chatwoot',
+    webhookSecret: process.env.CHATWOOT_WEBHOOK_SECRET,
 })
 
 const bot = await createBot({
@@ -90,6 +91,7 @@ const chatwoot = createChatwootPlugin({
      * Required for agent replies to reach WhatsApp.
      */
     webhookUrl: 'https://your-bot.example.com/v1/chatwoot',
+    webhookSecret: process.env.CHATWOOT_WEBHOOK_SECRET,
 })
 ```
 
@@ -111,7 +113,7 @@ https://app.chatwoot.com/app/accounts/42/conversations
 
 ## Receiving agent replies (webhook)
 
-When a Chatwoot agent sends a message, Chatwoot fires a webhook to your bot. As long as you set `webhookUrl` in the config, `attach()` handles everything automatically — it registers the webhook in Chatwoot **and** wires the HTTP route on the provider's server.
+When a Chatwoot agent sends a message, Chatwoot fires a webhook to your bot. With `webhookUrl` and the matching `webhookSecret` in the config, `attach()` handles everything automatically — it registers the webhook in Chatwoot **and** wires the HTTP route on the provider's server.
 
 ```ts
 import { createBot, createFlow, addKeyword } from '@builderbot/bot'
@@ -123,6 +125,7 @@ const chatwoot = createChatwootPlugin({
     url: 'https://app.chatwoot.com',
     accountId: 1,
     webhookUrl: 'https://your-bot.example.com/v1/chatwoot',
+    webhookSecret: process.env.CHATWOOT_WEBHOOK_SECRET,
 })
 
 const bot = await createBot({
@@ -138,14 +141,45 @@ await chatwoot.attach(bot)
 > **Note:** The URL you pass as `webhookUrl` must be reachable by your Chatwoot server.  
 > For local development use [ngrok](https://ngrok.com/) or a similar tunnel.
 
+### Security migration: signing secret required
+
+Unsigned inbound webhooks are no longer accepted. This is an intentional security change.
+
+1. Create the webhook in Chatwoot **Settings → Integrations → Webhooks**, or edit an existing webhook.
+2. Copy **that webhook's signing secret**, not your API access token, into `CHATWOOT_WEBHOOK_SECRET`.
+3. Configure `webhookUrl` and `webhookSecret`, restart the bot, and test an agent reply.
+
+Prefer creating the Chatwoot webhook first; `attach()` will reuse it. Automatic registration does not
+provision or retrieve its signing secret. If a new webhook is auto-created, copy its actual secret
+from Chatwoot and update the bot configuration before expecting delivery to succeed.
+
+Chatwoot sends `X-Chatwoot-Signature: sha256=<hex>` and `X-Chatwoot-Timestamp` (Unix seconds).
+The plugin verifies HMAC-SHA256 over exact `{timestamp}.{raw_body}` with constant-time comparison
+and rejects timestamps more than five minutes in the past or future. Keep both server clocks synchronized.
+The timestamp window limits stale replay; deliveries within that window are not deduplicated.
+
+`webhookUrl` without a non-empty `webhookSecret` fails at construction. Manual inbound handling also
+requires the secret and original bytes/headers. Outbound-only mirroring can omit both webhook options.
+There is no unsigned compatibility mode. See [Chatwoot verification documentation](https://www.chatwoot.com/hc/user-guide/articles/1677693021-how-to-use-webhooks).
+
 ### Advanced: manual route registration
 
 If you use a custom HTTP server outside of BuilderBot's provider, you can still call `handleWebhook` directly:
 
 ```ts
 myServer.post('/v1/chatwoot', async (req, res) => {
-    await chatwoot.handleWebhook(bot, req.body)
-    res.end(JSON.stringify({ status: 'ok' }))
+    try {
+        await chatwoot.handleWebhook(bot, req.body, {
+            rawBody: req.rawBody, // Capture exact bytes BEFORE parsing; never JSON.stringify(req.body)
+            signature: req.headers['x-chatwoot-signature'],
+            timestamp: req.headers['x-chatwoot-timestamp'],
+        })
+        res.writeHead(200, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ status: 'ok' }))
+    } catch (error) {
+        res.writeHead(error.message === 'Invalid Chatwoot webhook signature' ? 401 : 500)
+        res.end()
+    }
 })
 ```
 
@@ -304,9 +338,13 @@ Wires the plugin into the bot. Must be called once after `createBot`.
 - Auto-registers the HTTP route on `provider.server` if `webhookUrl` is configured
 - Listens to `send_message` and `provider.message` events
 
-### `chatwoot.handleWebhook(bot, body)`
+### `chatwoot.handleWebhook(bot, body, verification)`
 
-Processes a raw webhook body sent by Chatwoot. Call this from your HTTP route handler.
+Verifies the signature, then processes the authenticated JSON from `verification.rawBody`.
+`verification` contains `rawBody` (original string or Buffer), `signature` and `timestamp`.
+Missing secret, bytes, headers, invalid signatures or timestamps outside five minutes reject with
+`Invalid Chatwoot webhook signature` before any message/blacklist change. The separately parsed `body`
+is not trusted for side effects. The automatic route returns HTTP `401` on authentication failure.
 
 ### `chatwoot.getApi()`
 
