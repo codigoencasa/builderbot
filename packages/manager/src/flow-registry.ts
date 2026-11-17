@@ -8,7 +8,7 @@
  */
 import { addKeyword } from '@builderbot/bot'
 
-import type { CreateFlowInput, UpdateFlowInput, FlowStep } from './schemas'
+import { flowKeywordSchema, type CreateFlowInput, type UpdateFlowInput, type FlowStep } from './schemas'
 import type { Flow } from './types'
 
 /**
@@ -185,6 +185,7 @@ export class FlowRegistry {
      * Build a flow from steps configuration
      */
     private buildFlowFromSteps(keyword: string | string[], steps: FlowStep[]): Flow {
+        flowKeywordSchema.parse(keyword)
         const keywords: string | [string, ...string[]] = Array.isArray(keyword)
             ? (keyword as [string, ...string[]])
             : keyword

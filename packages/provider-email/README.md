@@ -152,7 +152,9 @@ Reply to an existing email thread.
 
 ### saveFile(ctx, options?)
 
-Save an email attachment to disk.
+Save an email attachment to disk. Sender-controlled filenames are reduced to a basename
+(including Windows-style paths) and prefixed with a timestamp. Path components are never used as directories;
+files stay in `options.path` (or the system temporary directory). Normal filenames and attachment bytes are preserved.
 
 ```typescript
 .addAction(async (ctx, { provider }) => {

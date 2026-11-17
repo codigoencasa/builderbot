@@ -1,4 +1,13 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: ChatwootPlugin and authenticated webhook handling
+ * Rules: Integrates the bot runtime with the Chatwoot API.
+ * BigO: O(n^2) score:1
+ * keywords: [ChatwootPlugin, ChatwootApi, WebhookVerification]
+ * GOAL: Mirror conversations and accept only authenticated inbound Chatwoot effects; existing media loops are unchanged.
+ */
 import type { CoreClass } from '@builderbot/bot'
+import { createHmac, timingSafeEqual } from 'node:crypto'
 import { createReadStream } from 'node:fs'
 import { mkdir, unlink } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -11,6 +20,7 @@ import type {
     ChatwootInbox,
     ChatwootPluginConfig,
     ChatwootWebhookBody,
+    ChatwootWebhookVerification,
 } from './types'
 
 const DEFAULT_INBOX_NAME = 'BuilderBot Inbox'
@@ -124,6 +134,9 @@ class ChatwootPlugin {
     public status = true
 
     constructor(config: ChatwootPluginConfig) {
+        if (config.webhookUrl && !config.webhookSecret?.trim()) {
+            throw new Error('webhookSecret is required when webhookUrl is configured')
+        }
         this.config = config
         this.api = new ChatwootApi(config)
     }
@@ -161,9 +174,17 @@ class ChatwootPlugin {
 
             const urlPath = new URL(this.config.webhookUrl).pathname
             if (server?.post) {
-                server.post(urlPath, (req: any, res: any) => {
-                    res.writeHead(200, { 'Content-Type': 'application/json' })
-                    res.end(JSON.stringify({ status: 'ok' }))
+                server.post(urlPath, async (req: any, res: any) => {
+                    const verification = {
+                        rawBody: req.rawBody,
+                        signature: req.headers?.['x-chatwoot-signature'],
+                        timestamp: req.headers?.['x-chatwoot-timestamp'],
+                    }
+                    if (!this.verifyWebhook(verification)) {
+                        res.writeHead(401, { 'Content-Type': 'application/json' })
+                        res.end(JSON.stringify({ error: 'Invalid Chatwoot webhook signature' }))
+                        return
+                    }
 
                     const botRef = bot as CoreClass & ChatwootBotRef
                     if (typeof (botRef as any).sendMessage !== 'function') {
@@ -174,9 +195,15 @@ class ChatwootPlugin {
                         ;(botRef as any).blacklist = (bot as any).dynamicBlacklist
                     }
 
-                    this.handleWebhook(botRef, req.body ?? {}).catch((err) =>
+                    try {
+                        await this.handleWebhook(botRef, req.body ?? {}, verification)
+                        res.writeHead(200, { 'Content-Type': 'application/json' })
+                        res.end(JSON.stringify({ status: 'ok' }))
+                    } catch (err) {
                         console.error('[Chatwoot] Webhook processing error:', err)
-                    )
+                        res.writeHead(500, { 'Content-Type': 'application/json' })
+                        res.end(JSON.stringify({ error: 'Webhook processing failed' }))
+                    }
                 })
                 console.log(`[Chatwoot] Webhook route auto-registered at ${urlPath}`)
             } else {
@@ -291,13 +318,36 @@ class ChatwootPlugin {
         console.log('[Chatwoot] Plugin attached successfully')
     }
 
+    private verifyWebhook(verification?: ChatwootWebhookVerification): boolean {
+        const secret = this.config.webhookSecret
+        const { rawBody, signature, timestamp } = verification ?? {}
+        if (
+            !secret?.trim() ||
+            (typeof rawBody !== 'string' && !Buffer.isBuffer(rawBody)) ||
+            typeof signature !== 'string' ||
+            !/^sha256=[a-f0-9]{64}$/i.test(signature) ||
+            typeof timestamp !== 'string' ||
+            !/^[0-9]+$/.test(timestamp)
+        )
+            return false
+
+        const seconds = Number(timestamp)
+        if (!Number.isSafeInteger(seconds) || Math.abs(Date.now() / 1000 - seconds) > 300) return false
+        const expected = createHmac('sha256', secret).update(`${timestamp}.`).update(rawBody).digest()
+        return timingSafeEqual(expected, Buffer.from(signature.slice(7), 'hex'))
+    }
+
     /**
      * Procesa un webhook entrante desde Chatwoot.
      *
      * Wire this to your HTTP route handler:
      * ```ts
      * server.post('/v1/chatwoot', handleCtx(async (bot, req, res) => {
-     *     await chatwoot.handleWebhook(bot, req.body)
+     *     await chatwoot.handleWebhook(bot, req.body, {
+     *         rawBody: req.rawBody,
+     *         signature: req.headers['x-chatwoot-signature'],
+     *         timestamp: req.headers['x-chatwoot-timestamp'],
+     *     })
      *     res.end(JSON.stringify({ status: 'ok' }))
      * }))
      * ```
@@ -306,7 +356,16 @@ class ChatwootPlugin {
      * - `conversation_updated` + assignee change → add/remove phone from blacklist
      * - `message_created` outgoing on API channel → forward message to WhatsApp
      */
-    async handleWebhook(bot: CoreClass & ChatwootBotRef, body: ChatwootWebhookBody): Promise<void> {
+    async handleWebhook(
+        bot: CoreClass & ChatwootBotRef,
+        body: ChatwootWebhookBody,
+        verification?: ChatwootWebhookVerification
+    ): Promise<void> {
+        if (!this.verifyWebhook(verification)) {
+            throw new Error('Invalid Chatwoot webhook signature')
+        }
+        // Only the authenticated raw payload may drive effects, not a separately supplied parsed object.
+        body = JSON.parse(verification!.rawBody.toString())
         if (!this.inbox) return
 
         const inboxIdFromBody =

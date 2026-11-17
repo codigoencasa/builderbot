@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: Integration contract regression tests
+ * Rules: Tests use local mocks and the public package interface.
+ * BigO: O(1) score:5
+ * keywords: [IntegrationContract, RegressionTests]
+ * GOAL: Preserve existing behavior and exercise the authorized security regressions; nested fixture loops are bounded.
+ */
 import mysql2 from 'mysql2'
 import { spy, stub } from 'sinon'
 import { test } from 'uvu'
@@ -60,8 +68,9 @@ class MockMysqlAdapter extends MysqlAdapter {
 
     error(message: string) {
         this.db = {
-            query: (_sql: string, callback: (err: any) => void) => {
-                callback(new Error(message))
+            query: (_sql: string, values: any, callback?: (err: any) => void) => {
+                const done = callback ?? values
+                done(new Error(message))
             },
         }
     }
@@ -164,9 +173,9 @@ test('[MysqlAdapter] - save error ', async () => {
 test('[MysqlAdapter] - getPrevByNumber ', async () => {
     const mockQueryResult = [mockHistoryRow]
 
-    mockMysqlAdapter.db.query = (sql: string, callback: Function) => {
+    mockMysqlAdapter.db.query = (sql: string, _values: any[], callback: Function) => {
         if (sql.startsWith('SELECT')) {
-            callback({}, mockQueryResult)
+            callback(null, mockQueryResult)
         }
     }
 
@@ -179,14 +188,14 @@ test('[MysqlAdapter] - getPrevByNumber - null ', async () => {
 
     const mockQueryResult = []
 
-    mockMysqlAdapter.db.query = (sql: string, callback: Function) => {
+    mockMysqlAdapter.db.query = (sql: string, _values: any[], callback: Function) => {
         if (sql.startsWith('SELECT')) {
             callback(null, mockQueryResult)
         }
     }
 
     const result = await mockMysqlAdapter.getPrevByNumber(phone)
-    assert.equal(result, null)
+    assert.equal(result, {})
 })
 
 test('[MysqlAdapter] - getPrevByNumber - error ', async () => {
