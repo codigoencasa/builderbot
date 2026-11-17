@@ -1,4 +1,16 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: Integration contract regression tests
+ * Rules: Tests use local mocks and the public package interface.
+ * BigO: O(n) score:3
+ * keywords: [IntegrationContract, RegressionTests]
+ * GOAL: Preserve existing behavior and exercise the authorized security regressions; nested fixture loops are bounded.
+ */
 import { describe, expect, test, beforeEach, jest } from '@jest/globals'
+import { writeFile } from 'fs/promises'
+import { basename, dirname, resolve } from 'path'
+
+jest.mock('fs/promises', () => ({ writeFile: jest.fn(async () => undefined) }))
 
 import { EmailProvider } from '../src/email/provider'
 import type { IEmailProviderArgs, EmailBotContext } from '../src/types'
@@ -105,6 +117,25 @@ describe('EmailProvider', () => {
             const attachments = [{ filename: 'test.txt', contentType: 'text/plain', size: 100 }]
             expect(provider.getAttachments({ attachments } as any)).toEqual(attachments)
             expect(provider.getAttachments({} as any)).toEqual([])
+        })
+    })
+
+    describe('saveFile confinement', () => {
+        test.each([
+            ['../../../outside.txt', 'outside.txt'],
+            ['..\\..\\..\\outside.txt', 'outside.txt'],
+            ['/etc/passwd', 'passwd'],
+            ['photo.jpg', 'photo.jpg'],
+        ])('confines attachment %s and preserves its content', async (filename, expectedName) => {
+            const provider = new EmailProvider(mockConfig)
+            const content = Buffer.from('attachment content')
+            const directory = resolve('safe-attachments')
+            jest.mocked(writeFile).mockClear()
+            const result = await provider.saveFile({ attachments: [{ filename, content }] } as any, { path: directory })
+            expect(dirname(result)).toBe(directory)
+            expect(basename(result)).toMatch(new RegExp(`^\\d+-${expectedName.replace('.', '\\.')}$$`))
+            expect(writeFile).toHaveBeenCalledTimes(1)
+            expect(writeFile).toHaveBeenCalledWith(result, content)
         })
     })
 
