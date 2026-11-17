@@ -238,12 +238,19 @@ testSuite('Debe de continuar el el encadenamiento con procesos async', async ({ 
 
 //Issue https://github.com/codigoencasa/bot-whatsapp/issues/877
 testSuite('Debe respectar el delay del node previo', async ({ database, provider }) => {
+    const sentAt: number[] = []
+    provider.sendMessage = async () => {
+        sentAt.push(Date.now())
+    }
+
     const flowPing = addKeyword(['hi']).addAction(async (_, { flowDynamic, gotoFlow }) => {
         await flowDynamic('Buenas ping debe espera 1segundo')
         return gotoFlow(flowBye)
     })
 
-    const flowBye = addKeyword('ping').addAnswer(`Pong con delay 1 segundo`, { delay: 1000 })
+    const flowBye = addKeyword('ping')
+        .addAnswer(`Pong con delay 1 segundo`, { delay: 1000 })
+        .addAnswer(`Segundo pong con delay 1 segundo`, { delay: 1000 })
 
     await createBot({
         database,
@@ -256,11 +263,58 @@ testSuite('Debe respectar el delay del node previo', async ({ database, provider
         body: 'hi',
     })
 
-    await delay(2000)
+    await delay(3000)
     const history = parseAnswers(database.listHistory).map((item) => item.answer)
     assert.is('Buenas ping debe espera 1segundo', history[0])
     assert.is('Pong con delay 1 segundo', history[1])
-    assert.is(undefined, history[2])
+    assert.is('Segundo pong con delay 1 segundo', history[2])
+    assert.is(undefined, history[3])
+    assert.ok(sentAt[1] - sentAt[0] >= 800, 'gotoFlow debe esperar el delay de la primera respuesta')
+    assert.ok(sentAt[2] - sentAt[1] >= 800, 'gotoFlow debe esperar el delay entre respuestas')
+})
+
+testSuite('Debe respetar la cancelación del queue timeout durante gotoFlow', async ({ database, provider }) => {
+    const sent: string[] = []
+    const unhandled: unknown[] = []
+    const onUnhandled = (reason: unknown) => {
+        unhandled.push(reason)
+    }
+    process.on('unhandledRejection', onUnhandled)
+
+    provider.sendMessage = async (_, answer) => {
+        sent.push(String(answer))
+    }
+
+    const targetFlow = addKeyword('target')
+        .addAnswer('A', { delay: 200 })
+        .addAnswer('B', { delay: 200 })
+        .addAnswer('C', { delay: 200 })
+
+    const startFlow = addKeyword('start').addAction(async (_, { gotoFlow }) => gotoFlow(targetFlow))
+
+    await createBot(
+        {
+            database,
+            flow: createFlow([startFlow, targetFlow]),
+            provider,
+        },
+        { queue: { timeout: 450, concurrencyLimit: 15 } }
+    )
+
+    await provider.delaySendMessage(0, 'message', {
+        from: '000',
+        body: 'start',
+    })
+
+    // A (~200ms) y B (~400ms) caben dentro del timeout de 450ms; C (~600ms) ya no.
+    await delay(1400)
+
+    process.off('unhandledRejection', onUnhandled)
+
+    // Antes del arreglo: el rechazo "Queue item timeout after 450ms" quedaba sin
+    // manejar y el flujo seguía enviando C después de la cancelación.
+    assert.ok(sent.length < 3, `no debe enviar después de la cancelación (enviados: ${sent.join(',')})`)
+    assert.is(unhandled.length, 0, `sin rechazos no manejados: ${unhandled.map(String).join('|')}`)
 })
 
 testSuite.run()
