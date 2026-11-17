@@ -147,12 +147,17 @@ const allBots = manager.getBotsInfo()
 // Send a message
 await manager.sendMessage('tenant-1', '1234567890', 'Hello!')
 
-// Remove a bot
+// Remove a bot: stop its core runtime/HTTP server, then disconnect its provider
 await manager.removeBot('tenant-1')
 
 // Shutdown all bots
 await manager.shutdown()
 ```
+
+`removeBot` retains the core runtime created for each tenant and stops it before emitting `bot:removed`.
+Stopping detaches that core's provider event listeners and clears its queue; unrelated provider listeners remain intact.
+Provider-specific `disconnect()` cleanup still runs, including when runtime shutdown reports an error.
+`shutdown`, stop and restart operations use the same removal lifecycle. Removing an unknown tenant returns `false`.
 
 ## License
 

@@ -46,6 +46,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     database: D
     provider: P
     queuePrincipal: Queue<unknown>
+    private providerListeners: { event: string; func: ProviderEventTypes[keyof ProviderEventTypes] }[] = []
     stateHandler = new SingleState()
     globalStateHandler = new GlobalState()
     dynamicBlacklist = new BlackList()
@@ -99,7 +100,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
 
         if (this.generalArgs.extensions) this.globalStateHandler.RAW = this.generalArgs.extensions
 
-        for (const { event, func } of this.listenerBusEvents()) {
+        this.providerListeners = this.listenerBusEvents()
+        for (const { event, func } of this.providerListeners) {
             this.provider.on(event, func)
         }
     }
@@ -817,6 +819,10 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
      * tests o `stop()` antes de `httpServer()`): ese caso se ignora silenciosamente.
      */
     public async stop(): Promise<void> {
+        for (const { event, func } of this.providerListeners) {
+            this.provider.off?.(event, func)
+        }
+        this.providerListeners = []
         try {
             await this.queuePrincipal.clearAll()
         } catch (error) {
