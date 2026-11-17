@@ -195,6 +195,17 @@ class TwilioProvider extends ProviderClass<TwilioCoreVendor> implements TwilioIn
      */
     saveFile = async (ctx: Partial<TwilioRequestBody & BotContext>, options?: { path: string }): Promise<string> => {
         try {
+            const mediaUrl = new URL(ctx?.MediaUrl0)
+            if (
+                mediaUrl.protocol !== 'https:' ||
+                mediaUrl.hostname !== 'api.twilio.com' ||
+                mediaUrl.port ||
+                mediaUrl.username ||
+                mediaUrl.password
+            ) {
+                throw new Error('Twilio media must use https://api.twilio.com without URL credentials or a custom port')
+            }
+
             const basicAuthToken = Buffer.from(
                 `${this.globalVendorArgs.accountSid}:${this.globalVendorArgs.authToken}`
             ).toString('base64')
@@ -202,7 +213,7 @@ class TwilioProvider extends ProviderClass<TwilioCoreVendor> implements TwilioIn
                 Authorization: `Basic ${basicAuthToken}`,
             }
             const pathFile = join(options?.path ?? tmpdir())
-            const localPath = await utils.generalDownload(`${ctx?.MediaUrl0}`, pathFile, twilioHeaders)
+            const localPath = await utils.generalDownload(mediaUrl.href, pathFile, twilioHeaders)
             return localPath
         } catch (err) {
             console.log(`[Error]:`, err)
