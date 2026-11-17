@@ -40,6 +40,8 @@ const loggerQueue = new Console({
 })
 
 const idleForCallback = new IdleState()
+/** Same fallback the Queue applies when `queue.timeout` is not set. */
+const QUEUE_TIMEOUT_FALLBACK = 50000
 
 class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends EventEmitterClass<HostEventTypes> {
     flowClass: FlowClass
@@ -49,6 +51,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     stateHandler = new SingleState()
     globalStateHandler = new GlobalState()
     dynamicBlacklist = new BlackList()
+    private contactTurns = new Map<string, Promise<void>>()
     generalArgs: GeneralArgs & { host?: string } = {
         blackList: [],
         listEvents: {},
@@ -134,7 +137,9 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         {
             event: 'message',
             func: (msg: MessageContextIncoming) => {
-                return this.handleMsg({ ...msg, host: `${this.generalArgs?.host}` })
+                const incoming = { ...msg, host: `${this.generalArgs?.host}` }
+                if (!this.generalArgs.queue?.serializeByContact) return this.handleMsg(incoming)
+                return this.runContactTurn(msg.from, () => this.handleMsg(incoming))
             },
         },
         {
@@ -145,6 +150,47 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
 
     private setHostData = (hostNumber: { phone: string }) => {
         this.generalArgs.host = hostNumber.phone
+    }
+
+    /**
+     * One turn at a time per contact (`queue.serializeByContact`).
+     *
+     * Turns of the same contact share state, history (`getPrevByNumber`) and queue. Run concurrently,
+     * `clearQueue(from)` from one cancels the pending work of the other and `continueFlow` resumes from a step
+     * saved by the other, so answers are lost or repeated.
+     *
+     * - FIFO per contact; other contacts are not affected. O(1) per message, one Map entry per contact with a
+     *   turn in progress (removed when the last one settles).
+     * - With no turn in progress the turn starts in the same tick, exactly like the non-serialized path.
+     * - The lock is released when the turn settles or `queue.timeout` after it STARTED, whichever comes first,
+     *   so a turn that never settles cannot block the contact forever.
+     * - The returned promise settles like the turn: a rejection is not swallowed here.
+     */
+    private runContactTurn = <T>(from: string, turn: () => Promise<T>): Promise<T> => {
+        const previous = this.contactTurns.get(from)
+        let release!: () => void
+        const released = new Promise<void>((resolve) => {
+            release = resolve
+        })
+        this.contactTurns.set(from, released)
+
+        const free = () => {
+            release()
+            if (this.contactTurns.get(from) === released) this.contactTurns.delete(from)
+        }
+
+        const start = async (): Promise<T> => {
+            const guard = setTimeout(free, this.generalArgs.queue?.timeout ?? QUEUE_TIMEOUT_FALLBACK)
+            guard.unref?.()
+            try {
+                return await turn()
+            } finally {
+                clearTimeout(guard)
+                free()
+            }
+        }
+
+        return previous ? previous.then(start) : start()
     }
 
     handleMsg = async (messageCtxInComing: MessageContextIncoming) => {
