@@ -43,7 +43,8 @@
         "rollup-plugin-typescript2": "^0.36.0",
         "tslib": "^2.8.1",
         "tsm": "^2.3.0",
-        "uvu": "^0.5.6"
+        "uvu": "^0.5.6",
+        "@builderbot/bot": "workspace:*"
     },
     "dependencies": {
         "@ffmpeg-installer/ffmpeg": "^1.1.0",
