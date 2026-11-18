@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/provider-facebook-messenger",
-    "version": "1.5.1",
+    "version": "1.5.2",
     "description": "Provider for Facebook Messenger",
     "keywords": [
         "facebook",
