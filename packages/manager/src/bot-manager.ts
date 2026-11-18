@@ -97,7 +97,7 @@ export class BotManager {
             ...databaseOptions,
         })
 
-        const { handleCtx, httpServer } = await createBot({
+        const coreBot = await createBot({
             flow: adapterFlow,
             provider: adapterProvider,
             database: adapterDB,
@@ -108,9 +108,9 @@ export class BotManager {
             name: name ?? tenantId,
             provider: adapterProvider,
             database: adapterDB,
-            handleCtx,
-            httpServer,
-            bot: null as any,
+            handleCtx: coreBot.handleCtx,
+            httpServer: coreBot.httpServer,
+            bot: coreBot,
             port,
             createdAt: new Date(),
             status: 'initializing' as BotStatus,
@@ -133,7 +133,7 @@ export class BotManager {
 
         // Start HTTP server if port is provided
         if (port) {
-            httpServer(port)
+            coreBot.httpServer(port)
         }
 
         this.emit('bot:created', tenantId, {
@@ -269,6 +269,12 @@ export class BotManager {
 
         if (!bot) {
             return false
+        }
+
+        try {
+            await bot.bot?.stop()
+        } catch (error) {
+            console.error(`Error stopping bot ${tenantId}:`, error)
         }
 
         try {

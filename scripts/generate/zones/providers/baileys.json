@@ -1,6 +1,6 @@
 {
     "IMPORT": "import { BaileysProvider as Provider } from '@builderbot/provider-baileys'\n",
-    "IMPLEMENTATION": "\n    // If you experience ERRO AUTH issues, check the latest WhatsApp version at:\n    // https://wppconnect.io/whatsapp-versions/\n    // Example: version \"2.3000.1035824857-alpha\" -> [2, 3000, 1035824857]\n    const adapterProvider = createProvider(Provider, \n\t\t{ version: [2, 3000, 1035824857] } \n\t)",
+    "IMPLEMENTATION": "\n    // The WhatsApp version is resolved automatically.\n    // Manual fix if you get \"405 Connection Failure\" / ERRO AUTH:\n    // copy the latest version from https://wppconnect.io/whatsapp-versions/\n    // and pass it as is: createProvider(Provider, { version: '2.3000.1054953954-alpha' })\n    // or set WA_VERSION=2.3000.1054953954 in your .env\n    const adapterProvider = createProvider(Provider)",
     "DEPENDENCIES":{
         "@builderbot/bot": "latest",
         "@builderbot/provider-baileys": "latest"

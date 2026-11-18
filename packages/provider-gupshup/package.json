@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/provider-gupshup",
-    "version": "1.4.4",
+    "version": "1.5.1",
     "description": "Gupshup Provider for BuilderBot",
     "repository": {
         "type": "git",

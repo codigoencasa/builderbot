@@ -94,6 +94,16 @@ const flowStepSchema = z.object({
     capture: z.boolean().optional(),
 })
 
+/** Keywords are compiled with the same case-insensitive alternation used by the runtime. */
+export const flowKeywordSchema = z.union([z.string().min(1), z.array(z.string().min(1)).min(1)]).refine((keyword) => {
+    try {
+        new RegExp(Array.isArray(keyword) ? keyword.join('|') : keyword, 'i')
+        return true
+    } catch {
+        return false
+    }
+}, 'keyword must be a valid regular expression')
+
 /**
  * Schema for creating a dynamic flow
  */
@@ -110,7 +120,7 @@ export const createFlowSchema = z.object({
     /** Display name for the flow */
     name: z.string().min(1).max(100),
     /** Keywords that trigger this flow */
-    keyword: z.union([z.string().min(1), z.array(z.string().min(1)).min(1)]),
+    keyword: flowKeywordSchema,
     /** Steps/answers in the flow */
     steps: z.array(flowStepSchema).min(1, 'At least one step is required'),
 })
@@ -120,7 +130,7 @@ export const createFlowSchema = z.object({
  */
 export const updateFlowSchema = z.object({
     name: z.string().min(1).max(100).optional(),
-    keyword: z.union([z.string().min(1), z.array(z.string().min(1)).min(1)]).optional(),
+    keyword: flowKeywordSchema.optional(),
     steps: z.array(flowStepSchema).min(1).optional(),
 })
 

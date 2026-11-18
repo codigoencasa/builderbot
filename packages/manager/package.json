@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/manager",
-    "version": "1.4.4",
+    "version": "1.5.1",
     "description": "Multi-tenant bot manager for BuilderBot",
     "author": "Leifer Mendez <leifer33@gmail.com>",
     "homepage": "https://github.com/codigoencasa/builderbot#readme",
@@ -33,6 +33,7 @@
         "bot-manager"
     ],
     "devDependencies": {
+        "@builderbot/bot": "workspace:*",
         "@rollup/plugin-commonjs": "^29.0.0",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^16.0.3",

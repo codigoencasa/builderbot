@@ -1,3 +1,12 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: Integration contract regression tests
+ * Rules: Tests use local mocks and the public package interface.
+ * BigO: O(n^2) score:1
+ * keywords: [IntegrationContract, RegressionTests]
+ * GOAL: Preserve existing behavior and exercise the authorized security regressions; nested fixture loops are bounded.
+ */
+import { createHmac } from 'node:crypto'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
@@ -10,9 +19,29 @@ const MOCK_CONFIG = {
     token: 'test-token-123',
     url: 'https://chatwoot.example.com',
     accountId: 1,
+    webhookSecret: 'test-webhook-secret',
 }
 
 const MOCK_INBOX = { id: 42, name: 'BuilderBot Inbox' }
+
+const webhookAuth = (
+    body: unknown,
+    timestamp = String(Math.floor(Date.now() / 1000)),
+    secret = MOCK_CONFIG.webhookSecret
+) => {
+    const rawBody = JSON.stringify(body)
+    const signature = `sha256=${createHmac('sha256', secret).update(`${timestamp}.${rawBody}`).digest('hex')}`
+    return { rawBody, timestamp, signature }
+}
+
+const signedRequest = (body: unknown) => {
+    const auth = webhookAuth(body)
+    return {
+        body,
+        rawBody: auth.rawBody,
+        headers: { 'x-chatwoot-signature': auth.signature, 'x-chatwoot-timestamp': auth.timestamp },
+    }
+}
 
 // ─── fetch mock ───────────────────────────────────────────────────────────────
 
@@ -126,6 +155,12 @@ const makeMockBot = (saveFileImpl?: (ctx: unknown, opts?: unknown) => Promise<st
         },
     }
 }
+
+const handleSignedWebhook = (
+    plugin: ChatwootPlugin,
+    bot: ReturnType<typeof makeMockBot>,
+    body: Parameters<ChatwootPlugin['handleWebhook']>[1]
+) => plugin.handleWebhook(bot as any, body, webhookAuth(body))
 
 // ─── existing construction tests ─────────────────────────────────────────────
 
@@ -243,7 +278,7 @@ test('handleWebhook returns early when inbox ID does not match', async () => {
     const bot = makeMockBot()
     await withFetch(mock, () => plugin.attach(bot as any))
 
-    await plugin.handleWebhook(bot as any, {
+    await handleSignedWebhook(plugin, bot, {
         event: 'message_created',
         message_type: 'outgoing',
         private: false,
@@ -259,7 +294,7 @@ test('handleWebhook adds phone to blacklist when agent is assigned', async () =>
     const bot = makeMockBot()
     await withFetch(mock, () => plugin.attach(bot as any))
 
-    await plugin.handleWebhook(bot as any, {
+    await handleSignedWebhook(plugin, bot, {
         event: 'conversation_updated',
         changed_attributes: [{ assignee_id: { current_value: 7 } }],
         meta: { sender: { phone_number: '+5215511223344' } },
@@ -276,7 +311,7 @@ test('handleWebhook removes phone from blacklist when agent is unassigned', asyn
 
     bot.blacklist.items.add('5215511223344')
 
-    await plugin.handleWebhook(bot as any, {
+    await handleSignedWebhook(plugin, bot, {
         event: 'conversation_updated',
         changed_attributes: [{ assignee_id: { current_value: null } }],
         meta: { sender: { phone_number: '+5215511223344' } },
@@ -291,7 +326,7 @@ test('handleWebhook forwards outgoing API channel message to WhatsApp', async ()
     const bot = makeMockBot()
     await withFetch(mock, () => plugin.attach(bot as any))
 
-    await plugin.handleWebhook(bot as any, {
+    await handleSignedWebhook(plugin, bot, {
         event: 'message_created',
         message_type: 'outgoing',
         private: false,
@@ -313,7 +348,7 @@ test('handleWebhook does not forward private messages to WhatsApp', async () => 
     const bot = makeMockBot()
     await withFetch(mock, () => plugin.attach(bot as any))
 
-    await plugin.handleWebhook(bot as any, {
+    await handleSignedWebhook(plugin, bot, {
         event: 'message_created',
         message_type: 'outgoing',
         private: true,
@@ -330,7 +365,7 @@ test('handleWebhook does not forward private messages to WhatsApp', async () => 
 test('handleWebhook is a no-op before attach()', async () => {
     const bot = makeMockBot()
     const plugin = createChatwootPlugin(MOCK_CONFIG)
-    await plugin.handleWebhook(bot as any, {
+    await handleSignedWebhook(plugin, bot, {
         event: 'message_created',
         message_type: 'outgoing',
         private: false,
@@ -488,7 +523,7 @@ test('handleWebhook forwards all attachments when agent sends multiple files', a
     const bot = makeMockBot()
     await withFetch(mock, () => plugin.attach(bot as any))
 
-    await plugin.handleWebhook(bot as any, {
+    await handleSignedWebhook(plugin, bot, {
         event: 'message_created',
         message_type: 'outgoing',
         private: false,
@@ -554,19 +589,17 @@ test('auto-registered route forwards agent message to WhatsApp', async () => {
     }
 
     await handler(
-        {
-            body: {
-                event: 'message_created',
-                message_type: 'outgoing',
-                private: false,
-                content: 'Hello from agent via route',
-                conversation: {
-                    inbox_id: MOCK_INBOX.id,
-                    channel: 'Channel::Api',
-                    meta: { sender: { phone_number: '+5215511223344' } },
-                },
+        signedRequest({
+            event: 'message_created',
+            message_type: 'outgoing',
+            private: false,
+            content: 'Hello from agent via route',
+            conversation: {
+                inbox_id: MOCK_INBOX.id,
+                channel: 'Channel::Api',
+                meta: { sender: { phone_number: '+5215511223344' } },
             },
-        },
+        }),
         mockRes
     )
 
@@ -796,6 +829,101 @@ test('provider message: no saveFile on provider sends [image] label as last-reso
     const incoming = bodies.find((b) => b?.message_type === 'incoming')
     assert.ok(incoming, 'message sent to Chatwoot without saveFile')
     assert.is(incoming?.content, '[image]', 'no media URL → [image] label used as fallback')
+})
+
+test('webhook setup requires an explicit signing secret', () => {
+    assert.throws(
+        () =>
+            createChatwootPlugin({
+                ...MOCK_CONFIG,
+                webhookSecret: undefined,
+                webhookUrl: 'https://bot.example.com/v1/chatwoot',
+            }),
+        /webhookSecret/
+    )
+})
+
+test('webhook route rejects forged requests without sends or blacklist mutations', async () => {
+    const { mock } = makeSmartFetch()
+    const plugin = createChatwootPlugin({ ...MOCK_CONFIG, webhookUrl: 'https://bot.example.com/v1/chatwoot' })
+    const bot = makeMockBot()
+    await withFetch(mock, () => plugin.attach(bot as any))
+    bot.blacklist.items.add('5215511223344')
+    const outgoing = {
+        event: 'message_created',
+        private: false,
+        message_type: 'outgoing',
+        content: 'forged',
+        conversation: { channel: 'Channel::Api', meta: { sender: { phone_number: '+5215511223344' } } },
+    }
+    const assign = (value: number | null) => ({
+        event: 'conversation_updated',
+        changed_attributes: [{ assignee_id: { current_value: value } }],
+        meta: { sender: { phone_number: '+5215511223344' } },
+    })
+    const handler = bot.provider.server.routes['/v1/chatwoot']
+    for (const body of [outgoing, assign(7), assign(null)]) {
+        const good = webhookAuth(body)
+        const variants = [
+            { rawBody: good.rawBody },
+            webhookAuth(body, good.timestamp, 'wrong-secret'),
+            webhookAuth(body, String(Number(good.timestamp) - 301)),
+            webhookAuth(body, String(Number(good.timestamp) + 301)),
+            webhookAuth(body, 'invalid-timestamp'),
+            { ...good, rawBody: '{}' },
+            { ...good, rawBody: undefined },
+            { ...good, signature: 'sha256=00' },
+        ]
+        for (const auth of variants) {
+            let status = 0
+            let response = ''
+            await handler(
+                {
+                    body,
+                    rawBody: auth.rawBody,
+                    headers: {
+                        'x-chatwoot-signature': 'signature' in auth ? auth.signature : undefined,
+                        'x-chatwoot-timestamp': 'timestamp' in auth ? auth.timestamp : undefined,
+                    },
+                },
+                {
+                    writeHead: (code: number) => {
+                        status = code
+                    },
+                    end: (value: string) => {
+                        response = value
+                    },
+                }
+            )
+            assert.is(status, 401)
+            assert.is(response, JSON.stringify({ error: 'Invalid Chatwoot webhook signature' }))
+            assert.equal(bot.sent, [])
+            assert.equal([...bot.blacklist.items], ['5215511223344'])
+        }
+    }
+})
+
+test('manual webhook rejects missing verification and uses only authenticated JSON', async () => {
+    const { mock } = makeSmartFetch()
+    const plugin = createChatwootPlugin(MOCK_CONFIG)
+    const bot = makeMockBot()
+    await withFetch(mock, () => plugin.attach(bot as any))
+    const trusted = {
+        event: 'message_created',
+        private: false,
+        message_type: 'outgoing',
+        content: 'signed content',
+        conversation: { channel: 'Channel::Api', meta: { sender: { phone_number: '+5215511223344' } } },
+    }
+    const unsignedError = await plugin.handleWebhook(bot as any, trusted).then(
+        () => null,
+        (error) => error
+    )
+    assert.is(unsignedError?.message, 'Invalid Chatwoot webhook signature')
+    assert.equal(bot.sent, [])
+    assert.equal([...bot.blacklist.items], [])
+    await (plugin.handleWebhook as any)(bot, { ...trusted, content: 'unsigned content' }, webhookAuth(trusted))
+    assert.is(bot.sent[0].content, 'signed content')
 })
 
 test.run()

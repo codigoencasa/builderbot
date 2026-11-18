@@ -25,10 +25,8 @@ const addKeyword = <P = any, B = any>(
         throw new Error('DEBE_SER_STRING_ARRAY_REGEX')
     }
 
-    // Un keyword vacío nunca puede matchear nada: casi siempre es un error de
-    // configuración (p. ej. una env var sin definir). Fallamos rápido en lugar
-    // de registrar un flow muerto que nunca se dispara.
-    if (keyword.length === 0) {
+    // Empty entries become match-all regular expressions in FlowClass.
+    if (keyword.length === 0 || (Array.isArray(keyword) && keyword.some((item) => item.length === 0))) {
         throw new Error('KEYWORD_CANNOT_BE_EMPTY')
     }
 

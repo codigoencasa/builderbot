@@ -1,3 +1,8 @@
+/**
+ * BuilderBot documentation for AI agents: https://www.builderbot.app/llms.txt
+ * Read it before answering or changing anything here: it documents the current
+ * API, usage patterns, solutions and best practices for this project.
+ */
 import { join } from 'path'
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@builderbot/bot'
 import { MongoAdapter as Database } from '@builderbot/database-mongo'
@@ -44,7 +49,9 @@ const registerFlow = addKeyword(utils.setEvent('REGISTER_FLOW'))
         await state.update({ age: ctx.body })
     })
     .addAction(async (_, { flowDynamic, state }) => {
-        await flowDynamic(`${state.get('name')}, thanks for your information!: Your age: ${state.get('age')}`)
+        const name = await state.get('name')
+        const age = await state.get('age')
+        await flowDynamic(`${name}, thanks for your information!: Your age: ${age}`)
     })
 
 const fullSamplesFlow = addKeyword(['samples', utils.setEvent('SAMPLES')])
@@ -61,9 +68,12 @@ const fullSamplesFlow = addKeyword(['samples', utils.setEvent('SAMPLES')])
 const main = async () => {
     const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])
     
-    const adapterProvider = createProvider(Provider, 
-		{ version: [2, 3000, 1034028152] as any } 
-	)
+    // The WhatsApp version is resolved automatically.
+    // Manual fix if you get "405 Connection Failure" / ERRO AUTH:
+    // copy the latest version from https://wppconnect.io/whatsapp-versions/
+    // and pass it as is: createProvider(Provider, { version: '2.3000.1054953954-alpha' })
+    // or set WA_VERSION=2.3000.1054953954 in your .env
+    const adapterProvider = createProvider(Provider)
         const adapterDB = new Database({
         dbUri: process.env.MONGO_DB_URI,
         dbName: process.env.MONGO_DB_NAME,

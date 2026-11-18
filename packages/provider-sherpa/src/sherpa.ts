@@ -50,6 +50,9 @@ import {
     baileyIsValidNumber as sherpaIsValidNumber,
     emptyDirSessions,
 } from './utils'
+import { parseWaVersion, resolveWaVersion } from './waVersion'
+
+const WA_VERSION_REJECTED = 405
 
 class SherpaProvider extends ProviderClass<WASocket> {
     public globalVendorArgs: SherpaGlobalVendorArgs = {
@@ -77,6 +80,13 @@ class SherpaProvider extends ProviderClass<WASocket> {
     private presenceInterval?: ReturnType<typeof setTimeout>
     private periodicCleanupInterval?: ReturnType<typeof setInterval>
     private badSessionCount = 0
+
+    private static readonly MAX_WA_VERSION_RETRIES = 3
+    /** WA Web version used by the current socket */
+    private waVersion?: WAVersion
+    private waVersionRejections = 0
+    /** Sticky once WhatsApp rejects a version: skip the manual version from then on */
+    private preferLiveWaVersion = false
 
     msgRetryCounterCache?: NodeCache
     userDevicesCache?: NodeCache
@@ -266,6 +276,17 @@ class SherpaProvider extends ProviderClass<WASocket> {
 
     protected saveCredsGlobal: (() => Promise<void>) | null = null
 
+    /** Manual WA version: `WA_VERSION` env var wins over the `version` option. */
+    private getManualWaVersion(): WAVersion | undefined {
+        const raw = process.env.WA_VERSION || this.globalVendorArgs.version
+        if (!raw) return undefined
+        const version = parseWaVersion(raw)
+        if (!version) {
+            this.logger.log(`[Sherpa] Ignoring invalid WA version "${raw}", expected e.g. "2.3000.1054953954"`)
+        }
+        return version
+    }
+
     /**
      * Iniciar todo Sherpa
      */
@@ -314,11 +335,15 @@ class SherpaProvider extends ProviderClass<WASocket> {
                 this.vendor = undefined
             }
 
-            const waVersion = this.globalVendorArgs.version ?? [2, 3000, 1023223821]
+            const { version, source } = await resolveWaVersion({
+                manual: this.getManualWaVersion(),
+                preferLive: this.preferLiveWaVersion,
+            })
+            this.waVersion = version
+            this.logger.log(`[Sherpa] Using WA Web version ${version.join('.')} (source: ${source})`)
 
             const sock = makeWASocketOther({
                 logger: loggerSherpa,
-                version: waVersion as WAVersion,
                 printQRInTerminal: false,
                 auth: {
                     creds: state.creds,
@@ -344,6 +369,8 @@ class SherpaProvider extends ProviderClass<WASocket> {
                     return false
                 },
                 ...this.globalVendorArgs,
+                // After the spread: the raw `version` option must not bypass resolution and 405 recovery
+                version,
             })
 
             this.vendor = sock
@@ -435,6 +462,28 @@ class SherpaProvider extends ProviderClass<WASocket> {
                         return
                     }
 
+                    // WhatsApp answers 405 when it rejects the client version
+                    if (statusCode === WA_VERSION_REJECTED) {
+                        const rejected = this.waVersion?.join('.') ?? 'unknown'
+                        if (this.waVersionRejections < SherpaProvider.MAX_WA_VERSION_RETRIES) {
+                            this.waVersionRejections++
+                            this.preferLiveWaVersion = true
+                            this.logger.log(
+                                `[${new Date().toISOString()}] WA version ${rejected} rejected (405); retrying with the live WhatsApp Web version`
+                            )
+                            await this.delayedReconnect()
+                            return
+                        }
+                        this.emit('auth_failure', [
+                            `WhatsApp rejected the client version ${rejected} (405)`,
+                            `Update @builderbot/provider-sherpa, or set the version manually:`,
+                            `copy the latest one from https://wppconnect.io/whatsapp-versions/`,
+                            `and use WA_VERSION=2.3000.xxxxxxxxxx in .env or createProvider(Provider, { version: '2.3000.xxxxxxxxxx' })`,
+                            `Need help: https://link.codigoencasa.com/DISCORD`,
+                        ])
+                        return
+                    }
+
                     // Casos donde debemos reconectar con backoff
                     if (this.shouldReconnect(statusCode)) {
                         await this.delayedReconnect()
@@ -464,6 +513,7 @@ class SherpaProvider extends ProviderClass<WASocket> {
                 if (connection === 'open') {
                     this.logger.log(`[${new Date().toISOString()}] Connection opened successfully`)
                     this.reconnectAttempts = 0 // Reset counter on successful connection
+                    this.waVersionRejections = 0
                     this.reconnectDelay = 1000 // Reset delay
                     this.badSessionCount = 0 // Reset bad session counter
                     this.startHealthCheck()

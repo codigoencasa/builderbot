@@ -19,6 +19,7 @@ jest.mock('../src/baileyWrapper', () => ({
     Browsers: { appropriate: () => ['Ubuntu', 'Chrome', '1'] },
     DisconnectReason: { connectionClosed: 428, loggedOut: 401, connectionReplaced: 440 },
     useMultiFileAuthState: jest.fn(),
+    fetchLatestBaileysVersion: jest.fn(),
     fetchLatestWaWebVersion: jest.fn(),
     makeCacheableSignalKeyStore: (keys: unknown) => keys,
     makeWASocketOther: jest.fn(),
@@ -252,6 +253,64 @@ describe('lifecycle review regressions', () => {
         expect(wrapper.makeWASocketOther).toHaveBeenCalledTimes(1)
     })
 
+    test('manual version: accepts the wppconnect text and WA_VERSION wins over the option', async () => {
+        provider.globalVendorArgs.version = '2.3000.1054953954-alpha'
+        await provider['initVendor']()
+        expect(wrapper.makeWASocketOther).toHaveBeenLastCalledWith(
+            expect.objectContaining({ version: [2, 3000, 1054953954] })
+        )
+
+        process.env.WA_VERSION = '2.3000.1055185710'
+        try {
+            await provider['initVendor']()
+        } finally {
+            delete process.env.WA_VERSION
+        }
+        expect(wrapper.makeWASocketOther).toHaveBeenLastCalledWith(
+            expect.objectContaining({ version: [2, 3000, 1055185710] })
+        )
+    })
+
+    test('405 reconnects with the live WhatsApp Web version instead of the rejected manual one', async () => {
+        jest.useFakeTimers()
+        jest.mocked(wrapper.fetchLatestWaWebVersion).mockResolvedValue({ version: [2, 3000, 1055185710] } as any)
+        provider.globalVendorArgs.version = [2, 3000, 1035824857]
+        await provider['initVendor']()
+        expect(wrapper.makeWASocketOther).toHaveBeenLastCalledWith(
+            expect.objectContaining({ version: [2, 3000, 1035824857] })
+        )
+
+        socket.ev.emit('connection.update', {
+            connection: 'close',
+            lastDisconnect: { error: { output: { statusCode: 405 } } },
+        })
+        await Promise.resolve()
+        expect(provider['reconnectTimer']).toBeDefined()
+
+        await jest.advanceTimersByTimeAsync(5_000)
+        expect(wrapper.makeWASocketOther).toHaveBeenLastCalledWith(
+            expect.objectContaining({ version: [2, 3000, 1055185710] })
+        )
+    })
+
+    test('405 stops retrying after the limit and explains the manual fix', async () => {
+        const emitSpy = jest.spyOn(provider, 'emit')
+        await provider['initVendor']()
+        provider['waVersionRejections'] = provider['constructor']['MAX_WA_VERSION_RETRIES']
+
+        socket.ev.emit('connection.update', {
+            connection: 'close',
+            lastDisconnect: { error: { output: { statusCode: 405 } } },
+        })
+        await Promise.resolve()
+
+        expect(emitSpy).toHaveBeenCalledWith(
+            'auth_failure',
+            expect.arrayContaining([expect.stringContaining('wppconnect.io/whatsapp-versions')])
+        )
+        expect(provider['reconnectTimer']).toBeUndefined()
+    })
+
     test('reconnect backoff applies jitter within ±20% of the base delay (T8)', async () => {
         jest.useFakeTimers()
         const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0)
@@ -290,8 +349,10 @@ describe('lifecycle review regressions', () => {
         const emitSpy = jest.spyOn(provider, 'emit')
 
         const init = provider['initVendor']()
-        await Promise.resolve()
-        await Promise.resolve()
+        for (let tick = 0; tick < 50 && !socket.requestPairingCode.mock.calls.length; tick++) {
+            await Promise.resolve()
+        }
+        expect(socket.requestPairingCode).toHaveBeenCalled()
         // Socket still awaiting pairing, but a live connection event is handled
         socket.ev.emit('connection.update', { connection: 'open' })
         await Promise.resolve()
@@ -329,6 +390,23 @@ describe('lifecycle review regressions', () => {
         )
         expect(qrSpy).toHaveBeenCalledWith('2@fake-qr-data', 'lifecycle.qr.png')
         qrSpy.mockRestore()
+    })
+
+    test('QR image generation failures emit a notice without rejecting the connection handler', async () => {
+        const utilsModule = require('../src/utils')
+        const error = new Error('QR write failed')
+        jest.spyOn(utilsModule, 'baileyGenerateImage').mockRejectedValue(error)
+        const emitSpy = jest.spyOn(provider, 'emit')
+        await provider['initVendor']()
+        const [onConnectionUpdate] = socket.ev.listeners('connection.update')
+
+        await expect(onConnectionUpdate({ qr: '2@fake-qr-data' })).resolves.toBeUndefined()
+        expect(emitSpy).toHaveBeenCalledWith(
+            'notice',
+            expect.objectContaining({
+                instructions: expect.arrayContaining([expect.stringContaining('QR write failed')]),
+            })
+        )
     })
 
     test('missing QR returns 404 and destroy closes a real HTTP listener and the log stream', async () => {

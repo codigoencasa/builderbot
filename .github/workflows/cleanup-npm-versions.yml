@@ -1,0 +1,93 @@
+name: '🧹 (CLEANUP) Deprecar versiones no usadas'
+
+# Marca como obsoletas las versiones que quedaron de intentos de release
+# fallidos, para que nadie las instale por error.
+#
+# Se usa `npm deprecate` y no `npm unpublish`: despublicar solo es posible
+# durante 72 h, deja huecos en el historial y rompe a quien ya lo tenga
+# instalado. Deprecar es reversible (mismo comando con mensaje vacío).
+on:
+    workflow_dispatch:
+        inputs:
+            versions:
+                description: 'Versiones a deprecar, separadas por coma'
+                required: true
+                default: '1.5.0-alpha.0,1.5.0'
+            message:
+                description: 'Mensaje de deprecación'
+                required: true
+                default: 'Superseded by 1.5.1'
+            dry_run:
+                description: 'Dry run: solo lista qué se deprecaría'
+                required: false
+                default: false
+                type: boolean
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: false
+
+env:
+    NODE_VERSION: 22.20.0
+
+jobs:
+    deprecate:
+        name: 'Deprecar versiones'
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js ${{ env.NODE_VERSION }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  registry-url: https://registry.npmjs.org/
+
+            - name: Verify npm authentication
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: |
+                  if ! npm whoami >/dev/null 2>&1; then
+                      echo "::error::NPM_TOKEN inválido o expirado (401)."
+                      exit 1
+                  fi
+                  echo "✅ Autenticado como: $(npm whoami)"
+
+            - name: Deprecate versions
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: |
+                  VERSIONS="${{ inputs.versions }}"
+                  MESSAGE="${{ inputs.message }}"
+                  DRY_RUN="${{ inputs.dry_run }}"
+                  CHANGED=0
+                  SKIPPED=0
+                  for dir in packages/*/ packages/plugins/*/; do
+                      [ -f "$dir/package.json" ] || continue
+                      NAME=$(node -p "require('./$dir/package.json').name")
+                      PRIVATE=$(node -p "Boolean(require('./$dir/package.json').private || false)")
+                      [ "$PRIVATE" = "true" ] && continue
+                      for VERSION in $(echo "$VERSIONS" | tr ',' ' '); do
+                          [ -z "$VERSION" ] && continue
+                          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+                              if [ "$DRY_RUN" = "true" ]; then
+                                  echo "· se deprecaría $NAME@$VERSION"
+                              else
+                                  if npm deprecate "$NAME@$VERSION" "$MESSAGE" >/dev/null 2>&1; then
+                                      echo "✅ deprecada $NAME@$VERSION"
+                                      CHANGED=$((CHANGED+1))
+                                  else
+                                      echo "::warning::no se pudo deprecar $NAME@$VERSION"
+                                  fi
+                              fi
+                          else
+                              SKIPPED=$((SKIPPED+1))
+                          fi
+                      done
+                  done
+                  if [ "$DRY_RUN" = "true" ]; then
+                      echo "DRY RUN — nada se modificó"
+                  fi
+                  echo "::notice::deprecadas=$CHANGED · inexistentes=$SKIPPED"

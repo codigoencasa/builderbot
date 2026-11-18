@@ -1,10 +1,9 @@
 {
     "IMPORT": "import { SherpaProvider as Provider } from '@builderbot/provider-sherpa'\n",
-    "IMPLEMENTATION": "\n    const adapterProvider = createProvider(Provider, \n\t\t{ version: [2, 3000, 1034028152] as any } \n\t)",
+    "IMPLEMENTATION": "\n    // The WhatsApp version is resolved automatically.\n    // Manual fix if you get \"405 Connection Failure\" / ERRO AUTH:\n    // copy the latest version from https://wppconnect.io/whatsapp-versions/\n    // and pass it as is: createProvider(Provider, { version: '2.3000.1054953954-alpha' })\n    // or set WA_VERSION=2.3000.1054953954 in your .env\n    const adapterProvider = createProvider(Provider)",
     "DEPENDENCIES":{
         "@builderbot/bot": "latest",
         "@builderbot/provider-sherpa": "latest"
     },
     "DEV_DEPENDENCIES":{}
 }
-

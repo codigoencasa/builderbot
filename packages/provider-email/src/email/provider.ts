@@ -10,7 +10,7 @@ import { ProviderClass } from '@builderbot/bot'
 import type { BotContext, SendOptions } from '@builderbot/bot/dist/types'
 import { writeFile } from 'fs/promises'
 import { tmpdir } from 'os'
-import { join, resolve } from 'path'
+import { basename, join, resolve } from 'path'
 
 import { EmailCoreVendor } from './core'
 import type { IEmailProviderArgs, EmailBotContext, EmailSendOptions } from '../types'
@@ -247,7 +247,8 @@ class EmailProvider extends ProviderClass<EmailCoreVendor> {
             }
 
             const savePath = options?.path ?? tmpdir()
-            const fileName = `${Date.now()}-${attachment.filename}`
+            const attachmentName = basename(attachment.filename.replace(/\\/g, '/')) || 'attachment'
+            const fileName = `${Date.now()}-${attachmentName}`
             const filePath = join(savePath, fileName)
 
             await writeFile(filePath, attachment.content)

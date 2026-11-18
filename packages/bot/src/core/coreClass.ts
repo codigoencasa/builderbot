@@ -21,14 +21,14 @@ import type {
 } from './../types'
 import type { HostEventTypes } from './eventEmitterClass'
 import { EventEmitterClass } from './eventEmitterClass'
-import { GlobalState, IdleState, SingleState } from '../context'
+import { GlobalState, IdleState, SingleState, RedisState } from '../context'
 import type { MemoryDB } from '../db'
 import { LIST_REGEX } from '../io/events'
 import type FlowClass from '../io/flowClass'
 import { toCtx } from '../io/methods'
 import type { ProviderClass } from '../provider/interface/provider'
 import type { FlowDynamicMessage, GeneralArgs, MessageContextIncoming } from '../types'
-import { BlackList, Queue } from '../utils'
+import { BlackList, Queue, QueueTimeoutError } from '../utils'
 import { delay } from '../utils/delay'
 import { printer } from '../utils/interactive'
 
@@ -48,7 +48,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     database: D
     provider: P
     queuePrincipal: Queue<unknown>
-    stateHandler = new SingleState()
+    private providerListeners: { event: string; func: ProviderEventTypes[keyof ProviderEventTypes] }[] = []
+    stateHandler: SingleState | RedisState
     globalStateHandler = new GlobalState()
     dynamicBlacklist = new BlackList()
     private contactTurns = new Map<string, Promise<void>>()
@@ -102,7 +103,12 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
 
         if (this.generalArgs.extensions) this.globalStateHandler.RAW = this.generalArgs.extensions
 
-        for (const { event, func } of this.listenerBusEvents()) {
+        this.stateHandler = this.generalArgs.RedisOptions
+            ? new RedisState(this.generalArgs.RedisOptions.connection, this.generalArgs.RedisOptions.options)
+            : new SingleState()
+
+        this.providerListeners = this.listenerBusEvents()
+        for (const { event, func } of this.providerListeners) {
             this.provider.on(event, func)
         }
     }
@@ -197,8 +203,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         logger.log(`[handleMsg]: `, messageCtxInComing)
         idleForCallback.stop(messageCtxInComing)
         const { body, from } = messageCtxInComing
-        let msgToSend = []
-        let endFlowFlag = this.stateHandler.get(from)('__end_flow__') || false
+        let msgToSend: any[] = []
+        let endFlowFlag = (await this.stateHandler.get(from)('__end_flow__')) || false
         const fallBackFlag = false
 
         if (this.dynamicBlacklist.checkIf(from)) return
@@ -401,6 +407,10 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                 )
             } catch (error) {
                 logger.error(`Error al encolar (ID ${ctxMessage.ref}):`, error)
+                // El item expiró por el timeout de la cola: ya se canceló y registró,
+                // y el flujo detiene el resto de sus envíos. Propagarlo terminaría en
+                // un `unhandledRejection` en el listener del provider.
+                if (error instanceof QueueTimeoutError) return
                 throw error
             }
         }
@@ -480,8 +490,6 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                     return
                 }
 
-                await delay(flowInstance?.ctx?.options?.delay ?? 0)
-
                 const flowTree = flowInstance.toJson()
 
                 const flowParentId = flowTree[step]
@@ -489,9 +497,22 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
                 const parseListMsg = this.flowClass.find(flowParentId?.ref, true, flowTree)
 
                 for (const msg of parseListMsg) {
+                    // Cancelación cooperativa: si el item de la cola expiró durante los
+                    // delays, no seguir enviando el resto del flujo destino.
+                    if (this.queuePrincipal.currentSignal()?.cancelled) {
+                        break
+                    }
+
                     const msgParse = this.flowClass.findSerializeByRef(msg?.ref)
 
                     const ctxMessage: TContext = { ...msgParse, ...msg }
+                    const delayMs = ctxMessage?.options?.delay ?? this.generalArgs.delay ?? 0
+                    await delay(delayMs)
+
+                    if (this.queuePrincipal.currentSignal()?.cancelled) {
+                        break
+                    }
+
                     await this.sendProviderAndSave(from, ctxMessage).then(() => promises.push(ctxMessage))
                 }
 
@@ -701,7 +722,11 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             }))
 
             msgToSend = this.flowClass.find(body, false, flowStandalone) || []
-            return exportFunctionsSend(() => sendFlow(msgToSend, from))
+            if (msgToSend.length) return exportFunctionsSend(() => sendFlow(msgToSend, from))
+
+            // si no hubo match en nested pero el previo pedía capture,
+            // procesar como captura libre sin buscar keywords globales
+            if (prevMsg?.options?.capture) return exportFunctionsSend(() => sendFlow([], from))
         }
 
         // 📄🤘(tiene return) Si el mensaje previo implementa capture
@@ -709,8 +734,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             const typeCapture = typeof prevMsg?.options?.capture
 
             if (typeCapture === 'boolean' && fallBackFlag) {
-                msgToSend = this.flowClass.find(refToContinue?.ref, true) || []
-                return exportFunctionsSend(() => sendFlow(msgToSend, from, { forceQueue: true }))
+                msgToSend = this.flowClass.find(refToContinue?.ref ?? '', true) || []
+                if (msgToSend.length) return exportFunctionsSend(() => sendFlow(msgToSend, from, { forceQueue: true }))
             }
         }
 
@@ -721,8 +746,6 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         }
 
         if (!prevMsg?.options?.capture) {
-            msgToSend = this.flowClass.find(this.generalArgs.listEvents.WELCOME) || []
-
             if (LIST_REGEX.REGEX_EVENT_LOCATION.test(body)) {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.LOCATION) || []
             }
@@ -754,6 +777,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             if (LIST_REGEX.REGEX_EVENT_CONTACTS.test(body)) {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.CONTACTS) || []
             }
+
+            if (!msgToSend.length) msgToSend = this.flowClass.find(this.generalArgs.listEvents.WELCOME) || []
         }
 
         await this.stateHandler.updateState({ from })({ __end_flow__: false })
@@ -826,12 +851,13 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     httpServer = (port: number) => {
         this.provider.initAll(port, {
             blacklist: this.dynamicBlacklist,
-            state: (number: string): BotStateStandAlone => ({
-                getMyState: this.stateHandler.getMyState(number),
-                get: this.stateHandler.get(number),
-                update: this.stateHandler.updateState({ from: number }),
-                clear: this.stateHandler.clear(number),
-            }),
+            state: (number: string): BotStateStandAlone =>
+                ({
+                    getMyState: this.stateHandler.getMyState(number),
+                    get: this.stateHandler.get(number),
+                    update: this.stateHandler.updateState({ from: number }),
+                    clear: this.stateHandler.clear(number),
+                }) as BotStateStandAlone,
             emit: (eventName: 'send_message' | 'notice', args: Record<string, any> & { from: string }) => {
                 if (eventName === 'send_message') {
                     this.emit('send_message', {
@@ -863,6 +889,10 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
      * tests o `stop()` antes de `httpServer()`): ese caso se ignora silenciosamente.
      */
     public async stop(): Promise<void> {
+        for (const { event, func } of this.providerListeners) {
+            this.provider.off?.(event, func)
+        }
+        this.providerListeners = []
         try {
             await this.queuePrincipal.clearAll()
         } catch (error) {
@@ -887,8 +917,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
      */
     private buildCtxMethods = (): BotCtxMethods => ({
         endFlow: async (from: string) => {
-            this.queuePrincipal.clearQueue(from)
-            this.stateHandler.updateState({ from })({ __end_flow__: true })
+            await this.queuePrincipal.clearQueue(from)
+            await this.stateHandler.updateState({ from })({ __end_flow__: true })
         },
     })
 

@@ -187,6 +187,13 @@ jobs:
                   npx lerna publish from-package --yes --dist-tag "$DIST_TAG"
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  # npm's provenance attestation fails here with
+                  # TLOG_CREATE_ENTRY_ERROR (409) "an equivalent entry already exists in the
+                  # transparency log" for most packages, which aborts the whole publish after
+                  # a couple of them. It reproduces on brand-new versions, so it is not a
+                  # duplicate-publish conflict. Attestations stay off until that is fixed;
+                  # set this back to 'true' to re-enable them.
+                  NPM_CONFIG_PROVENANCE: 'false'
 
             - name: Release Github
               if: ${{ success() && !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}

@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: Integration contract regression tests
+ * Rules: Tests use local mocks and the public package interface.
+ * BigO: O(n^2) score:1
+ * keywords: [IntegrationContract, RegressionTests]
+ * GOAL: Preserve existing behavior and exercise the authorized security regressions; nested fixture loops are bounded.
+ */
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
@@ -68,7 +76,7 @@ test('[MysqlAdapter Edge] - getPrevByNumber should parse JSON options', async ()
         created_at: '2024-01-01',
     }
 
-    adapter.setQueryHandler((sql: string, callback: Function) => {
+    adapter.setQueryHandler((sql: string, _values: any[], callback: Function) => {
         callback(null, [mockRow])
     })
 
@@ -78,7 +86,7 @@ test('[MysqlAdapter Edge] - getPrevByNumber should parse JSON options', async ()
 })
 
 test('[MysqlAdapter Edge] - getPrevByNumber should return empty object for no results', async () => {
-    adapter.setQueryHandler((sql: string, callback: Function) => {
+    adapter.setQueryHandler((sql: string, _values: any[], callback: Function) => {
         callback(null, [])
     })
 
@@ -87,7 +95,7 @@ test('[MysqlAdapter Edge] - getPrevByNumber should return empty object for no re
 })
 
 test('[MysqlAdapter Edge] - getPrevByNumber should reject on error', async () => {
-    adapter.setQueryHandler((sql: string, callback: Function) => {
+    adapter.setQueryHandler((sql: string, _values: any[], callback: Function) => {
         callback(new Error('DB connection lost'))
     })
 

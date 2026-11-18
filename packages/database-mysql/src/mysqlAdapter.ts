@@ -46,10 +46,10 @@ class MysqlAdapter extends MemoryDB {
 
     getPrevByNumber = async (from: any): Promise<HistoryRow> => {
         return await new Promise((resolve, reject) => {
-            const sql = `SELECT * FROM history WHERE phone='${from}' ORDER BY id DESC`
-            this.db.query<HistoryRow[]>(sql, (error: any, rows: any[]) => {
+            const sql = 'SELECT * FROM history WHERE phone=? ORDER BY id DESC'
+            this.db.query<HistoryRow[]>(sql, [from], (error: any, rows: any[]) => {
                 if (error) {
-                    reject(error)
+                    return reject(error)
                 }
                 if (rows.length) {
                     const [row] = rows

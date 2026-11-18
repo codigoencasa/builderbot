@@ -1,3 +1,11 @@
+/**
+ * LAYER: Infrastructure
+ * Contains: Integration contract regression tests
+ * Rules: Tests use local mocks and the public package interface.
+ * BigO: O(1) score:5
+ * keywords: [IntegrationContract, RegressionTests]
+ * GOAL: Preserve existing behavior and exercise the authorized security regressions; nested fixture loops are bounded.
+ */
 import { utils } from '@builderbot/bot'
 import { describe, expect, test, jest, beforeEach } from '@jest/globals'
 
@@ -53,9 +61,24 @@ describe('#TwilioProvider', () => {
     })
 
     describe('#saveFile', () => {
+        test.each([
+            'https://attacker.example/media',
+            'https://api.twilio.com.attacker.example/media',
+            'http://api.twilio.com/media',
+            'https://api.twilio.com:8443/media',
+            'https://user:password@api.twilio.com/media',
+            '/etc/passwd',
+            'file:///etc/passwd',
+            undefined,
+        ])('rejects untrusted media without dispatching credentials: %s', async (MediaUrl0) => {
+            jest.mocked(utils.generalDownload).mockClear()
+            expect(await twilioProvider.saveFile({ MediaUrl0 })).toBe('ERROR')
+            expect(utils.generalDownload).not.toHaveBeenCalled()
+        })
+
         test('should save a file received via Twilio', async () => {
             // Arrange
-            const ctx = { MediaUrl0: 'mockMediaUrl' }
+            const ctx = { MediaUrl0: 'https://api.twilio.com/2010-04-01/Accounts/AC123/Messages/MM123/Media/ME123' }
             const options = { path: 'mockPath' }
             const fileDownloaded = 'path/to/downloaded/image.jpg'
             ;(utils.generalDownload as jest.MockedFunction<typeof utils.generalDownload>).mockResolvedValue(
@@ -67,12 +90,14 @@ describe('#TwilioProvider', () => {
 
             // Assert
             expect(result).toEqual(fileDownloaded)
-            expect(utils.generalDownload).toHaveBeenCalled()
+            expect(utils.generalDownload).toHaveBeenCalledWith(ctx.MediaUrl0, options.path, {
+                Authorization: `Basic ${Buffer.from('mockAccountSid:mockAuthToken').toString('base64')}`,
+            })
         })
 
         test('should save a file in tmp directory', async () => {
             // Arrange
-            const ctx = { MediaUrl0: 'mockMediaUrl' }
+            const ctx = { MediaUrl0: 'https://api.twilio.com/2010-04-01/Accounts/AC123/Messages/MM123/Media/ME123' }
             const fileDownloaded = 'path/to/downloaded/image.jpg'
             ;(utils.generalDownload as jest.MockedFunction<typeof utils.generalDownload>).mockResolvedValue(
                 fileDownloaded
@@ -87,7 +112,7 @@ describe('#TwilioProvider', () => {
 
         test('should handle error when generalDownload fails', async () => {
             // Arrange
-            const ctx = { MediaUrl0: 'mockMediaUrl' }
+            const ctx = { MediaUrl0: 'https://api.twilio.com/2010-04-01/Accounts/AC123/Messages/MM123/Media/ME123' }
             const mockError = new Error('Download failed')
             ;(utils.generalDownload as jest.MockedFunction<typeof utils.generalDownload>).mockRejectedValue(mockError)
             const consoleLogSpy = jest.spyOn(console, 'log')
