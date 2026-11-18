@@ -20,7 +20,13 @@ export interface SherpaGlobalVendorArgs extends GlobalVendorArgs {
     experimentalStore?: boolean
     groupsIgnore: boolean
     readStatus: boolean
-    version?: WAVersion //
+    /**
+     * Manual WhatsApp Web version. Normally leave it unset: it is resolved automatically.
+     * Accepts `[2, 3000, 1054953954]` or the text from https://wppconnect.io/whatsapp-versions/
+     * (`'2.3000.1054953954-alpha'`). The `WA_VERSION` env var takes precedence.
+     * Ignored after WhatsApp rejects it (405); the live version is used instead.
+     */
+    version?: WAVersion | string
     autoRefresh?: number
     host?: any
 }
