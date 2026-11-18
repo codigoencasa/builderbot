@@ -117,6 +117,8 @@ jobs:
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
                   NPM_CONFIG_PROVENANCE: 'false'
+                  # lerna 9 rejects `--access`; npm reads the access of scoped packages from here.
+                  NPM_CONFIG_ACCESS: 'public'
               run: |
                   NEW="${{ steps.version.outputs.next }}"
                   echo "📦 Versionando todos los paquetes a $NEW"
@@ -124,7 +126,7 @@ jobs:
                   git add -A
                   git commit -m "chore: release $NEW [skip ci]" || true
                   echo "🚀 Publicando con dist-tag: latest"
-                  npx lerna publish from-package --dist-tag latest --yes --access public
+                  npx lerna publish from-package --dist-tag latest --yes
 
             - name: Publish stragglers individually
               if: ${{ !inputs.dry_run }}
@@ -153,10 +155,12 @@ jobs:
                   NEW="${{ steps.version.outputs.next }}"
                   FAILED=0
                   for pkg in $(npx lerna ls --json --all | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{for(const p of JSON.parse(s))if(!p.private)console.log(p.name)})"); do
-                      for attempt in 1 2 3 4 5; do
-                          LATEST=$(npm view "$pkg" dist-tags.latest 2>/dev/null || echo "none")
+                      # A fresh publish can take minutes to show up in `npm view`
+                      # (database-redis did in the 1.5.1 run): wait up to ~3 min.
+                      for attempt in $(seq 1 18); do
+                          LATEST=$(npm view "$pkg" dist-tags.latest --prefer-online 2>/dev/null || echo "none")
                           [ "$LATEST" = "$NEW" ] && break
-                          sleep 6
+                          sleep 10
                       done
                       if [ "$LATEST" = "$NEW" ]; then
                           echo "✅ $pkg -> $LATEST"
