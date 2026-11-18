@@ -35,8 +35,6 @@ import {
     isJidBroadcast,
     DisconnectReason,
     downloadMediaMessage,
-    fetchLatestBaileysVersion,
-    fetchLatestWaWebVersion,
     getAggregateVotesInPollMessage,
     makeCacheableSignalKeyStore,
     makeWASocketOther,
@@ -65,6 +63,9 @@ import {
     baileyIsValidNumber,
     emptyDirSessions,
 } from './utils'
+import { parseWaVersion, resolveWaVersion } from './waVersion'
+
+const WA_VERSION_REJECTED = 405
 
 class BaileysProvider extends ProviderClass<WASocket> {
     public globalVendorArgs: BaileyGlobalVendorArgs = {
@@ -90,6 +91,13 @@ class BaileysProvider extends ProviderClass<WASocket> {
     private reconnectAttempts = 0
     private maxReconnectAttempts = 10
     private reconnectDelay = 1000 // 1 segundo inicial
+
+    private static readonly MAX_WA_VERSION_RETRIES = 3
+    /** WA Web version used by the current socket */
+    private waVersion?: WAVersion
+    private waVersionRejections = 0
+    /** Sticky once WhatsApp rejects a version: skip the manual version from then on */
+    private preferLiveWaVersion = false
 
     msgRetryCounterCache?: NodeCache
     userDevicesCache?: NodeCache
@@ -406,6 +414,17 @@ class BaileysProvider extends ProviderClass<WASocket> {
         return this.initPromise
     }
 
+    /** Manual WA version: `WA_VERSION` env var wins over the `version` option. */
+    private getManualWaVersion(): WAVersion | undefined {
+        const raw = process.env.WA_VERSION || this.globalVendorArgs.version
+        if (!raw) return undefined
+        const version = parseWaVersion(raw)
+        if (!version) {
+            this.logger.log(`[Baileys] Ignoring invalid WA version "${raw}", expected e.g. "2.3000.1054953954"`)
+        }
+        return version
+    }
+
     private createVendor = async (): Promise<WASocket['ev'] | undefined> => {
         const NAME_DIR_SESSION = `${this.globalVendorArgs.name}_sessions`
         const { state, saveCreds } = await useMultiFileAuthState(NAME_DIR_SESSION)
@@ -433,27 +452,15 @@ class BaileysProvider extends ProviderClass<WASocket> {
         }
 
         try {
-            let version: WAVersion
-            try {
-                const waVersion = await fetchLatestWaWebVersion({})
-                version = waVersion.version
-                this.logger.log(`[Baileys] Using live WA Web version: ${version.join('.')}`)
-            } catch (err) {
-                try {
-                    const baileysVersion = await fetchLatestBaileysVersion()
-                    version = baileysVersion.version
-                    this.logger.log(`[Baileys] Fallback to Baileys repo WA version: ${version.join('.')}`)
-                } catch (e) {
-                    // T9: keep in sync with the WA Web version shipped by the
-                    // pinned Baileys release (rc14 default).
-                    version = [2, 3000, 1043857760] as WAVersion
-                    this.logger.log(`[Baileys] Fallback to hardcoded WA version: ${version.join('.')}`)
-                }
-            }
+            const { version, source } = await resolveWaVersion({
+                manual: this.getManualWaVersion(),
+                preferLive: this.preferLiveWaVersion,
+            })
+            this.waVersion = version
+            this.logger.log(`[Baileys] Using WA Web version ${version.join('.')} (source: ${source})`)
             if (this.isCleaned) return
             const sock = makeWASocketOther({
                 logger: loggerBaileys,
-                version,
                 printQRInTerminal: false,
                 auth: {
                     creds: state.creds,
@@ -481,6 +488,8 @@ class BaileysProvider extends ProviderClass<WASocket> {
                     return false
                 },
                 ...this.globalVendorArgs,
+                // After the spread: the raw `version` option must not bypass resolution and 405 recovery
+                version,
             })
 
             this.vendor = sock
@@ -579,6 +588,28 @@ class BaileysProvider extends ProviderClass<WASocket> {
                         return
                     }
 
+                    // WhatsApp answers 405 when it rejects the client version
+                    if (statusCode === WA_VERSION_REJECTED) {
+                        const rejected = this.waVersion?.join('.') ?? 'unknown'
+                        if (this.waVersionRejections < BaileysProvider.MAX_WA_VERSION_RETRIES) {
+                            this.waVersionRejections++
+                            this.preferLiveWaVersion = true
+                            this.logger.log(
+                                `[${new Date().toISOString()}] WA version ${rejected} rejected (405); retrying with the live WhatsApp Web version`
+                            )
+                            await this.delayedReconnect()
+                            return
+                        }
+                        this.emit('auth_failure', [
+                            `WhatsApp rejected the client version ${rejected} (405)`,
+                            `Update @builderbot/provider-baileys, or set the version manually:`,
+                            `copy the latest one from https://wppconnect.io/whatsapp-versions/`,
+                            `and use WA_VERSION=2.3000.xxxxxxxxxx in .env or createProvider(Provider, { version: '2.3000.xxxxxxxxxx' })`,
+                            `Need help: https://link.codigoencasa.com/DISCORD`,
+                        ])
+                        return
+                    }
+
                     // Casos donde debemos reconectar con backoff
                     if (this.shouldReconnect(statusCode)) {
                         await this.delayedReconnect()
@@ -599,6 +630,7 @@ class BaileysProvider extends ProviderClass<WASocket> {
                 if (connection === 'open') {
                     this.logger.log(`[${new Date().toISOString()}] Connection opened successfully`)
                     this.reconnectAttempts = 0 // Reset counter on successful connection
+                    this.waVersionRejections = 0
                     this.reconnectDelay = 1000 // Reset delay
 
                     const parseNumber = `${sock?.user?.id}`.split(':').shift()
