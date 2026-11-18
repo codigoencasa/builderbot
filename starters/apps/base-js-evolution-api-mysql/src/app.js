@@ -44,7 +44,9 @@ const registerFlow = addKeyword(utils.setEvent('REGISTER_FLOW'))
         await state.update({ age: ctx.body })
     })
     .addAction(async (_, { flowDynamic, state }) => {
-        await flowDynamic(`${state.get('name')}, thanks for your information!: Your age: ${state.get('age')}`)
+        const name = await state.get('name')
+        const age = await state.get('age')
+        await flowDynamic(`${name}, thanks for your information!: Your age: ${age}`)
     })
 
 const fullSamplesFlow = addKeyword(['samples', utils.setEvent('SAMPLES')])
