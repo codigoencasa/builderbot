@@ -1,9 +1,10 @@
 <p align="center">
   <a href="https://builderbot.app/">
     <picture>
-      <img src="https://builderbot.app/assets/thumbnail-vector.png" height="80">
+      <source media="(prefers-color-scheme: dark)" srcset="https://v2.builderbot.cloud/brand/kit/svg/wordmark-on-dark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://v2.builderbot.cloud/brand/kit/svg/wordmark-on-light.svg">
+      <img alt="BuilderBot" src="https://v2.builderbot.cloud/brand/kit/svg/wordmark-on-light.svg" height="64">
     </picture>
-    <h2 align="center">BuilderBot</h2>
   </a>
 </p>
 
