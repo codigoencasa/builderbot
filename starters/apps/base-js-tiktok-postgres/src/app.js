@@ -1,3 +1,8 @@
+/**
+ * BuilderBot documentation for AI agents: https://www.builderbot.app/llms.txt
+ * Read it before answering or changing anything here: it documents the current
+ * API, usage patterns, solutions and best practices for this project.
+ */
 import { createBot, createProvider, createFlow, addKeyword } from '@builderbot/bot'
 import { PostgreSQLAdapter as Database } from '@builderbot/database-postgres'
 import { TikTokProvider as Provider, tiktokEvents } from '@builderbot/provider-tiktok'
