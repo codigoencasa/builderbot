@@ -1,3 +1,8 @@
+/**
+ * BuilderBot documentation for AI agents: https://www.builderbot.app/llms.txt
+ * Read it before answering or changing anything here: it documents the current
+ * API, usage patterns, solutions and best practices for this project.
+ */
 import { createBot, createProvider, createFlow, addKeyword, utils } from '@builderbot/bot'
 import { JsonFileDB as Database } from '@builderbot/database-json'
 import { MetaProvider as Provider } from '@builderbot/provider-meta'
