@@ -1,16 +1,34 @@
 import { utils } from '@builderbot/bot'
-import { beforeEach, describe, expect, jest, test } from '@jest/globals'
+import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals'
 import fs from 'fs'
 import mime from 'mime-types'
 import path from 'path'
 import { IStickerOptions } from 'wa-sticker-formatter'
-import { useMultiFileAuthState } from 'whaileys'
+import makeWASocket, { useMultiFileAuthState } from 'whaileys'
 
 import { SherpaProvider } from '../src'
 
 const phoneNumber = '+123456789'
 
 jest.mock('whaileys', () => ({
+    __esModule: true,
+    default: jest.fn().mockImplementation(() => ({
+        ev: { on: jest.fn() },
+        authState: { creds: { registered: true } },
+        requestPairingCode: jest.fn(),
+    })),
+    fetchLatestBaileysVersion: jest.fn().mockImplementation(async () => ({ version: [2, 3000, 1043857760] })),
+    fetchLatestWaWebVersion: jest.fn().mockImplementation(async () => ({ version: [2, 3000, 1055185710] })),
+    makeCacheableSignalKeyStore: jest.fn((keys) => keys),
+    DisconnectReason: {
+        connectionClosed: 428,
+        connectionLost: 408,
+        connectionReplaced: 440,
+        timedOut: 408,
+        loggedOut: 401,
+        badSession: 500,
+        restartRequired: 515,
+    },
     downloadMediaMessage: jest.fn(),
     proto: {
         Message: {
@@ -1285,6 +1303,76 @@ describe('#SherpaProvider', () => {
             // Assert
             expect(useMultiFileAuthState).toHaveBeenCalled()
             // Store is no longer used, so we don't check for makeInMemoryStore
+        })
+    })
+
+    describe('#WA version', () => {
+        const makeSocket = jest.mocked(makeWASocket)
+
+        const lastSocketVersion = () => {
+            const { calls } = makeSocket.mock
+            return (calls[calls.length - 1]?.[0] as any)?.version
+        }
+
+        const closeWith = async (statusCode: number) => {
+            const { results } = makeSocket.mock
+            const sock = results[results.length - 1]?.value as any
+            const [, handler] = sock.ev.on.mock.calls.find(([event]: [string]) => event === 'connection.update')
+            await handler({ connection: 'close', lastDisconnect: { error: { output: { statusCode } } } })
+        }
+
+        beforeEach(() => {
+            makeSocket.mockClear()
+            delete process.env.WA_VERSION
+            provider.globalVendorArgs.usePairingCode = false
+            jest.spyOn(provider as any, 'delayedReconnect').mockResolvedValue(undefined)
+        })
+
+        afterEach(() => {
+            delete process.env.WA_VERSION
+        })
+
+        test('resolves the version automatically when none is given', async () => {
+            await provider['initVendor']()
+            expect(lastSocketVersion()).toEqual([2, 3000, 1043857760])
+        })
+
+        test('accepts the version text copied from wppconnect', async () => {
+            provider.globalVendorArgs.version = '2.3000.1054953954-alpha'
+            await provider['initVendor']()
+            expect(lastSocketVersion()).toEqual([2, 3000, 1054953954])
+        })
+
+        test('WA_VERSION wins over the version option', async () => {
+            provider.globalVendorArgs.version = [2, 3000, 1]
+            process.env.WA_VERSION = '2.3000.1054953954'
+            await provider['initVendor']()
+            expect(lastSocketVersion()).toEqual([2, 3000, 1054953954])
+        })
+
+        test('a 405 reconnects with the live WhatsApp Web version', async () => {
+            provider.globalVendorArgs.version = [2, 3000, 1034028152]
+            await provider['initVendor']()
+            expect(lastSocketVersion()).toEqual([2, 3000, 1034028152])
+
+            await closeWith(405)
+            expect(provider['delayedReconnect']).toHaveBeenCalledTimes(1)
+
+            await provider['initVendor']()
+            expect(lastSocketVersion()).toEqual([2, 3000, 1055185710])
+        })
+
+        test('after repeated 405s it stops and explains the manual fix', async () => {
+            const emitSpy = jest.spyOn(provider, 'emit')
+            for (let i = 0; i <= 3; i++) {
+                await provider['initVendor']()
+                await closeWith(405)
+            }
+            expect(provider['delayedReconnect']).toHaveBeenCalledTimes(3)
+            expect(emitSpy).toHaveBeenCalledWith(
+                'auth_failure',
+                expect.arrayContaining([expect.stringContaining('wppconnect.io/whatsapp-versions')])
+            )
         })
     })
 })
