@@ -1,3 +1,4 @@
+import RedisMock from 'ioredis-mock'
 import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 
@@ -231,6 +232,72 @@ suiteCase('Con serializeByContact un turno que falla libera al contacto y el err
     assert.is((unhandled[0] as Error).message, 'turn failed')
     assert.is(greetings(), 1)
     assert.is(context.bot.contactTurns.size, 0)
+})
+
+/**
+ * Each turn reads a counter, waits, and writes counter + 1. With the state in Redis every read and write is
+ * async, so two overlapping turns of one contact both read the same value and one write is lost.
+ */
+const counterWelcome = () =>
+    addKeyword(EVENTS.WELCOME).addAction(async (_ctx, { state, flowDynamic }) => {
+        const current = (await state.get<number>('counter')) ?? 0
+        await delay(TURN_MS)
+        await state.update({ counter: current + 1 })
+        await flowDynamic(`R:${current + 1}`)
+    })
+
+const redisOptions = (prefix: string) => ({ connection: new RedisMock(), options: { prefix } })
+
+suiteCase('Con estado en Redis y sin serializar, dos turnos solapados pierden una escritura', async (context) => {
+    const { database, provider } = context
+    context.bot = await createBot(
+        { database, provider, flow: createFlow([counterWelcome()]) },
+        { queue: { timeout: 5000, concurrencyLimit: 15 }, RedisOptions: redisOptions('serialize-off') }
+    )
+
+    provider.emit('message', { from: '800', body: 'uno', name: 'c' })
+    await delay(50)
+    provider.emit('message', { from: '800', body: 'dos', name: 'c' })
+    await settled(() => repliesOf(database, '800').length === 2)
+
+    assert.equal(repliesOf(database, '800'), ['R:1', 'R:1'])
+    assert.is(await context.bot.stateHandler.get('800')('counter'), 1)
+})
+
+suiteCase('Con estado en Redis y serializeByContact, cada turno ve lo que escribió el anterior', async (context) => {
+    const { database, provider } = context
+    context.bot = await createBot(
+        { database, provider, flow: createFlow([counterWelcome()]) },
+        {
+            queue: { timeout: 5000, concurrencyLimit: 15, serializeByContact: true },
+            RedisOptions: redisOptions('serialize-on'),
+        }
+    )
+
+    provider.emit('message', { from: '900', body: 'uno', name: 'c' })
+    await delay(50)
+    provider.emit('message', { from: '900', body: 'dos', name: 'c' })
+    await settled(() => repliesOf(database, '900').length === 2)
+
+    assert.equal(repliesOf(database, '900'), ['R:1', 'R:2'])
+    assert.is(await context.bot.stateHandler.get('900')('counter'), 2)
+})
+
+suiteCase('Con serializeByContact, stop() desconecta el listener y no se abren turnos nuevos', async (context) => {
+    const { database, provider } = context
+    const log: TurnLog = { active: 0, maxActive: 0, order: [] }
+    context.bot = await createBot(
+        { database, provider, flow: createFlow([slowWelcome(log, () => delay(20))]) },
+        { queue: { timeout: 5000, concurrencyLimit: 15, serializeByContact: true } }
+    )
+
+    await context.bot.stop()
+    provider.emit('message', { from: '1000', body: 'uno', name: 'c' })
+    await delay(TURN_MS)
+
+    assert.equal(log.order, [])
+    assert.is(context.bot.contactTurns.size, 0)
+    assert.equal(repliesOf(database, '1000'), [])
 })
 
 suiteCase.run()
