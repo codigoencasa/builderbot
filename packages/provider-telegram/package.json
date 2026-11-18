@@ -1,6 +1,6 @@
 {
     "name": "@builderbot/provider-telegram",
-    "version": "1.5.0-alpha.0",
+    "version": "1.5.0",
     "description": "Provider for Telegram",
     "keywords": [],
     "author": "",

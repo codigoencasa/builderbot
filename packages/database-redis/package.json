@@ -1,6 +1,6 @@
 {
   "name": "@builderbot/database-redis",
-  "version": "1.5.0-alpha.0",
+  "version": "1.5.0",
   "description": "Esto es el conector a redis",
   "author": "Juank2001 <jv288244@gmail.com>",
   "homepage": "https://github.com/codigoencasa/bot-whatsapp#readme",
