@@ -120,7 +120,7 @@ jobs:
                   git add -A
                   git commit -m "chore: release $NEW [skip ci]" || true
                   echo "🚀 Publicando con dist-tag: latest"
-                  npx lerna publish from-package --dist-tag latest --yes
+                  npx lerna publish from-package --dist-tag latest --yes --access public
 
             - name: Verify every package is on latest
               if: ${{ !inputs.dry_run }}
