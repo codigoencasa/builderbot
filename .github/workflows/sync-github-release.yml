@@ -1,0 +1,157 @@
+name: '🧾 (SYNC) Reflejar versión publicada en GitHub'
+
+# Mantiene GitHub alineado con lo que realmente está en npm: sube la versión en
+# los package.json, crea el tag y publica el GitHub release.
+#
+# Existe separado del workflow de publish porque un solo paquete que falle no
+# debe impedir que el repositorio refleje la versión. Las notas del release
+# incluyen el estado real de cada paquete en npm, así que una diferencia queda
+# visible en vez de silenciosa.
+on:
+    workflow_dispatch:
+        inputs:
+            version:
+                description: 'Versión a reflejar (vacío = la de lerna.json)'
+                required: false
+                type: string
+            dry_run:
+                description: 'Dry run: muestra qué haría, sin commit ni tag ni release'
+                required: false
+                default: false
+                type: boolean
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: false
+
+env:
+    NODE_VERSION: 22.20.0
+
+jobs:
+    sync:
+        name: 'Sync GitHub'
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        permissions:
+            contents: write
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  persist-credentials: true
+
+            - name: Set up pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 9.0.6
+                  run_install: false
+
+            - name: Set up Node.js ${{ env.NODE_VERSION }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: pnpm
+                  registry-url: https://registry.npmjs.org/
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile --prefer-offline --reporter=append-only
+
+            - name: Configure Git
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
+            - name: Resolve target version
+              id: target
+              run: |
+                  INPUT="${{ inputs.version }}"
+                  if [ -n "$INPUT" ]; then
+                      TARGET="$INPUT"
+                  else
+                      TARGET=$(node -p "require('./lerna.json').version")
+                  fi
+                  echo "version=$TARGET" >> "$GITHUB_OUTPUT"
+                  echo "🎯 Versión objetivo: $TARGET"
+
+            - name: Report npm status per package
+              run: |
+                  TARGET="${{ steps.target.outputs.version }}"
+                  echo "| Paquete | npm latest | ¿En $TARGET? |" > "$RUNNER_TEMP/status.md"
+                  echo "|---|---|---|" >> "$RUNNER_TEMP/status.md"
+                  MISMATCH=0
+                  for dir in packages/*/ packages/plugins/*/; do
+                      [ -f "$dir/package.json" ] || continue
+                      NAME=$(node -p "require('./$dir/package.json').name")
+                      PRIVATE=$(node -p "Boolean(require('./$dir/package.json').private || false)")
+                      [ "$PRIVATE" = "true" ] && continue
+                      LATEST=$(npm view "$NAME" dist-tags.latest 2>/dev/null || echo none)
+                      if [ "$LATEST" = "$TARGET" ]; then
+                          echo "| \`$NAME\` | $LATEST | ✅ |" >> "$RUNNER_TEMP/status.md"
+                      else
+                          echo "| \`$NAME\` | $LATEST | ❌ |" >> "$RUNNER_TEMP/status.md"
+                          MISMATCH=$((MISMATCH+1))
+                      fi
+                  done
+                  echo "diferencias=$MISMATCH" >> "$GITHUB_OUTPUT" || true
+                  echo "::notice::$MISMATCH paquete(s) fuera de $TARGET"
+                  cat "$RUNNER_TEMP/status.md"
+
+            - name: Dry run — qué se haría
+              if: ${{ inputs.dry_run }}
+              run: |
+                  TARGET="${{ steps.target.outputs.version }}"
+                  echo "DRY RUN — nada se modifica"
+                  echo "1) versionar todos los packages a $TARGET si hace falta"
+                  echo "2) commit 'chore: release $TARGET' y tag v$TARGET"
+                  echo "3) push del commit y del tag a ${{ github.ref_name }}"
+                  echo "4) crear el GitHub release v$TARGET con la tabla de estado de npm"
+
+            - name: Bump versions
+              if: ${{ !inputs.dry_run }}
+              run: |
+                  TARGET="${{ steps.target.outputs.version }}"
+                  CURRENT=$(node -p "require('./lerna.json').version")
+                  if [ "$CURRENT" = "$TARGET" ]; then
+                      echo "ℹ️ Los package.json ya están en $TARGET"
+                  else
+                      echo "📦 Versionando de $CURRENT a $TARGET"
+                      npx lerna version "$TARGET" --force-publish --yes --no-push
+                  fi
+
+            - name: Commit, tag and push
+              if: ${{ !inputs.dry_run }}
+              run: |
+                  TARGET="${{ steps.target.outputs.version }}"
+                  git add -A
+                  if git diff --cached --quiet; then
+                      echo "ℹ️ Sin cambios de versión para commitear"
+                  else
+                      git commit -m "chore: release $TARGET [skip ci]"
+                  fi
+                  git tag -f "v$TARGET"
+                  git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "HEAD:${{ github.ref_name }}"
+                  git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "refs/tags/v$TARGET"
+
+            - name: Create or update GitHub release
+              if: ${{ !inputs.dry_run }}
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  TARGET="${{ steps.target.outputs.version }}"
+                  {
+                    echo "Versión **$TARGET** publicada en npm."
+                    echo
+                    echo "### Estado de cada paquete en \`latest\`"
+                    echo
+                    cat "$RUNNER_TEMP/status.md"
+                    echo
+                    echo "_Generado por el workflow de sync: el tag refleja la versión del repositorio y la tabla muestra qué hay realmente en npm._"
+                  } > "$RUNNER_TEMP/notes.md"
+                  if gh release view "v$TARGET" >/dev/null 2>&1; then
+                      gh release edit "v$TARGET" --notes-file "$RUNNER_TEMP/notes.md"
+                      echo "♻️ Release v$TARGET actualizado"
+                  else
+                      gh release create "v$TARGET" --title "v$TARGET" --notes-file "$RUNNER_TEMP/notes.md"
+                      echo "🆕 Release v$TARGET creado"
+                  fi
