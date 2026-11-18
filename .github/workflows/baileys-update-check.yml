@@ -1,0 +1,264 @@
+name: 'Baileys update check'
+
+# Weekly check for a newer `baileys` release on npm. The upgrade must install
+# without peer-dependency conflicts, build, pass the provider tests and the
+# WhatsApp handshake. When it does, a PR with the bump is opened; when it does
+# not, an issue records which step failed.
+on:
+    schedule:
+        - cron: '0 7 * * 1' # Mondays 07:00 UTC
+    workflow_dispatch:
+        inputs:
+            version:
+                description: 'Baileys version to test (empty = npm latest)'
+                required: false
+
+concurrency:
+    group: ${{ github.workflow }}
+    cancel-in-progress: false
+
+permissions:
+    contents: write
+    pull-requests: write
+    issues: write
+
+defaults:
+    run:
+        # Explicit bash enables pipefail, so `cmd | tee log` still fails when cmd fails.
+        shell: bash
+
+env:
+    NODE_VERSION: 22.20.0
+    BASE_BRANCH: builderbot
+    PROVIDER_DIR: packages/provider-baileys
+    PROVIDER_NAME: '@builderbot/provider-baileys'
+    GH_TOKEN: ${{ github.token }}
+
+jobs:
+    check:
+        name: 'Check for a newer Baileys'
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        steps:
+            - name: Checkout
+              uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+              with:
+                  submodules: false
+
+            - name: Compare versions
+              id: versions
+              env:
+                  REQUESTED: ${{ inputs.version }}
+              run: |
+                  CURRENT=$(node -p "require('./$PROVIDER_DIR/package.json').dependencies.baileys")
+                  TARGET="${REQUESTED:-$(npm view baileys dist-tags.latest)}"
+                  BRANCH="chore/baileys-$TARGET"
+                  # Published but unreleased fixes on master, for context only
+                  AHEAD=$(gh api "repos/WhiskeySockets/Baileys/compare/v$CURRENT...master" --jq .ahead_by 2>/dev/null || echo '?')
+
+                  {
+                      echo "current=$CURRENT"
+                      echo "target=$TARGET"
+                      echo "branch=$BRANCH"
+                  } >> "$GITHUB_OUTPUT"
+                  {
+                      echo '### Baileys'
+                      echo '| | |'
+                      echo '|---|---|'
+                      echo "| Installed | \`$CURRENT\` |"
+                      echo "| npm \`latest\` / requested | \`$TARGET\` |"
+                      echo "| Unreleased commits on master since \`v$CURRENT\` | $AHEAD |"
+                  } >> "$GITHUB_STEP_SUMMARY"
+
+                  if [ "$CURRENT" = "$TARGET" ]; then
+                      echo "update=false" >> "$GITHUB_OUTPUT"
+                      echo "Up to date ✅" >> "$GITHUB_STEP_SUMMARY"
+                      exit 0
+                  fi
+
+                  # Scheduled runs only move forward: compare publish dates, which
+                  # also orders release candidates (7.0.0-rc14 < 7.0.0).
+                  if [ -z "$REQUESTED" ]; then
+                      NEWER=$(npm view baileys time --json | node -e "
+                          const t = JSON.parse(require('fs').readFileSync(0, 'utf8'));
+                          process.stdout.write(String(new Date(t['$TARGET']) > new Date(t['$CURRENT'])));
+                      ")
+                      if [ "$NEWER" != "true" ]; then
+                          echo "update=false" >> "$GITHUB_OUTPUT"
+                          echo "\`$TARGET\` is not newer than \`$CURRENT\`, skipping" >> "$GITHUB_STEP_SUMMARY"
+                          exit 0
+                      fi
+                  fi
+
+                  OPEN=$(gh pr list --head "$BRANCH" --state open --json number --jq length)
+                  if [ "$OPEN" != "0" ]; then
+                      echo "update=false" >> "$GITHUB_OUTPUT"
+                      echo "A PR for \`$BRANCH\` is already open, skipping" >> "$GITHUB_STEP_SUMMARY"
+                      exit 0
+                  fi
+                  echo "update=true" >> "$GITHUB_OUTPUT"
+
+            - name: Set up pnpm
+              if: steps.versions.outputs.update == 'true'
+              uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
+              with:
+                  version: 9.0.6
+                  run_install: false
+
+            - name: Set up Node.js ${{ env.NODE_VERSION }}
+              if: steps.versions.outputs.update == 'true'
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: pnpm
+
+            - name: Install current dependencies
+              if: steps.versions.outputs.update == 'true'
+              run: pnpm install --frozen-lockfile --prefer-offline --reporter=append-only
+
+            - name: Upgrade baileys
+              id: upgrade
+              if: steps.versions.outputs.update == 'true'
+              env:
+                  TARGET: ${{ steps.versions.outputs.target }}
+              run: pnpm --filter "$PROVIDER_NAME" add "baileys@$TARGET" --save-exact --reporter=append-only 2>&1 | tee /tmp/upgrade.log
+
+            # The lockfile written by `add` must reinstall as-is, resolve to the
+            # target version and leave no peer-dependency issue involving baileys.
+            - name: Verify install has no conflicts
+              id: install
+              if: steps.versions.outputs.update == 'true'
+              env:
+                  TARGET: ${{ steps.versions.outputs.target }}
+              run: |
+                  pnpm install --frozen-lockfile --reporter=append-only 2>&1 | tee /tmp/install.log
+
+                  RESOLVED=$(node -p "require('./$PROVIDER_DIR/node_modules/baileys/package.json').version")
+                  if [ "$RESOLVED" != "$TARGET" ]; then
+                      echo "::error::Resolved baileys@$RESOLVED instead of $TARGET"
+                      exit 1
+                  fi
+
+                  if grep -h -A200 'Issues with peer dependencies' /tmp/upgrade.log /tmp/install.log | grep -i 'baileys'; then
+                      echo "::error::Peer dependency conflict involving baileys (see log above)"
+                      exit 1
+                  fi
+
+                  ENGINES=$(node -p "require('./$PROVIDER_DIR/node_modules/baileys/package.json').engines?.node ?? 'any'")
+                  echo "engines=$ENGINES" >> "$GITHUB_OUTPUT"
+                  echo "| Requires Node | \`$ENGINES\` |" >> "$GITHUB_STEP_SUMMARY"
+
+            # The provider falls back to the WA Web version bundled with Baileys;
+            # keep that constant in sync with the release.
+            - name: Sync bundled WA version
+              id: bundled
+              if: steps.versions.outputs.update == 'true'
+              working-directory: ${{ env.PROVIDER_DIR }}
+              run: |
+                  BUNDLED=$(node --input-type=module -e "
+                      import { DEFAULT_CONNECTION_CONFIG as c } from 'baileys'
+                      console.log(c.version.join(', '))
+                  ")
+                  sed -i -E "s/(BUNDLED_WA_VERSION: WAVersion = \[)[0-9, ]+(\])/\1$BUNDLED\2/" src/waVersion.ts
+                  grep -q "BUNDLED_WA_VERSION: WAVersion = \[$BUNDLED\]" src/waVersion.ts
+                  echo "version=$BUNDLED" >> "$GITHUB_OUTPUT"
+                  echo "| Bundled WA version | \`[$BUNDLED]\` |" >> "$GITHUB_STEP_SUMMARY"
+
+            - name: Build provider
+              id: build
+              if: steps.versions.outputs.update == 'true'
+              run: npx lerna run build --scope "$PROVIDER_NAME" --include-dependencies
+
+            - name: Test provider
+              id: test
+              if: steps.versions.outputs.update == 'true'
+              run: pnpm --filter "$PROVIDER_NAME" test
+
+            # Informative: the provider resolves the WA version at runtime, so a
+            # rejected bundled version alone does not block the upgrade.
+            - name: WhatsApp handshake
+              id: handshake
+              if: steps.versions.outputs.update == 'true'
+              continue-on-error: true
+              working-directory: ${{ env.PROVIDER_DIR }}
+              run: |
+                  set +e
+                  node --input-type=module - < ../../scripts/ci/baileys-handshake.mjs > /tmp/handshake.log 2>&1
+                  CODE=$?
+                  cat /tmp/handshake.log
+                  echo "| Handshake | $(grep '^result=' /tmp/handshake.log | cut -d= -f2-) |" >> "$GITHUB_STEP_SUMMARY"
+                  exit $CODE
+
+            # Requires "Allow GitHub Actions to create and approve pull requests"
+            # (Settings > Actions > General); otherwise this step fails and an issue is opened.
+            - name: Open pull request
+              id: pr
+              if: steps.versions.outputs.update == 'true'
+              env:
+                  CURRENT: ${{ steps.versions.outputs.current }}
+                  TARGET: ${{ steps.versions.outputs.target }}
+                  BRANCH: ${{ steps.versions.outputs.branch }}
+                  ENGINES: ${{ steps.install.outputs.engines }}
+                  BUNDLED: ${{ steps.bundled.outputs.version }}
+                  HANDSHAKE: ${{ steps.handshake.outcome }}
+              run: |
+                  git config user.name 'github-actions[bot]'
+                  git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+                  git switch -c "$BRANCH"
+                  git add "$PROVIDER_DIR/package.json" "$PROVIDER_DIR/src/waVersion.ts" pnpm-lock.yaml
+                  git commit -m "chore(provider-baileys): bump baileys from $CURRENT to $TARGET"
+                  git push --force origin "$BRANCH"
+
+                  HANDSHAKE_LINE=$(grep '^result=' /tmp/handshake.log 2>/dev/null | cut -d= -f2- || echo "$HANDSHAKE")
+                  gh pr create --base "$BASE_BRANCH" --head "$BRANCH" \
+                      --title "chore(provider-baileys): bump baileys from $CURRENT to $TARGET" \
+                      --body "$(cat <<EOF
+                  Automated by the weekly [Baileys update check](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
+
+                  | Check | Result |
+                  |---|---|
+                  | Install with frozen lockfile, no baileys peer conflicts | ✅ |
+                  | Build \`$PROVIDER_NAME\` | ✅ |
+                  | Provider tests | ✅ |
+                  | WhatsApp handshake with the bundled version | $HANDSHAKE_LINE |
+                  | Bundled WA version synced in \`waVersion.ts\` | \`[$BUNDLED]\` |
+                  | Baileys requires Node | \`$ENGINES\` |
+
+                  Release notes: https://github.com/WhiskeySockets/Baileys/releases/tag/v$TARGET
+
+                  > PRs opened with \`GITHUB_TOKEN\` do not trigger other workflows: close and reopen this PR to run the \`Pull Request\` checks.
+                  EOF
+                  )"
+
+            - name: Report failure
+              if: failure() && steps.versions.outputs.update == 'true'
+              env:
+                  TARGET: ${{ steps.versions.outputs.target }}
+                  UPGRADE: ${{ steps.upgrade.outcome }}
+                  INSTALL: ${{ steps.install.outcome }}
+                  BUNDLED: ${{ steps.bundled.outcome }}
+                  BUILD: ${{ steps.build.outcome }}
+                  TEST: ${{ steps.test.outcome }}
+                  PR: ${{ steps.pr.outcome }}
+              run: |
+                  TITLE="Baileys $TARGET: automated upgrade check failed"
+                  RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                  BODY=$(cat <<EOF
+                  The weekly [Baileys update check]($RUN_URL) could not upgrade to \`baileys@$TARGET\`.
+
+                  | Step | Outcome |
+                  |---|---|
+                  | Upgrade (\`pnpm add\`) | $UPGRADE |
+                  | Install without conflicts | $INSTALL |
+                  | Sync bundled WA version | $BUNDLED |
+                  | Build | $BUILD |
+                  | Provider tests | $TEST |
+                  | Open PR | $PR |
+                  EOF
+                  )
+                  EXISTING=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number --jq '.[0].number')
+                  if [ -n "$EXISTING" ]; then
+                      gh issue comment "$EXISTING" --body "$BODY"
+                  else
+                      gh issue create --title "$TITLE" --body "$BODY"
+                  fi
