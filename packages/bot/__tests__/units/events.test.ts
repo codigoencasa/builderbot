@@ -39,6 +39,31 @@ test('[REGEX_EVENT_MEDIA] should not match arbitrary strings', () => {
     assert.not.ok(REGEX_EVENT_MEDIA.test('_event_location__abc'))
 })
 
+// ===== eventContacts =====
+
+test('[eventContacts] should return a string with correct prefix', () => {
+    const ref = eventContacts()
+    assert.type(ref, 'string')
+    assert.ok(ref.startsWith('_event_contacts__'), `Expected prefix _event_contacts__, got: ${ref}`)
+})
+
+test('[eventContacts] should return unique values on each call', () => {
+    const ref1 = eventContacts()
+    const ref2 = eventContacts()
+    assert.is.not(ref1, ref2, 'Each call should return a unique ref')
+})
+
+test('[REGEX_EVENT_CONTACTS] should match valid media event refs', () => {
+    const ref = eventContacts()
+    assert.ok(REGEX_EVENT_CONTACTS.test(ref), `Regex should match generated ref: ${ref}`)
+})
+
+test('[REGEX_EVENT_CONTACTS] should not match arbitrary strings', () => {
+    assert.not.ok(REGEX_EVENT_CONTACTS.test('hello'))
+    assert.not.ok(REGEX_EVENT_CONTACTS.test('_event_media_'))
+    assert.not.ok(REGEX_EVENT_CONTACTS.test('_event_location__abc'))
+})
+
 // ===== eventLocation =====
 
 test('[eventLocation] should return a string with correct prefix', () => {
