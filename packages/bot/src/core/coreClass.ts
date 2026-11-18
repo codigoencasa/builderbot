@@ -21,7 +21,7 @@ import type {
 } from './../types'
 import type { HostEventTypes } from './eventEmitterClass'
 import { EventEmitterClass } from './eventEmitterClass'
-import { GlobalState, IdleState, SingleState } from '../context'
+import { GlobalState, IdleState, SingleState, RedisState } from '../context'
 import type { MemoryDB } from '../db'
 import { LIST_REGEX } from '../io/events'
 import type FlowClass from '../io/flowClass'
@@ -47,7 +47,7 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     provider: P
     queuePrincipal: Queue<unknown>
     private providerListeners: { event: string; func: ProviderEventTypes[keyof ProviderEventTypes] }[] = []
-    stateHandler = new SingleState()
+    stateHandler: SingleState | RedisState
     globalStateHandler = new GlobalState()
     dynamicBlacklist = new BlackList()
     generalArgs: GeneralArgs & { host?: string } = {
@@ -99,6 +99,10 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         this.globalStateHandler.updateState()(this.generalArgs.globalState)
 
         if (this.generalArgs.extensions) this.globalStateHandler.RAW = this.generalArgs.extensions
+
+        this.stateHandler = this.generalArgs.RedisOptions
+            ? new RedisState(this.generalArgs.RedisOptions.connection, this.generalArgs.RedisOptions.options)
+            : new SingleState()
 
         this.providerListeners = this.listenerBusEvents()
         for (const { event, func } of this.providerListeners) {
@@ -153,8 +157,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         logger.log(`[handleMsg]: `, messageCtxInComing)
         idleForCallback.stop(messageCtxInComing)
         const { body, from } = messageCtxInComing
-        let msgToSend = []
-        let endFlowFlag = this.stateHandler.get(from)('__end_flow__') || false
+        let msgToSend: any[] = []
+        let endFlowFlag = (await this.stateHandler.get(from)('__end_flow__')) || false
         const fallBackFlag = false
 
         if (this.dynamicBlacklist.checkIf(from)) return
@@ -797,12 +801,13 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
     httpServer = (port: number) => {
         this.provider.initAll(port, {
             blacklist: this.dynamicBlacklist,
-            state: (number: string): BotStateStandAlone => ({
-                getMyState: this.stateHandler.getMyState(number),
-                get: this.stateHandler.get(number),
-                update: this.stateHandler.updateState({ from: number }),
-                clear: this.stateHandler.clear(number),
-            }),
+            state: (number: string): BotStateStandAlone =>
+                ({
+                    getMyState: this.stateHandler.getMyState(number),
+                    get: this.stateHandler.get(number),
+                    update: this.stateHandler.updateState({ from: number }),
+                    clear: this.stateHandler.clear(number),
+                }) as BotStateStandAlone,
             emit: (eventName: 'send_message' | 'notice', args: Record<string, any> & { from: string }) => {
                 if (eventName === 'send_message') {
                     this.emit('send_message', {
@@ -862,8 +867,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
      */
     private buildCtxMethods = (): BotCtxMethods => ({
         endFlow: async (from: string) => {
-            this.queuePrincipal.clearQueue(from)
-            this.stateHandler.updateState({ from })({ __end_flow__: true })
+            await this.queuePrincipal.clearQueue(from)
+            await this.stateHandler.updateState({ from })({ __end_flow__: true })
         },
     })
 
