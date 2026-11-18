@@ -8,6 +8,9 @@
     "main": "dist/index.cjs",
     "types": "dist/index.d.ts",
     "type": "module",
+    "engines": {
+        "node": ">=20"
+    },
     "files": [
         "./dist/"
     ],
