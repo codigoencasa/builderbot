@@ -63,9 +63,12 @@ const fullSamplesFlow = addKeyword(['samples', utils.setEvent('SAMPLES')])
 const main = async () => {
     const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])
     
-    const adapterProvider = createProvider(Provider, 
-		{ version: [2, 3000, 1034028152] as any } 
-	)
+    // The WhatsApp version is resolved automatically.
+    // Manual fix if you get "405 Connection Failure" / ERRO AUTH:
+    // copy the latest version from https://wppconnect.io/whatsapp-versions/
+    // and pass it as is: createProvider(Provider, { version: '2.3000.1054953954-alpha' })
+    // or set WA_VERSION=2.3000.1054953954 in your .env
+    const adapterProvider = createProvider(Provider)
     
     const adapterDB = new Database({ filename: 'db.json' })
 
