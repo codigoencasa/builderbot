@@ -60,6 +60,9 @@ jobs:
               with:
                   node-version: ${{ env.NODE_VERSION }}
                   cache: pnpm
+                  # Sin registry-url, actions/setup-node no escribe el .npmrc con
+                  # _authToken y `npm whoami` / `lerna publish` fallan con 401.
+                  registry-url: https://registry.npmjs.org/
 
             - name: Install dependencies
               run: pnpm install --frozen-lockfile --prefer-offline --reporter=append-only
