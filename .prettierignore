@@ -11,3 +11,5 @@ packages/bot-ts/
 *.json
 /.nx/cache
 apps/
+# Lockfile is pnpm-managed; Prettier reformatting it rewrites every line.
+pnpm-lock.yaml

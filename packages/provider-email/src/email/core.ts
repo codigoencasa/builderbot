@@ -10,7 +10,7 @@ import { utils } from '@builderbot/bot'
 import { ImapFlow } from 'imapflow'
 import { simpleParser, type ParsedMail, type AddressObject } from 'mailparser'
 import EventEmitter from 'node:events'
-import nodemailer, { type Transporter } from 'nodemailer'
+import nodemailer, { type SendMailOptions, type Transporter } from 'nodemailer'
 
 import type { IEmailProviderArgs, EmailBotContext, EmailSendOptions, EmailAttachment } from '../types'
 
@@ -389,7 +389,7 @@ export class EmailCoreVendor extends EventEmitter {
         const fromEmail = this.config.fromEmail || this.config.smtp.auth.user
         const fromName = this.config.fromName || fromEmail
 
-        const mailOptions: nodemailer.SendMailOptions = {
+        const mailOptions: SendMailOptions = {
             from: `"${fromName}" <${fromEmail}>`,
             to: to,
             subject: subject,

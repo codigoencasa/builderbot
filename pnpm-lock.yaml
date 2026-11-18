@@ -569,9 +569,6 @@ importers:
 
   packages/manager:
     dependencies:
-      '@builderbot/bot':
-        specifier: '>=1.0.0'
-        version: link:../bot
       '@ffmpeg-installer/ffmpeg':
         specifier: ^1.1.0
         version: 1.1.0
@@ -585,6 +582,9 @@ importers:
         specifier: ^4.1.13
         version: 4.1.13
     devDependencies:
+      '@builderbot/bot':
+        specifier: workspace:*
+        version: link:../bot
       '@rollup/plugin-commonjs':
         specifier: ^29.0.0
         version: 29.0.0(rollup@4.53.3)
@@ -762,8 +762,8 @@ importers:
         specifier: ^3.7.2
         version: 3.9.3
       nodemailer:
-        specifier: ^6.10.1
-        version: 6.10.1
+        specifier: ^10.1.4
+        version: 10.6.0
       polka:
         specifier: ^0.5.2
         version: 0.5.2
@@ -786,9 +786,6 @@ importers:
       '@types/node':
         specifier: ^24.10.2
         version: 24.10.2
-      '@types/nodemailer':
-        specifier: ^6.4.17
-        version: 6.4.22
       '@types/polka':
         specifier: ^0.5.7
         version: 0.5.8
@@ -4465,9 +4462,6 @@ packages:
   '@types/node@24.10.2':
     resolution: {integrity: sha512-WOhQTZ4G8xZ1tjJTvKOpyEVSGgOTvJAfDK3FNFgELyaTpzhdgHVHeqW8V+UJvzF5BT+/B54T/1S2K6gd9c7bbA==}
 
-  '@types/nodemailer@6.4.22':
-    resolution: {integrity: sha512-HV16KRsW7UyZBITE07B62k8PRAKFqRSFXn1T7vslurVjN761tMDBhk5Lbt17ehyTzK6XcyJnAgUpevrvkcVOzw==}
-
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
 
@@ -8140,10 +8134,6 @@ packages:
   mdurl@2.0.0:
     resolution: {integrity: sha512-Lf+9+2r+Tdp5wXDXC4PcIBjTDtq4UKjCPMQhKIuzpJNW0b96kVqSwW0bT7FhRSfmAiFYgP+SCRvdrDozfh0U5w==}
 
-  media-typer@1.1.0:
-    resolution: {integrity: sha512-aisnrDP4GNe06UcKFnV5bfMNPBUw4jsLGaWwWfnH3v02GnBuXX2MCVn5RbrWo0j3pczUilYblq7fQ7Nw2t5XKw==}
-    engines: {node: '>= 0.8'}
-
   media-typer@1.1.1:
     resolution: {integrity: sha512-yz3xRaG20c6/BOzvYoDaGtPmGscs7YivItZEEqe6GbwNfHuxu9YNmvnEkMzKldAGY4/80pRcQRZSEnhquk9XuQ==}
     engines: {node: '>= 0.8'}
@@ -8567,9 +8557,9 @@ packages:
   node-webpmux@3.2.1:
     resolution: {integrity: sha512-MKgpq9nFgo44pIVNx/umD3nkqb2E8oqQTfmstVsfNdx9uV4cX7a4LqA+d8AZd3v5tgJXwENKUFsXNP3bRLP8nQ==}
 
-  nodemailer@6.10.1:
-    resolution: {integrity: sha512-Z+iLaBGVaSjbIzQ4pX6XV41HrooLsQ10ZWPUehGmuantvzWoDVBnmsdUcOIDM1t+yPor5pDhVlDESgOMEGxhHA==}
-    engines: {node: '>=6.0.0'}
+  nodemailer@10.6.0:
+    resolution: {integrity: sha512-jWanL7D9GD3jvUDYKmoC5rWTiG8MnBgnN2yV68bgMKip1zUJhiSTyz7Eg+18y8sk5OvdVDzws5nZK5arSI4f5Q==}
+    engines: {node: '>=20.0.0'}
 
   nodemailer@7.0.13:
     resolution: {integrity: sha512-PNDFSJdP+KFgdsG3ZzMXCgquO7I6McjY2vlqILjtJd0hy8wEvtugS9xKRF2NWlPNGxvLCXlTNIae4serI7dinw==}
@@ -9877,10 +9867,6 @@ packages:
   shebang-regex@3.0.0:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
-
-  side-channel-list@1.0.0:
-    resolution: {integrity: sha512-FCLHtRD/gnpCiCHEiJLOwdmFP+wzCmDEkc9y7NsYxeF4u7Btsn1ZuwgwJGxImImHicJArLP4R0yX4c2KCrMrTA==}
-    engines: {node: '>= 0.4'}
 
   side-channel-list@1.0.1:
     resolution: {integrity: sha512-mjn/0bi/oUURjc5Xl7IaWi/OJJJumuoJFQJfDDyO46+hBWsfaVM65TBHq2eoZBhzl9EchxOijpkbRC8SVBQU0w==}
@@ -14527,10 +14513,6 @@ snapshots:
     dependencies:
       undici-types: 7.16.0
 
-  '@types/nodemailer@6.4.22':
-    dependencies:
-      '@types/node': 24.10.2
-
   '@types/normalize-package-data@2.4.4': {}
 
   '@types/pg@8.15.6':
@@ -17507,7 +17489,7 @@ snapshots:
   http-proxy-agent@7.0.2:
     dependencies:
       agent-base: 7.1.4
-      debug: 4.3.4
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
@@ -19029,8 +19011,6 @@ snapshots:
 
   mdurl@2.0.0: {}
 
-  media-typer@1.1.0: {}
-
   media-typer@1.1.1: {}
 
   media-typer@2.0.0: {}
@@ -19329,7 +19309,7 @@ snapshots:
       content-type: 1.0.5
       debug: 4.4.3
       file-type: 16.5.4
-      media-typer: 1.1.0
+      media-typer: 1.1.1
       strtok3: 6.3.0
       token-types: 4.2.1
     transitivePeerDependencies:
@@ -19466,7 +19446,7 @@ snapshots:
 
   node-webpmux@3.2.1: {}
 
-  nodemailer@6.10.1: {}
+  nodemailer@10.6.0: {}
 
   nodemailer@7.0.13: {}
 
@@ -20454,7 +20434,7 @@ snapshots:
   proxy-agent@6.3.1:
     dependencies:
       agent-base: 7.1.4
-      debug: 4.3.4
+      debug: 4.4.3
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.6
       lru-cache: 7.18.3
@@ -21261,11 +21241,6 @@ snapshots:
 
   shebang-regex@3.0.0: {}
 
-  side-channel-list@1.0.0:
-    dependencies:
-      es-errors: 1.3.0
-      object-inspect: 1.13.4
-
   side-channel-list@1.0.1:
     dependencies:
       es-errors: 1.3.0
@@ -21290,7 +21265,7 @@ snapshots:
     dependencies:
       es-errors: 1.3.0
       object-inspect: 1.13.4
-      side-channel-list: 1.0.0
+      side-channel-list: 1.0.1
       side-channel-map: 1.0.1
       side-channel-weakmap: 1.0.2
 
@@ -21388,7 +21363,7 @@ snapshots:
   socks-proxy-agent@8.0.5:
     dependencies:
       agent-base: 7.1.4
-      debug: 4.3.4
+      debug: 4.4.3
       socks: 2.8.7
     transitivePeerDependencies:
       - supports-color
