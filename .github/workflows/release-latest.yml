@@ -110,6 +110,10 @@ jobs:
 
             - name: Publish stable release
               if: ${{ !inputs.dry_run }}
+              # A single package failing (historically @builderbot/database-redis
+              # with E402) must not abort the release: the next step retries the
+              # stragglers individually and the verification step is the gate.
+              continue-on-error: true
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
                   NPM_CONFIG_PROVENANCE: 'false'
@@ -121,6 +125,25 @@ jobs:
                   git commit -m "chore: release $NEW [skip ci]" || true
                   echo "🚀 Publicando con dist-tag: latest"
                   npx lerna publish from-package --dist-tag latest --yes --access public
+
+            - name: Publish stragglers individually
+              if: ${{ !inputs.dry_run }}
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  NPM_CONFIG_PROVENANCE: 'false'
+              run: |
+                  NEW="${{ steps.version.outputs.next }}"
+                  for dir in packages/*/ packages/plugins/*/; do
+                      [ -f "$dir/package.json" ] || continue
+                      NAME=$(node -p "require('./$dir/package.json').name")
+                      PRIVATE=$(node -p "Boolean(require('./$dir/package.json').private || false)")
+                      [ "$PRIVATE" = "true" ] && continue
+                      CURRENT=$(npm view "$NAME" dist-tags.latest 2>/dev/null || echo none)
+                      if [ "$CURRENT" != "$NEW" ]; then
+                          echo "→ $NAME está en latest=$CURRENT; publicando $NEW"
+                          ( cd "$dir" && npm publish --access public --tag latest ) || echo "::warning::$NAME falló en el publish individual"
+                      fi
+                  done
 
             - name: Verify every package is on latest
               if: ${{ !inputs.dry_run }}
