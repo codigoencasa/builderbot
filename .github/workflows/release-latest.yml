@@ -1,0 +1,157 @@
+name: '🚀 (LATEST) Publicar release estable'
+
+# Publica una versión ESTABLE nueva y mueve el dist-tag `latest`.
+#
+# Mismo modelo que `releases-dev.yml` (alpha), que sí tolera correr varias veces:
+# cada corrida calcula una versión nueva, la publica y verifica que TODOS los
+# paquetes queden en `latest`. Republicar una versión ya existente es lo que
+# hacía fallar al workflow 🚀⚡ Liberando versiones con un exit 1 sin mensaje.
+on:
+    workflow_dispatch:
+        inputs:
+            bump:
+                description: 'Tipo de bump sobre la versión estable actual'
+                required: true
+                default: 'patch'
+                type: choice
+                options:
+                    - patch
+                    - minor
+                    - major
+            dry_run:
+                description: 'Dry run: muestra la versión y los paquetes, sin publicar'
+                required: false
+                default: false
+                type: boolean
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: false
+
+env:
+    NODE_VERSION: 22.20.0
+    PUPPETEER_SKIP_DOWNLOAD: 'true'
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
+    PUPPETEER_SKIP_FIREFOX_DOWNLOAD: 'true'
+    MONGOMS_DOWNLOAD_DIR: ~/.cache/mongodb-binaries
+
+jobs:
+    release-latest:
+        name: 'Release latest'
+        runs-on: ubuntu-latest
+        timeout-minutes: 60
+        permissions:
+            contents: write
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  persist-credentials: true
+
+            - name: Set up pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 9.0.6
+                  run_install: false
+
+            - name: Set up Node.js ${{ env.NODE_VERSION }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile --prefer-offline --reporter=append-only
+
+            - name: Templates in sync
+              run: pnpm run generate:check
+
+            - name: Build packages
+              run: pnpm run build
+
+            - name: Verify npm authentication
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: |
+                  if [ -z "$NODE_AUTH_TOKEN" ]; then
+                      echo "::error::Falta el secret NPM_TOKEN."
+                      exit 1
+                  fi
+                  if ! npm whoami >/dev/null 2>&1; then
+                      echo "::error::NPM_TOKEN inválido o expirado (401 Unauthorized)."
+                      exit 1
+                  fi
+                  echo "✅ Autenticado en npm como: $(npm whoami)"
+
+            - name: Configure Git
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
+            - name: Compute next stable version
+              id: version
+              run: |
+                  CURRENT=$(node -p "require('./lerna.json').version.replace(/[-+].*$/, '')")
+                  NEW=$(node -e "const s=require('semver');console.log(s.inc(process.argv[1],process.argv[2]))" "$CURRENT" "${{ inputs.bump }}")
+                  echo "current=$CURRENT" >> "$GITHUB_OUTPUT"
+                  echo "next=$NEW" >> "$GITHUB_OUTPUT"
+                  echo "📦 Versión estable actual: $CURRENT"
+                  echo "🚀 Versión a publicar: $NEW (dist-tag: latest)"
+
+            - name: Dry run — reportar qué se publicaría
+              if: ${{ inputs.dry_run }}
+              run: |
+                  echo "DRY RUN — no se versiona ni publica nada"
+                  npx lerna ls --json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const p=JSON.parse(s);for(const x of p)console.log('   - '+x.name+': '+x.version+' -> ${{ steps.version.outputs.next }}');console.log('Total: '+p.length+' paquetes')})"
+
+            - name: Publish stable release
+              if: ${{ !inputs.dry_run }}
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  NPM_CONFIG_PROVENANCE: 'false'
+              run: |
+                  NEW="${{ steps.version.outputs.next }}"
+                  echo "📦 Versionando todos los paquetes a $NEW"
+                  npx lerna version "$NEW" --force-publish --yes --no-git-tag-version --no-push
+                  git add -A
+                  git commit -m "chore: release $NEW [skip ci]" || true
+                  echo "🚀 Publicando con dist-tag: latest"
+                  npx lerna publish from-package --dist-tag latest --yes
+
+            - name: Verify every package is on latest
+              if: ${{ !inputs.dry_run }}
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: |
+                  NEW="${{ steps.version.outputs.next }}"
+                  FAILED=0
+                  for pkg in $(npx lerna ls --json --all | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{for(const p of JSON.parse(s))if(!p.private)console.log(p.name)})"); do
+                      for attempt in 1 2 3 4 5; do
+                          LATEST=$(npm view "$pkg" dist-tags.latest 2>/dev/null || echo "none")
+                          [ "$LATEST" = "$NEW" ] && break
+                          sleep 6
+                      done
+                      if [ "$LATEST" = "$NEW" ]; then
+                          echo "✅ $pkg -> $LATEST"
+                      else
+                          echo "::error::$pkg quedó en latest=$LATEST (esperado $NEW)"
+                          FAILED=1
+                      fi
+                  done
+                  if [ "$FAILED" -ne 0 ]; then
+                      echo "::error::Algunos paquetes no quedaron en $NEW. Reintentar este workflow publica una versión nueva, no la misma."
+                      exit 1
+                  fi
+                  echo "🎉 Todos los paquetes están en latest=$NEW"
+
+            - name: Push version commit and tag
+              if: ${{ !inputs.dry_run }}
+              run: |
+                  NEW="${{ steps.version.outputs.next }}"
+                  git tag "v$NEW" || true
+                  git push origin HEAD:${{ github.ref_name }} --follow-tags --no-verify
+
+            - name: Release Github
+              if: ${{ !inputs.dry_run }}
+              run: node ./scripts/github.js --version="${{ steps.version.outputs.next }}" --token="${{ secrets.GITHUB_TOKEN }}"
