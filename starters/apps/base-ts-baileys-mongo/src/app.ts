@@ -63,12 +63,12 @@ const fullSamplesFlow = addKeyword<Provider, Database>(['samples', utils.setEven
 const main = async () => {
     const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])
     
-    // If you experience ERRO AUTH issues, check the latest WhatsApp version at:
-    // https://wppconnect.io/whatsapp-versions/
-    // Example: version "2.3000.1035824857-alpha" -> [2, 3000, 1035824857]
-    const adapterProvider = createProvider(Provider, 
-		{ version: [2, 3000, 1035824857] } 
-	)
+    // The WhatsApp version is resolved automatically.
+    // Manual fix if you get "405 Connection Failure" / ERRO AUTH:
+    // copy the latest version from https://wppconnect.io/whatsapp-versions/
+    // and pass it as is: createProvider(Provider, { version: '2.3000.1054953954-alpha' })
+    // or set WA_VERSION=2.3000.1054953954 in your .env
+    const adapterProvider = createProvider(Provider)
         const adapterDB = new Database({
         dbUri: process.env.MONGO_DB_URI,
         dbName: process.env.MONGO_DB_NAME,
