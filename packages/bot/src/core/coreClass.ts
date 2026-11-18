@@ -676,7 +676,11 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             }))
 
             msgToSend = this.flowClass.find(body, false, flowStandalone) || []
-            return exportFunctionsSend(() => sendFlow(msgToSend, from))
+            if (msgToSend.length) return exportFunctionsSend(() => sendFlow(msgToSend, from))
+
+            // si no hubo match en nested pero el previo pedía capture,
+            // procesar como captura libre sin buscar keywords globales
+            if (prevMsg?.options?.capture) return exportFunctionsSend(() => sendFlow([], from))
         }
 
         // 📄🤘(tiene return) Si el mensaje previo implementa capture
@@ -684,8 +688,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             const typeCapture = typeof prevMsg?.options?.capture
 
             if (typeCapture === 'boolean' && fallBackFlag) {
-                msgToSend = this.flowClass.find(refToContinue?.ref, true) || []
-                return exportFunctionsSend(() => sendFlow(msgToSend, from, { forceQueue: true }))
+                msgToSend = this.flowClass.find(refToContinue?.ref ?? '', true) || []
+                if (msgToSend.length) return exportFunctionsSend(() => sendFlow(msgToSend, from, { forceQueue: true }))
             }
         }
 
@@ -696,8 +700,6 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
         }
 
         if (!prevMsg?.options?.capture) {
-            msgToSend = this.flowClass.find(this.generalArgs.listEvents.WELCOME) || []
-
             if (LIST_REGEX.REGEX_EVENT_LOCATION.test(body)) {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.LOCATION) || []
             }
@@ -729,6 +731,8 @@ class CoreClass<P extends ProviderClass = any, D extends MemoryDB = any> extends
             if (LIST_REGEX.REGEX_EVENT_CONTACTS.test(body)) {
                 msgToSend = this.flowClass.find(this.generalArgs.listEvents.CONTACTS) || []
             }
+
+            if (!msgToSend.length) msgToSend = this.flowClass.find(this.generalArgs.listEvents.WELCOME) || []
         }
 
         await this.stateHandler.updateState({ from })({ __end_flow__: false })

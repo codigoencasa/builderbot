@@ -79,7 +79,7 @@ const replaceZones = async (fullPath: string, database: string, provider: string
     const jsonConstantsProvider: genericProps = JSON.parse(readFileSync(ZONE_PATH_PROVIDERS, 'utf8'))
 
     const pathEntryPoint = join(fullPath, 'src', findApp)
-    const textPlain = readFileSync(pathEntryPoint, 'utf8')
+    const textPlain = readFileSync(pathEntryPoint, 'utf8').replace(/\r\n/g, '\n')
 
     // Provider flows are authored with TypeScript generics; strip them for JS.
     const providerFlow =
