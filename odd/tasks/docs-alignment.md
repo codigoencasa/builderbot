@@ -10,8 +10,8 @@ S3. Delivery selection: "Cadena sobre una rama de documentación". Scope stateme
 ## Tasks
 T1 | S1 | inline (background writers disabled; no parallel writer reason) | done | Repository/scaffolder guides + index/audit; structural check passed; commit: 9c5c461f.
 T2 | S1 | inline | done | Shared + three provider READMEs and 181 generated copies; CLI 16/16, banner 3/3, generate:check passed; commit: 12ac8e15.
-T3 | S1-S3 | inline | in_progress | Run final structural/independent verification and record evidence; commit: pending.
-T4 | S2-S3 | inline | pending | Push tracker and two child branches; open draft tracker plus ordered child PRs, without merge; commit: pending.
+T3 | S1-S3 | inline | done | Structural, independent and generation/CLI verification recorded; commit: 795b320e.
+T4 | S2-S3 | inline | in_progress | Push tracker and two child branches; open draft tracker plus ordered child PRs, without merge; commit: pending.
 
 ## Log
 L1. User: "revisar donde quedamos y adutiar los cambios, quiero mejorar la documentacion en todos lados, revisar documentacion revisar templates y asegura que este alineado con nuestro sitio web builderbot.app"
