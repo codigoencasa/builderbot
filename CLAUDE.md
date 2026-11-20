@@ -3,10 +3,10 @@
 > Complements `AGENTS.md` (the canonical agent guide for this repo). Read both.
 
 ## Tech Stack
-- TypeScript monorepo (pnpm workspaces + Lerna + Nx cache), Node >=18 (use Node 22 + pnpm 9).
+- TypeScript monorepo (pnpm workspaces + Lerna + Nx cache); use Node 22 + pnpm 9. The scaffolding CLI requires Node 20+ and Git; root/core engine ranges are separate.
 - Core lib: `@builderbot/bot` — flows, state machine, queue, provider interface.
 - Providers: `packages/provider-*` (baileys, meta, twilio, telegram, voice, …).
-- Databases: `packages/database-*` (json, mongo, mysql, postgres).
+- Databases: `packages/database-*` (json, mongo, mysql, postgres, redis); `MemoryDB` is exported by `@builderbot/bot`.
 - Build: Rollup + `rollup-plugin-typescript2`. HTTP: Polka.
 - Tests: UVU (`bot`, `cli`, `manager`, db pkgs) and Jest (most providers).
 - Release: Lerna + standard-version + Conventional Commits.
@@ -44,4 +44,6 @@
 - Edit `src/**` only; never hand-edit generated `dist/**`.
 - Add new providers by mirroring `packages/provider-baileys`.
 - Verify the test runner (Jest vs UVU) before adding test commands.
-- Known gotcha: `CONTRIBUTING.md` references `pnpm run test.e2e`, which is not defined at root.
+- Template source/ownership: `docs/README.md`. Never hand-edit `starters/apps/**`; regenerate from `scripts/generate/` and commit both source and output.
+- Public API docs: https://www.builderbot.app/ ; agent index: https://www.builderbot.app/llms.txt .
+- Root has no `test.e2e` script; check the package runner before selecting tests.
