@@ -6,18 +6,15 @@ Minimal BuilderBot example for **TikTok organic comments** (poll + public reply)
 
 ## Setup
 
-From the monorepo root (recommended while developing the provider):
+Use Node.js 20+ and Git, as in the [BuilderBot quickstart](https://www.builderbot.app/en/quickstart).
+From your generated project directory:
 
 ```bash
-# build the provider
-pnpm --filter @builderbot/provider-tiktok build
-
-# run the example
-cd starters/apps/<this-starter>
-pnpm install
+npm install
 ```
 
-Set env vars:
+Export these variables in the terminal that will run the bot (or configure your deployment environment).
+`.env.example` is a reference: this starter does not automatically load `.env` files.
 
 ```bash
 export TIKTOK_ACCESS_TOKEN='your_access_token'
@@ -28,10 +25,13 @@ export TIKTOK_VIDEO_IDS='7258231412594101531'
 ## Run
 
 ```bash
-pnpm run dev
-# or
-pnpm run build && pnpm start
+npm run dev
 ```
+
+For production, **TypeScript** starters use `npm run build` then `npm start`.
+**JavaScript** starters use `npm start` directly; they have no build script.
+Configure the selected database in `src/app.ts` or `src/app.js`; only Memory runs without an external database service or file configuration.
+The HTTP port defaults to `3008` (`PORT` overrides it).
 
 When someone comments on a watched video with the keyword `info`, the bot posts a public reply.
 
@@ -50,7 +50,11 @@ curl -X POST http://localhost:3008/v1/reply-comment \
   -d '{"videoId":"7258231412594101531","commentId":"COMMENT_ID","message":"Thanks!"}'
 ```
 
+Do not expose these debug endpoints publicly without authentication, input validation and network restrictions.
+Never commit access tokens, real `.env` values or session files.
+
 ## Docs
 
-- Package: [`@builderbot/provider-tiktok`](../../../packages/provider-tiktok/README.md)
-- Site: [builderbot.app](https://builderbot.app/)
+- Package: [`@builderbot/provider-tiktok`](https://www.npmjs.com/package/@builderbot/provider-tiktok)
+- Site: [builderbot.app](https://www.builderbot.app/)
+- AI-agent index: [llms.txt](https://www.builderbot.app/llms.txt)
