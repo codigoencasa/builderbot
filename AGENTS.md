@@ -29,8 +29,10 @@ Guide for agentic coding tools working in this repository.
   `zones/extras/tiktok/`), otherwise the generator overwrites them.
 
 ## Runtime Expectations
-- Root engines: Node `>=18`, pnpm `>=8.6.12`.
-- `CONTRIBUTING.md` recommends Node 20+.
+- Root engines: Node `^18.17.0 || ^20.3.0 || >=21.0.0`, pnpm `>=8.6.12`.
+- The scaffolding CLI requires Node 20+ and Git; use Node 22 for monorepo development, as documented in `CONTRIBUTING.md`.
+- Public docs: https://www.builderbot.app/ ; AI-agent index: https://www.builderbot.app/llms.txt .
+- Template workflow and documentation ownership: `docs/README.md`.
 - CI workflows use Node `22.20.0`.
 - Safe default for agents: Node 22 + pnpm 9.
 
@@ -95,7 +97,7 @@ UVU gotcha:
 
 ## Test Runner Map
 - Jest packages: `@builderbot/provider-baileys`, `@builderbot/provider-email`, `@builderbot/provider-evolution-api`, `@builderbot/provider-facebook-messenger`, `@builderbot/provider-gohighlevel`, `@builderbot/provider-gupshup`, `@builderbot/provider-instagram`, `@builderbot/provider-meta`, `@builderbot/provider-sherpa`, `@builderbot/provider-telegram`, `@builderbot/provider-tiktok`, `@builderbot/provider-twilio`, `@builderbot/provider-venom`, `@builderbot/provider-voice`, `@builderbot/provider-voice-sip`, `@builderbot/provider-voice-whatsapp`, `@builderbot/provider-web-whatsapp`, `@builderbot/provider-wppconnect`.
-- UVU packages: `@builderbot/bot`, `@builderbot/cli`, `@builderbot/manager`, `@builderbot/contexts-dialogflow`, `@builderbot/contexts-dialogflow-cx`, `@builderbot/database-json`, `@builderbot/database-mongo`, `@builderbot/database-mysql`, `@builderbot/database-postgres`, `eslint-plugin-builderbot`.
+- UVU packages: `@builderbot/bot`, `@builderbot/cli`, `@builderbot/manager`, `@builderbot/contexts-dialogflow`, `@builderbot/contexts-dialogflow-cx`, `@builderbot/database-json`, `@builderbot/database-mongo`, `@builderbot/database-mysql`, `@builderbot/database-postgres`, `@builderbot/database-redis`, `eslint-plugin-builderbot`.
 - No `test` script currently: `create-builderbot`.
 
 ## Code Style: Formatting and Imports
@@ -161,5 +163,5 @@ When touching flow callbacks (or `eslint-plugin-builderbot` behavior), preserve 
 5. Run `pnpm run build` for release-sensitive changes.
 
 ## Known Gotchas
-- `CONTRIBUTING.md` references `pnpm run test.e2e`, but that script is not currently defined at root.
+- Root has no `test.e2e` script; use the package test scripts listed above.
 - Jest and UVU coexist; verify runner before writing automation/test commands.
