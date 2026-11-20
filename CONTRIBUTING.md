@@ -10,8 +10,8 @@ También agradecemos los aportes económicos, que utilizaremos para diversos fin
 
 __Requisitos:__
 Para poder aportar al proyecto necesitarás tener:
-- __[Node.js](https://nodejs.org/es/download/)__ con una versión compatible con la dependencia `sharp`: `^18.17.0 || ^20.3.0 || >=21.0.0` (definida en el campo `engines` de `packages/bot/package.json`).
-- __[pnpm](https://pnpm.io/cli/install)__ como administrador de paquetes. Puedes seguir el enlace para saber cómo instalarlo.
+- __[Node.js](https://nodejs.org/es/download/)__: usa Node 22 para trabajar en el monorepo, igual que CI. El CLI exige Node 20 o superior, como indica el [inicio rápido](https://www.builderbot.app/en/quickstart). Los rangos `engines` de la raíz y del core todavía admiten algunas versiones de Node 18; no representan el mínimo del CLI.
+- __[pnpm](https://pnpm.io/cli/install)__ 9 como administrador de paquetes del monorepo (`packageManager`: 9.0.6). Los proyectos generados también pueden usar npm.
 - __[VSCode](https://code.visualstudio.com/download)__ es el editor de código que recomendamos, ya que cuenta con plugins útiles.
 - __[Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits&ssr=false#overview)__ es un plugin de VSCode que te ayudará a crear commits semánticos, siguiendo buenas prácticas.
 
@@ -92,6 +92,9 @@ pnpm --filter <package-name> test
 ```
 Por ejemplo: `pnpm --filter @builderbot/bot test`.
 
+### Documentación hacia builderbot-dev
+Para enviar documentación a `builderbot-dev`, usa una rama con prefijo `docs/`: el workflow ejecuta tests, build y sincronización de templates, pero omite el job de publicación alpha. Un PR en draft por sí solo no evita publicar. Consulta la [política de release de dev](docs/dev-release.md); los releases manuales conservan su comportamiento.
+
 ### Antes de enviar un Pull Request
 Revisa la guía para contribuir en `AGENTS.md` y asegúrate de que:
 - Los chequeos de lint y formato pasan:
@@ -101,7 +104,8 @@ pnpm run format:check
 ```
 - Las pruebas del paquete afectado pasan: `pnpm --filter <package-name> test`.
 - Los commits siguen el estándar [Conventional Commits](https://www.conventionalcommits.org/): el repositorio usa commitlint y no acepta otro formato.
-- No editas a mano los starters generados (`starters/apps/**`); se regeneran con `pnpm run generate.templates`.
+- No editas a mano los starters generados (`starters/apps/**`); cambia las fuentes en `scripts/generate/`, ejecuta `pnpm run generate.templates` e incluye ambos en el mismo commit. Después de commitear, `pnpm run generate:check` debe pasar. Consulta el [flujo de templates](docs/README.md#template-workflow).
+- Para cambios de documentación, revisa los enlaces a [builderbot.app](https://www.builderbot.app/) y su [índice para agentes](https://www.builderbot.app/llms.txt). Los pendientes del sitio se registran por separado en la [auditoría documental](docs/audits/documentation-alignment.md); el código del sitio no está en este monorepo.
 - Rellenas la plantilla de Pull Request (`.github/PULL_REQUEST_TEMPLATE.md`) con una descripción clara de tu aporte y abres el PR desde una rama de tu fork hacia la rama `builderbot`.
 
 > __NOTA:__ Si encuentras información que podría mejorarse en este documento o algún error ortográfico que dificulte la comprensión, eres libre de corregirlo.([edita aqui](https://github.com/codigoencasa/builderbot/edit/builderbot/CONTRIBUTING.md))

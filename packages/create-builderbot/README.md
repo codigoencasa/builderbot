@@ -1,21 +1,57 @@
-<p align="center">
-  <a href="https://builderbot.app/">
-    <h2 align="center">create-builderbot</h2>
-  </a>
-</p>
+# create-builderbot
 
+Scaffold a BuilderBot chatbot in TypeScript or JavaScript. Requires **Node.js 20+** and **Git**.
+See the [official quickstart](https://www.builderbot.app/en/quickstart).
 
-## Documentation
+## Create a project
 
-Visit [builderbot](https://builderbot.app/) to view the full documentation.
+```bash
+npm create builderbot@latest
+# Or: pnpm create builderbot@latest
+```
 
+Choose a provider, database and language in the interactive prompts. To supply the selections directly, pass all three flags:
 
-## Official Course
+```bash
+npm create builderbot@latest -- --provider=baileys --database=memory --language=ts
+# pnpm forwards flags without npm's extra separator:
+pnpm create builderbot@latest --provider=baileys --database=memory --language=ts
+```
 
-If you want to discover all the functions and features offered by the library you can take the course.
-[View Course](https://app.codigoencasa.com/courses/builderbot?refCode=LEIFER)
+The CLI creates `base-<language>-<provider>-<database>` in the current directory. Use a new directory, not an existing bot.
+Dependencies are not installed automatically:
 
+```bash
+cd base-ts-baileys-memory
+npm install
+npm run dev
+```
 
-## Contact Us
-- [💻 Discord](https://link.codigoencasa.com/DISCORD)
-- [👌 𝕏 (Twitter)](https://twitter.com/leifermendez)
+Configure credentials in the generated `src/app.ts` or `src/app.js` before connecting a provider or database.
+If the starter includes `.env.example`, follow its README; do not assume every starter loads `.env` files.
+
+## Supported selections
+
+| Flag | Values |
+| --- | --- |
+| `--language` | `ts`, `js` |
+| `--database` | `memory`, `json`, `mongo`, `mysql`, `postgres`, `redis` |
+| `--provider` | `baileys`, `sherpa`, `evolution-api`, `wppconnect`, `twilio`, `meta`, `facebook-messenger`, `instagram`, `tiktok`, `gupshup`, `gohighlevel`, `email`, `voice`, `voice-sip`, `voice-whatsapp`, `meta-voice-ai` |
+
+**Gupshup supports only `--language=ts --database=memory`.** Available provider packages are not the same as available CLI starters; for example, Telegram is installed and configured separately.
+Memory uses `MemoryDB` from `@builderbot/bot`; it does not require a separate database package and is not durable across restarts.
+
+## Run the generated bot
+
+| Language | Development | Production |
+| --- | --- | --- |
+| TypeScript | `npm run dev` | `npm run build` then `npm start` |
+| JavaScript | `npm run dev` or `npm start` | `npm start` (no build script) |
+
+Provider-specific README files take precedence for webhook, speech and TikTok setup. Never expose sample HTTP endpoints publicly without access controls.
+
+## Documentation and support
+
+- [BuilderBot documentation](https://www.builderbot.app/) — API, flows, providers and deployment.
+- [AI-agent documentation index](https://www.builderbot.app/llms.txt).
+- [Discord](https://link.codigoencasa.com/DISCORD).
