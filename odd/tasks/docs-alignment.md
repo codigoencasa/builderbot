@@ -9,8 +9,8 @@ S3. Delivery selection: "Cadena sobre una rama de documentación". Scope stateme
 
 ## Tasks
 T1 | S1 | inline (background writers disabled; no parallel writer reason) | done | Repository/scaffolder guides + index/audit; structural check passed; commit: 9c5c461f.
-T2 | S1 | inline | in_progress | Replace generic starter README sources, preserve provider overrides, regenerate all starters; commit: pending.
-T3 | S1-S3 | inline | pending | Run structural and generation/CLI checks; record results and commit evidence; commit: pending.
+T2 | S1 | inline | done | Shared + three provider READMEs and 181 generated copies; CLI 16/16, banner 3/3, generate:check passed; commit: 12ac8e15.
+T3 | S1-S3 | inline | in_progress | Run final structural/independent verification and record evidence; commit: pending.
 T4 | S2-S3 | inline | pending | Push tracker and two child branches; open draft tracker plus ordered child PRs, without merge; commit: pending.
 
 ## Log
@@ -23,3 +23,6 @@ L6. Passive documentation has no meaningful behavioral RED; validate commands/im
 L7. T1 structural check passed (exit 0): local Markdown targets, all 16 CLI providers, six databases and TS/JS scripts; `git diff --check` passed. Initial native assessment could not classify untracked Markdown without declaration; recorded as unassessable, not approval. One independent read-only verifier is required at feature end before delivery. Runtime, manifests and lockfile remain unchanged.
 L8. Tracker seed e1f9c6a7; T1 commit 9c5c461f (245 changed lines). Child1 docs/repository-guides bases on docs/align-guides-and-starters; child2 docs/starter-guides bases on child1. T2 also corrects provider README overrides (environment is not auto-loaded, standalone TikTok instructions and TS-only build distinction).
 L9. T2 self-checks passed (exit 0): `pnpm run generate.templates`, README/source parity for all 181 starters, Markdown-only diff, `git diff --check`, focused starters-banner UVU 3/3, full CLI UVU 16/16. No live provider or secret used. Shared READMEs and all three overrides point to llms.txt. Generated-only volume remains in the same commit as its sources.
+L10. T2 commit 12ac8e15; post-commit `pnpm run generate:check` passed. Native assessment of this committed work unit returned passive / non_executable_only / reviewDue:false; no review transaction started. T2 authored README changes: 231 lines; generated copies: 181 files, +7862/-4469. Full-series independent verification retained because T1 assessment was unavailable.
+L11. Independent verifier completed without blockers: all 195 changed files are Markdown; local links, 181/181 README source parity, scripts, CLI selections, routes/env names and branch ancestry verified. S1 met for repository scope; S2/S3 delivery awaits T4. Parent spot check also passed (exit 0). Advisories are follow-ups, not new correction scope: database env tables could be more explicit, copying .env remains inert, existing WA_VERSION flow comment remains unchanged.
+L12. Build/typecheck/lint/format were not run for this Markdown-only series (Markdown is ignored by .prettierignore); no runtime changes to exercise. Live messaging, deployment, credentials and a complete website/translation audit are not claimed. Destination PR workflow runs only for base builderbot, so child PRs need these local checks and the final tracker will need fresh CI after human integration. No repository requirement for approved-issue linkage or type:docs label exists; use the destination's Docs/tests template.
